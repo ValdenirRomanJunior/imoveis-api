@@ -1,0 +1,9 @@
+export const colors={
+    PRYMARY:"#494949",
+    SECONDARY:"#343233",
+    TERTIARY:"#E8E8E8",
+    BACKGROUND:"#FFFFFF",
+    BACKGROUND2:"#F8FCFF",
+    RED: "#E72424",
+    GREEN:"#15B138",
+}
