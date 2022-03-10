@@ -7,6 +7,7 @@ interface CardProps {
     height?: string;
     noShadow?: boolean
     marginTop?: string;
+    padding?: boolean;
 }
 
 
@@ -15,12 +16,13 @@ const Card = ({
     width='100%',
     height='auto',
     noShadow=false,
-    marginTop='20px'
+    marginTop='20px',
+    padding=false
     
 
 }: CardProps) => {
     return (
-      <CardContainer width={width} height={height} noShadow={noShadow} marginTop={marginTop}>
+      <CardContainer width={width} height={height} noShadow={noShadow} marginTop={marginTop} padding={padding}>
              {children}
 
       </CardContainer>

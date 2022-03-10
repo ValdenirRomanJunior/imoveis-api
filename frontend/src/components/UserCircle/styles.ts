@@ -1,11 +1,11 @@
 import styled from "styled-components"
 
 export const CircleContainer = styled.div`
-    width: 74px;
-    height: 74px;
+    width: 54px;
+    height: 54px;
     border-radius: 50%;
     border: 1px solid ${({theme}) => theme.colors.primary};
-
+    
     display: flex;
     align-items: center;
     justify-content: center;

@@ -9,6 +9,7 @@ export const InputImageContainer = styled.div`
     border: 1px dashed #000;
     flex-direction: column;
     background-color: ${({theme}) => theme.colors.backgroundLight};
+    margin-bottom:20px;
  
     
    

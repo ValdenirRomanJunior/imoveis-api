@@ -2,20 +2,28 @@ import styled from "styled-components";
 
 export const RegisterWrapper= styled.div`
     width: 100vw;
-    height:100vh;
+
     display:flex;
     flex-direction: column;
     align-items: center;   
+
+    h1{
+        margin-top:2rem;
+        font-family: 'Poppins', sans serif; 
+        font-weight:600;
+        color: #575757;
+        
+    }
 `
 
 export const BodyRegisterContainer= styled.div`
-    width: 90%;
+    width: 80%;
     height:100%;
     border: 1px solid #000;
     border-radius:5px;
-    margin-top: 5rem;
+    margin-top: 2rem;
+    padding-bottom:2rem;
 `
-
 
 export const InputRegisterContainer = styled.div`
     margin-top: 3rem;
@@ -25,8 +33,9 @@ export const InputRegisterContainer = styled.div`
 `
 export const TextAreaContainer = styled.div`
     margin-top: 3rem;
-    max-width: 50%;
+    max-width:50%;
     margin-left: 2rem;
+    
 
 `
 export const ImageContainer = styled.div`
@@ -34,7 +43,8 @@ export const ImageContainer = styled.div`
     width: 4rem;
     height: 4rem;
     margin-left: 2rem;
-
+    margin-bottom: 2rem;
+    
 `
 
 export const ButtonWrapper = styled.div`

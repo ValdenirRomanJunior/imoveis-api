@@ -27,6 +27,7 @@ interface PropertyItem {
         city: {
 
             name: string,
+            
             estado: {
                 name: string
             }
@@ -42,7 +43,7 @@ const PropertyItem = ({ image, title, description, value, built, address }: Prop
     return (
         <PropertyItemContainer>
 
-            <img src={image} width={100} height={50} alt="Property image" />
+            <img src={image} width={100} height={50} alt="Property image"/>
 
             <div>
             <h4>Title</h4>

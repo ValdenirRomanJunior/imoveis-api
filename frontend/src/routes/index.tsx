@@ -9,6 +9,7 @@ import SignIn from '../pages/SignIn';
 import SignUp from '../pages/SignUp';
 import Dashboard from '../pages/Dashboard';
 import Register from "../pages/Register";
+import Details from "../pages/Details";
 
 
 export const Router = () => {
@@ -21,6 +22,9 @@ export const Router = () => {
                 <Route path="/signUp" element={<SignUp />} />
                 <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/register" element={<Register />} />
+                <Route path="/details" >
+                 <Route path=":propertyId" element={<Details />} />
+                 </Route>
             </Routes>
         </BrowserRouter>
     )

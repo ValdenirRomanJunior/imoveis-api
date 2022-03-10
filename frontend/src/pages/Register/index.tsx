@@ -4,44 +4,75 @@ import Header from '../../components/Header';
 import Input from '../../components/Input';
 import InputImage from '../../components/InputImage';
 import TextArea from '../../components/TextArea';
+import { useNavigate } from 'react-router-dom';
 
 
-import {RegisterWrapper,BodyRegisterContainer, InputRegisterContainer,ButtonWrapper,ButtonContainer, TextAreaContainer,ImageContainer} from './styles';
+import { RegisterWrapper, BodyRegisterContainer, InputRegisterContainer, ButtonWrapper, ButtonContainer, TextAreaContainer, ImageContainer } from './styles';
 
-const Register = ()=>{
-    return(
+const Register = () => {
+    const navigate = useNavigate();
+    const handleToRegister = () => {
+        navigate('/dashboard');
+    }
+    return (
         <RegisterWrapper>
             <Header />
+            <h1>Register your land</h1>
+            <BodyRegisterContainer>
+                <ImageContainer style={{marginBottom:"2rem"}}>
+                    <InputImage type="file" accept='jpg, png' multiple />
 
-                <BodyRegisterContainer>
-                 <InputRegisterContainer>
-                    <Input  placeholder='Title*'/>
-                 </InputRegisterContainer>
+                    
+                </ImageContainer>
+                <InputRegisterContainer style={{marginTop:"70px"}}>
+                    <Input placeholder='Title*' />
+                </InputRegisterContainer>
 
-                    <TextAreaContainer>
-                        <TextArea placeholder='Description*'/>
-                    </TextAreaContainer>
+                <TextAreaContainer>
+                    <TextArea placeholder='Description*' />
+                </TextAreaContainer>
+                <InputRegisterContainer>
+                    <Input placeholder='Beds*'/>
+                </InputRegisterContainer>
+                <InputRegisterContainer>
+                    <Input placeholder='Baths*' />
+                </InputRegisterContainer>
+                <InputRegisterContainer>
+                    <Input placeholder='Yr Built?*' />
+                </InputRegisterContainer>
+                <InputRegisterContainer style={{width: "20%"}} >
+                    <Input placeholder='value*' />
+                </InputRegisterContainer>
+                <InputRegisterContainer>
+                    <Input placeholder='Sqft*' />
+                </InputRegisterContainer>
 
-                    <ImageContainer>
-                        <InputImage type="file" accept='jpg, png' multiple>
-                      
-                        </InputImage>
-                       
+                <InputRegisterContainer style={{width: "20%"}}>
+                    <Input placeholder='zipcode*' />
+                </InputRegisterContainer>
+                <InputRegisterContainer>
+                    <Input placeholder='Address*' />
+                </InputRegisterContainer>
+              
+                <InputRegisterContainer>
+                    <Input placeholder='district*' />
+                </InputRegisterContainer>
 
-                        
-                    </ImageContainer>
+                <InputRegisterContainer>
+                    <Input placeholder='City*' />
+                </InputRegisterContainer>
+                <InputRegisterContainer>
+                    <Input placeholder='State*' />
+                </InputRegisterContainer>
                
-
-
-
-                </BodyRegisterContainer>
-                <ButtonWrapper>
+            </BodyRegisterContainer>
+            <ButtonWrapper>
                 <ButtonContainer>
-                    <Button />
+                    <Button type='button' onClick={handleToRegister} style={{borderRadius:"30px"}}>Register</Button>
                 </ButtonContainer>
-                </ButtonWrapper>
-                </RegisterWrapper>
-        
+            </ButtonWrapper>
+        </RegisterWrapper>
+
     )
 }
 

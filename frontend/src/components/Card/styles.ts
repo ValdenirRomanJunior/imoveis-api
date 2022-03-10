@@ -7,13 +7,14 @@ export const CardContainer = styled.div<{
     height: string;
     noShadow: boolean;
     marginTop:string;
-    
-    
+    padding: boolean;
+     
 }>`
 
 width: ${(props) => props.width};
 height: ${(props) => props.height};
 background: ${({theme}) => theme.colors.background};
+
 
 
 ${(props) => !props.noShadow && css`
@@ -25,9 +26,14 @@ ${(props) => props.marginTop && css`
     margin-top:20px;
 
 `}
+${(props) => !props.padding && css`
+    padding:20px;
+
+`}
+
 border-radius: 20px;
 
-padding:20px;
+
 
 display:flex;
 align-items: center;

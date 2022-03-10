@@ -1,7 +1,7 @@
 import styled from "styled-components";
 
 export const HeaderContainer = styled.head`
-    width:100%;
+    width: 100vw;
     height: 90px;
 
     background-color: ${({theme}) => theme.colors.background};
@@ -9,6 +9,7 @@ export const HeaderContainer = styled.head`
     display: flex;
     align-items: center;
     justify-content: center;
+    border-bottom: 1px solid rgba(0,0,0,0.15);
 
 `
 

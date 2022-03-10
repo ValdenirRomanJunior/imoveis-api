@@ -6,6 +6,7 @@ import Card from '../../components/Card';
 import Property from '../../components/Property';
 import Input from '../../components/Input';
 import { FiSearch   } from "react-icons/fi";
+import Pagination from '../../components/Pagination';
 
 const Dashboard = ()=>{
 
@@ -39,6 +40,7 @@ const Dashboard = ()=>{
                
                
            </BodyContainer>
+           <Pagination />
 
        </DashboardBackground>
             

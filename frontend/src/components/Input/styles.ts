@@ -5,7 +5,7 @@ export const InputContainer = styled.div`
     height: 46px;
 
     background: ${({theme}) => theme.colors.background};
-    border:1px solid ${({theme}) => theme.colors.primary};
+    border:1px solid ${({theme}) => theme.colors.secondary};
     border-radius: 10px;
 
     margin-bottom: 20px;

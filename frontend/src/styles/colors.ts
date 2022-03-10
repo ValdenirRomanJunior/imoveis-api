@@ -1,6 +1,6 @@
 export const colors={
-    PRYMARY:"#494949",
-    SECONDARY:"#343233",
+    PRYMARY:"#54BC96",
+    SECONDARY:"#747474",
     TERTIARY:"#E8E8E8",
     BACKGROUND:"#FFFFFF",
     BACKGROUND2:"#F8FCFF",
