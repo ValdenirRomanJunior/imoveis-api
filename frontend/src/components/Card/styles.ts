@@ -18,7 +18,7 @@ background: ${({theme}) => theme.colors.background};
 
 
 ${(props) => !props.noShadow && css`
-    box-shadow: 5px 4px 6px rgba(0,0,0,0.25);
+    box-shadow: -1px 4px 6px rgba(0,0,0,0.25);
 
 `}
 

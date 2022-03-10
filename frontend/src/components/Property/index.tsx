@@ -1,6 +1,8 @@
 import React from 'react';
 import { FiTrash, FiEdit } from "react-icons/fi";
+import { Link } from 'react-router-dom';
 import { PropertiesContainer, PropertyItemContainer } from './styles';
+
 
 
 interface PropertyProps {
@@ -12,6 +14,7 @@ interface PropertyProps {
 }
 
 interface PropertyItem {
+    id:number,
     image: string,
     title: string,
     description: string,
@@ -39,7 +42,7 @@ interface PropertyItem {
 
 }
 
-const PropertyItem = ({ image, title, description, value, built, address }: PropertyItem) => {
+const PropertyItem = ({ id,image, title, description, value, built, address }: PropertyItem) => {
     return (
         <PropertyItemContainer>
 
@@ -65,7 +68,9 @@ const PropertyItem = ({ image, title, description, value, built, address }: Prop
                 <h4>Zipcode</h4>
             <p>{address.zipcode}</p>
             </div>
+            <Link to={`/details/${id}`}>
             <FiEdit color='blue' />
+            </Link>
             <FiTrash color='blue' />
 
 
@@ -81,7 +86,7 @@ const Property = () => {
 
     const properties: PropertyItem[] = [
         {
-
+            id:1,
             image: "https://www.themoviedb.org/t/p/w533_and_h300_bestv2/jBJWaqoSCiARWtfV0GlqHrcdidd.jpg",
             title: "Beautiful house",
             description: "nice enterprise",

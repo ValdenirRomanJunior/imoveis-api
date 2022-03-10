@@ -9,9 +9,22 @@ const Header = () =>{
           <div className='logo-wrapper'>
           <img src={logo} alt='Logo oppenterprise'/>
           </div>
-       
-        <p className='login'>Login </p>
+          <div className='menu-box'>
+          <nav>
+            <ul>
+              <li>Home</li>
+              <li>About</li>
+              <li>Buy</li>
+              <li>Sell</li>
+            </ul>
+          </nav>
+            <div className='listing-button'><span>LISTING</span></div>
+            </div>
+       <div className='login-lets-box'>
+        <p className='login'>Log In </p>
         <span className='lets'>Let's start</span>
+        </div>
+
         <div className='menu-hamburguer'>
           <span>MENU</span>
         <GiHamburgerMenu />

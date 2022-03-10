@@ -16,7 +16,7 @@ const Register = () => {
     }
     return (
         <RegisterWrapper>
-            <Header />
+            <Header/>
             <h1>Register your land</h1>
             <BodyRegisterContainer>
                 <ImageContainer style={{marginBottom:"2rem"}}>

@@ -8,12 +8,15 @@ export const MainWrapper= styled.main`
     align-items: center;
     justify-content: center;
 
+    @media screen and (min-width: 1024px){
+        height: 100vh;
+    }
     
     
     }
 `
 
-export const BackgroundContainer= styled.div<{image: any}>`
+export const BackgroundContainer= styled.div<{image: any,image2:any}>`
 width: 100%;
 height: 70vh;
 background-image: url(${({image}) => image});
@@ -21,6 +24,11 @@ background-size: cover;
 background-position: center;
 background-repeat: no-repeat;
 z-index: 1;
+
+@media screen and (min-width: 1024px){
+    background-image: url(${({image2}) => image2});
+    height: 100vh;
+}
 
     
 }
@@ -35,18 +43,35 @@ export const TextContainer= styled.div`
   
 
     .principal-title{
-        font-size: 2rem;
+        font-size: 1.8rem;
         color:##000000;
         font-family: "Segoe UI", sans serif;
-        font-weight: 700;
+        font-weight: 600;
         text-align: center;
+        
      
 
     }
     .subtitle{
-        color:#3C3C3C;
+        color:#838383;
         text-align: center;
         font-family: "Segoe UI", sans serif;
+        
+    }
+
+    @media screen and (min-width: 1024px){
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+
+        .subtitle{
+            width:40%;
+        }
+
+        .principal-title{
+            font-size: 3rem;
+        
     }
 
     
@@ -67,7 +92,7 @@ export const SearchContainer = styled.div`
 
 
     display:flex;
-    justify-content: center;
+    justify-content: space-between;
     z-index: 5000;
 
     input{
@@ -76,7 +101,8 @@ export const SearchContainer = styled.div`
         background: transparent;
         border: 0;
         width: 80%;
-        margin: 0 20px;
+        padding-left:1rem;
+    
         
     }
 
@@ -103,6 +129,14 @@ export const SearchContainer = styled.div`
        &:disabled{
         filter: opacity(0.4)
     }
+    }
+
+    @media screen and (min-width: 1024px){
+        width: 40%;
+        
+        button{
+            width:10%;
+        }
     }
 
 `

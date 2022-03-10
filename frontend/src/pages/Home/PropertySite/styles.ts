@@ -1,17 +1,20 @@
 import styled from "styled-components";
 
 export const PropertySiteContainer= styled.div`
-    width: 100%;
+    width: 70%;
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin-top: 2rem;
+    margin-top: 1rem;
     position: relative;
+
+    @media screen and (min-width: 1200px) {
+       
+        width: 20%;
+    }
     
 
  
-    
-    
 `
 
 export const CardImage= styled.div`
@@ -29,8 +32,8 @@ export const CardImage= styled.div`
 `
 export const PriceContainer= styled.div`
         position: absolute;
-        top: 53%;
-        left: 25%;
+        top: 50%;
+        left: 20px;
         width: 6.5rem;
         height:2rem;
         border-radius:30px;
