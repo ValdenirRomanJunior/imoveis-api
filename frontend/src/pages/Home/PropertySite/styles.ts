@@ -58,7 +58,7 @@ export const PriceContainer= styled.div`
 
 export const TitleAndAdressContainer= styled.div`
     width:100%;
-    margin-top:1.5rem;
+    margin-top:1.9rem;
     margin-left: 1.5rem;
     margin-bottom: 1rem;
     font-family:"Poppins", sans serif;   
@@ -90,8 +90,6 @@ export const DescriptionContainerBottom= styled.div`
 
 
 
-    
-  
     div{
         display:flex;
         flex-direction: column;
@@ -100,6 +98,8 @@ export const DescriptionContainerBottom= styled.div`
         p{
             font-family: "Poppins", sans serif;
             margin-bottom: 0;
+            color: #000;
+            font-weight: 600;
         }
     
         span{

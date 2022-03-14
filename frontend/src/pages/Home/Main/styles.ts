@@ -48,8 +48,6 @@ export const TextContainer= styled.div`
         font-family: "Segoe UI", sans serif;
         font-weight: 600;
         text-align: center;
-        
-     
 
     }
     .subtitle{

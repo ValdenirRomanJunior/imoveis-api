@@ -16,7 +16,7 @@ const Main = () =>{
                 condos & apartments</p>
             </TextContainer>
             <SearchContainer>
-                <input type='text' placeholder='city, state, zipcode' />
+                <input type='text' placeholder='city, county, state' />
                 <button type='submit'><BsSearch />  </button>
             </SearchContainer>
             

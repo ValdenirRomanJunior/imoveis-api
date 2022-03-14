@@ -25,6 +25,7 @@ export const HeaderContainer = styled.header`
     }
     .login-lets-box{
         display: flex;
+      
        
 
     }
@@ -33,12 +34,14 @@ export const HeaderContainer = styled.header`
     }
     
     .lets{
-       display: flex;
-       align-items: center;
+        display: flex;
+        align-items: center;
         background:#54BC96;
-        border-radius:10px;
-        padding: 3px 10px;
+        border-radius:5px;
+        padding: 2px 10px;
         color: #fff;
+        box-shadow: -1px 3px 6px rgba(0,0,0,0.25);
+        margin-left:.5rem;
       
     }
 
@@ -47,7 +50,7 @@ export const HeaderContainer = styled.header`
         align-items: center;
         border: 1px solid #000;
         border-radius:3px;
-        padding: 2px 2px;
+        padding: 3px 4px;
     }
     .menu-box{
         display: none;
@@ -103,6 +106,7 @@ export const HeaderContainer = styled.header`
            margin-left: 1rem;
            border-radius: 5px;
            position: relative;
+           box-shadow: -1px 3px 6px rgba(0,0,0,0.25);
         }
         .listing-button::before{
             content:"";

@@ -24,15 +24,17 @@ interface PropertyItem {
     sqft: number,
 
     address: {
-
-        zipcode: string,
+        street:string,
         number: number,
         city: {
 
             name: string,
             
-            estado: {
-                name: string
+            county: {
+                name: string,
+                state:{
+                    name: string
+                }
             }
         }
 
@@ -54,6 +56,7 @@ const PropertyItem = ({ id,image, title, description, value, built, address }: P
             </div>
             <div>
              <h4 >Description</h4>
+         
             <p>{description}</p>
             </div>
             <div>
@@ -65,8 +68,8 @@ const PropertyItem = ({ id,image, title, description, value, built, address }: P
             <p>{built}</p>
             </div>
             <div>
-                <h4>Zipcode</h4>
-            <p>{address.zipcode}</p>
+                <h4>Street</h4>
+            <p>{address.street}</p>
             </div>
             <Link to={`/details/${id}`}>
             <FiEdit color='blue' />
@@ -95,16 +98,18 @@ const Property = () => {
             built: 1970,
             sqft: 12345.00,
             address: {
-
-                zipcode: "123455",
+                street:"rua tal",
                 number: 123,
 
                 city: {
 
                     name: "litle Rock",
-                    estado: {
+                    county: {
 
-                        name: "Arkansas"
+                        name: "county",
+                        state:{
+                            name:"Arkansas"
+                        }
                     }
                 }
 

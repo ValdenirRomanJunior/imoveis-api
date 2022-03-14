@@ -6,7 +6,7 @@ export const PropertiesWrapper = styled.div`
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin-top: 1rem;
+    margin-top: 2rem;
 
     h2{
         font-family:"Raleway", sans serif;
@@ -27,7 +27,7 @@ export const PropertiesContainer = styled.div`
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin-top: 2rem;
+    margin-top: 1rem;
     position: relative;
 
     @media screen and (min-width: 1200px) {   

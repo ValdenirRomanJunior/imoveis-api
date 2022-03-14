@@ -7,9 +7,13 @@ import TextArea from '../../components/TextArea';
 import { useNavigate } from 'react-router-dom';
 
 
+
 import { RegisterWrapper, BodyRegisterContainer, InputRegisterContainer, ButtonWrapper, ButtonContainer, TextAreaContainer, ImageContainer } from './styles';
 
 const Register = () => {
+
+    
+
     const navigate = useNavigate();
     const handleToRegister = () => {
         navigate('/dashboard');
@@ -47,9 +51,6 @@ const Register = () => {
                     <Input placeholder='Sqft*' />
                 </InputRegisterContainer>
 
-                <InputRegisterContainer style={{width: "20%"}}>
-                    <Input placeholder='zipcode*' />
-                </InputRegisterContainer>
                 <InputRegisterContainer>
                     <Input placeholder='Address*' />
                 </InputRegisterContainer>
@@ -64,6 +65,8 @@ const Register = () => {
                 <InputRegisterContainer>
                     <Input placeholder='State*' />
                 </InputRegisterContainer>
+                <h2>Bootstrap - year picker only example</h2>
+        <input className='date-own form-control' type="text"></input>
                
             </BodyRegisterContainer>
             <ButtonWrapper>
