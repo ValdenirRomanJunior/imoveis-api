@@ -1,25 +1,18 @@
 import React from 'react'
-import {DashboardBackground} from './styles';
-
 
 import Card from '../../components/Card';
 import Input from '../../components/Input';
 import { FiSearch   } from "react-icons/fi";
 
 
-const Dashboard = ()=>{
+const Tenant = ()=>{
 
     
     return(
-       <DashboardBackground>
-        
-
-           
-
-       </DashboardBackground>
+        <div></div>
             
         
     )
 }
 
-export default Dashboard;
+export default Tenant;

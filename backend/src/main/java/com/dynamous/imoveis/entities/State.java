@@ -4,13 +4,17 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
 
 @Entity
 @Table(name="tb_state")
@@ -22,18 +26,19 @@ public class State implements Serializable {
 	private Integer id;
 	private String name;
 	
-	@OneToMany(mappedBy = "state")
-	private List<County> counties = new ArrayList<>();
+	@JsonBackReference
+	@OneToMany(fetch=FetchType.EAGER,mappedBy = "state", cascade = CascadeType.ALL)
+	private List<City> cities = new ArrayList<>();
 	
 	public State() {
 		// TODO Auto-generated constructor stub
 	}
 
-	public State(Integer id, String name, List<County> counties) {
-		super();
+	public State(Integer id, String name) {
+		
 		this.id = id;
 		this.name = name;
-		this.counties = counties;
+		
 	}
 
 	public Integer getId() {
@@ -52,12 +57,12 @@ public class State implements Serializable {
 		this.name = name;
 	}
 
-	public List<County> getCounties() {
-		return counties;
+	public List<City> getCities() {
+		return cities;
 	}
 
-	public void setCounties(List<County> counties) {
-		this.counties = counties;
+	public void setCities(List<City> counties) {
+		this.cities = counties;
 	}
 
 	@Override

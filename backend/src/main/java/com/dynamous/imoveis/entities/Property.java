@@ -1,14 +1,21 @@
 package com.dynamous.imoveis.entities;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.persistence.CascadeType;
+import javax.persistence.CollectionTable;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 @Entity
 @Table(name="tb_property")
@@ -19,12 +26,21 @@ public class Property implements Serializable{
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
 	private String title;
+	private String description;
 	private Double price;
-	private String image;
 	private Integer beds;
 	private Integer baths;
 	private Integer built;
+	private Integer sqft;
+	private String informationLink;
+	private String mapLink;
 	
+	@ElementCollection
+	@CollectionTable(name="IMAGES")
+	private List<String> images = new ArrayList<>();
+	
+	
+	@JsonManagedReference
 	@OneToOne(cascade = CascadeType.ALL, mappedBy = "property")
 	private Address address;
 
@@ -33,17 +49,21 @@ public class Property implements Serializable{
 		// TODO Auto-generated constructor stub
 	}
 
-	public Property(Integer id, String title, Double value, String image, Integer beds, Integer baths, Integer yearBuilt, Address address) {
+	public Property(Integer id, String title, String description, Double price, Integer beds, Integer baths, Integer yearBuilt,Integer sqft, String informationLink, String mapLink) {
 		super();
 		this.id = id;
 		this.title = title;
-		this.price = value;
-		this.image = image;
+		this.description=description;
+		this.price = price;
 		this.beds = beds;
 		this.baths = baths;
 		this.built = yearBuilt;
-		this.address=address;
+		this.sqft=sqft;
+		this.informationLink=informationLink;
+		this.mapLink=mapLink;
+			
 	}
+
 
 	public Integer getId() {
 		return id;
@@ -60,6 +80,15 @@ public class Property implements Serializable{
 	public void setTitle(String title) {
 		this.title = title;
 	}
+	
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
 
 	public Double getPrice() {
 		return price;
@@ -69,13 +98,6 @@ public class Property implements Serializable{
 		this.price = price;
 	}
 
-	public String getImage() {
-		return image;
-	}
-
-	public void setImage(String image) {
-		this.image = image;
-	}
 
 	public Integer getBeds() {
 		return beds;
@@ -100,6 +122,15 @@ public class Property implements Serializable{
 	public void setBuilt(Integer built) {
 		this.built = built;
 	}
+	
+
+	public Integer getSqft() {
+		return sqft;
+	}
+
+	public void setSqft(Integer sqft) {
+		this.sqft = sqft;
+	}
 
 	public Address getAddress() {
 		return address;
@@ -107,6 +138,34 @@ public class Property implements Serializable{
 
 	public void setAddress(Address address) {
 		this.address = address;
+	}
+	
+	
+
+	public String getInformationLink() {
+		return informationLink;
+	}
+
+	public void setInformationLink(String informationLink) {
+		this.informationLink = informationLink;
+	}
+
+	public String getMapLink() {
+		return mapLink;
+	}
+
+	public void setMapLink(String mapLink) {
+		this.mapLink = mapLink;
+	}
+	
+	
+
+	public List<String> getImages() {
+		return images;
+	}
+
+	public void setImages(List<String> images) {
+		this.images = images;
 	}
 
 	@Override

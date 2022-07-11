@@ -1,6 +1,7 @@
 package com.dynamous.imoveis.controllers;
 
 import java.net.URI;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -18,43 +19,34 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import com.dynamous.imoveis.dto.CityDTO;
 import com.dynamous.imoveis.dto.PropertyDTO;
 import com.dynamous.imoveis.dto.PropertyNewDTO;
+import com.dynamous.imoveis.entities.City;
 import com.dynamous.imoveis.entities.Property;
+import com.dynamous.imoveis.services.CityService;
 import com.dynamous.imoveis.services.PropertyService;
 
 @RestController
-@RequestMapping(value = "/properties")
-public class PropertyController {
+@RequestMapping(value = "/cities")
+public class CityController {
 	
 	@Autowired
-	private PropertyService service;
+	private CityService service;
 	
 	@GetMapping
-	public Page<PropertyDTO> findAll(Pageable pageable){
-		return service.findAll(pageable);
+	public List<CityDTO> findAll(){
+		return service.findAll();
 	}
-	@GetMapping(value = "/{id}")
-	public PropertyDTO findById(@PathVariable Integer id){
-		return service.findById(id);
-	}
+
 	
 	@PostMapping
-	public ResponseEntity<Void> save(@RequestBody PropertyNewDTO propertyNewDTO){
-		Property property=service.fromDTO(propertyNewDTO);	
-		property = service.save(property);
+	public ResponseEntity<Void> save(@RequestBody CityDTO cityDTO){
+		City city=service.fromDTO(cityDTO);
+		service.save(city);
 		URI uri= ServletUriComponentsBuilder.fromCurrentRequest()
-		.path("/{id}").buildAndExpand(property.getId()).toUri();
+		.path("/{id}").buildAndExpand(city.getId()).toUri();
 		return ResponseEntity.created(uri).build();
 	}
 	
-	@PutMapping(value = "/{id}")
-	public ResponseEntity<Void> update(@RequestBody Property property, @PathVariable Integer id){
-		
-		property=service.update(property);
-		return ResponseEntity.noContent().build();
-		
-	}
-	
-	
+
 	
 	
 

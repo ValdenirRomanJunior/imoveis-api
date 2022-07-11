@@ -1,5 +1,23 @@
-INSERT INTO tb_property(title, price, image, beds, baths, built) VALUES ('title 1', 2500,'https://www.themoviedb.org/t/p/w533_and_h300_bestv2/vIgyYkXkg6NC2whRbYjBD7eb3Er.jpg',1,2,2001);
-INSERT INTO tb_state(name) VALUES ('maria');
-INSERT INTO tb_county( state_id, name) VALUES (1,'oregon');
-INSERT INTO tb_city( county_id, name) VALUES (1, 'litle rock');
-INSERT INTO tb_address(street, number, city_id, property_id) VALUES ('st ht2', 234, 1 ,1);
+INSERT INTO tb_property(title, description, price,  beds, baths, built, sqft) VALUES ('title 1','nice place in arkansas', 2500,1,2,2001,23453);
+INSERT INTO tb_property(title, description, price,  beds, baths, built, sqft) VALUES ('title 2', 'nice place in arkansas', 2500,1,2,2001, 23453);
+INSERT INTO tb_property(title, description, price,  beds, baths, built, sqft) VALUES ('title 3', 'nice place in arkansas', 2500,1,2,2001, 23453);
+INSERT INTO tb_property(title, description, price,  beds, baths, built, sqft) VALUES ('title 4', 'nice place in arkansas', 2500,1,2,2001, 23453);
+INSERT INTO tb_property(title, description, price,  beds, baths, built, sqft) VALUES ('title 5', 'nice place in arkansas', 2500,1,2,2001,23453);
+INSERT INTO tb_property(title, description, price,  beds, baths, built, sqft) VALUES ('title 6', 'nice place in arkansas', 2500,1,2,2001,23453);
+INSERT INTO tb_property(title, description, price,  beds, baths, built, sqft) VALUES ('title 7', 'nice place in arkansas', 2500,1,2,2001,23453);
+INSERT INTO tb_property(title, description, price,  beds, baths, built, sqft) VALUES ('title 8', 'nice place in arkansas', 2500,1,2,2001,23453);
+INSERT INTO tb_property(title, description, price,  beds, baths, built, sqft) VALUES ('title 9', 'nice place in arkansas', 2500,1,2,2001,23453);
+INSERT INTO tb_property(title, description, price,  beds, baths, built, sqft) VALUES ('title 10', 'nice place in arkansas',2500,1,2,2001,23453);
+INSERT INTO tb_state(name) VALUES ('arkansas');
+INSERT INTO tb_city( state_id, name) VALUES (1, 'litle rock');
+INSERT INTO tb_address(street, number, city_id, property_id ) VALUES ('st ht1', 234,1,1 );
+INSERT INTO tb_address(street, number, city_id, property_id ) VALUES ('st ht1', 234,1,2 );
+INSERT INTO tb_address(street, number, city_id, property_id ) VALUES ('st ht1', 234,1,3 );
+INSERT INTO tb_address(street, number, city_id, property_id ) VALUES ('st ht1', 234,1,4 );
+INSERT INTO tb_address(street, number, city_id, property_id ) VALUES ('st ht1', 234,1,5 );
+INSERT INTO tb_address(street, number, city_id, property_id ) VALUES ('st ht1', 234,1,6 );
+INSERT INTO tb_address(street, number, city_id, property_id ) VALUES ('st ht1', 234,1,7 );
+INSERT INTO tb_address(street, number, city_id, property_id ) VALUES ('st ht1', 234,1,8 );
+INSERT INTO tb_address(street, number, city_id, property_id ) VALUES ('st ht1', 234,1,9 );
+INSERT INTO tb_address(street, number, city_id, property_id ) VALUES ('st ht1', 234,1,10 );
+

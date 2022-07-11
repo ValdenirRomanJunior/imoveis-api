@@ -1,17 +1,13 @@
 import React from 'react'
-import Header from './Header';
-import Main from './Main';
-import Properties from './Properties';
-import {HomeContainer,MainContainer,} from './styles';
+
+import {HomeContainer} from './styles';
 
 const Home = ()=>{
     return(
        <HomeContainer>
-           <MainContainer>
-           <Header/>       
-           <Main />
-           <Properties />
-           </MainContainer>
+       <h1>his</h1>
+
+       
            
        </HomeContainer>
     )

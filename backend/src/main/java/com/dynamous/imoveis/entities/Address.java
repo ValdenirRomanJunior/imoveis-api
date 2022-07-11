@@ -2,19 +2,24 @@ package com.dynamous.imoveis.entities;
 
 import java.io.Serializable;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.MapsId;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 
 @Entity
 @Table(name="tb_address")
+
 public class Address implements Serializable{
 	private static final long serialVersionUID = 1L;
 		
@@ -23,10 +28,12 @@ public class Address implements Serializable{
 	private String street;
 	private Integer number;
 	
+	@JsonManagedReference
 	@ManyToOne
 	@JoinColumn(name="city_id")
 	private City city;
 	
+	@JsonBackReference
 	@OneToOne
 	@JoinColumn(name="property_id")
 	@MapsId
@@ -35,13 +42,16 @@ public class Address implements Serializable{
 	public Address() {
 		// TODO Auto-generated constructor stub
 	}
+	
 
-	public Address(Integer id, String street,Integer number, City city) {
+
+	public Address(Integer id, String street,Integer number, City city, Property property) {
 		super();
 		this.id = id;
 		this.street = street;
-		this.city = city;
 		this.number=number;
+		this.city = city;
+		this.property=property;
 	}
 
 	public Integer getId() {

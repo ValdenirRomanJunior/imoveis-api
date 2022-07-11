@@ -2,7 +2,7 @@ package com.dynamous.imoveis.entities;
 
 import java.io.Serializable;
 
-
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -10,6 +10,8 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 @Entity
 @Table(name="tb_city")
@@ -21,19 +23,27 @@ public class City implements Serializable{
 	private Integer id;
 	private String name;
 	
+	@JsonManagedReference
 	@ManyToOne
-	@JoinColumn(name="county_id")
-	private County county;
+	@JoinColumn(name="state_id")
+	private State state;
 
 	public City() {
 		// TODO Auto-generated constructor stub
 	}
+	public City(Integer id, String name) {
+		this.id = id;
+		this.name = name;
+		
+		
+	}
 
-	public City(Integer id, String name, County county) {
+	public City(Integer id, String name, State state) {
 		super();
 		this.id = id;
 		this.name = name;
-		this.county = county;
+		this.state=state;
+		
 	}
 
 	public Integer getId() {
@@ -52,12 +62,12 @@ public class City implements Serializable{
 		this.name = name;
 	}
 
-	public County getCounty() {
-		return county;
+	public State getState() {
+		return state;
 	}
 
-	public void setCounty(County county) {
-		this.county = county;
+	public void setCounty(State state) {
+		this.state = state;
 	}
 
 	@Override
