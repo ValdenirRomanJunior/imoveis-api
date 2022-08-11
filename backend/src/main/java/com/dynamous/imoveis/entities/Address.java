@@ -1,124 +1,112 @@
 package com.dynamous.imoveis.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import javax.persistence.*;
 import java.io.Serializable;
-
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Inheritance;
-import javax.persistence.InheritanceType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.MapsId;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
-
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-
+import java.util.Objects;
 
 @Entity
-@Table(name="tb_address")
+public class Address implements Serializable {
+    private static final long serialVersionUID = 1L;
 
-public class Address implements Serializable{
-	private static final long serialVersionUID = 1L;
-		
-	@Id
-	private Integer id;
-	private String street;
-	private Integer number;
-	
-	@JsonManagedReference
-	@ManyToOne
-	@JoinColumn(name="city_id")
-	private City city;
-	
-	@JsonBackReference
-	@OneToOne
-	@JoinColumn(name="property_id")
-	@MapsId
-	private Property property;
-	
-	public Address() {
-		// TODO Auto-generated constructor stub
-	}
-	
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    private String street;
+    private String number;
+    private String district;
+    private String cep;
 
+    @JsonIgnore
+    @OneToOne
+    @JoinColumn(name = "property_id")
+    private Property property;
 
-	public Address(Integer id, String street,Integer number, City city, Property property) {
-		super();
-		this.id = id;
-		this.street = street;
-		this.number=number;
-		this.city = city;
-		this.property=property;
-	}
+    @ManyToOne
+    @JoinColumn(name = "city_id")
+    private City city;
 
-	public Integer getId() {
-		return id;
-	}
+    public Address(){
 
-	public void setId(Integer id) {
-		this.id = id;
-	}
+    }
 
-	public String getStreet() {
-		return street;
-	}
+    public Address(Long id, String publicPlace, String number, String district, String cep, Property property, City city) {
+        this.id = id;
+        this.street = publicPlace;
+        this.number = number;
+        this.district = district;
+        this.cep = cep;
+        this.property = property;
+        this.city=city;
+    }
 
-	public void setStreet(String street) {
-		this.street = street;
-	}
+    public Long getId() {
+        return id;
+    }
 
-	public City getCity() {
-		return city;
-	}
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-	public void setCity(City city) {
-		this.city = city;
-	}
-	
+    public String getStreet() {
+        return street;
+    }
 
-	public Integer getNumber() {
-		return number;
-	}
+    public void setStreet(String street) {
+        this.street = street;
+    }
 
-	public void setNumber(Integer number) {
-		this.number = number;
-	}
+    public String getNumber() {
+        return number;
+    }
 
-	public Property getProperty() {
-		return property;
-	}
+    public void setNumber(String number) {
+        this.number = number;
+    }
 
-	public void setProperty(Property property) {
-		this.property = property;
-	}
+    public String getDistrict() {
+        return district;
+    }
 
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((id == null) ? 0 : id.hashCode());
-		return result;
-	}
+    public void setDistrict(String district) {
+        this.district = district;
+    }
 
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		Address other = (Address) obj;
-		if (id == null) {
-			if (other.id != null)
-				return false;
-		} else if (!id.equals(other.id))
-			return false;
-		return true;
-	}
-	
+    public String getCep() {
+        return cep;
+    }
 
+    public void setCep(String cep) {
+        this.cep = cep;
+    }
+
+    public Property getProperty() {
+        return property;
+    }
+
+    public void setProperty(Property property) {
+        this.property = property;
+    }
+
+    public City getCity() {
+        return city;
+    }
+
+    public void setCity(City city) {
+        this.city = city;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Address address = (Address) o;
+        return Objects.equals(id, address.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
 }

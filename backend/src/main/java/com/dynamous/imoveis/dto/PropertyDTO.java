@@ -1,147 +1,52 @@
 package com.dynamous.imoveis.dto;
 
-import com.dynamous.imoveis.entities.Address;
 import com.dynamous.imoveis.entities.Property;
+import org.hibernate.validator.constraints.Length;
 
-public class PropertyDTO {
+import javax.validation.constraints.NotEmpty;
+import java.io.Serializable;
 
-	private Integer id;
-	private String title;
-	private String description;
-	private Double price;
-	private Integer beds;
-	private Integer baths;
-	private Integer built;
-	private Integer sqft;
-	private String informationLink;
-	private String mapLink;
-	
-	
-	private Address address;
-	
-	public PropertyDTO() {
-		// TODO Auto-generated constructor stub
-	}
+public class PropertyDTO implements Serializable {
+    private static final long serialVersionUID = 1L;
 
-	public PropertyDTO(Integer id, String title,String description, Double price, Integer beds, Integer baths, Integer built, Integer sqft, Address address,  String informationLink, String mapLink) {
-		this.id = id;
-		this.title = title;
-		this.description=description;
-		this.price = price;
-		this.beds = beds;
-		this.baths = baths;
-		this.built = built;
-		this.sqft=sqft;
-		this.address=address;
-		this.informationLink=informationLink;
-		this.mapLink=mapLink;
-		}
-	public PropertyDTO(Property property) {
-		id = property.getId();
-		title =property.getTitle();
-		description=property.getDescription();
-		price = property.getPrice();
-		beds = property.getBeds();
-		baths = property.getBaths();
-		built = property.getBuilt();
-		sqft=property.getSqft();
-		address=property.getAddress();
-		informationLink=property.getInformationLink();
-		mapLink=property.getMapLink();
-	}
-
-	public Integer getId() {
-		return id;
-	}
-
-	public void setId(Integer id) {
-		this.id = id;
-	}
-
-	public String getTitle() {
-		return title;
-	}
-
-	public void setTitle(String title) {
-		this.title = title;
-	}
-	
-
-	public String getDescription() {
-		return description;
-	}
-
-	public void setDescription(String description) {
-		this.description = description;
-	}
-
-	public Double getPrice() {
-		return price;
-	}
-
-	public void setPrice(Double price) {
-		this.price = price;
-	}
-
-	
+    private Long id;
+    @NotEmpty(message = "Preenchimento obrigatório")
+    @Length(min=5, max=120, message = "O tamanho deve ter entre 5 e 120 caracteres")
+    private String name;
+    private String description;
 
 
-	public Integer getBeds() {
-		return beds;
-	}
+    public PropertyDTO(){
 
-	public void setBeds(Integer beds) {
-		this.beds = beds;
-	}
+    }
 
-	public Integer getBaths() {
-		return baths;
-	}
+    public PropertyDTO(Property obj) {
+        this.id = obj.getId();
+        this.name = obj.getName();
+        this.description = obj.getDescription();
+    }
 
-	public void setBaths(Integer baths) {
-		this.baths = baths;
-	}
+    public Long getId() {
+        return id;
+    }
 
-	public Integer getBuilt() {
-		return built;
-	}
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-	public void setBuilt(Integer built) {
-		this.built = built;
-	}
-	
-	
-	public Integer getSqft() {
-		return sqft;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public void setSqft(Integer sqft) {
-		this.sqft = sqft;
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	public Address getAddress() {
-		return address;
-	}
+    public String getDescription() {
+        return description;
+    }
 
-	public void setAddress(Address address) {
-		this.address = address;
-	}
-
-	public String getInformationLink() {
-		return informationLink;
-	}
-
-	public void setInformationLink(String informationLink) {
-		this.informationLink = informationLink;
-	}
-
-	public String getMapLink() {
-		return mapLink;
-	}
-
-	public void setMapLink(String mapLink) {
-		this.mapLink = mapLink;
-	}
-	
-	
+    public void setDescription(String description) {
+        this.description = description;
+    }
 }

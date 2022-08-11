@@ -1,53 +1,49 @@
 package com.dynamous.imoveis.entities;
 
 import com.dynamous.imoveis.enums.Perfil;
-import com.dynamous.imoveis.enums.Status;
-import com.dynamous.imoveis.services.validation.TenantInsert;
-import org.hibernate.validator.constraints.Length;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotEmpty;
-import java.io.Serializable;
 import java.util.*;
 import java.util.stream.Collectors;
 
-
 @Entity
-public class Tenant implements Serializable {
-    private static final long serialVersionUID = 1L;
+public class TenantCustomer {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String slug;
+    private String name;
 
-
-    @Column(unique = true)
     private String email;
+    @JsonIgnore
     private String password;
-    private Integer status;
 
 
-
+    @ManyToOne
+    @JoinColumn(name = "tenant_id")
+    private Tenant tenant;
 
     @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name="PERFIS")
+    @CollectionTable(name="CUSTOMER_PERFIS")
     private Set<Integer> perfis = new HashSet<>();
 
-    public Tenant() {
-        addPerfil(Perfil.TENANT);
+    @OneToMany(mappedBy = "tenantCustomer")
+    private List<Contract> contracts = new ArrayList<>();
+
+    public TenantCustomer(){
+        addPerfil(Perfil.TENANT_CUSTOMER);
+
     }
 
-    public Tenant(Long id, String slug, String email, String password, Status status) {
+    public TenantCustomer(Long id, String name, String email, String password, Tenant tenant) {
         this.id = id;
-        this.slug = slug;
+        this.name = name;
         this.email = email;
         this.password = password;
-        this.status= (status == null) ? null : status.getCod();
-        addPerfil(Perfil.TENANT);
-
+        this.tenant = tenant;
+        addPerfil(Perfil.TENANT_CUSTOMER);
     }
 
     public Long getId() {
@@ -58,19 +54,19 @@ public class Tenant implements Serializable {
         this.id = id;
     }
 
-    public String getSlug() {
-        return slug;
+    public String getName() {
+        return name;
     }
 
-    public void setSlug(String slug) {
-        this.slug = slug;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getEmail() {
         return email;
     }
 
-    public void setEmail(String email) {
+    public void setemail(String email) {
         this.email = email;
     }
 
@@ -82,16 +78,13 @@ public class Tenant implements Serializable {
         this.password = password;
     }
 
-
-    public void setStatus(Status status) {
-        this.status = status.getCod();
+    public Tenant getTenant() {
+        return tenant;
     }
 
-    public Status getStatus() {
-        return Status.toEnum(status);
+    public void setTenant(Tenant tenant) {
+        this.tenant = tenant;
     }
-
-
 
     public Set<Perfil> getPerfis(){
         return perfis.stream().map(x -> Perfil.toEnum(x)).collect(Collectors.toSet());
@@ -105,12 +98,20 @@ public class Tenant implements Serializable {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Tenant tenant = (Tenant) o;
-        return Objects.equals(id, tenant.id);
+        TenantCustomer that = (TenantCustomer) o;
+        return Objects.equals(id, that.id);
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(id);
+    }
+
+    public List<Contract> getContracts() {
+        return contracts;
+    }
+
+    public void setContracts(List<Contract> contracts) {
+        this.contracts = contracts;
     }
 }

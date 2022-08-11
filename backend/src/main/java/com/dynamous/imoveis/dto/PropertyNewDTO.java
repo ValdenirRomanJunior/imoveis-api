@@ -1,160 +1,117 @@
 package com.dynamous.imoveis.dto;
 
+import org.hibernate.validator.constraints.Length;
+
+import javax.validation.constraints.NotEmpty;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonProperty;
+public class PropertyNewDTO implements Serializable {
+    private static final long serialVersionUID = 1L;
 
-public class PropertyNewDTO  implements Serializable{
-	private static final long serialVersionUID = 1L; 
+    @NotEmpty(message = "Preenchimento obrigatório")
+    @Length(min=5, max=80, message = "O tamanho deve ser entre 5 e 80 caracteres")
+    private String name;
+    @NotEmpty(message = "Preenchimento obrigatório")
+    @Length(min=5, max=200, message = "O tamanho deve ser entre 5 e 200 caracteres")
+    private String description;
 
-	
-	
-	private String title;
-	private String description;	
-	private Integer beds;
-	private Integer baths;
-	private Integer built;
-	private Double price;
-	private Integer sqft;
-	private String street;
-	private Integer number;
-	
-	private Integer cityId;	
-	private Integer countyId;	
-	private Integer stateId;
-	private String informationLink;
-	private String mapLink;
-	
-	@JsonFormat(with = JsonFormat.Feature.ACCEPT_SINGLE_VALUE_AS_ARRAY)
-	private List<String> images = new ArrayList<>();
+    private Integer type;
+    private Integer goal;
 
-	public PropertyNewDTO() {
-	
-	}
-	public String getTitle() {
-		return title;
-	}
+    @NotEmpty(message = "Preenchimento obrigatório")
+    private String street;
+    @NotEmpty(message = "Preenchimento obrigatório")
+    private String number;
+    @NotEmpty(message = "Preenchimento obrigatório")
+    private String district;
+    @NotEmpty(message = "Preenchimento obrigatório")
+    private String cep;
 
-	public void setTitle(String title) {
-		this.title = title;
-	}
+    private Long tenantId;
+    private Long cityId;
 
-	public String getDescription() {
-		return description;
-	}
+    public PropertyNewDTO(){
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
+    }
 
-	public Double getPrice() {
-		return price;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public void setPrice(Double price) {
-		this.price = price;
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
 
+    public String getDescription() {
+        return description;
+    }
 
-	public Integer getBeds() {
-		return beds;
-	}
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
-	public void setBeds(Integer beds) {
-		this.beds = beds;
-	}
+    public Integer getType() {
+        return type;
+    }
 
-	public Integer getBaths() {
-		return baths;
-	}
+    public void setType(Integer type) {
+        this.type = type;
+    }
 
-	public void setBaths(Integer baths) {
-		this.baths = baths;
-	}
+    public Integer getGoal() {
+        return goal;
+    }
 
-	public Integer getBuilt() {
-		return built;
-	}
+    public void setGoal(Integer goal) {
+        this.goal = goal;
+    }
 
-	public void setBuilt(Integer built) {
-		this.built = built;
-	}
+    public String getStreet() {
+        return street;
+    }
 
-	public Integer getSqft() {
-		return sqft;
-	}
+    public void setStreet(String street) {
+        this.street = street;
+    }
 
-	public void setSqft(Integer sqft) {
-		this.sqft = sqft;
-	}
+    public String getNumber() {
+        return number;
+    }
 
-	public String getStreet() {
-		return street;
-	}
+    public void setNumber(String number) {
+        this.number = number;
+    }
 
-	public void setStreet(String street) {
-		this.street = street;
-	}
+    public String getDistrict() {
+        return district;
+    }
 
-	public Integer getNumber() {
-		return number;
-	}
+    public void setDistrict(String district) {
+        this.district = district;
+    }
 
-	public void setNumber(Integer number) {
-		this.number = number;
-	}
+    public String getCep() {
+        return cep;
+    }
 
-	public Integer getCityId() {
-		return cityId;
-	}
+    public void setCep(String cep) {
+        this.cep = cep;
+    }
 
-	public void setCity(Integer cityId) {
-		this.cityId = cityId;
-	}
+    public Long getTenantId() {
+        return tenantId;
+    }
 
-	public Integer getCountyId() {
-		return countyId;
-	}
+    public void setTenantId(Long tenantId) {
+        this.tenantId = tenantId;
+    }
 
-	public void setCounty(Integer countyId) {
-		this.countyId = countyId;
-	}
+    public Long getCityId() {
+        return cityId;
+    }
 
-	public Integer getStateId() {
-		return stateId;
-	}
-
-	public void setState(Integer stateId) {
-		this.stateId = stateId;
-	}
-
-	public String getInformationLink() {
-		return informationLink;
-	}
-
-	public void setInformationLink(String informationLink) {
-		this.informationLink = informationLink;
-	}
-
-	public String getMapLink() {
-		return mapLink;
-	}
-
-	public void setMapLink(String mapLink) {
-		this.mapLink = mapLink;
-	}
-	public List<String> getImages() {
-		return images;
-	}
-	public void setImages(List<String> images) {
-		this.images = images;
-	}
-
-
-
-	
-	
+    public void setCityId(Long cityId) {
+        this.cityId = cityId;
+    }
 }
+

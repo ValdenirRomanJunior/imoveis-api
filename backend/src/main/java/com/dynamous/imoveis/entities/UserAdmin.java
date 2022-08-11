@@ -1,53 +1,40 @@
 package com.dynamous.imoveis.entities;
 
 import com.dynamous.imoveis.enums.Perfil;
-import com.dynamous.imoveis.enums.Status;
-import com.dynamous.imoveis.services.validation.TenantInsert;
-import org.hibernate.validator.constraints.Length;
 
 import javax.persistence.*;
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotEmpty;
 import java.io.Serializable;
-import java.util.*;
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
-
 @Entity
-public class Tenant implements Serializable {
+public class UserAdmin implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String slug;
-
-
     @Column(unique = true)
     private String email;
     private String password;
-    private Integer status;
-
-
-
 
     @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name="PERFIS")
+    @CollectionTable(name="USER_ADMIN_PERFIS")
     private Set<Integer> perfis = new HashSet<>();
 
-    public Tenant() {
-        addPerfil(Perfil.TENANT);
+    public UserAdmin(){
+        addPerfil(Perfil.ADMIN);
+
     }
 
-    public Tenant(Long id, String slug, String email, String password, Status status) {
+    public UserAdmin(Long id, String email, String password) {
         this.id = id;
-        this.slug = slug;
         this.email = email;
         this.password = password;
-        this.status= (status == null) ? null : status.getCod();
-        addPerfil(Perfil.TENANT);
-
+        addPerfil(Perfil.ADMIN);
     }
 
     public Long getId() {
@@ -56,14 +43,6 @@ public class Tenant implements Serializable {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public String getSlug() {
-        return slug;
-    }
-
-    public void setSlug(String slug) {
-        this.slug = slug;
     }
 
     public String getEmail() {
@@ -82,17 +61,6 @@ public class Tenant implements Serializable {
         this.password = password;
     }
 
-
-    public void setStatus(Status status) {
-        this.status = status.getCod();
-    }
-
-    public Status getStatus() {
-        return Status.toEnum(status);
-    }
-
-
-
     public Set<Perfil> getPerfis(){
         return perfis.stream().map(x -> Perfil.toEnum(x)).collect(Collectors.toSet());
     }
@@ -105,8 +73,8 @@ public class Tenant implements Serializable {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Tenant tenant = (Tenant) o;
-        return Objects.equals(id, tenant.id);
+        UserAdmin userAdmin = (UserAdmin) o;
+        return Objects.equals(id, userAdmin.id);
     }
 
     @Override

@@ -1,16 +1,16 @@
 package com.dynamous.imoveis.repositories;
 
-import com.dynamous.imoveis.entities.City;
-import com.dynamous.imoveis.entities.State;
+
 import com.dynamous.imoveis.entities.Tenant;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 @Repository
-@Transactional
-public interface CityRepository extends JpaRepository<City,Long> {
+public interface TenantRepository extends JpaRepository <Tenant,Long> {
 
     @Transactional(readOnly = true)
-    City findByName(String name);
+    Tenant findByEmail(String email);
+
 }

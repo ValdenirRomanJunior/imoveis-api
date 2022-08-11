@@ -1,23 +1,31 @@
 package com.dynamous.imoveis.entities;
 
-
 import javax.persistence.*;
-import java.io.Serializable;
 import java.util.Objects;
 
-
 @Entity
-public class City  implements Serializable {
-    private static final long serialVersionUID = 1L;
+public class Theme {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
+    private String mainColor;
 
-    @ManyToOne
-    @JoinColumn(name="state_id")
-    private State state;
+    @OneToOne
+    @JoinColumn(name = "tenant_id")
+    private Tenant tenant;
+
+    public Theme(){
+
+    }
+
+    public Theme(Long id, String name, String mainColor, Tenant tenant) {
+        this.id = id;
+        this.name = name;
+        this.mainColor = mainColor;
+        this.tenant = tenant;
+    }
 
     public Long getId() {
         return id;
@@ -35,30 +43,28 @@ public class City  implements Serializable {
         this.name = name;
     }
 
-    public State getState() {
-        return state;
+    public String getMainColor() {
+        return mainColor;
     }
 
-    public void setState(State state) {
-        this.state = state;
+    public void setMainColor(String mainColor) {
+        this.mainColor = mainColor;
     }
 
-    public City(){
-
+    public Tenant getTenant() {
+        return tenant;
     }
 
-    public City(Long id, String name, State state) {
-        this.id = id;
-        this.name = name;
-        this.state = state;
+    public void setTenant(Tenant tenant) {
+        this.tenant = tenant;
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        City city = (City) o;
-        return Objects.equals(id, city.id);
+        Theme theme = (Theme) o;
+        return Objects.equals(id, theme.id);
     }
 
     @Override

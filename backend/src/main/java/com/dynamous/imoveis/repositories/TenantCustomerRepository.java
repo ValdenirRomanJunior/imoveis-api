@@ -1,12 +1,13 @@
 package com.dynamous.imoveis.repositories;
 
-import com.dynamous.imoveis.entities.Property;
-import com.dynamous.imoveis.entities.State;
+import com.dynamous.imoveis.entities.TenantCustomer;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 @Repository
-@Transactional
-public interface StateRepository extends JpaRepository<State,Long> {
+public interface TenantCustomerRepository extends JpaRepository <TenantCustomer,Long> {
+
+    @Transactional(readOnly = true)
+    TenantCustomer findByemail(String email);
 }
