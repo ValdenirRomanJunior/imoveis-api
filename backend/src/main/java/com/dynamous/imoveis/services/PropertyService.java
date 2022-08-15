@@ -62,7 +62,7 @@ public class PropertyService {
         property.setId(null);
         property = propertyRepository.save(property);
         addressRepository.save(property.getAddress());
-        return property;
+        return property;	
     }
 
     //ATUALIZA UM IMOVEL
@@ -116,6 +116,25 @@ public class PropertyService {
         property.setAddress(address);
         Tenant tenant = tenantRepository.findById(propertyNewDTO.getTenantId()).get();
         property.setTenant(tenant);
+        if(propertyNewDTO.getImage1() != null){
+            property.getImages().add(propertyNewDTO.getImage1());
+        }
+        if(propertyNewDTO.getImage2() != null){
+            property.getImages().add(propertyNewDTO.getImage2());
+        }
+        if(propertyNewDTO.getImage3() != null){
+            property.getImages().add(propertyNewDTO.getImage3());
+        }
+        if(propertyNewDTO.getImage4() != null){
+            property.getImages().add(propertyNewDTO.getImage4());
+        }
+        if(propertyNewDTO.getImage5() != null){
+            property.getImages().add(propertyNewDTO.getImage5());
+        }
+        if(propertyNewDTO.getImage6() != null){
+            property.getImages().add(propertyNewDTO.getImage6());
+        }
+
         return property;
     }
 

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<title th:remove="all">Confirmação de cadastro Dynamob</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<link rel="stylesheet" type="text/css" href="static/css/registrationTenantEmail.css">
+</head>
+<body>
+<div class="container">
+
+<div class="logo-wrapper">
+<img src="static/images/logoSite.png">
+</div>
+<h1>
+<span th:text="${tenant.email}"></span>
+
+</h1>
+
+<p>
+<span th:text="${tenant.slug}"></span>
+</p>
+
+<p>Obrigado por se cadastrar na dynamob!</p>
+
+
+
+</div>
+</body>
+</html>

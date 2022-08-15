@@ -34,6 +34,9 @@ public class TenantService {
     @Autowired
     private BCryptPasswordEncoder pe;
 
+    @Autowired
+    private EmailService emailService;
+
     public Tenant find(Long id) {
         UserSS user = UserService.authenticated();
         if(user==null || !user.hasRole(Perfil.TENANT) && !id.equals(user.getId())){
@@ -47,6 +50,8 @@ public class TenantService {
     public Tenant insert(Tenant obj) {
         obj.setId(null);
         tenantRepository.save(obj);
+        System.out.println(obj);
+        emailService.sendRegistrationHtmlEmail(obj);
         return obj;
     }
 
@@ -68,7 +73,7 @@ public class TenantService {
        try {
             tenantRepository.deleteById(id);
         } catch (DataIntegrityViolationException e) {
-           throw new DataIntegrityException("Não é possivel deletar porque tem objetos anexados: ");
+          throw new DataIntegrityException("Não é possivel deletar porque tem objetos anexados: ");
         }
     }
 

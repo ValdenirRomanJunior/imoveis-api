@@ -4,6 +4,8 @@ package com.dynamous.imoveis.entities;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -18,6 +20,10 @@ public class Property implements Serializable {
     private String description;
     private Integer type;
     private Integer goal;
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name="IMAGES")
+    private List<String> images= new ArrayList<>();
 
 
 
@@ -95,6 +101,13 @@ public class Property implements Serializable {
         this.address = address;
     }
 
+    public List<String> getImages() {
+        return images;
+    }
+
+    public void setImages(List<String> images) {
+        this.images = images;
+    }
 
     @Override
     public boolean equals(Object o) {

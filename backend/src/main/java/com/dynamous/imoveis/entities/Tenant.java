@@ -23,7 +23,6 @@ public class Tenant implements Serializable {
 
     private String slug;
 
-
     @Column(unique = true)
     private String email;
     private String password;
@@ -112,5 +111,15 @@ public class Tenant implements Serializable {
     @Override
     public int hashCode() {
         return Objects.hash(id);
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder();
+        sb.append(getSlug());
+        sb.append(",Email: ");
+        sb.append(getEmail());
+        sb.append('\n');
+        return sb.toString();
     }
 }
