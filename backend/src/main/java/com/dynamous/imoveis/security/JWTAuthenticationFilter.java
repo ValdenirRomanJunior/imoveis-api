@@ -27,6 +27,7 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     private JWTUtil jwtUtil;
 
     public JWTAuthenticationFilter ( AuthenticationManager authenticationManager,JWTUtil jwtUtil){
+    	setAuthenticationFailureHandler(new JWTAuthenticationFailureHandler());
         this.authenticationManager=authenticationManager;
         this.jwtUtil=jwtUtil;
     }
@@ -52,9 +53,15 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException, ServletException {
 
         String email = ((UserSS) authResult.getPrincipal()).getUsername();
-        String token = jwtUtil.GenerateToken(email);
+      
+        String token = jwtUtil.GenerateToken(email);   
         response.addHeader("Authorization", "Bearer " + token);
         response.addHeader("access-control-expose-headers", "Authorization");
+        
+        
+       
+        
+       
     }
 
 private class JWTAuthenticationFailureHandler implements AuthenticationFailureHandler {

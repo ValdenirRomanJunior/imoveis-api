@@ -23,6 +23,7 @@ public class TenantDTO implements Serializable {
     @Email(message = "E-mail inválido")
     private String email;
     private Integer status;
+    private String lastName;
 
     public TenantDTO(){
 
@@ -33,6 +34,7 @@ public class TenantDTO implements Serializable {
         slug= tenant.getSlug();
         email= tenant.getEmail();
         status=tenant.getStatus().getCod();
+        lastName=tenant.getLastName();
     }
 
     public Long getId() {
@@ -66,4 +68,13 @@ public class TenantDTO implements Serializable {
     public void setStatus(Integer status) {
         this.status = status;
     }
+
+	public String getLastName() {
+		return lastName;
+	}
+
+	public void setLastName(String lastName) {
+		this.lastName = lastName;
+	}
+    
 }

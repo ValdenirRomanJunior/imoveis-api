@@ -27,9 +27,8 @@ public class Tenant implements Serializable {
     private String email;
     private String password;
     private Integer status;
-
-
-
+    private String lastName;
+    
 
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name="PERFIS")
@@ -39,12 +38,13 @@ public class Tenant implements Serializable {
         addPerfil(Perfil.TENANT);
     }
 
-    public Tenant(Long id, String slug, String email, String password, Status status) {
+    public Tenant(Long id, String slug, String email, String password, Status status, String lastName) {
         this.id = id;
         this.slug = slug;
         this.email = email;
         this.password = password;
         this.status= (status == null) ? null : status.getCod();
+        this.lastName=lastName;
         addPerfil(Perfil.TENANT);
 
     }
@@ -89,10 +89,19 @@ public class Tenant implements Serializable {
     public Status getStatus() {
         return Status.toEnum(status);
     }
+    
+    
 
 
+    public String getLastName() {
+		return lastName;
+	}
 
-    public Set<Perfil> getPerfis(){
+	public void setLastName(String lastName) {
+		this.lastName = lastName;
+	}
+
+	public Set<Perfil> getPerfis(){
         return perfis.stream().map(x -> Perfil.toEnum(x)).collect(Collectors.toSet());
     }
 

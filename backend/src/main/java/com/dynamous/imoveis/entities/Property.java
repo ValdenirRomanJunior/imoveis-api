@@ -3,6 +3,10 @@ package com.dynamous.imoveis.entities;
 
 
 import javax.persistence.*;
+
+import com.dynamous.imoveis.enums.Goal;
+import com.dynamous.imoveis.enums.Type;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,11 +24,16 @@ public class Property implements Serializable {
     private String description;
     private Integer type;
     private Integer goal;
+    private String numberRooms;
+    private String bathRooms;
+    private String area;
+    private String iptu;
+    private String vacancies;
+    private String condominium;
+    private String price;
 
-    @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name="IMAGES")
-    private List<String> images= new ArrayList<>();
-
+    @OneToMany(fetch = FetchType.EAGER,mappedBy = "property",cascade=CascadeType.REMOVE, orphanRemoval = true)
+    private List<ImageUrl> images= new ArrayList<ImageUrl>();
 
 
 
@@ -38,12 +47,21 @@ public class Property implements Serializable {
     public Property() {
     }
 
-    public Property(Long id, String name, String description, Integer type, Integer goal) {
+    public Property(Long id, String name, String description, Type type, Goal goal, String numberRooms,
+    		String bathRooms,String area, String iptu,String vacancies,String condominium, String price) {
         this.id = id;
         this.name = name;
         this.description = description;
-        this.type = type;
-        this.goal = goal;
+        this.type = type.getCod();
+        this.goal = goal.getCod();
+        this.numberRooms=numberRooms;
+        this.bathRooms=bathRooms;
+        this.area=area;
+        this.iptu=iptu;
+        this.vacancies=vacancies;
+        this.condominium=condominium;
+        this.price=price;
+     
 
     }
 
@@ -71,25 +89,81 @@ public class Property implements Serializable {
         this.description = description;
     }
 
-    public Integer getType() {
-        return type;
+    public Type getType() {
+        return Type.toEnum(type);
     }
 
-    public void setType(Integer type) {
-        this.type = type;
+    public void setType(Type type) {
+        this.type = type.getCod();
     }
 
-    public Integer getGoal() {
-        return goal;
+    public Goal getGoal() {
+        return Goal.toEnum(goal);
     }
 
-    public void setGoal(Integer goal) {
-        this.goal = goal;
+    public void setGoal(Goal goal) {
+        this.goal = goal.getCod();
     }
+    
+    public String getNumberRooms() {
+		return numberRooms;
+	}
+
+	public void setNumberRooms(String numberRooms) {
+		this.numberRooms = numberRooms;
+	}
+
+	public String getBathRooms() {
+		return bathRooms;
+	}
+
+	public void setBathRooms(String bathRooms) {
+		this.bathRooms = bathRooms;
+	}
+
+	public String getArea() {
+		return area;
+	}
+
+	public void setArea(String area) {
+		this.area = area;
+	}
+
+	public String getIptu() {
+		return iptu;
+	}
+
+	public void setIptu(String iptu) {
+		this.iptu = iptu;
+	}
+
+	public String getVacancies() {
+		return vacancies;
+	}
+
+	public void setVacancies(String vacancies) {
+		this.vacancies = vacancies;
+	}
+
+	public String getCondominium() {
+		return condominium;
+	}
+
+	public void setCondominium(String condominium) {
+		this.condominium = condominium;
+	}
+
+	public String getPrice() {
+		return price;
+	}
+
+	public void setPrice(String price) {
+		this.price = price;
+	}
 
 
 
-    public Tenant getTenant() {
+	public Tenant getTenant() {
         return tenant;
     }
 
@@ -101,13 +175,16 @@ public class Property implements Serializable {
         this.address = address;
     }
 
-    public List<String> getImages() {
+    public List<ImageUrl> getImages() {
         return images;
     }
 
-    public void setImages(List<String> images) {
+    public void setImages(List<ImageUrl> images) {
         this.images = images;
     }
+   
+  
+
 
     @Override
     public boolean equals(Object o) {

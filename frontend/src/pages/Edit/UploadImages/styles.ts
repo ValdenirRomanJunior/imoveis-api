@@ -1,0 +1,68 @@
+import styled from "styled-components";
+
+export const ImagesContainer = styled.div`
+    width: 100%;
+    overflow: visible;
+
+    .title-fotos{
+
+    }
+
+    p{
+
+    }
+
+
+`
+
+export const UploadImage = styled.div`
+    width: 160px;
+    height: 122px;
+    border-radius: 2px;
+    background-color: #fff;
+    border: 1px dashed #9027b0;
+    float: left;
+    margin-right: 12px;
+    margin-top: 6px;
+    text-align: center;
+    cursor: pointer;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    .icon-photo{
+        width: 100%;
+        font-size: 40px;
+    }
+
+`
+
+export const ImageWrapper = styled.div`
+
+width: 160px;
+height: 122px;
+border-radius: 2px;
+background-color: #fff;
+float: left;
+margin-right: 12px;
+margin-top: 6px;
+text-align: center;
+cursor: pointer;
+
+
+align-items: flex-start;
+overflow: hidden;
+position: relative;
+display: flex;
+justify-content: center;
+
+img{
+    width: 100%;
+    height: 100%;
+    max-width: 100%;
+    object-fit: cover;
+}
+
+`

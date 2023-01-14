@@ -18,6 +18,10 @@ public class TenantNewDTO implements Serializable {
     @NotEmpty(message = "Preenchimento obrigatório")
     @Email
     private String email;
+    
+    @NotEmpty(message = "Preenchimento obrigatório")
+    @Length(min=5, max=80, message = "O tamanho deve ser entre 5 e 80 caracteres")
+    private String lastName;
 
     @NotEmpty(message = "Preenchimento obrigatório")
     @Length(min=8, max=20, message = "O tamanho deve ser entre 8 e 20 caracteres")
@@ -50,4 +54,14 @@ public class TenantNewDTO implements Serializable {
     public void setPassword(String password) {
         this.password = password;
     }
+
+	public String getLastName() {
+		return lastName;
+	}
+
+	public void setLastName(String lastName) {
+		this.lastName = lastName;
+	}
+    
+    
 }

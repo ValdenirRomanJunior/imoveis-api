@@ -1,0 +1,51 @@
+.Modall {
+    position: absolute;
+    top: 300px;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width:90%;
+    padding: 1rem 1rem;
+    
+    background-color: #F8FCFF;
+
+  
+  }
+  .button-close-modal{
+    position: absolute;
+    top: 10px;
+    right:10px;
+
+    font-size:30px;
+  }
+
+  .Overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rebeccapurple;
+  }
+
+  @media screen and (min-width: 1000px){
+    .Modal {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width:30%;
+      padding: 2rem 2rem;
+      background-color: #F8FCFF;
+  
+      
+    }
+  
+    .Overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: rebeccapurple;
+    }
+  }

@@ -3,9 +3,12 @@ package com.dynamous.imoveis.services;
 import com.amazonaws.AmazonClientException;
 import com.amazonaws.AmazonServiceException;
 import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.model.ListObjectsV2Result;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
-
+import com.dynamous.imoveis.entities.Image;
+import com.dynamous.imoveis.repositories.ImageRepository;
+import com.dynamous.imoveis.security.UserSS;
 import com.dynamous.imoveis.services.exceptions.FileException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,14 +20,19 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Array;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.List;
 
 
 @Service
 public class S3Service {
 
     private Logger LOG = LoggerFactory.getLogger(S3Service.class);
+    
+    @Autowired
+    private ImageRepository imageRepository;
 
     @Autowired
     private AmazonS3 s3client;
@@ -43,13 +51,24 @@ public class S3Service {
         }
     }
     public URI uploaFile(InputStream is, String fileName, String contentType) {
+    	
+    	  UserSS user = UserService.authenticated();
+          if (user == null) {
+              throw new RuntimeException("erro");
+          }
         try {
              ObjectMetadata meta = new ObjectMetadata();
              meta.setContentType(contentType);
              LOG.info("Iniciando upload");
+            
              s3client.putObject(bucketName, fileName, is,meta);
              LOG.info("Finalizado upload");
+             URI urlImage=s3client.getUrl(bucketName, fileName).toURI();
+             String url= String.valueOf(urlImage);
+             Image image = new Image(null,url,user.getId());
+             imageRepository.save(image);
              return s3client.getUrl(bucketName,fileName).toURI();
+            
         } catch (URISyntaxException e) {
            throw new FileException(("Erro ao converter URL para URI"));
         }

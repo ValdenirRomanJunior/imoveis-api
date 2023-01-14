@@ -2,21 +2,40 @@ package com.dynamous.imoveis.dto;
 
 import org.hibernate.validator.constraints.Length;
 
+import com.dynamous.imoveis.entities.Image;
+import com.dynamous.imoveis.entities.ImageUrl;
+
+import javax.persistence.Column;
 import javax.validation.constraints.NotEmpty;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 public class PropertyNewDTO implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @NotEmpty(message = "Preenchimento obrigatório")
-    @Length(min=5, max=80, message = "O tamanho deve ser entre 5 e 80 caracteres")
+    @Length(min=1, max=10, message = "O tamanho deve ser entre 1 e 80 caracteres")
     private String name;
     @NotEmpty(message = "Preenchimento obrigatório")
-    @Length(min=5, max=200, message = "O tamanho deve ser entre 5 e 200 caracteres")
+    @Length(min=1, max=200, message = "O tamanho deve ser entre 1 e 200 caracteres")
     private String description;
 
     private Integer type;
     private Integer goal;
+    private String numberRooms;
+    private String bathRooms;
+    private String area;
+    private String iptu;
+    private String vacancies;
+    private String condominium;
+    private String price;
+    
+    @Column(unique=true)
+    private String uf;
+    
+    @Column(unique=true)
+    private String city;
 
     @NotEmpty(message = "Preenchimento obrigatório")
     private String street;
@@ -26,16 +45,11 @@ public class PropertyNewDTO implements Serializable {
     private String district;
     @NotEmpty(message = "Preenchimento obrigatório")
     private String cep;
+    
+    
+    private List<ImageUrl> images= new ArrayList<>();
 
-    private String image1;
-    private String image2;
-    private String image3;
-    private String image4;
-    private String image5;
-    private String image6;
-
-    private Long tenantId;
-    private Long cityId;
+  
 
     public PropertyNewDTO(){
 
@@ -105,68 +119,88 @@ public class PropertyNewDTO implements Serializable {
         this.cep = cep;
     }
 
-    public Long getTenantId() {
-        return tenantId;
-    }
+    
+    
+	public String getNumberRooms() {
+		return numberRooms;
+	}
 
-    public void setTenantId(Long tenantId) {
-        this.tenantId = tenantId;
-    }
+	public void setNumberRooms(String numberRooms) {
+		this.numberRooms = numberRooms;
+	}
 
-    public Long getCityId() {
-        return cityId;
-    }
+	public String getBathRooms() {
+		return bathRooms;
+	}
 
-    public void setCityId(Long cityId) {
-        this.cityId = cityId;
-    }
+	public void setBathRooms(String bathRooms) {
+		this.bathRooms = bathRooms;
+	}
 
-    public String getImage1() {
-        return image1;
-    }
+	public String getArea() {
+		return area;
+	}
 
-    public void setImage1(String image1) {
-        this.image1 = image1;
-    }
+	public void setArea(String area) {
+		this.area = area;
+	}
 
-    public String getImage2() {
-        return image2;
-    }
+	public String getIptu() {
+		return iptu;
+	}
 
-    public void setImage2(String image2) {
-        this.image2 = image2;
-    }
+	public void setIptu(String iptu) {
+		this.iptu = iptu;
+	}
 
-    public String getImage3() {
-        return image3;
-    }
+	public String getVacancies() {
+		return vacancies;
+	}
 
-    public void setImage3(String image3) {
-        this.image3 = image3;
-    }
+	public void setVacancies(String vacancies) {
+		this.vacancies = vacancies;
+	}
 
-    public String getImage4() {
-        return image4;
-    }
+	public String getCondominium() {
+		return condominium;
+	}
 
-    public void setImage4(String image4) {
-        this.image4 = image4;
-    }
+	public void setCondominium(String condominium) {
+		this.condominium = condominium;
+	}
 
-    public String getImage5() {
-        return image5;
-    }
+	public String getPrice() {
+		return price;
+	}
 
-    public void setImage5(String image5) {
-        this.image5 = image5;
-    }
+	public void setPrice(String price) {
+		this.price = price;
+	}
 
-    public String getImage6() {
-        return image6;
-    }
+	public String getCity() {
+		return city;
+	}
 
-    public void setImage6(String image6) {
-        this.image6 = image6;
-    }
+	public void setCity(String city) {
+		this.city = city;
+	}
+
+	public String getState() {
+		return uf;
+	}
+
+	public void setState(String state) {
+		this.uf = state;
+	}
+
+	public List<ImageUrl> getImages() {
+		return images;
+	}
+
+	public void setImages(List<ImageUrl> images) {
+		this.images = images;
+	}
+
+
 }
 

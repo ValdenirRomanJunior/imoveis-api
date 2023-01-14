@@ -31,19 +31,23 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
 
         //pegar o token Bearer
         String header =request.getHeader("Authorization");
+       
         //libera o usuario que esta tentando acessar o endpoint
         if (header != null && header.startsWith("Bearer ")){
-            UsernamePasswordAuthenticationToken auth= getAuthentication(header.substring(7));
-            if( auth != null){
-                SecurityContextHolder.getContext().setAuthentication(auth);
+            UsernamePasswordAuthenticationToken auth= getAuthentication(request,header.substring(7));
+            if(auth !=null) {
+            	SecurityContextHolder.getContext().setAuthentication(auth);
             }
+          
+         
         }
         chain.doFilter(request,response);
     }
 
-    private UsernamePasswordAuthenticationToken getAuthentication( String token) {
+    private UsernamePasswordAuthenticationToken getAuthentication(HttpServletRequest request, String token) {
         //testa se token é valido
         if(jwtUtil.tokenValido(token)){
+        	
             //pega username dentro do token
             String email = jwtUtil.getUsername(token);
             //busca no banco usuario

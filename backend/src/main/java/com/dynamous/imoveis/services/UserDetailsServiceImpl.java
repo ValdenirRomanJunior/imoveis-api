@@ -39,7 +39,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
             //exception security context
         } else if (tenant != null && tenant.getPerfis().contains(Perfil.TENANT)) {
             return new UserSS(tenant.getId(), tenant.getEmail(), tenant.getPassword(), tenant.getPerfis());
-
+            
 
         } else if (tenantCustomer != null && tenantCustomer.getPerfis().contains(Perfil.TENANT_CUSTOMER)) {
             return new UserSS(tenantCustomer.getId(), tenantCustomer.getEmail(), tenantCustomer.getPassword(), tenantCustomer.getPerfis());

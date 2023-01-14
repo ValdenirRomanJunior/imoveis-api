@@ -1,0 +1,464 @@
+/* eslint-disable no-loop-func */
+import {  useEffect, useState } from 'react';
+import BarTop from '../../components/Bartop';
+import Button from '../../components/Button';
+import Header from '../../components/Header';
+import Input from '../../components/Input';
+import {EditBackground,BodyEditContainer, FormContainer} from './styles';
+import UploadImages from './UploadImages';
+import {editProperty, findProperty} from '../../services/resources/property';
+import {ImageItem} from '../../types/Images'
+import api from '../../utils/requests';
+import { useNavigate, useParams } from 'react-router-dom';
+import {number, currency, cep} from '../Registration/masks';
+
+import { Property } from '../../types/property';
+
+type Error = {
+    fieldName:string;
+    message:string;
+}
+
+type Props={
+    propertyId:string;
+}
+
+
+type IBGEUFResponse = {
+    id:number;
+    sigla:string;
+    nome:string;
+};
+
+type IBGECYTYResponse = {
+    id: number;
+    nome: string;
+};
+
+type Prop = {
+    property: Property;
+}
+
+
+
+const EditComponent = ({property}: Prop) =>{
+
+    const params = useParams();
+    
+    const [errors, setErrors] = useState<Error[]>([]);
+    const navigate = useNavigate();
+    const [ufs, setUfs]= useState<IBGEUFResponse[]>([]);
+    const [cities, setCities]= useState<IBGECYTYResponse[]>([]);
+    const [state, setState]=useState(); 
+    const [images, setImages] = useState<ImageItem[]>([]);
+    
+    const imagesFromUpdate=(property.images?.map(x => {return {id: x.id, url: x.url, idTenant: x.idTenant, selected: true}})) as ImageItem[];
+    
+
+     
+     //pega imagens do UploadImages
+  
+     const getImagesUrls = (data:ImageItem[]) => {  
+        console.log(data)    
+         setImages(data);
+       
+                                          
+    }
+    
+   
+    useEffect(() => {
+        api.get('https://servicodados.ibge.gov.br/api/v1/localidades/estados/')
+        .then(
+            (response) => {
+                setUfs(response.data);
+               
+            });
+    }, []);
+
+
+    useEffect(() => {
+        api.get(`https://servicodados.ibge.gov.br/api/v1/localidades/estados/${form['uf']}/municipios`)
+        .then(
+            (response) => {
+                setCities(response.data)
+               
+            }
+        )
+    }, [state]);
+
+        const changeGoal = () => {
+            if(property.goal === 'Aluguel'){
+                return '1';
+            }
+        }
+
+        const changeType = () => {
+            if(property.type === 'Casa'){
+                return '1';
+            }
+            if(property.type === 'Apartamento'){
+                return '2';
+            }
+            if(property.type === 'Terreno'){
+                return '3';
+            }
+            if(property.type === 'Comercial'){
+                return '4';
+            }
+        }
+
+            const changeState = ()=>{
+                for (const uf in ufs) {
+                    if(ufs[uf].sigla ===property.address.city.state.name){
+                        const aux=ufs[uf];
+                        setState(aux as any)
+                    }
+                 }
+            }
+            useEffect(() => {
+                changeState()
+            }, []);
+       
+        const [form, setForm] = useState({
+          
+            name:property.name,
+            description:property.description,
+            type:changeType(),
+            goal:changeGoal(),
+            numberRooms:property.numberRooms,
+            bathRooms:property.bathRooms,
+            area:property.area,
+            iptu:property.iptu,
+            vacancies:property.vacancies,
+            condominium:property.condominium,
+            price:property.price,
+            uf:property.address.city.state.name,
+            city:property.address.city.name,
+            district:property.address.district,
+            street:property.address.street,
+            number:property.address.number,
+            cep:property.address.cep
+
+
+});
+       
+        
+
+        const [emptyValue,setEmptyValue]= useState(false);
+
+            const handleChange = (e:any) =>{
+                             
+                const field= e.target.getAttribute('name');
+                const value= e.target.value
+                setForm({ ...form,
+                    [field]:value,
+                }); 
+             
+
+                  
+                if(e.target.name === "uf"){
+                    setState(e.target.value);
+                }
+               
+                            
+            }
+
+
+      
+            const handleKeyUp = (e: React.FormEvent<HTMLInputElement>) =>{
+           
+                if(e.currentTarget.name  === 'number'){
+                    number(e)
+                }
+                if(e.currentTarget.name === 'price'){
+                    currency(e);
+                }
+                if(e.currentTarget.name === 'cep'){
+                    cep(e);
+                }
+                if(e.currentTarget.name === 'condominium'){
+                    currency(e);
+                }
+                if(e.currentTarget.name === 'iptu'){
+                    currency(e);
+                }
+
+                        
+                    
+            }   
+               
+          
+                
+            const handleSubmit = async (e:any) =>{
+              e.preventDefault();
+
+        
+                let emptyValues=Object.values(form).some(obj => obj === '');
+                setEmptyValue(emptyValues);
+                
+              
+              
+                let name: any;            
+                for (var prop in form) { if(prop === 'name'){name=form[prop]; } }
+                        
+                let description: any;            
+                for (var prop1 in form) {if(prop1 === 'description'){ description=form[prop1];  console.log(description)}}
+
+                let type: any;            
+                for (var prop2 in form) {if(prop2 === 'type'){ type=form[prop2];}}
+
+                let goal: any;            
+                for (var prop3 in form) {if(prop3 === 'goal'){ goal=form[prop3];}}
+
+                let numberRooms: any;            
+                for (var prop4 in form) {if(prop4 === 'numberRooms'){ numberRooms=form[prop4];}}
+
+                let bathRooms: any;            
+                for (var prop5 in form) {if(prop5 === 'bathRooms'){ bathRooms=form[prop5];}}
+
+                let area: any;            
+                for (var prop6 in form) {if(prop6 === 'area'){ area=form[prop6];}}
+
+                let iptu: any;            
+                for (var prop7 in form) {if(prop7 === 'iptu'){ iptu=form[prop7];}}
+
+                let vacancies: any;            
+                for (var prop8 in form) {if(prop8 === 'vacancies'){ vacancies=form[prop8];}}
+
+                let condominium: any;            
+                for (var prop9 in form) {if(prop9 === 'condominium'){ condominium=form[prop9];}}
+
+                let price: any;            
+                for (var prop10 in form) {if(prop10 === 'price'){ price=form[prop10];}}
+              
+                let state: any; 
+                for (var prop11 in form) {if(prop11 === 'uf'){ state=form[prop11];}  }
+                
+                let city: any;            
+                for (var prop12 in form) {if(prop12 === 'city'){ city=form[prop12];}}
+
+                let district: any;            
+                for (var prop13 in form) {if(prop13 === 'district'){ district=form[prop13];}}
+
+                let street: any;            
+                for (var prop14 in form) {if(prop14 === 'street'){ street=form[prop14];}}
+
+                let number: any;            
+                for (var prop15 in form) {if(prop15 === 'number'){ number=form[prop15];}}
+
+                let cep: any;            
+                for (var prop16 in form) {if(prop16 === 'cep'){ cep=form[prop16];}}
+                    
+                
+                if(!emptyValues){
+                    
+                  
+                const data = await editProperty(name, description, type, goal, numberRooms, bathRooms,area, iptu,vacancies,condominium,                                      
+                price, state, city, district, street, number, cep, images,`${params.propertyId}`)
+              
+               
+               
+              
+                    
+                if(data.response.data.errors !== null){   
+                    setErrors(data.response.data.errors)
+                              
+                }else{
+                    navigate('/properties')
+                }
+            }
+            e.currentTarget.submit();
+           
+            }
+                 
+    return(
+       <EditBackground>
+        <Header />
+        <BarTop />
+        <BodyEditContainer>
+            <h1 className='title-registration'>Editar imóvel</h1>
+
+            <form onSubmit={(e)=> {handleSubmit(e)}}>
+            <FormContainer>
+
+                <label>Título*</label>
+               
+                <Input id="name" name="name" value={form['name'] } onChange={(e) => handleChange(e)} maxLength={90} />
+                {errors.map(x => { if(x.fieldName === 'name') return  <p className='formField__error'>{x.message}</p>})}
+               { emptyValue && form['name'] === '' ? <span className='formField__error'>Este campo é requerido</span>: ''}
+
+                <label>Descrição*</label>
+                <textarea id="description"  value={form['description']} name="description" rows={4}  onChange={(e) => handleChange(e)}></textarea>
+                {errors.map(x => { if(x.fieldName === 'description') return  <p className=' formField__error'>{x.message}</p>})}
+                { emptyValue && form['description'] === '' ?<span className='formField__error'>Este campo é requerido</span>: ''}
+
+                <label>Finalidade</label>
+                    <select  name='goal'  id='goal' value={form['goal'] }   placeholder='selecione'  onChange={(e) => handleChange(e)} >
+                    <option value='' >Selecione</option>
+                    <option key='Venda' value='2'>Vender</option>
+                    <option  key='Aluguel' value='1'>Alugar</option>
+                    
+                </select>
+                {errors.map(x => { if(x.fieldName === 'goal') return  <p className=' formField__error'>{x.message}</p>})}
+                { emptyValue && form['goal'] === '' ?<span className='formField__error'>Selecione uma Finalidade</span>: ''}
+                
+            
+                <label>Tipo*</label>
+                <select  name='type' placeholder='selecione' id='type' value={form['type'] }   onChange={(e) => handleChange(e)} >
+                    <option value=''  >Selecione</option>
+                    <option key='1' value='1'>Casa</option>
+                    <option  key='2' value='2'>Apartamento</option>
+                    <option  key='3' value='3'>Terreno</option>
+                    <option  key='4' value='4'>Comercial</option>
+                </select>
+                {errors.map(x => { if(x.fieldName === 'type') return  <p className=' formField__error'>{x.message}</p>})}
+                { emptyValue && form['type'] === '' ?<span className='formField__error'>Selecione um Tipo</span>: ''}
+
+          
+                <label>Quartos*</label>
+                <select name='numberRooms' value={form['numberRooms'] }  placeholder='selecione' id='numberRooms'  onChange={(e) => handleChange(e)}>
+                <option value=''  >Selecione</option>
+                    <option key='0' value='0'>0</option>
+                    <option key='1' value='1'>1</option>
+                    <option key='2' value='2'>2</option>
+                    <option key='3' value='3'>3</option>
+                    <option key='4' value='4 ou mais'>4 ou mais</option>
+                </select>
+                {errors.map(x => { if(x.fieldName === 'numberRooms') return  <p className=' formField__error'>{x.message}</p>})}
+                { emptyValue && form['numberRooms'] === '' ?<span className='formField__error'>Selecione o número de Quartos</span>: ''}
+                
+
+                <label>Banheiros*</label>
+                <select  id="bathRooms" name="bathRooms" value={form['bathRooms'] }  placeholder='selecione' onChange={(e) => handleChange(e)}>
+                    <option value=''  >Selecione</option>
+                    <option key='0' value='0'>0</option>
+                    <option key='1' value='1'>1</option>
+                    <option key='2' value='2'>2</option>
+                    <option key='3' value='3'>3</option>
+                    <option key='4' value='4 ou mais'>4 ou mais</option>
+                </select>
+                {errors.map(x => { if(x.fieldName === 'bathRooms') return  <p className=' formField__error'>{x.message}</p>})}
+                { emptyValue && form['bathRooms'] === '' ? <span className='formField__error'>Selecione o número de Banheiros</span>: ''}
+              
+                <label>Área(m2)*</label>
+                <Input id="area" name="area" value={form['area'] }  onChange={(e) => handleChange(e)}/>
+                {errors.map(x => { if(x.fieldName === 'area') return  <p className=' formField__error'>{x.message}</p>})}
+                { emptyValue && form['area'] === '' ?<span className='formField__error'>Preencha o total da Área interna</span>: ''}
+
+                <label>Vagas</label>
+                <select id="vacancies" name="vacancies" value={form['vacancies'] }  placeholder='selecione' onChange={(e) => handleChange(e)}>
+                <option value=''  >Selecione</option>
+                    <option key='0' value='0'>0</option>
+                    <option key='1' value='1'>1</option>
+                    <option key='2' value='2'>2</option>
+                    <option key='3' value='3'>3</option>
+                    <option key='4' value='4 ou mais'>4 ou mais</option>
+                </select>
+                {errors.map(x => { if(x.fieldName === 'vacancies') return  <p className=' formField__error'>{x.message}</p>})}
+                { emptyValue && form['vacancies'] === '' ?<span className='formField__error'>Este campo é requerido</span>: ''}
+
+                <label>IPTU(R$)</label>
+                <Input id="iptu" name="iptu" value={form['iptu'] }  maxLength={14} onKeyUp={handleKeyUp} onBlur={(e) => handleChange(e)}/>
+                {errors.map(x => { if(x.fieldName === 'iptu') return  <p className=' formField__error'>{x.message}</p>})}
+                { emptyValue && form['iptu'] === '' ?<span className='formField__error'>Este campo é requerido</span>: ''}
+
+                <label>Condomínio(R$)</label>
+                <Input  id="condominium" name="condominium" value={form['condominium'] }  maxLength={14} onKeyUp={handleKeyUp} onChange={(e) => handleChange(e)}/>
+                {errors.map(x => { if(x.fieldName === 'condominium') return  <p className=' formField__error'>{x.message}</p>})}
+                { emptyValue && form['condominium'] === '' ?<span className='formField__error'>Este campo é requerido</span>: ''}
+
+               
+                <label>Preço(R$)</label>
+                <Input type='text' id='price' name='price'value={form['price'] }  maxLength={14} onKeyUp={handleKeyUp} onChange={(e) => handleChange(e)}/>    
+                {errors.map(x => { if(x.fieldName === 'price') return  <p className=' formField__error'>{x.message}</p>})}
+                { emptyValue && form['price'] === '' ?<span className='formField__error'>Este campo é requerido</span>: ''}
+               
+             
+                 <label>Estado</label>
+                <select placeholder='selecione' name='uf'  id='uf' value={form['uf'] }  onChange={(e) => handleChange(e)} > 
+                <option value='' >Selecione</option>
+                  
+                 { ufs.map((uf) => (
+                    <option  key={uf.id} value={uf.sigla}>{uf.nome}</option>
+                 ))}
+                </select>
+                {errors.map(x => { if(x.fieldName === 'uf') return  <p className=' formField__error'>{x.message}</p>})}
+                { emptyValue && form['uf'] === '' ?<span className='formField__error'>Este campo é requerido</span>: ''}
+
+                <label>Cidade</label>
+                <select placeholder='selecione'  name='city'  id='city' value={form['city'] }  onChange={(e) => handleChange(e)}>
+                    <option value='' >Selecione a Cidade</option>
+                 { cities.map((city) => (
+                    <option key={city.id} value={city.nome}>{city.nome}</option>
+                 ))}
+                </select>
+                {errors.map(x => { if(x.fieldName === 'city') return  <p className=' formField__error'>{x.message}</p>})}
+                { emptyValue && form['city'] === '' ?<span className='formField__error'>Este campo é requerido</span>: ''}
+
+                <label>Bairro</label>
+                <Input  name='district'  id='district' value={form['district'] }  onChange={(e) => handleChange(e)}/>
+                {errors.map(x => { if(x.fieldName === 'district') return  <p className=' formField__error'>{x.message}</p>})}
+                { emptyValue && form['district'] === '' ?<span className='formField__error'>Este campo é requerido</span>: ''}
+                
+                <label>Rua</label>
+                <Input   name='street'  id='street' value={form['street'] }  onChange={(e) => handleChange(e)}/>
+                {errors.map(x => { if(x.fieldName === 'street') return  <p className=' formField__error'>{x.message}</p>})}
+                { emptyValue && form['street'] === '' ?<span className='formField__error'>Este campo é requerido</span>: ''}
+                
+                <label>Número</label>
+                <div className='number-wrapper'>
+                <Input type='text'  name='number' id='number'value={form['number'] }  onKeyUp={handleKeyUp} onChange={(e) => handleChange(e)}/>       
+                </div>
+                {errors.map(x => { if(x.fieldName === 'number') return  <p className=' formField__error'>{x.message}</p>})}
+                { emptyValue && form['number'] === '' ?<span className='formField__error'>Este campo é requerido</span>: ''}
+                
+                <label>Cep</label>
+                <Input  name='cep'  id='cep' value={form['cep'] }  onKeyUp={handleKeyUp} onChange={(e) => handleChange(e)}/> 
+                {errors.map(x => { if(x.fieldName === 'cep') return  <p className=' formField__error'>{x.message}</p>})}
+                { emptyValue && form['cep'] === '' ?<span className='formField__error'>Este campo é requerido</span>: ''}
+                     
+                <UploadImages images={imagesFromUpdate}  handleResult={getImagesUrls}/>
+                <div className='buttom-register-wrapper'>
+                <Button type='submit'>Editar</Button>
+                </div>
+            </FormContainer>
+            </form>
+        </BodyEditContainer>
+       </EditBackground>
+            
+        
+    )
+}
+
+const Edit = () =>{
+
+    const params = useParams();
+    const [property,setProperty]=useState<Property>();
+
+    const p = `${params.propertyId}`;
+    const getProperty = async() => {
+                 
+        const data = await findProperty(p) ;          
+             setProperty(data as Property) 
+                 
+    }
+
+     
+    useEffect(() => {
+        getProperty();
+
+    },
+     [p]);
+
+    
+
+    return(
+        <div>
+            {property && (
+            <EditComponent property={property as unknown as Property}/>
+            )}
+        </div>
+    )
+}
+
+export default Edit;

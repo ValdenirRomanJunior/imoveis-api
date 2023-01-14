@@ -2,10 +2,10 @@ package com.dynamous.imoveis.enums;
 
 public enum Type {
 
-        HOUSE(1,"HOUSE"),
-        APARTMENT(2,"APARTMENT"),
-        LAND(3,"LAND"),
-        COMERCIAL(4,"COMERCIAL");
+        Casa(1,"Casa"),
+        Apartamento(2,"Apartamento"),
+        Terreno(3,"Terreno"),
+        Comercial(4,"Comercial");
 
         private int cod;
         private String description;

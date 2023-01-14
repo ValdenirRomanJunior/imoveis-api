@@ -18,6 +18,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,14 +37,16 @@ public class TenantService {
 
     @Autowired
     private EmailService emailService;
-
+    
+   
     public Tenant find(Long id) {
-        UserSS user = UserService.authenticated();
-        if(user==null || !user.hasRole(Perfil.TENANT) && !id.equals(user.getId())){
+       // UserSS user = UserService.authenticated();
+       
+        if(id==null){
             throw new AuthorizationException("Acesso negado");
         }
-        Optional<Tenant> property = tenantRepository.findById(id);
-        return property.orElseThrow(() -> new ObjectNotFoundException(
+        Optional<Tenant> tenant = tenantRepository.findById(id);
+        return tenant.orElseThrow(() -> new ObjectNotFoundException(
                 "Página não encontrada! Id:" + ", Type" + Tenant.class.getName()));
     }
     @Transactional
@@ -87,7 +90,7 @@ public class TenantService {
     }
 
     public Tenant fromDTO(TenantNewDTO objDto){
-        Tenant tenant = new Tenant(null, objDto.getSlug(), objDto.getEmail(), pe.encode(objDto.getPassword()), Status.ACTIVE);
+        Tenant tenant = new Tenant(null, objDto.getSlug(), objDto.getEmail(), pe.encode(objDto.getPassword()), Status.ACTIVE,objDto.getLastName());
         tenant.addPerfil(Perfil.TENANT);
         return tenant;
 
@@ -95,7 +98,7 @@ public class TenantService {
 
 
     public Tenant fromDTO(TenantDTO objDto) {
-        Tenant tenant = new Tenant(objDto.getId(), objDto.getSlug(), objDto.getEmail(),null,null);
+        Tenant tenant = new Tenant(objDto.getId(), objDto.getSlug(), objDto.getEmail(),null,null,objDto.getLastName());
         return tenant;
     }
 }

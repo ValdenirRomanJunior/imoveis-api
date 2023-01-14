@@ -52,4 +52,6 @@ public class ImageService {
             throw new FileException("erro ao ler arquivo");
         }
     }
+    
+    //metodo para buscar todas imagens de cada cliente
 }

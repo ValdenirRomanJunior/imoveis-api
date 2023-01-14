@@ -1,6 +1,5 @@
 package com.dynamous.imoveis.repositories;
 
-
 import com.dynamous.imoveis.entities.State;
 
 import java.util.List;
@@ -14,5 +13,10 @@ import org.springframework.transaction.annotation.Transactional;
 public interface StateRepository extends JpaRepository<State,Long> {
 	
 	@Transactional(readOnly = true)
+	State findByName(String name);
+	
+	@Transactional(readOnly = true)
 	public List<State> findAllByOrderByName();
 }
+
+	

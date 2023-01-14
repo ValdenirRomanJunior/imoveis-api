@@ -27,7 +27,6 @@ import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
-
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Autowired
@@ -39,17 +38,28 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	private JWTUtil jwtUtil;
 
 	private static final String[] PUBLIC_MATCHERS = {
-			"/h2-console/**"
+			"/h2-console/**",
+			"/properties/**",
+			"/pictures/**",
+			"/properties/find/**",
+			"/properties/update/**"
+			
+			
+			
+			
 	};
 
-	private static final String[] PUBLIC_MATCHERS_GET = {
-			"/properties/**",
-			"/templateemail/**",
-			"/states/**"
+	private static final String[] PUBLIC_MATCHERS_GET = {		
+			"/templateemail/**",		
+			"/states/**",
+			"/properties/**"
+			
+			
+		
 
 	};
 	private static final String[] PUBLIC_MATCHERS_POST = {
-			"/tenants/**",
+			
 			"/auth/forgot/**"
 
 	};
@@ -64,15 +74,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 		http.cors().and().csrf().disable();
 		http.authorizeRequests()
-				.antMatchers(HttpMethod.GET, PUBLIC_MATCHERS_GET).permitAll()
-				.antMatchers(HttpMethod.POST, PUBLIC_MATCHERS_POST).permitAll()
 				.antMatchers(PUBLIC_MATCHERS).permitAll()
-				.antMatchers(HttpMethod.GET,"/images/").permitAll()
-				.antMatchers(HttpMethod.GET,"/images/**").permitAll()
+				.antMatchers(HttpMethod.GET, PUBLIC_MATCHERS_GET).permitAll()
+				//.antMatchers(HttpMethod.GET,"/images/").permitAll()
+				//.antMatchers(HttpMethod.GET,"/images/**").permitAll()
 				.anyRequest().authenticated();
-		http.addFilter(new JWTAuthenticationFilter(authenticationManager(), jwtUtil));
+		    http.addFilter(new JWTAuthenticationFilter(authenticationManager(), jwtUtil));
 			http.addFilter(new JWTAuthorizationFilter(authenticationManager(), jwtUtil, userDetailsService));
-		http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+		    http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 	}
 
 	@Override
@@ -83,7 +92,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	@Bean
 	CorsConfigurationSource corsConfigurationSource() {
 		CorsConfiguration configuration = new CorsConfiguration().applyPermitDefaultValues();
-		configuration.setAllowedMethods(Arrays.asList("POST", "GET", "PUT", "DELETE", "OPTIONS"));
+		configuration.setAllowedMethods(Arrays.asList("POST","PUT", "DELETE", "OPTIONS"));
+		configuration.setAllowedOrigins(Arrays.asList("*"));
+		
+		 configuration.addAllowedOrigin("*");
+	        configuration.addAllowedHeader("*");
+	        configuration.addAllowedMethod("*");
+		
+		
 		final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 		source.registerCorsConfiguration("/**", configuration);
 		return source;
@@ -93,18 +109,19 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		return new BCryptPasswordEncoder();
 	}
 	
-	  public void addResourceHandlers(ResourceHandlerRegistry registry) {
-	 registry.addResourceHandler("/webjars/**", "/resources/**", "/static/**", "/images/**", "/css/**", "/js/**",
-					"classpath:/static/", "classpath:/resources/")
-			.addResourceLocations("/webjars/", "/resources/",
-							"classpath:/static/**", "classpath:/static/img/**", "classpath:/static/",
-							"classpath:/resources/", "classpath:/static/css/", "classpath:/static/js/", "/resources/**",
-							"/WEB-INF/classes/static/**");
+	//  public void addResourceHandlers(ResourceHandlerRegistry registry) {
+	// registry.addResourceHandler("/webjars/**", "/resources/**", "/static/**", "/images/**", "/css/**", "/js/**",
+	//				"classpath:/static/", "classpath:/resources/")
+	//		.addResourceLocations("/webjars/", "/resources/",
+	//						"classpath:/static/**", "classpath:/static/img/**", "classpath:/static/",
+	//						"classpath:/resources/", "classpath:/static/css/", "classpath:/static/js/", "/resources/**",
+	//						"/WEB-INF/classes/static/**");
+	 		
    
 	
-}
-	  @Override
-	public void configure(WebSecurity web) throws Exception {
-		  web.ignoring().antMatchers(HttpMethod.GET,"/resources/**","static/**","/**");
-	}
+//}
+	//  @Override
+	//public void configure(WebSecurity web) throws Exception {
+	//	  web.ignoring().antMatchers(HttpMethod.GET,"/resources/**","static/**","/**");
+	//}
 }

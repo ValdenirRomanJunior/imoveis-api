@@ -1,51 +1,286 @@
 import styled from "styled-components";
+import imageTopBanner from '../../assets/images/banner-top.png';
+
 
 export const DashboardBackground = styled.main`
-    width: 100%;
-    
-
-    display: flex;
-    align-items: center;
+    width: 100%;   
+    display: flex;  
     flex-direction: column;
-
     background-color: ${({theme}) => theme.colors.backgroundLight};
+
+    .left-side-message-user{
+        margin-top:25px;
+        padding: 0 20px;
+       
+    }
+
+    @media screen and (min-width: 1000px){
+
+        .left-side-message-user{
+            margin-top:35px;
+            padding: 0 20px;
+            margin-left: 90px;
+           
+        }
+    }
+   
 `
 
-export const BodyContainer = styled.main`
+export const BodyContainer = styled.main`   
+    width:100%;
+    display:flex;
+    flex-direction: column-reverse;
+    align-items: center;
+    padding: 20px 0 30px 0;
+    
+       
+    .left-side{
+        margin-top: 50px;
+        width: 95%;
 
+        
+
+        .card-wrapper-top{
+            padding:25px 20px;
+            border: 1px solid #e6e9ed;
+            background: ${({theme}) => theme.colors.background};
+
+            button{
+                width: auto;
+                height:40px;
+                padding: 5px 30px;
+            }
+        }     
+
+        .cards-left-side-title{
+            font-size: 1.25rem;
+            color:#707780;
+            font-weight: 300;
+            width:100%;
+            text-align: left;
+            padding: 0 15px;
+
+        }
+
+      .cards-left-side{
+            background: #fff;
+            margin-top: 40px;
+            padding: 10px 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            border: 1px solid #e6e9ed;
+            width:100%;
+            
+            .cards-wrapper{
+                width: 100%;
+            }
+
+            .card-wrapper-left{
+                    width: 100%;
+                    height: 150px;
+                    padding: 15px 10px;
+
+                    p{
+                        color: #767676; 
+                        font-weight: 500;
+                    }
+                    span{
+                        color: #484848; 
+                        font-weight: 300;
+                        font-size: 35px;
+                        font-family: "Poppins", sans-serif; 
+                    }
+            }
+
+            
+    .number-card-dashboard{
+        font-size:40px;
+    }
+            
+        }
+      
+    }
+
+
+    .right-side{
+       
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        width:100%;
+        padding: 0 10px;
+        
+
+        .img-right{
+            width: 100vw;
+            height: 70px;
+            object-fit: cover;
+            display:none;
+         
+        }
+        .eMWcUt{
+            display:none;
+        }
+    }
+
+
+
+    @media screen and (min-width:1000px){
+        
+       
+        flex-direction: row;
+        align-items: start;
+        padding: 40px 20px 30px 20px;
+       
+         
+        .left-side{
+            
+
+            width: 75%;
+            margin: 0 30px 0 80px;
+    
+    
+            .card-wrapper-top{
+                padding:33px 40px;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+
+               .button-top{
+                width:auto;
+                padding:10px 20px;
+               }
+
+               p{
+                margin-bottom: 0;
+               }
+
+            }     
+            
+          
+    
+          .cards-left-side{
+
+            margin-top: 30px;
+            padding: 10px 10px;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            border: 1px solid #e6e9ed;
+
+            .cards-left-side-title{
+                font-size: 1.30rem;
+                color:#707780;
+                margin-top:10px;
+                text-align: left;
+                width:100%;
+                margin-left:10px;
+                padding-left: 15px;
+                font-weight: 400;
+            }
+
+            .cards-wrapper{
+                display:flex;
+                justify-content: center;
+            }
+
+                .card-wrapper-left{
+                    width: 300px;
+                    height: 130px;
+                    margin: 10px;
+
+                }
+               
+                .number-card-dashboard{
+                    font-size:40px;
+                }                         
+        }       
+    }
     
 
-    width:80%;
-    margin-top: 40px;
-    display:flex;
-    justify-content: space-between;
+        .right-side{
+            width:25%;
+            
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            
+
+            .img-right{
+                width:100%;
+                height:230px;
+                object-fit: cover;
+                border-radius: 10px;
+                display:block;
+            }
+            .eMWcUt{
+                display:block;
+            }
+
+
+        }
+        
+`
+
+
+export const UserInfo = styled.div`
+    display: flex;
     flex-direction: column;
-    }
-`
-
-export const RegisterContainer= styled.div`
-    width: 15%;
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-
-    h2{
-        font-family: Raleway, sans serif;
-    }
-    .p-register{
-        font-size:1.5rem;
-    }
- 
-`
-
-export const SearchContainer=styled.div`
-    width:50%;
-    display: flex;
     align-items: center;
     justify-content: center;
+    padding: 15px 0;
+    
+    
+    
+    .user-image-wrapper-dashboard{
+        width:92px;
+        height:92px;
+        border: .3px solid #e6e9ed;
+        border-radius:50%;
+        padding:10px;
+        text-align:center;
+        
+        img{
+            width: 100%;
+            height: 100%;
+            padding: 3px;
+            border-radius: 50%;
+            object-fit: cover;
+            
+            
+        }
+        .initials{
+            color:#008ace;
+            font-weight: 500;
+            font-size:38px;
+           }
+       
+    }
+   
 `
+
+export const SocialList = styled.ul`
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width:26%;
+    padding-left: 0;
+
+    li{
+
+    }
+
+`
+
+
+
+
+
 
 
 

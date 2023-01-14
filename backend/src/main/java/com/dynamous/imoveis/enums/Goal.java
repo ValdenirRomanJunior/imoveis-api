@@ -5,8 +5,8 @@ import java.io.Serializable;
 public enum Goal implements Serializable {
 
 
-    RENT(1,"RENT"),
-    SALE(2,"SALE");
+	Aluguel(1,"Aluguel"),
+    Venda(2,"Venda");
 
     private int cod;
     private String description;
