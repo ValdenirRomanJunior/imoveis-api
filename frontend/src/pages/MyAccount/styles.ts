@@ -13,7 +13,7 @@ background-color: ${({theme}) => theme.colors.backgroundLight};
 `
 
 export const BodyMyAccountContainer = styled.main`      
-    width:100%;
+    width:85%;
     display:flex;
     flex-direction: column;
     justify-content: center;
@@ -23,20 +23,35 @@ export const BodyMyAccountContainer = styled.main`
 
     .upload{
         position:relative;
+        margin-top:20px;
     }
     .imgWrapper{
-        width:92px;
-        height:92px;
+        width:130px;
+        height:130px;
         border: .3px solid #e6e9ed;
         border-radius:50%;
         padding:10px;
         text-align:center;
+        
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      
 
         img{
             width:100%;
             height:100%;
             object-fit:cover;
-        }      
+            border-radius:50%;
+            
+        }  
+        
+        p{
+            color:#008ace;
+            font-weight: 500;
+            font-size:50px;
+            
+        }
     }
 
     .round{
@@ -44,12 +59,13 @@ export const BodyMyAccountContainer = styled.main`
         bottom:0;
         right:0;
         background:#00B4FF;
-        width:32px;
-        height:32px;
+        width:110px;
+        height:110px;
         line-height: 32px;
         overflow: hidden;
         text-align:center;
         border-radius: 50%;
+        opacity:0;
         
         
     }
@@ -85,13 +101,16 @@ export const BodyMyAccountContainer = styled.main`
    
     
     display: flex;
-    align-items: center;
-    justify-content: space-around;
+    align-items:left;
+    width:100%;
+    justify-content:center;
+    
     padding: 10px 0;
+    border-bottom:1px solid #e6e9ed;
 
     
-    .title-properties{
-        text-align: left;
+    .title-account{
+        text-align: center;
        
 
         font-family: "Poppins", sans-serif;
@@ -123,5 +142,70 @@ export const BodyMyAccountContainer = styled.main`
         
     }
    
+`
 
+export const CardAccount = styled.div<{status:'ACTIVE' | 'DESACTIVATED'}>`
+        width: 100%;
+        height: auto;
+        margin-top:20px;
+
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        background-color: ${({theme}) => theme.colors.background};
+        
+       border-radius:5px;
+       border: 1px solid #e6e9ed;
+
+        .card-account-wrapper{
+            width:100%;
+            padding: 20px 20px;
+
+            h2{
+                font-family:'Nunito Sans', sans-serif;
+                font-weight:400;
+                font-size: 22px;
+                color:#191C1F;
+                line-height: 1.2;
+            }
+            .card-account-wrapper-name{
+                width:100%;
+                margin-top:25px;
+                
+                p{
+                    color:gray;
+                    margin-bottom:0.5rem;
+                }
+
+            }
+            .card-account-wrapper-email{
+                width:100%;
+               
+                p{
+                    color:gray;
+                    margin-bottom:0.5rem;
+                }
+            }
+            .card-account-wrapper-date{
+                width:100%;
+                margin-bottom:0.5rem;
+                            
+                p{
+                    margin-bottom:0.5rem;
+                    color:gray;
+                }
+            }
+            .card-account-wrapper-status{
+                width:100%;
+                
+                p{
+                    margin-bottom:0.5rem;
+                    color:${({status,theme}) => status === 'ACTIVE' ?  theme.colors.green : theme.colors.red};
+                   
+                }
+            }
+
+         
+        }
 `

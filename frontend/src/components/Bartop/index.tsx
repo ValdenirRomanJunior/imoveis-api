@@ -10,7 +10,8 @@ const BarTop = ()=>{
           <img src={logoDynamous} alt='logo'/>
 
 <p> "Você está usando a <strong>Dynamob</strong>, a melhor plataforma para corretores"</p>
-<Button>Compartilhar Plataforma </Button>
+
+<a  href='https://www.dynamous.com.br/' target="_blank"><Button>Website Dynamous</Button> </a>
  <div className='arrow-top'>
      < MdKeyboardArrowDown />
 

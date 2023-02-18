@@ -74,7 +74,7 @@ public class ControllerExceptionHandler {
     @ExceptionHandler(AuthorizationException.class)
     public ResponseEntity<StandardError> authorization(AuthorizationException e, HttpServletRequest request) {
 
-        StandardError err = new StandardError(System.currentTimeMillis(), HttpStatus.FORBIDDEN.value(), "Integridade do upload", e.getMessage(), request.getRequestURI());
+        StandardError err = new StandardError(System.currentTimeMillis(), HttpStatus.FORBIDDEN.value(), "Não autorizado", e.getMessage(), request.getRequestURI());
         return ResponseEntity.status( HttpStatus.FORBIDDEN.value()).body(err);
     }
 }

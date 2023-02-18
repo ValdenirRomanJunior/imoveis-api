@@ -16,6 +16,34 @@ export const findProperty = (id:string) => {
                    
                 });
 }
+
+export const findPropertyLead = (id:string) => {
+  return api.get<Property>(`/properties/findLeadProperty/${id}`,) 
+                .then(response =>{
+                  if(response.data != null){
+                    return response.data as Property
+                   
+                  }
+                 
+                }).catch((error) =>{
+                  return error
+                 
+              });
+}
+
+export const getTotalPropertiesById = (id:string) => {
+  return api.get(`/properties/totalProperties/${id}`,) 
+                .then(response =>{
+                  if(response.data != null){
+                    return response.data
+                   
+                  }
+                 
+                }).catch((error) =>{
+                  return error
+                 
+              });
+}
         
 export const propertiesPageable = (pageNumber: number) => {
     return api.get(`/properties/search?size=12&page=${pageNumber}&sort=name`)
@@ -40,7 +68,7 @@ export const newProperty = (name:string, description:string, goal: number, type:
 export const editProperty = (name:string, description:string, goal: number, type: number,numberRooms:string,
     bathRooms:string,area:string,iptu:string, vacancies:string, condominium:string, price:number, state:string, city:string,
      district: string, street: string, number: number, cep: string, images: ImageItem[], id:string) => {
-        console.log('cheguei aqui')
+        
     return api.put(`/properties/update/${id}`,{name, description, goal, type, numberRooms, bathRooms,area,iptu,vacancies,condominium,                                      
                                                 price,state,city, district, street, number, cep, images})
                                                
@@ -51,3 +79,4 @@ export const editProperty = (name:string, description:string, goal: number, type
                                                    
                                                 });
 }
+

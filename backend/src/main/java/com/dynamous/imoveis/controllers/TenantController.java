@@ -3,7 +3,9 @@ package com.dynamous.imoveis.controllers;
 import com.dynamous.imoveis.dto.TenantDTO;
 
 import com.dynamous.imoveis.dto.TenantNewDTO;
+import com.dynamous.imoveis.dto.TenantUpdateDTO;
 import com.dynamous.imoveis.entities.Tenant;
+import com.dynamous.imoveis.repositories.TenantRepository;
 import com.dynamous.imoveis.services.TenantService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -24,35 +26,52 @@ public class TenantController {
     @Autowired
     private TenantService service;
 
+    @Autowired
+    private TenantRepository tenantRepository;
    
-    @PreAuthorize("hasAnyRole('ADMIN')")
-    @GetMapping(value = "/{id}")
+   // @PreAuthorize("hasAnyRole('ADMIN')")
+    @GetMapping(value = "/find/{id}")
     public ResponseEntity<?> findById(@PathVariable Long id){
         Tenant tenant=service.find(id);
         return ResponseEntity.ok().body(tenant);
     }
 
-    
-    @PostMapping()
+
+    @PostMapping(value="/save")
     public ResponseEntity<Void> save(@Valid @RequestBody TenantNewDTO objDto){
         Tenant obj = service.fromDTO(objDto);
 
         service.insert(obj);
+        
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").
                   buildAndExpand(obj.getId()).toUri();
         return ResponseEntity.created(uri).build();
     }
    
-    @PutMapping(value = "/{id}")
-    public ResponseEntity<Void> update(@Valid @RequestBody TenantDTO objDto, @PathVariable Long id){
-        Tenant tenant= service.fromDTO(objDto);
+    @PutMapping(value = "/update/{id}")
+    public ResponseEntity<Void> update(@Valid @RequestBody TenantUpdateDTO objDto, @PathVariable Long id){
+    	System.out.println(objDto.getStatus());
+    	if(objDto.getPassword() ==null || objDto.getPassword().isEmpty()) {
+    		Tenant tenantAux=service.find(id);
+    		objDto.setId(id);
+    		objDto.setPassword(tenantAux.getPassword());
+    		  Tenant tenant= service.fromUpdateDTO(objDto);
+    		  	tenant.setPassword(tenantAux.getPassword());
+    	        tenant.setId(id);
+    	        tenant=service.update(tenant);
+    	        return ResponseEntity.noContent().build();
+    	}
+    	
+    	objDto.setId(id);
+    	
+        Tenant tenant= service.fromUpdateDTO(objDto);
         tenant.setId(id);
         tenant=service.update(tenant);
         return ResponseEntity.noContent().build();
 
     }
     
-    @DeleteMapping(value = "/{id}")
+    @DeleteMapping(value = "/delete/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id){
         service.delete(id);
         return ResponseEntity.noContent().build();

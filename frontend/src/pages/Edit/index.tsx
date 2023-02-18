@@ -13,6 +13,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import {number, currency, cep} from '../Registration/masks';
 
 import { Property } from '../../types/property';
+import { refreshToken } from '../../services/resources/user';
 
 type Error = {
     fieldName:string;
@@ -432,6 +433,7 @@ const EditComponent = ({property}: Prop) =>{
 
 const Edit = () =>{
 
+    const navigate = useNavigate();
     const params = useParams();
     const [property,setProperty]=useState<Property>();
 
@@ -450,7 +452,18 @@ const Edit = () =>{
     },
      [p]);
 
-    
+     const refreshTokenUser = async ()=>{
+        const  resp = await refreshToken();    
+        if(resp === 204){  
+          navigate(`/edit/${p}`)
+        }else{
+            navigate('/')
+        }
+    }
+
+  useEffect( () =>  {
+  refreshTokenUser()
+},[p])
 
     return(
         <div>

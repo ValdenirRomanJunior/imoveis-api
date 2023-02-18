@@ -1,14 +1,15 @@
 
 import { AxiosResponse } from 'axios';
+import { Console } from 'console';
 import { createContext, useEffect,useState,useCallback} from 'react';
-import {signIn, signUp,SignInData,SignUpData, me, getImageIfExist} from '../services/resources/user';
+import {signIn, signUp,SignInData,SignUpData, me, getImageIfExist, refreshToken} from '../services/resources/user';
 import { BASE_URL_FROM_BUCKET } from '../utils/request-image';
 import api from '../utils/requests';
 
 
 
 interface UserDto{
-    startsWith(arg0: string): unknown;
+    
     
     token: string;
     id: string;
@@ -16,17 +17,19 @@ interface UserDto{
     email: string;
     password: string;
     status: string;
-    perfil: string;
+    perfis: string;
     lastName:string;
+    verification:string;
     imageUrl?:string;
     
 }
 
 interface ContextData{
    user: UserDto;
-   userSignIn: (userData: SignInData) => Promise<UserDto>;
+   userSignIn: (userData: SignInData) => Promise<any>;
    userSignUp: (userData: SignUpData) => Promise<UserDto>;
-   getCurrentUser: () => Promise<AxiosResponse<UserDto,any>>;
+   getCurrentUser: () => Promise<UserDto>;
+   refreshTokenUser: () => Promise<any>;
  
    
 
@@ -37,65 +40,84 @@ export const AuthContext = createContext<ContextData>({} as ContextData)
 export const AuthProvider:React.FC = ({children}) => {
 
 
+    const [user,setUser] = useState<UserDto>(()=>{
 
-    const [user,setUser] = useState<UserDto>(() => {
-        const user= localStorage.getItem('user');
+        const user=localStorage.getItem('user');
+        
 
         if(user){
             return JSON.parse(user);
+            
         }
         return {} as UserDto;
     });
 
+
+  
     
          const userSignIn = async (userData: SignInData)=>{
+          
         const data = await signIn(userData);
-
+      
         try {
-            if(data.response.data.error !== null){               
-                return data.response.data.error;
+            if(data.response.data !== null){         
+                return data.response.data.message;
+         
             }
          
         } catch (tokenUser) {
-
-            const token = localStorage.getItem('token') || '';
-            const tokenString = JSON.parse(token);
-            tokenUser=tokenString;     
-            return tokenUser;
-        
+               let userData= await getCurrentUser();
+               setUser(userData);
+               localStorage.setItem('user',JSON.stringify(user));
+            return data;
+          
         }
-                   
-            /*
-            const user=getCurrentUser();
-            localStorage.setItem('user', JSON.stringify(user));
-             return user;
-            */
-        
-             
+        getCurrentUser()      
+                      
     }
+    
 
     const getCurrentUser = async () =>{
-        const {data}= await me();
-        setUser(data)
-       
-        localStorage.setItem('user', JSON.stringify(user));
-        return data;
+      // if user voltar nulo ou erro ir para login
+             
+        const {data}= await me() ;
+        setUser(data as UserDto)
+           localStorage.setItem('user', JSON.stringify(data))
+        return data as UserDto;
     }
 
 
-   
+
 
     const userSignUp = async (userData: SignUpData)=>{
         const {data} = await signUp(userData);
-        localStorage.setItem('@Dynamob: Token', data.accessToken);
+        //localStorage.setItem('Token', data);
         return  getCurrentUser();
         
     }
+    
+    const refreshTokenUser = async ()=>{
         
-   
+        const data = await refreshToken();
+      
+        try {
+            if(data.response.data !== null){         
+                return data.response.data.message;
+         
+            }
+         
+        } catch (tokenUser) {
+               let user= await getCurrentUser();
+               setUser(user)
+               localStorage.setItem('user',JSON.stringify(user));
+               return data;         
+        }  
+        getCurrentUser()                         
+    }
+        
 
     return(
-        <AuthContext.Provider value={{user, userSignIn,userSignUp, getCurrentUser}}>
+        <AuthContext.Provider value={{user, userSignIn,userSignUp, getCurrentUser,refreshTokenUser}}>
             {children}
         </AuthContext.Provider>
     )

@@ -10,17 +10,18 @@ import java.io.Serializable;
 @TenantInsert
 public class TenantNewDTO implements Serializable {
     private static final long serialVersionUID = 1L;
-
+    
     @NotEmpty(message = "Preenchimento obrigatório")
-    @Length(min=5, max=80, message = "O tamanho deve ser entre 5 e 80 caracteres")
+    @Length(min=2, max=25, message = "O tamanho deve ser entre 2 e 25 caracteres")
     private String slug;
 
     @NotEmpty(message = "Preenchimento obrigatório")
-    @Email
+    @Length(min=2, max=30, message = "O tamanho deve ser entre 2 e 30 caracteres")
+    @Email(message = "E-mail inválido")
     private String email;
     
     @NotEmpty(message = "Preenchimento obrigatório")
-    @Length(min=5, max=80, message = "O tamanho deve ser entre 5 e 80 caracteres")
+    @Length(min=2, max=35, message = "O tamanho deve ser entre 2 e 35 caracteres")
     private String lastName;
 
     @NotEmpty(message = "Preenchimento obrigatório")

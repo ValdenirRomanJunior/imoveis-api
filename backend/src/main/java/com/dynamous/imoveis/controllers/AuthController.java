@@ -13,6 +13,7 @@ import com.dynamous.imoveis.security.UserSS;
 import com.dynamous.imoveis.services.AuthService;
 import com.dynamous.imoveis.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -45,26 +46,35 @@ public class AuthController {
 
     @PostMapping(value = "/refresh_token")
     public ResponseEntity<Void> refreshToken(HttpServletResponse response){
+    	
+    	//se user for 1= null busca ele
         UserSS user= UserService.authenticated();
-        String token = jwtUtil.GenerateToken(user.getUsername());
-        response.addHeader("Authorization", "Bearer " + token);
-        response.addHeader("access-control-expose-headers", "Authorization");
-        return ResponseEntity.noContent().build();
+        if(user != null) {
+        	 String token = jwtUtil.GenerateToken(user.getUsername());
+             response.addHeader("Authorization", "Bearer " + token);
+             response.addHeader("access-control-expose-headers", "Authorization");
+             return ResponseEntity.noContent().build();      	
+        }
+        return ResponseEntity.noContent().build(); 
+       
     }
     
     @PostMapping(value = "/forgot")
     public ResponseEntity<Void> forgot(@Valid @RequestBody EmailDTO emaildDto){
-    	authService.sendNewPassword(emaildDto.getEmail());
+    	
+    	authService.sendNewPassword(emaildDto);
         return ResponseEntity.noContent().build();
     }
     
     
     @GetMapping(value="/getuser")
-    public ResponseEntity<?> getUserData(){
+    public ResponseEntity<?> getUserData() throws UsernameNotFoundException{
     	UserSS user= UserService.authenticated();
+    	System.out.println(user.getUsername());
     	String email=user.getUsername();
-    	
-    	  TenantCustomer tenantCustomer = tenantCustomerRepository.findByemail(email);
+    		
+    	// se user for tenant buscar email, if user for tenantcustomer buscar
+    	  TenantCustomer tenantCustomer = tenantCustomerRepository.findByEmail(email);
           Tenant tenant = tenantRepository.findByEmail(email);
           UserAdmin userAdmin = userAdminRepository.findByEmail(email);
           

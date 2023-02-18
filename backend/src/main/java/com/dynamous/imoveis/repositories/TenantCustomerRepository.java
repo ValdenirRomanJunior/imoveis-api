@@ -9,5 +9,5 @@ import org.springframework.transaction.annotation.Transactional;
 public interface TenantCustomerRepository extends JpaRepository <TenantCustomer,Long> {
 
     @Transactional(readOnly = true)
-    TenantCustomer findByemail(String email);
+    TenantCustomer findByEmail(String email);
 }

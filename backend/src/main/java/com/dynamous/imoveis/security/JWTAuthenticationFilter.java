@@ -1,12 +1,20 @@
 package com.dynamous.imoveis.security;
 
 import com.dynamous.imoveis.dto.CredentialsDTO;
+import com.dynamous.imoveis.entities.Tenant;
+import com.dynamous.imoveis.enums.Verification;
+import com.dynamous.imoveis.repositories.TenantRepository;
+import com.dynamous.imoveis.services.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyEmitterReturnValueHandler;
@@ -22,6 +30,8 @@ import java.util.Date;
 //esta classe intercepta o email
 public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
+	
+	
     private AuthenticationManager authenticationManager;
 
     private JWTUtil jwtUtil;
@@ -38,14 +48,20 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         try {
                 CredentialsDTO creds = new ObjectMapper()
                         .readValue(request.getInputStream(), CredentialsDTO.class);
-
+                
+                      
+               
                 UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(creds.getEmail(), creds.getPassword(), new ArrayList<>());
-
+                
                 Authentication auth = authenticationManager.authenticate(authToken);
                 return auth;
+                
+              
         }
         catch (IOException e){
+        	
             throw new RuntimeException(e);
+           
         }
     }
 
@@ -53,14 +69,20 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException, ServletException {
 
         String email = ((UserSS) authResult.getPrincipal()).getUsername();
-      
+        Verification verification= ((UserSS) authResult.getPrincipal()).getVerification();       
         String token = jwtUtil.GenerateToken(email);   
         response.addHeader("Authorization", "Bearer " + token);
         response.addHeader("access-control-expose-headers", "Authorization");
-        
-        
+        if(verification !=null) {
+        	 response.addHeader("Verification", verification.toString());        	
+        }else {
+        	response.addHeader("Verification", "admin"); 
+        }
+       
+        response.addHeader("access-control-expose-headers", "verification");
        
         
+             
        
     }
 
@@ -68,10 +90,11 @@ private class JWTAuthenticationFailureHandler implements AuthenticationFailureHa
 
     @Override
     public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception)
-            throws IOException, ServletException {
+            throws IOException, ServletException {  	
         response.setStatus(401);
-        response.setContentType("application/json");
+        response.setContentType("application/json");    
         response.getWriter().append(json());
+     
     }
 
     private String json() {
@@ -80,6 +103,15 @@ private class JWTAuthenticationFailureHandler implements AuthenticationFailureHa
                 + "\"status\": 401, "
                 + "\"error\": \"Não autorizado\", "
                 + "\"message\": \"Email ou senha inválidos\", "
+                + "\"path\": \"/login\"}";
+    }
+    
+    private String jsonEmailValidate() {
+        long date = new Date().getTime();
+        return "{\"timestamp\": " + date + ", "
+                + "\"status\": 401, "
+                + "\"error\": \"Não autorizado\", "
+                + "\"message\": \"Por favor verifique seu email\", "
                 + "\"path\": \"/login\"}";
     }
 }

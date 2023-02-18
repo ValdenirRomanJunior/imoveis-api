@@ -13,6 +13,7 @@ import com.dynamous.imoveis.entities.Tenant;
 import com.dynamous.imoveis.repositories.AddressRepository;
 import com.dynamous.imoveis.repositories.CityRepository;
 import com.dynamous.imoveis.repositories.ImageUrlRepository;
+import com.dynamous.imoveis.repositories.PropertyRepository;
 import com.dynamous.imoveis.repositories.TenantRepository;
 import com.dynamous.imoveis.services.PropertyService;
 import com.dynamous.imoveis.services.TenantService;
@@ -49,6 +50,9 @@ public class PropertyController {
     
     @Autowired
      private ImageUrlRepository imageUrlRepository;
+    
+    @Autowired
+    private PropertyRepository propertyRepository;
 
     
     @GetMapping(value = "/find/{id}")
@@ -127,6 +131,27 @@ public class PropertyController {
        	
         Page<PropertySimpleDTO>listDTO=list.map(x -> new PropertySimpleDTO(x));
         return ResponseEntity.ok().body(list);
+    }
+    
+    @GetMapping(value = "/totalProperties/{id}")
+    public ResponseEntity<?> getTotalProperties(@PathVariable Long id){ 
+    	System.out.println(id);
+    	
+       Long total= propertyRepository.countByTenantId(id);     
+        return ResponseEntity.ok().body(total);
+    }
+    
+    @GetMapping(value = "/findLeadProperty/{id}")
+    public ResponseEntity<?> findByIdLeadProperty(@PathVariable Long id){    
+        Property property=service.find(id);
+        
+    	if( property.getImages().size() >0 ) {  
+       		ImageUrl imgux = property.getImages().get(0);    		
+       		List<ImageUrl> OneImg = new ArrayList<ImageUrl>();
+       		property.setImages(OneImg);
+       		property.getImages().add(imgux);
+       		}
+        return ResponseEntity.ok().body(property);
     }
 
 

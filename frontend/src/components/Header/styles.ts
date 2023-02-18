@@ -28,7 +28,10 @@ export const HeaderWrapper = styled.div`
     display: flex;
     align-items: center;
     justify-content: space-between;
-  
+
+    .message-icon{
+        margin-left:190px;
+    }
 
     @media screen and (min-width: 1000px){
         width:99%;
@@ -41,10 +44,10 @@ export const UserInfo = styled.div`
     display: flex;
     align-items: center;
     justify-content: center;
+    position: relative;
+   
     
-    .message-icon{
-        margin-right:20px;
-    }
+  
     
     .user-image-wrapper{
         width:30px;
@@ -52,12 +55,82 @@ export const UserInfo = styled.div`
         border: .3px solid gray;
         border-radius:50%;
         text-align:center;
+        cursor:pointer;
+
+        img{
+            width:100%;
+            height:100%;
+            border-radius:50%;
+            padding:2px;
+        }
          
     }
    .initials{
     color:#008ace;
     font-weight: 500;
    }
+`
+export const BoxLinks = styled.div<{ linksModal: boolean}>`
+    width: 120px;
+    height:80px;
+
+    display:flex;
+    flex-direction:column;
+    justify-content: space-around;
+    align-items: center;
+    padding:10px 0;
+
+    position: absolute !important;
+    bottom:-95px;
+    left:100px;
+   
+    background:#FFF;
+    border: 1px solid #e6e9ed;
+    border-radius:5px;
+    
+    transition: all .5s cubic-bezier(.2,1,.2,1),width .5s cubic-bezier(.2,1,.2,1) .3s,box-shadow .5s cubic-bezier(.2,1,.2,1) .3s;
+    opacity: ${({linksModal}) => (linksModal ? '0' : '1')};
+    left: ${({linksModal}) => (linksModal ? '100px' : '-80px')};
+    box-shadow: ${({linksModal}) => (linksModal ? '0 10px 10px 0 rgb(0 0 1 / 10%)':'0 10px 10px 0 rgb(100 149 237 / 20%)')};
+    
+
+
+
+    .arrow{
+        display: block;    
+        position: absolute;   
+        transform: translateX(-50%);
+        top:-25px;
+        left: 50%;
+        width: 0; 
+        height: 0; 
+        border-right: 12px solid transparent;
+        border-left: 12px solid transparent; 
+        border-bottom:  12px solid #989898; 
+        border-top: 12px solid transparent; /* 40px height (20+20) */
+        right:-12px;
+      
+    }
+    
+   p{
+   
+    margin-bottom:0;
+    font-size:15px;
+    font-family:"Nunito Sans", sans-serif;
+    cursor: pointer;
+    font-weight:400;
+    color: #000;
+    
+   }
+   .logout-icon{
+    margin-right:8px;
+    color:gray;
+    font-size:18px;
+   }
+
+    @media screen and (min-width: 1000px){
+      
+    }
 `
 export const MenuLogoWrapper = styled.div`
     display:flex;

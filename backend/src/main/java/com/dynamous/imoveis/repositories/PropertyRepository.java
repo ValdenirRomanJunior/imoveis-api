@@ -34,6 +34,9 @@ public interface PropertyRepository extends JpaRepository<Property,Long> {
 
     @Query("SELECT p FROM Property p WHERE  p.tenant= :tenant and p.type= :type ORDER BY p.name")
     Page<Property> findByTypeAndTenant( Integer type,Tenant tenant,Pageable pageRequest);
+    
+    @Query("SELECT count(p) FROM Property p WHERE p.tenant.id= :id")
+	Long countByTenantId(Long id);
 }
 
 

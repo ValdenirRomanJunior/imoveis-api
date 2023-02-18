@@ -185,10 +185,18 @@ export const TitleWrapper = styled.div`
         padding: 5px 20px;
         margin-bottom:0;
         font-size: 17px;
-        border-radius:50px;
-        background: rgb(0, 157, 67);
+        border-radius:5px;
+        background: rgba(191,235,214,0.5);
         border: none;
-        color: #fff;
+        position: relative;
+        color: green;
+
+        .icon-add-lead-positive{
+            position:absolute;
+            top:5px;
+            right:8px;
+        }
+        
 
         a{
             color:#fff;

@@ -2,11 +2,11 @@ package com.dynamous.imoveis.enums;
 
 import java.io.Serializable;
 
-public enum Status implements Serializable {
+public enum Status {
 
-    ACTIVE(1,"ACTIVE"),
-    DISABLED(2,"DISABLED"),
-    PENDING(3,"PENDING");
+    ATIVO(1,"ACTIVE"),
+    DESATIVADO(2,"DISABLED");
+    
 
 
     private int cod;

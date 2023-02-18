@@ -1,9 +1,15 @@
 package com.dynamous.imoveis.security;
 
+import com.dynamous.imoveis.entities.Tenant;
 import com.dynamous.imoveis.enums.Perfil;
+import com.dynamous.imoveis.enums.Verification;
+import com.dynamous.imoveis.repositories.TenantRepository;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 import java.util.Collection;
 import java.util.Set;
@@ -12,21 +18,25 @@ import java.util.stream.Collectors;
 public class UserSS implements UserDetails {
 	private static final long serialVersionUID= 1L;
 
+	 @Autowired
+	 private TenantRepository tenantRepository;
 
     private Long id;
     private String email;
     private String password;
     private Collection<? extends GrantedAuthority> authorities;
+    private Verification verification;
 
     public UserSS(){
 
     }
 
-    public UserSS(Long id, String email, String password, Set<Perfil> perfis) {
+    public UserSS(Long id, String email, String password, Set<Perfil> perfis, Verification verification) {
         this.id = id;
         this.email = email;
         this.password = password;
         this.authorities = perfis.stream().map(x -> new SimpleGrantedAuthority(x.getDescription())).collect(Collectors.toList());
+        this.verification= verification;
     }
 
     public Long getId(){
@@ -47,7 +57,22 @@ public class UserSS implements UserDetails {
         return email;
     }
 
-    @Override
+    
+    public Verification getVerification() {    	
+		return verification;
+	}
+
+	public void setVerification(Verification verification) {
+		
+		//logica para buscar os useradmin com
+		Tenant tenant = tenantRepository.findByEmail(email);
+		if(tenant == null) {
+			throw new UsernameNotFoundException(email);
+		}
+		this.verification = (verification == null) ? null : tenant.getVerification(); 
+	}
+
+	@Override
     public boolean isAccountNonExpired() {
         return true;
     }

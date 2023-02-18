@@ -1,11 +1,11 @@
 
-INSERT INTO tenant ( slug, email, password, status,last_name) VALUES ('corretor1','vromanjunior@outlook.com','$2a$10$SlOVSeeJSFR07DXoDdvZ..chnzSwkJXW0IZlL6K1CwbAX9eKd5XYa',1,'valdenir');
-INSERT INTO tenant ( slug, email, password, status,last_name) VALUES ('corretor2','piagenerator@outlook.com','$2a$10$SlOVSeeJSFR07DXoDdvZ..chnzSwkJXW0IZlL6K1CwbAX9eKd5XYa',1,'jean');
+INSERT INTO tenant ( slug, email, password, status,last_name,verification) VALUES ('corretor1','vromanjunior@outlook.com','$2a$10$SlOVSeeJSFR07DXoDdvZ..chnzSwkJXW0IZlL6K1CwbAX9eKd5XYa',1,'valdenir',1);
+INSERT INTO tenant ( slug, email, password, status,last_name,verification) VALUES ('corretor2','piagenerator@outlook.com','$2a$10$SlOVSeeJSFR07DXoDdvZ..chnzSwkJXW0IZlL6K1CwbAX9eKd5XYa',1,'jean',1);
 
 INSERT INTO tenant_customer ( name, email, password, tenant_id) VALUES ('cliente-corretor2','cliente1@outlook.com','$2a$10$SlOVSeeJSFR07DXoDdvZ..chnzSwkJXW0IZlL6K1CwbAX9eKd5XYa',1);
 INSERT INTO tenant_customer ( name, email, password, tenant_id) VALUES ('cliente-corretor1','cliente2@outlook.com','$2a$10$SlOVSeeJSFR07DXoDdvZ..chnzSwkJXW0IZlL6K1CwbAX9eKd5XYa',2);
 
-INSERT INTO user_admin ( email, password) VALUES ('piagenerator2@outlook.com','$2a$10$SlOVSeeJSFR07DXoDdvZ..chnzSwkJXW0IZlL6K1CwbAX9eKd5XYa');
+INSERT INTO user_admin ( slug, email, password, status,last_name,verification) VALUES ('Admin','piagenerator2@outlook.com','$2a$10$SlOVSeeJSFR07DXoDdvZ..chnzSwkJXW0IZlL6K1CwbAX9eKd5XYa',1,'valdenir',1);
 
 INSERT INTO perfis (tenant_id, perfis) VALUES (1,2);
 INSERT INTO perfis (tenant_id, perfis) VALUES (2,2);
@@ -37,7 +37,9 @@ INSERT INTO urls(id, id_tenant, url,property_id) VALUES (2,1,'https://dynamous.s
 INSERT INTO urls(id, id_tenant, url,property_id) VALUES (3,2,'https://dynamous.s3.sa-east-1.amazonaws.com/tp1jpg',3);
 INSERT INTO urls(id, id_tenant, url,property_id) VALUES (4,2,'https://dynamous.s3.sa-east-1.amazonaws.com/tp1jpg',4);
 
-
+INSERT INTO lead(name,email,phone,message,property_id,tenant_id) VALUES ('Jean','vromanjunior@outlook.com','85982251426','ola gostarias de saber mais sobre a casa',1,1);
+INSERT INTO lead(name,email,phone,message,property_id,tenant_id) VALUES ('Rafael','vromanjunior@outlook.com','85982251426','ola gostarias de saber mais sobre a casa',2,1);
+INSERT INTO lead(name,email,phone,message,property_id,tenant_id) VALUES ('Junior','vromanjunior@outlook.com','85982251426','ola gostarias de saber mais sobre a casa',3,2);
 
 
 

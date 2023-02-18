@@ -2,6 +2,7 @@ package com.dynamous.imoveis.entities;
 
 import com.dynamous.imoveis.enums.Perfil;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import javax.persistence.*;
 import java.util.*;
@@ -29,7 +30,8 @@ public class TenantCustomer {
     @CollectionTable(name="CUSTOMER_PERFIS")
     private Set<Integer> perfis = new HashSet<>();
 
-    @OneToMany(mappedBy = "tenantCustomer")
+    @OneToMany(mappedBy = "tenantCustomer",fetch = FetchType.EAGER)
+    @ElementCollection
     private List<Contract> contracts = new ArrayList<>();
 
     public TenantCustomer(){

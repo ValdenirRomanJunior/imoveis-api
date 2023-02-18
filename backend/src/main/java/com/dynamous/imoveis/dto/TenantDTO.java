@@ -1,6 +1,8 @@
 package com.dynamous.imoveis.dto;
 
 import com.dynamous.imoveis.entities.Tenant;
+import com.dynamous.imoveis.enums.Status;
+import com.dynamous.imoveis.enums.Verification;
 import com.dynamous.imoveis.services.validation.TenantUpdate;
 import org.hibernate.validator.constraints.Length;
 
@@ -15,15 +17,12 @@ public class TenantDTO implements Serializable {
 
 
     private Long id;
-
-    @NotEmpty(message = "Preenchimento obrigatório")
-    @Length(min=5, max=80, message = "O tamanho deve ser entre 5 e 80 caracteres")
     private String slug;
-
-    @Email(message = "E-mail inválido")
     private String email;
-    private Integer status;
-    private String lastName;
+    private Status status;
+    private String lastName;  
+    private String password;
+    private Verification verification;
 
     public TenantDTO(){
 
@@ -33,8 +32,10 @@ public class TenantDTO implements Serializable {
         id=tenant.getId();
         slug= tenant.getSlug();
         email= tenant.getEmail();
-        status=tenant.getStatus().getCod();
+        status=tenant.getStatus();
         lastName=tenant.getLastName();
+        password=tenant.getPassword();
+        verification= tenant.getVerification();
     }
 
     public Long getId() {
@@ -57,15 +58,15 @@ public class TenantDTO implements Serializable {
         return email;
     }
 
-    public void setemail(String email) {
+    public void setEmail(String email) {
         this.email = email;
     }
 
-    public Integer getStatus() {
+    public Status getStatus() {
         return status;
     }
 
-    public void setStatus(Integer status) {
+    public void setStatus(Status status) {
         this.status = status;
     }
 
@@ -76,5 +77,25 @@ public class TenantDTO implements Serializable {
 	public void setLastName(String lastName) {
 		this.lastName = lastName;
 	}
+
+	public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
+	}
+
+	public Verification getVerification() {
+		return verification;
+	}
+
+	public void setVerification(Verification verification) {
+		this.verification = verification;
+	}
+	
+	
+	
+	
     
 }

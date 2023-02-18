@@ -15,6 +15,9 @@ public class EmailDTO implements Serializable {
 	public EmailDTO() {
 		// TODO Auto-generated constructor stub
 	}
+	public EmailDTO(String email) {
+		this.email=email;
+	}
 
 	public String getEmail() {
 		return email;

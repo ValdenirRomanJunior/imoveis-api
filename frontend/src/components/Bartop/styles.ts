@@ -34,11 +34,13 @@ export const BarTopContainer = styled.div`
            display: none;
           
         }
+
+      
         
         button{
           width:auto;
           height: auto;
-          padding: 3px 8px !important;
+          padding: 5px 10px !important;
           margin-bottom:0;
           background:#7b62e2 !important;
           border-radius:3px;

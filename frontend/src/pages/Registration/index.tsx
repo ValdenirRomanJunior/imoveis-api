@@ -11,6 +11,7 @@ import {ImageItem} from '../../types/Images'
 import api from '../../utils/requests';
 import { useNavigate } from 'react-router-dom';
 import {number, currency, cep} from './masks';
+import { refreshToken } from '../../services/resources/user';
 
 
 type Error = {
@@ -202,7 +203,7 @@ const Registration = () =>{
                     
                 const data = await newProperty(name, description, type, goal, numberRooms, bathRooms,area, iptu,vacancies,condominium,                                      
                 price, state, city, district, street, number, cep, images)
-                console.log(data.response.data.errors)
+                
                     
                 if(data.response.data.errors !== null){   
                     setErrors(data.response.data.errors)
@@ -214,6 +215,20 @@ const Registration = () =>{
             e.currentTarget.submit();
            
             }
+
+
+            const refreshTokenUser = async ()=>{
+                const  resp = await refreshToken();    
+                if(resp === 204){  
+                  navigate('/registration')
+                }else{
+                    navigate('/')
+                }
+            }
+        
+          useEffect( () =>  {
+          refreshTokenUser()
+        },[])
                 
     return(
        <RegistrationBackground>
@@ -229,7 +244,7 @@ const Registration = () =>{
                 <Input id="name" name="name" onChange={(e) => handleChange(e)} /*maxLength={90} /*//>
                
                 {errors.map(x => { if(x.fieldName === 'name') return  <p className=' formField__error'>{x.message}</p>})}
-                { emptyValue && form['name'] === '' ? <span className='formField__error'>Este campo é r'equerido</span>: ''}
+                { emptyValue && form['name'] === '' ? <span className='formField__error'>Este campo é requerido</span>: ''}
 
                 <label>Descrição*</label>
                 <textarea id="description" name="description" rows={4}  onChange={(e) => handleChange(e)}></textarea>

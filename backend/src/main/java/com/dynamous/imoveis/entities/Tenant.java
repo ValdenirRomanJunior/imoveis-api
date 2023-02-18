@@ -2,6 +2,7 @@ package com.dynamous.imoveis.entities;
 
 import com.dynamous.imoveis.enums.Perfil;
 import com.dynamous.imoveis.enums.Status;
+import com.dynamous.imoveis.enums.Verification;
 import com.dynamous.imoveis.services.validation.TenantInsert;
 import org.hibernate.validator.constraints.Length;
 
@@ -27,7 +28,8 @@ public class Tenant implements Serializable {
     private String email;
     private String password;
     private Integer status;
-    private String lastName;
+    private String lastName; 
+    private Integer verification; 
     
 
     @ElementCollection(fetch = FetchType.EAGER)
@@ -38,13 +40,14 @@ public class Tenant implements Serializable {
         addPerfil(Perfil.TENANT);
     }
 
-    public Tenant(Long id, String slug, String email, String password, Status status, String lastName) {
+    public Tenant(Long id, String slug, String email, String password, Status status, String lastName, Verification verification) {
         this.id = id;
         this.slug = slug;
         this.email = email;
         this.password = password;
         this.status= (status == null) ? null : status.getCod();
         this.lastName=lastName;
+        this.verification=(verification == null) ? null : verification.getCod();
         addPerfil(Perfil.TENANT);
 
     }
@@ -81,13 +84,20 @@ public class Tenant implements Serializable {
         this.password = password;
     }
 
-
+    public Status getStatus() {
+        return Status.toEnum(status);
+    }
+    
     public void setStatus(Status status) {
         this.status = status.getCod();
     }
-
-    public Status getStatus() {
-        return Status.toEnum(status);
+    
+    public Verification getVerification() {
+        return Verification.toEnum(verification);
+    }
+    
+    public void setVerification(Verification verification) {
+        this.verification = verification.getCod();
     }
     
     

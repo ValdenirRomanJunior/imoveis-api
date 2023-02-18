@@ -10,7 +10,7 @@ public class RegistrationEmailTemplateController {
 	
 	@RequestMapping("/templateemail")
 	public ModelAndView getTemplate() {
-		return new ModelAndView("email/registrationTenantEmail");
+		return new ModelAndView("email/newPasswordTenantEmail");
 	}
 
 }

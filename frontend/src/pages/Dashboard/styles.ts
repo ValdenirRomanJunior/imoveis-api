@@ -49,6 +49,7 @@ export const BodyContainer = styled.main`
                 width: auto;
                 height:40px;
                 padding: 5px 30px;
+                font-family:'Nunito Sans', sans-serif;
             }
         }     
 
@@ -258,6 +259,21 @@ export const UserInfo = styled.div`
             font-weight: 500;
             font-size:38px;
            }
+       
+    }
+    .name-perfil-dashboard{
+        font-family:'Nunito Sans', sans-serif;
+        font-size:18px;
+
+    }
+    .message-welcome-perfil{
+        color:#008ace;
+        font-family:'Nunito Sans', sans-serif;
+        font-size:14px;
+    }
+
+    .builder-icon{
+        font-size:20px;
        
     }
    

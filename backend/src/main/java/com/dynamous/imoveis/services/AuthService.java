@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.dynamous.imoveis.dto.EmailDTO;
 import com.dynamous.imoveis.entities.Tenant;
 import com.dynamous.imoveis.repositories.TenantRepository;
 import com.dynamous.imoveis.services.exceptions.ObjectNotFoundException;
@@ -24,18 +25,18 @@ public class AuthService {
 	
 	private Random rand = new Random();
 	
-	public void sendNewPassword(String email) {
+	public void sendNewPassword(EmailDTO email) {
 		
-		Tenant tenant = tenantRepository.findByEmail(email);
+		Tenant tenant = tenantRepository.findByEmail(email.getEmail());
 		if(tenant == null) {
 			throw new ObjectNotFoundException("Email não encontrado");
 		}
 		
 		String newPass = newPassword();
 		tenant.setPassword(pe.encode(newPass));
-		
+				
 		tenantRepository.save(tenant);
-		emailService.sendNewPasswordEmail(tenant,newPass);
+		emailService.sendNewPasswordHtmlEmail(tenant,newPass);
 		
 	}
 
@@ -61,4 +62,11 @@ public class AuthService {
 			return (char)(rand.nextInt(26) + 97);
 		}
 }
+	
+public void sendConfirmationRegistration(Tenant tenant) {
+					
+		tenantRepository.save(tenant);
+		emailService.sendRegistrationHtmlEmail(tenant);
+		
+	}
 }

@@ -1,6 +1,10 @@
 package com.dynamous.imoveis.entities;
 
 import javax.persistence.*;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import java.util.Objects;
 
 @Entity

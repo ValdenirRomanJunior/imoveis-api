@@ -105,7 +105,7 @@ export const BodyRegistrationContainer = styled.main`
         font-size: 12px;
         font-weight:400;
 
-        position: absolute:
+        position: absolute;
         top:0;
         left: 0;
         width:100%;

@@ -1,0 +1,111 @@
+
+ .Modal{
+    padding:20px 10px;
+    border-radius: 2px;
+   
+    
+ }
+ 
+ .Modal .button-send-email-wrapper{
+        width:100%;
+        margin-top: 20px;
+        
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    .Modal .button-send-email{
+        width: 100px !important;
+        height: 35px;
+        border-radius: 3px;
+        margin-bottom: 0;
+  
+
+    }
+
+    .Modal .button-send-email-loading{
+        position:relative;
+        width: 160px !important;
+        height: 40px;
+        border-radius: 3px;
+        margin-bottom: 0;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        
+    }
+
+    .Modal .button-send-email-loading .loading-sendemail-wrapper{
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .Modal h1{
+        font-size:16px;
+        text-align: center;
+        color:rgb(89, 87, 87);
+        margin-bottom: 20px;
+        font-family: 'Nunito Sans', sans-serif;
+        font-weight: 600;
+    }
+    .Modal .button-close-modal{
+        position: absolute;
+        right: 0;
+        top:2%;
+        font-size:35px;
+        color:gray;
+    }
+
+    .ReactModal__Overlay {
+        background-color: rgb(37 37 37 / 75%) !important ;
+    }
+    .ReactModal__Overlay--after-open{
+        background-color: rgb(37 37 37 / 75%) !important;
+
+    }
+
+    .Modal .message{
+        width:100%;
+        position:relative;
+        margin-top:10px;
+        margin-bottom: 30px;
+        display: flex;
+        justify-content: center;
+    }
+
+    .Modal .message .success{
+        font-size: 14px;
+        color:green;
+        position: absolute;
+        animation: buttons .3s linear;
+        background-color: #7fe87f29;
+        padding:3px 15px;
+       
+    }
+
+    @keyframes buttons {
+        
+        0%{
+            transform: scale(0.1);
+        }
+        50%{
+            transform: scale(0.5);
+        }
+        100%{
+            transform: scale(1);
+          
+        }
+    }
+
+    .Modal .formField__error{
+        font-family: 'Nunito Sans', sans-serif;
+        font-size: 14px;
+        color:rgb(180, 0, 0);
+        position: absolute;
+        animation: buttons .3s linear;
+        background-color: #e87f7f14;
+       
+    }

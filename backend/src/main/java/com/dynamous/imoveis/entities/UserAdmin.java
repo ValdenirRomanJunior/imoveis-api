@@ -1,6 +1,8 @@
 package com.dynamous.imoveis.entities;
 
 import com.dynamous.imoveis.enums.Perfil;
+import com.dynamous.imoveis.enums.Status;
+import com.dynamous.imoveis.enums.Verification;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -17,9 +19,15 @@ public class UserAdmin implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    private String slug;
+    
     @Column(unique = true)
     private String email;
     private String password;
+    
+    private Integer status;
+    private String lastName; 
+    private Integer verification;
 
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name="USER_ADMIN_PERFIS")
@@ -30,10 +38,14 @@ public class UserAdmin implements Serializable {
 
     }
 
-    public UserAdmin(Long id, String email, String password) {
+    public UserAdmin(Long id, String slug, String email, String password, Status status, String lastName, Verification verification) {
         this.id = id;
+        this.slug = slug;
         this.email = email;
         this.password = password;
+        this.status= (status == null) ? null : status.getCod();
+        this.lastName=lastName;
+        this.verification=null;
         addPerfil(Perfil.ADMIN);
     }
 
@@ -68,8 +80,42 @@ public class UserAdmin implements Serializable {
     public void addPerfil(Perfil perfil){
         perfis.add(perfil.getCod());
     }
+    
+    
 
-    @Override
+    public String getSlug() {
+		return slug;
+	}
+
+	public void setSlug(String slug) {
+		this.slug = slug;
+	}
+
+	public Integer getStatus() {
+		return status;
+	}
+
+	public void setStatus(Integer status) {
+		this.status = status;
+	}
+
+	public String getLastName() {
+		return lastName;
+	}
+
+	public void setLastName(String lastName) {
+		this.lastName = lastName;
+	}
+
+	public Integer getVerification() {
+		return verification;
+	}
+
+	public void setVerification(Integer verification) {
+		this.verification = verification;
+	}
+
+	@Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;

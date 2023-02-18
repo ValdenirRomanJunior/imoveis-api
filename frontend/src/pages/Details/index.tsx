@@ -5,31 +5,30 @@ import {BiMap} from 'react-icons/bi';
 import Detail from './Detail';
 import Address from './Address';
 import Button from '../../components/Button';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { findProperty } from '../../services/resources/property';
 import { useEffect, useState } from 'react';
 import { Property } from '../../types/property';
 import "./styles.css";
 import Carousel from 'react-elastic-carousel';
 import defaultImage from '../../assets/images/no-pictures.png'
+import { refreshToken } from '../../services/resources/user';
 
 
 
 
 const Details = ()=>{
-    
+    const navigate = useNavigate();
     const params = useParams();
 
     const [property, setProperty]= useState<Property>();
 
     
 
-  
-
     const getProperty = async() => {             
         const dataProperty = await findProperty(`${params.propertyId}`);
-        setProperty(dataProperty) ;
-        console.log(property as Property)
+        setProperty(dataProperty);
+      
         
     }
 
@@ -65,6 +64,19 @@ const Details = ()=>{
         {width: 1200, itemToShow: 4},
     ]
 
+    const refreshTokenUser = async ()=>{
+        const  resp = await refreshToken();    
+        if(resp === 204){  
+          navigate(`/details/${params.propertyId}`)
+        }else{
+            navigate('/')
+        }
+    }
+
+  useEffect( () =>  {
+  refreshTokenUser()
+},[params.propertyId])
+
     return(
     <DetailsBackground>
             <Header />
@@ -85,7 +97,7 @@ const Details = ()=>{
                               <img src={photo.url}  alt="algo"/>
                               
                              </CardWrapper>)}
-                             {property?.images?.length===0 as number  && ( <CardWrapper><img src={defaultImage}/></CardWrapper>)}
+                             {property?.images?.length===0 as number  && ( <CardWrapper><img src={defaultImage} alt='Foto Padrão'/></CardWrapper>)}
                                  
                
                         </Carousel>

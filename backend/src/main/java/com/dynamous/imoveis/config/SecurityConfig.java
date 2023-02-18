@@ -42,17 +42,23 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 			"/properties/**",
 			"/pictures/**",
 			"/properties/find/**",
-			"/properties/update/**"
+			"/properties/update/**",
+			"/auth/forgot/**",
+			"/properties/totalProperties/**",
+			"/verification/**",
+			"/leads/**"
 			
 			
-			
+				
 			
 	};
 
 	private static final String[] PUBLIC_MATCHERS_GET = {		
 			"/templateemail/**",		
 			"/states/**",
-			"/properties/**"
+			"/properties/**",
+			"/properties/totalProperties/**"
+			
 			
 			
 		
@@ -95,7 +101,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		configuration.setAllowedMethods(Arrays.asList("POST","PUT", "DELETE", "OPTIONS"));
 		configuration.setAllowedOrigins(Arrays.asList("*"));
 		
-		 configuration.addAllowedOrigin("*");
+		   configuration.addAllowedOrigin("*");
 	        configuration.addAllowedHeader("*");
 	        configuration.addAllowedMethod("*");
 		
@@ -109,18 +115,18 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		return new BCryptPasswordEncoder();
 	}
 	
-	//  public void addResourceHandlers(ResourceHandlerRegistry registry) {
-	// registry.addResourceHandler("/webjars/**", "/resources/**", "/static/**", "/images/**", "/css/**", "/js/**",
-	//				"classpath:/static/", "classpath:/resources/")
-	//		.addResourceLocations("/webjars/", "/resources/",
-	//						"classpath:/static/**", "classpath:/static/img/**", "classpath:/static/",
-	//						"classpath:/resources/", "classpath:/static/css/", "classpath:/static/js/", "/resources/**",
-	//						"/WEB-INF/classes/static/**");
+	 public void addResourceHandlers(ResourceHandlerRegistry registry) {
+ registry.addResourceHandler("/webjars/**", "/resources/**", "/static/**", "/images/**", "/css/**", "/js/**",
+					"classpath:/static/", "classpath:/resources/")
+			.addResourceLocations("/webjars/", "/resources/",
+							"classpath:/static/**", "classpath:/static/img/**", "classpath:/static/",
+							"classpath:/resources/", "classpath:/static/css/", "classpath:/static/js/", "/resources/**",
+							"/WEB-INF/classes/static/**");
 	 		
    
 	
-//}
-	//  @Override
+}
+	  //@Override
 	//public void configure(WebSecurity web) throws Exception {
 	//	  web.ignoring().antMatchers(HttpMethod.GET,"/resources/**","static/**","/**");
 	//}

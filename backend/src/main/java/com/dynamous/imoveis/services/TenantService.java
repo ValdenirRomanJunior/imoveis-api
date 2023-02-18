@@ -2,11 +2,12 @@ package com.dynamous.imoveis.services;
 
 import com.dynamous.imoveis.dto.TenantDTO;
 import com.dynamous.imoveis.dto.TenantNewDTO;
-
+import com.dynamous.imoveis.dto.TenantUpdateDTO;
 import com.dynamous.imoveis.entities.Property;
 import com.dynamous.imoveis.entities.Tenant;
 import com.dynamous.imoveis.enums.Perfil;
 import com.dynamous.imoveis.enums.Status;
+import com.dynamous.imoveis.enums.Verification;
 import com.dynamous.imoveis.repositories.PropertyRepository;
 import com.dynamous.imoveis.repositories.TenantRepository;
 import com.dynamous.imoveis.security.UserSS;
@@ -52,6 +53,7 @@ public class TenantService {
     @Transactional
     public Tenant insert(Tenant obj) {
         obj.setId(null);
+        
         tenantRepository.save(obj);
         System.out.println(obj);
         emailService.sendRegistrationHtmlEmail(obj);
@@ -68,6 +70,10 @@ public class TenantService {
     private void updateData(Tenant newObj, Tenant tenant) {
         newObj.setSlug(tenant.getSlug());
         newObj.setEmail(tenant.getEmail());
+        newObj.setLastName(tenant.getLastName());
+        newObj.setStatus(tenant.getStatus());
+        newObj.setPassword(tenant.getPassword());
+        newObj.setVerification(tenant.getVerification());
 
     }
 
@@ -89,16 +95,30 @@ public class TenantService {
         return tenantRepository.findAll(pageRequest);
     }
 
-    public Tenant fromDTO(TenantNewDTO objDto){
-        Tenant tenant = new Tenant(null, objDto.getSlug(), objDto.getEmail(), pe.encode(objDto.getPassword()), Status.ACTIVE,objDto.getLastName());
+    public Tenant fromDTO(TenantNewDTO objDto){  
+    		Tenant tenant = new Tenant(null, objDto.getSlug(), objDto.getEmail(), pe.encode(objDto.getPassword()), Status.ATIVO,objDto.getLastName(),Verification.NAO_VERIFICADO);
+            tenant.addPerfil(Perfil.TENANT);
+            return tenant;
+    		
+    	   
+    }
+    
+    public Tenant fromUpdateDTO(TenantUpdateDTO objDto){  
+		Tenant tenant = new Tenant(objDto.getId(), objDto.getSlug(), objDto.getEmail(),pe.encode(objDto.getPassword()), Status.toEnum(objDto.getStatus()),objDto.getLastName(),Verification.toEnum(objDto.getVerification()));
         tenant.addPerfil(Perfil.TENANT);
         return tenant;
+		
+	   
+}
 
+
+    public Tenant fromDTO(TenantDTO objDto) {  		
+    		Tenant tenant = new Tenant(objDto.getId(), objDto.getSlug(), objDto.getEmail(), pe.encode(objDto.getPassword()), Status.toEnum(objDto.getStatus().getCod()),objDto.getLastName(),Verification.toEnum(objDto.getVerification().getCod()));
+            tenant.addPerfil(Perfil.TENANT);
+            return tenant;
+    		
+    	
+    	
     }
-
-
-    public Tenant fromDTO(TenantDTO objDto) {
-        Tenant tenant = new Tenant(objDto.getId(), objDto.getSlug(), objDto.getEmail(),null,null,objDto.getLastName());
-        return tenant;
-    }
+    
 }

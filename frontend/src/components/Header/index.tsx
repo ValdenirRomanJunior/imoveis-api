@@ -1,38 +1,70 @@
-import {HeaderContainer,HeaderWrapper,UserInfo,Hambuguer,MenuLogoWrapper,NavIcon,SideBarContainer, SidebarFooter,SideBarTop} from './styles';
+import {HeaderContainer,HeaderWrapper,UserInfo,Hambuguer,MenuLogoWrapper,NavIcon,SideBarContainer, SidebarFooter,SideBarTop,BoxLinks} from './styles';
 import useAuth from '../../hooks/useAuth';
 import logo from '../../assets/images/logo-pontos.png';
-import userImage from '../../assets/images/user-image.jpeg';
-import {useNavigate} from 'react-router-dom';
+import {Link, useNavigate} from 'react-router-dom';
 import { VscComment } from "react-icons/vsc";
 import { useEffect, useState } from 'react';
 import {AiOutlineHome} from 'react-icons/ai';
 import {VscDashboard} from 'react-icons/vsc';
 import {AiOutlineUser} from 'react-icons/ai';
-import {RiPagesLine} from 'react-icons/ri';
 import {IoIosArrowForward} from 'react-icons/io';
+import {MdLogout} from 'react-icons/md'
+import { getImageIfExist, UserDto } from '../../services/resources/user';
 
 
 const Header = () =>{
 
     const navigate = useNavigate();
     const {user, getCurrentUser} = useAuth();
-
-    const initials= user.slug.substring(0,1)+ user.lastName.substring(0,1);
+    const [imageUser,setImageUser]= useState<string>("");
+  
 
     useEffect(() =>{
         getCurrentUser();
     },[])
 
-    if(!user){
-        return null;
+    
+
+    const initials= user.slug.substring(0,1)+ user.lastName.substring(0,1) || '';
+    
+    const userPerfil= user.perfis[0];
+    
+    const getUrl = async() =>{
+     
+         
+        const data=  await getImageIfExist(user.id,userPerfil);
+        
+            if(data){
+               // const url=`${BASE_URL_FROM_BUCKET}cp${user.id}.jpg`;
+                setImageUser(data);
+               
+                return data;
+            }
+         
+
     }
 
+      useEffect(() => {
+     
+        getUrl()
+       
+        }, [user.id]);
    
 
+  
 
+   
     const handleLogoff = () =>{
+       localStorage.clear();
+       
+
+        
         navigate('/')
     }
+
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    const [linksModal, setLinksModal] =useState(true);
+    const showLinksModal = () => setLinksModal(!linksModal);
 
     // eslint-disable-next-line react-hooks/rules-of-hooks
     const [sidebar, setSidebar] =useState(false);
@@ -40,8 +72,7 @@ const Header = () =>{
 
    
     
-   
-    
+
 
     return(
         <HeaderContainer>
@@ -54,13 +85,19 @@ const Header = () =>{
                 </Hambuguer>
                 <img src={logo} className="logo"  alt='logo dynamous' />
                 </MenuLogoWrapper>
-                <UserInfo>
-                    <VscComment fontSize={22} color="gray" className="message-icon"/>
+                <VscComment  fontSize={22} color="gray" className="message-icon"/>
+                <UserInfo onClick={showLinksModal}>
                    
-                    <div className='user-image-wrapper'>
-                        <p className='initials'>{initials}</p>
+                   
+                   <div className='user-image-wrapper'>
+                       {imageUser !== '' ? <img src={imageUser} alt='Foto Perfil'/>:<p className='initials'>{initials}</p>}
                    </div>
                   
+                    <BoxLinks  linksModal={linksModal} >
+                        <div className='arrow'></div>
+                        <Link to={'/account'}><p>Minha conta</p></Link>
+                        <p onClick={handleLogoff}> <MdLogout className='logout-icon'/>Sair</p>
+                    </BoxLinks>
                 </UserInfo>
             </HeaderWrapper>
          
@@ -90,6 +127,11 @@ const Header = () =>{
             <NavIcon to="/leads"   >
             <AiOutlineUser className='icon-sidebar'/>
             <p className='description-icon'>Contatos</p>
+            </NavIcon>
+
+            <NavIcon to="/tenants"   >
+            <AiOutlineUser className='icon-sidebar'/>
+            <p className='description-icon'>Clientes Dynamous</p>
             </NavIcon>
 
 
