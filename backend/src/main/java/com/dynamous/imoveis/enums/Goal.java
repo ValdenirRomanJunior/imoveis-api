@@ -2,11 +2,17 @@ package com.dynamous.imoveis.enums;
 
 import java.io.Serializable;
 
+
+
+
+
+
+
 public enum Goal implements Serializable {
 
-
-	Aluguel(1,"Aluguel"),
-    Venda(2,"Venda");
+	
+	ALUGUEL(1,"Aluguel"),
+    VENDA(2,"Venda");
 
     private int cod;
     private String description;
@@ -20,18 +26,16 @@ public enum Goal implements Serializable {
     public int getCod() {
         return cod;
     }
-
+    
     public void setCod(int cod) {
-        this.cod = cod;
+    	this.cod=cod;
     }
-
+ 
     public String getDescription() {
         return description;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
+
 
     public static Goal toEnum(Integer cod){
 
@@ -43,7 +47,7 @@ public enum Goal implements Serializable {
                 return x;
             }
         }
-            throw new IllegalArgumentException("invalid id"+ cod);
+            throw new com.dynamous.imoveis.services.exceptions.IllegalArgumentException("Codigo invalido"+ cod);
 
     }
 }

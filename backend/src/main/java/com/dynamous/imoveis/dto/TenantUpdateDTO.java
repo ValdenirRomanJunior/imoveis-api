@@ -96,7 +96,7 @@ public class TenantUpdateDTO implements Serializable {
 
 
 	public void setVerification(Integer verification) {
-		this.verification = verification;
+		this.verification = (verification == null) ? null : verification;
 	}
 	
 	

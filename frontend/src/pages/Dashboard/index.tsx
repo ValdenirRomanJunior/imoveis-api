@@ -13,6 +13,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { getImageIfExist, refreshToken } from '../../services/resources/user';
 import { getTotalPropertiesById } from '../../services/resources/property';
 import { getTotalLeadsById } from '../../services/resources/lead';
+
  
 
 const Dashboard = ()=>{
@@ -21,17 +22,31 @@ const Dashboard = ()=>{
 
     const [loadingLogin,setLoadingLogin]= useState(true);
 
-    const {user, getCurrentUser} = useAuth();
+    const {user, getCurrentUser,refreshTokenUser} = useAuth();
     const [imageUser,setImageUser]= useState<string>("");
     const [totalProperties,setTotalProperties]= useState();
     const [totalLeads,setTotalLeads]= useState();
+
+    const refreshTokens = async ()=>{
+        const  resp = await refreshTokenUser();    
+        if(resp === 204){
+           
+          navigate('/dashboard')
+        }else{
+            navigate('/')
+        }
+    }
+
+  useEffect( () => {
+  refreshTokens()
+},[])
 
     useEffect(() =>{
         getCurrentUser();
 
     },[])
 
-
+console.log()
     const userPerfil= user.perfis[0];
 
     
@@ -90,28 +105,22 @@ const Dashboard = ()=>{
        
         setTimeout(() =>{
             setLoadingLogin(false)
-        },2000)
+        },1500)
 
     },[])
    
 
-    const refreshTokenUser = async ()=>{
-        const  resp = await refreshToken();    
-        if(resp === 204){  
-          navigate('/dashboard')
-        }else{
-            navigate('/')
-        }
-    }
 
-  useEffect( () =>  {
-  refreshTokenUser()
-},[])
  
 
     const initials= user.slug.substring(0,1)+ user.lastName.substring(0,1);
-    return(
 
+    
+
+    
+    return(
+      
+        
         <div>
              { loadingLogin &&  <LoadingLogin/> }
         { !loadingLogin ?  

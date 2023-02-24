@@ -10,8 +10,9 @@ import {ImageItem} from '../../../types/Images'
 import { useNavigate } from 'react-router-dom';
 
 
-interface PropImages{  
+interface PropImages{ 
     handleResult:(imgs: ImageItem[]) => void;
+    cleanImages:boolean;
 }
 
 
@@ -20,20 +21,26 @@ const UploadImages = (props:PropImages) =>{
     const [imagesSelected, setImagesSelected] = useState<ImageItem[]>([]);
    
 
-    
 
     const removePhoto =(url:string) => {     
         let newList=imagesSelected.filter((l => l.url !== url));
         localStorage.setItem('images',JSON.stringify(newList))
-        setImagesSelected(newList);            
+        setImagesSelected(newList);          
     }
   
-   
+ 
+ 
  
 useEffect(() => {
-    props.handleResult(imagesSelected);
+  
+     if(props.cleanImages === true){
+        setImagesSelected([]);
+     }
+    
+    console.log(imagesSelected)
+   
        
-}, []);
+}, [props.cleanImages]);
 
  
     const [modalIsOpen, setIsOpen] = useState(false);
@@ -44,21 +51,22 @@ useEffect(() => {
 
     const handleCloseModal =() =>{                 
             setIsOpen(false)
-          
-           
+                    
     }
 
-    const handleToRegistration =() =>{     
+    const handleToRegistration =() =>{
+       
         navigate("/registration")
         let itemImages=JSON.parse(localStorage.getItem('images') || '[]') as ImageItem[];
-    
+        
         if(itemImages === null){
             localStorage.removeItem('images')
         }
-        setImagesSelected([...itemImages])
+        setImagesSelected([...itemImages]);
+        props.handleResult(itemImages)
         localStorage.removeItem('images')
         setIsOpen(false)
-       
+        
         
     }
     localStorage.setItem('images',JSON.stringify(imagesSelected))

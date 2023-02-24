@@ -6,12 +6,16 @@ import { AuthProvider } from './context/authContext';
 
 
 
+
 function App() {
   return (
+    
      <ThemeProvider theme={theme}>
       <AuthProvider>
        <GlobalStyle />
+     
        <Router />
+   
        </AuthProvider>
      </ThemeProvider>
    

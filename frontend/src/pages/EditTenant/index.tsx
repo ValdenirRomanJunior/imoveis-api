@@ -11,6 +11,7 @@ import {editTenant, findTenant, sendNewPasswordForEmail} from '../../services/re
 import {MdOutlineChangeCircle} from 'react-icons/md'
 import Loading from '../../components/Loading';
 import { refreshToken } from '../../services/resources/user';
+import LoadingLogin from '../../components/LoadingLogin';
 
 type PropParam = {
     tenantId:string;
@@ -35,9 +36,33 @@ const EditTenantComponent = ({tenant}: Prop) =>{
     const [loadingTenant, setLoadingTenant]=useState(false);
     const [successMessage, setSuccessMessage] = useState(false);
     
-    
-    
+    const navigate = useNavigate();
+
+    const [loadingLogin,setLoadingLogin]= useState(true);
+
+    useEffect(() =>{
+       
+        setTimeout(() =>{
+            setLoadingLogin(false)
+        },1500)
+
+    },[])
+
+    const tParam = `${params.tenantId}`;
+    const refreshTokenUser = async ()=>{
+        const  resp = await refreshToken();    
+        if(resp === 204){  
+          navigate(`/edittenant/${tParam}`)
+        }else{
+            navigate('/')
+        }
+    }
+
+  useEffect( () =>  {
+  refreshTokenUser()
+},[tParam])
   
+
 
     const intialValueStatusRange = () =>{
         if(tenant.status === 'ATIVO'){
@@ -47,6 +72,15 @@ const EditTenantComponent = ({tenant}: Prop) =>{
             return '2' as string;
         }
       
+    }
+
+    const initialValuesVerification = () => {
+        if(tenant.verification === 'VERIFICADO'){
+            return '1';
+        }
+        if(tenant.verification === 'NAO_VERIFICADO'){
+            return '2';
+        }
     }
        
     const [initialValueStatus,setInitialValueStatus]= useState(()=> intialValueStatusRange());
@@ -75,14 +109,9 @@ const EditTenantComponent = ({tenant}: Prop) =>{
                 }); 
 
                 
-                
-                  
-              
+                             
                     }   
-                    
-
-
-      
+                       
             const handleKeyUp = (e: React.FormEvent<HTMLInputElement>) =>{
            
                 setErrors([])           
@@ -132,7 +161,7 @@ const EditTenantComponent = ({tenant}: Prop) =>{
 
                     setTimeout(async() =>{
                     
-                const data = await editTenant(slug, lastName, email,password, status,`${params.tenantId} `)
+                const data = await editTenant(slug, lastName, email,password, status,initialValuesVerification() as string,`${params.tenantId} `)
                         console.log(data)
                 if(data.status === 204){
                    
@@ -159,6 +188,9 @@ const EditTenantComponent = ({tenant}: Prop) =>{
      
                  
     return(
+        <div>
+        { loadingLogin &&  <LoadingLogin/> }
+   { !loadingLogin ?  
        <EditBackground>
         <Header />
         <BarTop />
@@ -215,18 +247,22 @@ const EditTenantComponent = ({tenant}: Prop) =>{
 
         </BodyEditContainer>
        </EditBackground>
-            
+          :''}
+          </div>  
         
     )
 }
 
 const EditTenant = () =>{
 
-    const navigate = useNavigate();
+   
     const params = useParams();
     const [tenant,setTenant]=useState<Tenant>();
-
     const p = `${params.tenantId}`;
+
+
+
+  
     const getTenant = async() => {
                  
         const data = await findTenant(p) ;          
@@ -241,18 +277,7 @@ const EditTenant = () =>{
     },
      [p]);
 
-     const refreshTokenUser = async ()=>{
-        const  resp = await refreshToken();    
-        if(resp === 204){  
-          navigate(`/edittenant/${p}`)
-        }else{
-            navigate('/')
-        }
-    }
 
-  useEffect( () =>  {
-  refreshTokenUser()
-},[p])
 
     return(
         <div>

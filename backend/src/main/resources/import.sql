@@ -15,10 +15,10 @@ INSERT INTO customer_perfis (tenant_customer_id, perfis) VALUES (2,3);
 
 INSERT INTO user_admin_perfis (user_admin_id, perfis) VALUES (1,1);
 
-INSERT INTO property (name, description, type, goal,number_rooms, bath_rooms,area, iptu, vacancies, condominium, price, tenant_id) VALUES ('casa1','casa linda', 1,1, '1','1', '234', '3323', '2332','3323','123',1);
-INSERT INTO property (name, description, type, goal,number_rooms, bath_rooms,area, iptu, vacancies, condominium, price, tenant_id) VALUES ('casa1','casa linda', 1,1, '1','1', '234', '3323', '2332','3323','123',1);
-INSERT INTO property (name, description, type, goal,number_rooms, bath_rooms,area, iptu, vacancies, condominium, price, tenant_id) VALUES ('casa1','casa linda', 1,1, '1','1', '234', '3323', '2332','3323','123',2);
-INSERT INTO property (name, description, type, goal,number_rooms, bath_rooms,area, iptu, vacancies, condominium, price, tenant_id) VALUES ('casa1','casa linda', 1,1,'1','1', '234', '3323', '2332','3323','123',2);
+INSERT INTO property (name, description, type_property, goal,number_rooms, bath_rooms,area, iptu, vacancies, condominium, price, tenant_id) VALUES ('casa1','casa linda', 1,1, '1','1', '234', '3323', '1','3323','123',1);
+INSERT INTO property (name, description, type_property, goal,number_rooms, bath_rooms,area, iptu, vacancies, condominium, price, tenant_id) VALUES ('casa1','casa linda', 1,1, '1','1', '234', '3323', '0','3323','123',1);
+INSERT INTO property (name, description, type_property, goal,number_rooms, bath_rooms,area, iptu, vacancies, condominium, price, tenant_id) VALUES ('casa1','casa linda', 1,1, '1','1', '234', '3323', '1','3323','123',2);
+INSERT INTO property (name, description, type_property, goal,number_rooms, bath_rooms,area, iptu, vacancies, condominium, price, tenant_id) VALUES ('casa1','casa linda', 1,2,'1','1', '234', '3323', '4 ou mais','3323','123',2);
 
 INSERT INTO state(name) VALUES ('PR');
 INSERT INTO city(name,state_id) VALUES ('Toledo',1);

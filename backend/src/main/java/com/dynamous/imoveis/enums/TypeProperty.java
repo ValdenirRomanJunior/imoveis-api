@@ -1,6 +1,6 @@
 package com.dynamous.imoveis.enums;
 
-public enum Type {
+public enum TypeProperty {
 
         Casa(1,"Casa"),
         Apartamento(2,"Apartamento"),
@@ -10,7 +10,7 @@ public enum Type {
         private int cod;
         private String description;
 
-    Type(int cod, String description) {
+    TypeProperty(int cod, String description) {
         this.cod = cod;
         this.description = description;
     }
@@ -31,16 +31,16 @@ public enum Type {
         this.description = description;
     }
 
-    public static Type toEnum(Integer cod) {
+    public static TypeProperty toEnum(Integer cod) {
         if (cod == null) {
             return null;
         }
-        for (Type x : Type.values()) {
+        for (TypeProperty x : TypeProperty.values()) {
             if (cod.equals(x.getCod())) {
                 return x;
             }
         }
-            throw new IllegalArgumentException("id invalido" + cod);
+            throw new com.dynamous.imoveis.services.exceptions.IllegalArgumentException("Codigo invalido"+ cod);
         }
 
 }

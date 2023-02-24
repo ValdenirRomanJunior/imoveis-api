@@ -43,6 +43,6 @@ public enum Status {
                 return x;
             }
         }
-        throw  new IllegalArgumentException("id inválido: "+ cod);
+        throw  new com.dynamous.imoveis.services.exceptions.IllegalArgumentException("id inválido: "+ cod);
     }
 }

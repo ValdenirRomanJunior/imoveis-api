@@ -2,8 +2,8 @@ export type Property = {
     id:number,
     name: string,
     description: string,
-    type: string,
     goal: string,
+    typeProperty: string,
     numberRooms:string,
     bathRooms:string,
     area:string,
@@ -62,7 +62,7 @@ export type PropertyNewDto ={
 
     name:string,
     description:string,
-    type:string,
+    typeProperty:string,
     goal:string,
     numberRooms:string,
     bathRooms:string,

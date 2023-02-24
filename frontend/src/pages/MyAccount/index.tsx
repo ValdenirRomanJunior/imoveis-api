@@ -14,6 +14,7 @@ import useAuth from '../../hooks/useAuth';
 import { BASE_URL_FROM_BUCKET } from '../../utils/request-image';
 import { hasFormSubmit } from '@testing-library/user-event/dist/utils';
 import { useNavigate } from 'react-router-dom';
+import LoadingLogin from '../../components/LoadingLogin';
 
 
 const MyAccount = ()=>{
@@ -28,6 +29,28 @@ const MyAccount = ()=>{
 
     const initials= user.slug.substring(0,1)+ user.lastName.substring(0,1) || '';
 
+    const [loadingLogin,setLoadingLogin]= useState(true);
+
+    useEffect(() =>{
+       
+        setTimeout(() =>{
+            setLoadingLogin(false)
+        },1500)
+
+    },[])
+
+    const refreshTokenUser = async ()=>{
+        const  resp = await refreshToken();    
+        if(resp === 204){  
+          navigate('/account')
+        }else{
+            navigate('/')
+        }
+    }
+
+  useEffect( () =>  {
+  refreshTokenUser()
+},[])
    
 
     useEffect(() =>{
@@ -92,21 +115,13 @@ useEffect(() => {
          
         }, [user.id]);
 
-        const refreshTokenUser = async ()=>{
-            const  resp = await refreshToken();    
-            if(resp === 204){  
-              navigate('/account')
-            }else{
-                navigate('/')
-            }
-        }
-    
-      useEffect( () =>  {
-      refreshTokenUser()
-    },[])
+ 
 
     
     return(
+        <div>
+        { loadingLogin &&  <LoadingLogin/> }
+   { !loadingLogin ?  
     <MyAccountBackground>
        <Header /> 
       <BarTop />
@@ -163,6 +178,8 @@ useEffect(() => {
         
        </BodyMyAccountContainer>
     </MyAccountBackground>
+      :''}
+      </div>
     )
 
 }

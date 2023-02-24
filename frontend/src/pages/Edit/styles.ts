@@ -113,6 +113,45 @@ export const BodyEditContainer = styled.main`
         width:100%;
     }
 
+    .message-edit{
+        width:100%;
+        position:relative;
+        margin-top:5px;
+        margin-bottom:25px;
+        display: flex;
+        justify-content: center;
+    }
+
+     .message-edit .success{
+        font-size: 14px;
+        color:green;
+        position: absolute;
+        animation: buttons .3s linear;
+        background-color: #7fe87f29;
+        padding:10px 15px;
+        margin-top:20px;
+       
+
+        .new-property-link{
+            margin-left:5px;
+        }
+       
+    }
+
+    @keyframes buttons {
+        
+        0%{
+            transform: scale(0.1);
+        }
+        50%{
+            transform: scale(0.5);
+        }
+        100%{
+            transform: scale(1);
+          
+        }
+    }
+
     @media screen and (min-width: 1000px){
         
     }

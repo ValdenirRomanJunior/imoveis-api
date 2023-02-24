@@ -35,9 +35,9 @@ export const newTenant = (slug:string, lastName:string, email: string, password:
                                                 });
 }
 
-export const editTenant = (slug:string, lastName:string, email: string,password:string, status: string, id:string) => {
+export const editTenant = (slug:string, lastName:string, email: string,password:string, status: string,verification:string, id:string) => {
   console.log(status)
-    return api.put(`/tenants/update/${id}`,{slug, email,status,lastName, password})
+    return api.put(`/tenants/update/${id}`,{slug, email,status,lastName, password,verification})
                                              
                                                  .then(response =>{
                                                     return response;
@@ -71,4 +71,16 @@ export const editTenant = (slug:string, lastName:string, email: string,password:
                     return error
                    
                 });
+  }
+
+  export const sendConfirmationTenant=(email:string) =>{
+    return api.put('/verification/confirmation',{email})
+   
+  
+              .then(response =>{
+                return response;
+               
+              }).catch((error) =>{
+                return error;
+              })
   }

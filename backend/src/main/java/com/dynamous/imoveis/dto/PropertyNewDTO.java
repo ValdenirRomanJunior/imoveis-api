@@ -15,28 +15,39 @@ public class PropertyNewDTO implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @NotEmpty(message = "Preenchimento obrigatório")
-    @Length(min=1, max=10, message = "O tamanho deve ser entre 1 e 80 caracteres")
+    @Length(min=2, max=80, message = "O tamanho deve ser entre 2 e 80 caracteres")
     private String name;
     @NotEmpty(message = "Preenchimento obrigatório")
-    @Length(min=1, max=200, message = "O tamanho deve ser entre 1 e 200 caracteres")
+    @Length(min=1, max=250, message = "O tamanho deve ser entre 1 e 250 caracteres")
     private String description;
 
-    private Integer type;
+  
+    private Integer typeProperty;
+  
     private Integer goal;
+    @NotEmpty(message = "Preenchimento obrigatório")
     private String numberRooms;
+    @NotEmpty(message = "Preenchimento obrigatório")
     private String bathRooms;
+    @NotEmpty(message = "Preenchimento obrigatório")
     private String area;
+    @NotEmpty(message = "Preenchimento obrigatório")
     private String iptu;
+    @NotEmpty(message = "Preenchimento obrigatório")
     private String vacancies;
+    @NotEmpty(message = "Preenchimento obrigatório")
     private String condominium;
+    @NotEmpty(message = "Preenchimento obrigatório")
     private String price;
     
+    @NotEmpty(message = "Preenchimento obrigatório")
     @Column(unique=true)
     private String uf;
     
+    @NotEmpty(message = "Preenchimento obrigatório")
     @Column(unique=true)
     private String city;
-
+   
     @NotEmpty(message = "Preenchimento obrigatório")
     private String street;
     @NotEmpty(message = "Preenchimento obrigatório")
@@ -71,12 +82,12 @@ public class PropertyNewDTO implements Serializable {
         this.description = description;
     }
 
-    public Integer getType() {
-        return type;
+    public Integer getTypeProperty() {
+        return typeProperty;
     }
 
-    public void setType(Integer type) {
-        this.type = type;
+    public void setTypeProperty(Integer type) {
+        this.typeProperty = type;
     }
 
     public Integer getGoal() {

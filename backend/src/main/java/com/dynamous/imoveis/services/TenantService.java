@@ -52,8 +52,7 @@ public class TenantService {
     }
     @Transactional
     public Tenant insert(Tenant obj) {
-        obj.setId(null);
-        
+        obj.setId(null);       
         tenantRepository.save(obj);
         System.out.println(obj);
         emailService.sendRegistrationHtmlEmail(obj);

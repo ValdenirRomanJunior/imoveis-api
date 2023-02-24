@@ -15,10 +15,10 @@ const Address = ({address}:PropAddress) =>{
  
     return(
    <AddressContainer>
-    <div><span>CEP</span><div className="address-value-wrapper"><span>{address?.cep}</span></div></div>
-    <div><span>Município</span><div className="address-value-wrapper"><span>{address?.city}</span></div></div>
-    <div><span>Bairro</span><div className="address-value-wrapper"><span>{address?.district}</span></div></div>
-    <div><span>Logradouro</span><div className="address-value-wrapper"><span>{address?.street}, <span>{address?.number}</span></span></div></div>
+    <div><span>CEP</span><div className="address-value-wrapper"><span className="cep-value">{address?.cep}</span></div></div>
+    <div><span>Município</span><div className="address-value-wrapper"><span className="city-value">{address?.city}</span></div></div>
+    <div><span>Bairro</span><div className="address-value-wrapper"><span className="district-value">{address?.district}</span></div></div>
+    <div><span>Logradouro</span><div className="address-value-wrapper"><span className="street-value">{address?.street}, <span>{address?.number}</span></span></div></div>
 
    </AddressContainer>
                

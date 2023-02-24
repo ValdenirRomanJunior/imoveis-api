@@ -15,6 +15,7 @@ import Modal from 'react-modal';
 import { IoCloseOutline } from "react-icons/io5";
 import "./ModalStyleLeadCard.css";
 import LoadingLogin from "../../../components/LoadingLogin";
+import PageNotFound from "../../../components/PageNotFound";
 
 
 type Prop={
@@ -31,6 +32,7 @@ const LeadCardItem = ({id,name,lastName,email,phone, message, propertyId, onChan
 
     const [property,setProperty]=useState<Property>();
     const [loading,setLoading]= useState(false);
+    const [errors,setErrors]=useState();
   
 
    
@@ -40,7 +42,14 @@ const LeadCardItem = ({id,name,lastName,email,phone, message, propertyId, onChan
 
                  
         const data = await findPropertyLead(String(propertyId));          
-             setProperty(data) 
+        if(data.status === 200){  
+            console.log(data.status) 
+            setProperty(data.data as Property) 
+          } else if(data.response.status === 404){ 
+            console.log(data.response.data.error)
+            setErrors(data.response.data.error);
+             
+          }  
                           
     }
     }      
@@ -105,6 +114,8 @@ const LeadCardItem = ({id,name,lastName,email,phone, message, propertyId, onChan
   
      
     return(
+        <>
+        {errors && <div><PageNotFound/></div> }
      <LeadWrapper prop={hiddenMessage}>
                 {loading &&<LoadingLogin/>}
                 <div className="content-first" onClick={openMessage}>
@@ -166,6 +177,7 @@ const LeadCardItem = ({id,name,lastName,email,phone, message, propertyId, onChan
                 </div>  
                 <button onClick={handleOpenModal} className='icon-trash'><BsTrash /> </button>     
        </LeadWrapper>
+       </>
        
    
 

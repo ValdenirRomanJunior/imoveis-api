@@ -9,14 +9,20 @@ import {VscDashboard} from 'react-icons/vsc';
 import {AiOutlineUser} from 'react-icons/ai';
 import {IoIosArrowForward} from 'react-icons/io';
 import {MdLogout} from 'react-icons/md'
-import { getImageIfExist, UserDto } from '../../services/resources/user';
+import { getImageIfExist, refreshToken, UserDto } from '../../services/resources/user';
 
 
 const Header = () =>{
 
     const navigate = useNavigate();
-    const {user, getCurrentUser} = useAuth();
+    const {user, getCurrentUser,refreshTokenUser} = useAuth();
     const [imageUser,setImageUser]= useState<string>("");
+
+  
+
+  useEffect( () =>  {
+    refreshTokenUser();
+},[])
   
 
     useEffect(() =>{

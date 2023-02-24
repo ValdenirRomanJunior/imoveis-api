@@ -6,23 +6,25 @@ width: 90%;
 height: 110px;
 border-bottom: 1px solid rgb(222, 222, 222);
 margin-top: 10px;
+padding: 10px 0;
 `
 
 export const CardContent = styled.div`
 width: 100%;
 height:100%;
-
+padding: 10px;
 display: flex;
 justify-content: space-around;
+align-items: center;
 
 font-family: "Poppins", sans-serif;
-padding: 4px 0;
+
 
 
     
     img{
-        max-width: 95px;
-        height: 95px;
+        max-width: 75px;
+        height: 75px;
         object-fit: cover;
         border-radius: 5px;
     }
@@ -33,38 +35,70 @@ padding: 4px 0;
         justify-content: center;
         flex:1;
         margin-left:10px;
-        padding: 0px 5px;
+        padding: 5px 5px;
+        max-width:100%;
+        overflow: hidden;
+
         
         .title-card-property{
             color: rgb(74, 74, 74)  !important;
-            overflow: hidden;
-            text-overflow: ellipsis;
             margin-bottom: 3px;
             font-weight:400;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: block;
+           white-space: nowrap;
+           cursor: pointer;
+           outline: none;
+           max-width:100%;
+         
             
 
         }
         .value{
             font-weight: 500;
             color: rgb(74, 74, 74);
-            font-size: 16px;
+            font-size: 14px;
             margin-bottom: 3px;
+            text-overflow: ellipsis;
+            display: block;
+            white-space: nowrap;
+            max-width: 100%;
         }
         p{
             margin-bottom: 0;
-            display: flex;
-            align-items: center;
+            
+        }
+
+        .localization-wrapper{
+            display:flex;
+            width:100%;
+            overflow:hidden;
+            line-break: anywhere;
+            text-overflow: ellipsis;
+            align-items:center;
+            
         }
         .localization{
             color: rgb(153, 153, 153);
-            font-size: 13px;
-            display: flex;
+            font-size: 12px;
+            
             align-items: center;
             margin-bottom: 6px;
             font-weight: 300;
+            line-break: anywhere;
+            text-overflow: ellipsis;
+            display: block !important;
+            white-space: nowrap;
+            max-width: 40%;
+            overflow: hidden;
+           
         }
         .localization-icon{
             font-size:15px;
+        }
+        .district-localization{
+            margin-left:5px;
         }
 
         .links-card{
@@ -72,7 +106,7 @@ padding: 4px 0;
             color:#0b90d1;
             justify-content: space-between;  
             width: 65%;
-            font-size: 12px;
+            font-size: 11px;
             font-weight: 300;
             
             

@@ -9,11 +9,14 @@ import UploadImages from './UploadImages';
 import {editProperty, findProperty} from '../../services/resources/property';
 import {ImageItem} from '../../types/Images'
 import api from '../../utils/requests';
-import { useNavigate, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import {number, currency, cep} from '../Registration/masks';
 
 import { Property } from '../../types/property';
 import { refreshToken } from '../../services/resources/user';
+import Loading from '../../components/Loading';
+import PageNotFound from '../../components/PageNotFound';
+import LoadingLogin from '../../components/LoadingLogin';
 
 type Error = {
     fieldName:string;
@@ -47,15 +50,27 @@ const EditComponent = ({property}: Prop) =>{
     const params = useParams();
     
     const [errors, setErrors] = useState<Error[]>([]);
+    const [otherError, setOtherError] = useState(false);
     const navigate = useNavigate();
     const [ufs, setUfs]= useState<IBGEUFResponse[]>([]);
     const [cities, setCities]= useState<IBGECYTYResponse[]>([]);
     const [state, setState]=useState(); 
     const [images, setImages] = useState<ImageItem[]>([]);
+    const [successMessage, setSuccessMessage] = useState(false);
+    const [loadingTenant, setLoadingTenant]=useState(false);
+    const [cleanImagesForm,setCleanImagesForm] = useState(false);
     
     const imagesFromUpdate=(property.images?.map(x => {return {id: x.id, url: x.url, idTenant: x.idTenant, selected: true}})) as ImageItem[];
     
+    const [loadingLogin,setLoadingLogin]= useState(true);
 
+    useEffect(() =>{
+       
+        setTimeout(() =>{
+            setLoadingLogin(false)
+        },1500)
+
+    },[])
      
      //pega imagens do UploadImages
   
@@ -87,23 +102,24 @@ const EditComponent = ({property}: Prop) =>{
         )
     }, [state]);
 
+        //verificar valores  goal
         const changeGoal = () => {
-            if(property.goal === 'Aluguel'){
-                return '1';
+            if(property.goal === 'ALUGUEL'){
+                return '2';
             }
         }
 
         const changeType = () => {
-            if(property.type === 'Casa'){
+            if(property.typeProperty === 'Casa'){
                 return '1';
             }
-            if(property.type === 'Apartamento'){
+            if(property.typeProperty === 'Apartamento'){
                 return '2';
             }
-            if(property.type === 'Terreno'){
+            if(property.typeProperty === 'Terreno'){
                 return '3';
             }
-            if(property.type === 'Comercial'){
+            if(property.typeProperty === 'Comercial'){
                 return '4';
             }
         }
@@ -124,7 +140,7 @@ const EditComponent = ({property}: Prop) =>{
           
             name:property.name,
             description:property.description,
-            type:changeType(),
+            typeProperty:changeType(),
             goal:changeGoal(),
             numberRooms:property.numberRooms,
             bathRooms:property.bathRooms,
@@ -143,6 +159,42 @@ const EditComponent = ({property}: Prop) =>{
 
 });
        
+const cleanForm = () =>{
+
+    Array.from(document.querySelectorAll("input")).forEach(
+        input => (input.value = "")
+      );
+      Array.from(document.querySelectorAll("textarea")).forEach(
+        textarea => (textarea.value = "")
+      );
+
+      
+      Array.from(document.querySelectorAll("select")).forEach(
+        select => (select.value = "")
+      );
+      
+    setForm({ ...form,
+        name:"",
+    description:"",
+    typeProperty:"",
+    goal:"",
+    numberRooms:"",
+    bathRooms:"",
+    area:"",
+    iptu:"",
+    vacancies:"",
+    condominium:"",
+    price:"",
+    uf:"",
+    city:"",
+    district:"",
+    street:"",
+    number:"",
+    cep:""
+        
+    });
+    setCleanImagesForm(true);
+   }
         
 
         const [emptyValue,setEmptyValue]= useState(false);
@@ -168,22 +220,25 @@ const EditComponent = ({property}: Prop) =>{
       
             const handleKeyUp = (e: React.FormEvent<HTMLInputElement>) =>{
            
-                if(e.currentTarget.name  === 'number'){
+                if(e.currentTarget.name  === 'number') {
                     number(e)
                 }
-                if(e.currentTarget.name === 'price'){
+                if(e.currentTarget.name  === 'area') {
+                    number(e)
+                }
+                if(e.currentTarget.name === 'price') {
                     currency(e);
                 }
-                if(e.currentTarget.name === 'cep'){
+                if(e.currentTarget.name === 'cep') {
                     cep(e);
                 }
-                if(e.currentTarget.name === 'condominium'){
+                if(e.currentTarget.name === 'condominium') {
                     currency(e);
                 }
-                if(e.currentTarget.name === 'iptu'){
+                if(e.currentTarget.name === 'iptu') {
                     currency(e);
                 }
-
+                setErrors([])
                         
                     
             }   
@@ -205,8 +260,8 @@ const EditComponent = ({property}: Prop) =>{
                 let description: any;            
                 for (var prop1 in form) {if(prop1 === 'description'){ description=form[prop1];  console.log(description)}}
 
-                let type: any;            
-                for (var prop2 in form) {if(prop2 === 'type'){ type=form[prop2];}}
+                let typeProperty: any;            
+               for (var prop2 in form) {if(prop2 === 'typeProperty'){ typeProperty=form[prop2];}}
 
                 let goal: any;            
                 for (var prop3 in form) {if(prop3 === 'goal'){ goal=form[prop3];}}
@@ -253,26 +308,59 @@ const EditComponent = ({property}: Prop) =>{
                 
                 if(!emptyValues){
                     
+                    setLoadingTenant(true)
+
+                    setTimeout(async() =>{
                   
-                const data = await editProperty(name, description, type, goal, numberRooms, bathRooms,area, iptu,vacancies,condominium,                                      
+                const data = await editProperty(name, description,typeProperty, goal, numberRooms, bathRooms,area, iptu,vacancies,condominium,                                      
                 price, state, city, district, street, number, cep, images,`${params.propertyId}`)
               
                
-               
-              
+                if(data.status === 204){
                     
-                if(data.response.data.errors !== null){   
-                    setErrors(data.response.data.errors)
-                              
-                }else{
-                    navigate('/properties')
-                }
-            }
-            e.currentTarget.submit();
+                    setCleanImagesForm(true);
+                    cleanForm()
+                    
+                    setSuccessMessage(true)
+                    setLoadingTenant(false)
+                    setTimeout(()=>{
+                        setLoadingTenant(true);
+                    },1000)
+                    setTimeout(()=>{
+                        setSuccessMessage(false);
+                        setCleanImagesForm(false);
+                        navigate(`/details/${params.propertyId}`)
+                    },2000)
+        
+                                  
+                  }
+                    if(data.response.data.errors){              
+                        setErrors(data.response.data.errors);
+                        setSuccessMessage(false)
+                        setLoadingTenant(false)
+                                                                                       
+                    }
+                    else if(data.response.status === 404){
+                        console.log(data.response.status)
+                        setOtherError(true)
+                        setSuccessMessage(false)
+                        setLoadingTenant(false)
+
+                        setTimeout(()=>{
+                            setOtherError(false)
+                        },2000)
+                    } 
+            },2000) 
            
-            }
+        }
+    }
+
+  console.log(form['typeProperty'])
                  
     return(
+        <div>
+        { loadingLogin &&  <LoadingLogin/> }
+   { !loadingLogin ?  
        <EditBackground>
         <Header />
         <BarTop />
@@ -284,36 +372,35 @@ const EditComponent = ({property}: Prop) =>{
 
                 <label>Título*</label>
                
-                <Input id="name" name="name" value={form['name'] } onChange={(e) => handleChange(e)} maxLength={90} />
+                <Input id="name" name="name" value={form['name'] } onChange={(e) => handleChange(e)}  maxLength={80}/>
                 {errors.map(x => { if(x.fieldName === 'name') return  <p className='formField__error'>{x.message}</p>})}
                { emptyValue && form['name'] === '' ? <span className='formField__error'>Este campo é requerido</span>: ''}
 
                 <label>Descrição*</label>
-                <textarea id="description"  value={form['description']} name="description" rows={4}  onChange={(e) => handleChange(e)}></textarea>
+                <textarea id="description"  value={form['description']} name="description" rows={4}  onChange={(e) => handleChange(e)} maxLength={250}></textarea>
                 {errors.map(x => { if(x.fieldName === 'description') return  <p className=' formField__error'>{x.message}</p>})}
                 { emptyValue && form['description'] === '' ?<span className='formField__error'>Este campo é requerido</span>: ''}
 
                 <label>Finalidade</label>
                     <select  name='goal'  id='goal' value={form['goal'] }   placeholder='selecione'  onChange={(e) => handleChange(e)} >
                     <option value='' >Selecione</option>
-                    <option key='Venda' value='2'>Vender</option>
-                    <option  key='Aluguel' value='1'>Alugar</option>
-                    
+                    <option key='VENDA' value='1'>Vender</option>
+                    <option  key='ALUGUEL' value='2'>Alugar</option>                   
                 </select>
                 {errors.map(x => { if(x.fieldName === 'goal') return  <p className=' formField__error'>{x.message}</p>})}
                 { emptyValue && form['goal'] === '' ?<span className='formField__error'>Selecione uma Finalidade</span>: ''}
                 
             
                 <label>Tipo*</label>
-                <select  name='type' placeholder='selecione' id='type' value={form['type'] }   onChange={(e) => handleChange(e)} >
+                <select  name='typeProperty' placeholder='selecione' id='typeProperty' value={form['typeProperty'] }   onChange={(e) => handleChange(e)} >
                     <option value=''  >Selecione</option>
-                    <option key='1' value='1'>Casa</option>
-                    <option  key='2' value='2'>Apartamento</option>
-                    <option  key='3' value='3'>Terreno</option>
-                    <option  key='4' value='4'>Comercial</option>
+                    <option  key='Casa' value='1'>Casa</option>
+                    <option  key='Apartamento' value='2'>Apartamento</option>
+                    <option  key='Terreno' value='3'>Terreno</option>
+                    <option  key='Comercial' value='4'>Comercial</option>
                 </select>
-                {errors.map(x => { if(x.fieldName === 'type') return  <p className=' formField__error'>{x.message}</p>})}
-                { emptyValue && form['type'] === '' ?<span className='formField__error'>Selecione um Tipo</span>: ''}
+                {errors.map(x => { if(x.fieldName === 'typeProperty') return  <p className=' formField__error'>{x.message}</p>})}
+                { emptyValue && form['typeProperty'] === '' ?<span className='formField__error'>Selecione um Tipo</span>: ''}
 
           
                 <label>Quartos*</label>
@@ -342,13 +429,13 @@ const EditComponent = ({property}: Prop) =>{
                 { emptyValue && form['bathRooms'] === '' ? <span className='formField__error'>Selecione o número de Banheiros</span>: ''}
               
                 <label>Área(m2)*</label>
-                <Input id="area" name="area" value={form['area'] }  onChange={(e) => handleChange(e)}/>
+                <Input id="area" name="area" value={form['area'] }  onChange={(e) => handleChange(e)} maxLength={11} onKeyUp={handleKeyUp}/>
                 {errors.map(x => { if(x.fieldName === 'area') return  <p className=' formField__error'>{x.message}</p>})}
                 { emptyValue && form['area'] === '' ?<span className='formField__error'>Preencha o total da Área interna</span>: ''}
 
                 <label>Vagas</label>
-                <select id="vacancies" name="vacancies" value={form['vacancies'] }  placeholder='selecione' onChange={(e) => handleChange(e)}>
-                <option value=''  >Selecione</option>
+                <select id="vacancies" name="vacancies" value={form['vacancies']}  placeholder='selecione' onChange={(e) => handleChange(e)}>
+                <option value='' >Selecione</option>
                     <option key='0' value='0'>0</option>
                     <option key='1' value='1'>1</option>
                     <option key='2' value='2'>2</option>
@@ -419,14 +506,28 @@ const EditComponent = ({property}: Prop) =>{
                 { emptyValue && form['cep'] === '' ?<span className='formField__error'>Este campo é requerido</span>: ''}
                      
                 <UploadImages images={imagesFromUpdate}  handleResult={getImagesUrls}/>
+                <div className="message-edit">
+                    {successMessage   ? <span className='success'>Editado com sucesso! <Link to={`/details/${params.propertyId}`}className='new-property-link'>Ver Imóvel</Link></span>: ''}
+                    </div>
+               
                 <div className='buttom-register-wrapper'>
-                <Button type='submit'>Editar</Button>
+                { otherError &&   
+                <div className='other-error'>Erro Inesperado</div>
+                 }
+                {
+                        loadingTenant && <Button className="button-send-email" type='submit'><Loading/></Button>
+                    }
+                    {
+                        !loadingTenant &&
+                    <Button className="button-send-email" type='submit'>Salvar</Button>
+                    }
                 </div>
             </FormContainer>
             </form>
         </BodyEditContainer>
        </EditBackground>
-            
+       :''}
+        </div>    
         
     )
 }
@@ -436,23 +537,12 @@ const Edit = () =>{
     const navigate = useNavigate();
     const params = useParams();
     const [property,setProperty]=useState<Property>();
+    const [errors,setErrors]= useState ('');
+ 
 
     const p = `${params.propertyId}`;
-    const getProperty = async() => {
-                 
-        const data = await findProperty(p) ;          
-             setProperty(data as Property) 
-                 
-    }
 
-     
-    useEffect(() => {
-        getProperty();
-
-    },
-     [p]);
-
-     const refreshTokenUser = async ()=>{
+    const refreshTokenUser = async ()=>{
         const  resp = await refreshToken();    
         if(resp === 204){  
           navigate(`/edit/${p}`)
@@ -465,12 +555,36 @@ const Edit = () =>{
   refreshTokenUser()
 },[p])
 
+    const getProperty = async() => {
+                 
+        const data = await findProperty(p);
+        if(data.status === 200){  
+            console.log(data.status) 
+            setProperty(data.data as Property) 
+          } else if(data.response.status === 404){ 
+            console.log(data.response.data.error)
+            setErrors(data.response.data.error);
+             
+          }                         
+    }
+   
+    useEffect(() => {
+        getProperty();
+
+    },
+     [p]);
+
+
+
     return(
+        <>
+        {errors && <div><PageNotFound/></div> }
         <div>
             {property && (
             <EditComponent property={property as unknown as Property}/>
             )}
         </div>
+        </>
     )
 }
 

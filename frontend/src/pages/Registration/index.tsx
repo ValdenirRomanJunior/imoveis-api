@@ -9,9 +9,11 @@ import UploadImages from './UploadImages';
 import {newProperty} from '../../services/resources/property';
 import {ImageItem} from '../../types/Images'
 import api from '../../utils/requests';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import {number, currency, cep} from './masks';
 import { refreshToken } from '../../services/resources/user';
+import Loading from '../../components/Loading';
+import LoadingLogin from '../../components/LoadingLogin';
 
 
 type Error = {
@@ -34,19 +36,44 @@ type IBGECYTYResponse = {
 const Registration = () =>{
     
     const [errors, setErrors] = useState<Error[]>([]);
+    const [otherError, setOtherError] = useState(false);
     const navigate = useNavigate();
     const [ufs, setUfs]= useState<IBGEUFResponse[]>([]);
     const [cities, setCities]= useState<IBGECYTYResponse[]>([]);
     const [state, setState]=useState(); 
-    const [images, setImages] = useState<ImageItem[]>([]); 
+    const [images, setImages] = useState<ImageItem[]>([]);
+    const [successMessage, setSuccessMessage] = useState(false);
+    const [loadingTenant, setLoadingTenant]=useState(false);
+    const [cleanImagesForm,setCleanImagesForm] = useState(false);
    
+    const [loadingLogin,setLoadingLogin]= useState(true);
 
+    useEffect(() =>{
+       
+        setTimeout(() =>{
+            setLoadingLogin(false)
+        },1500)
+
+    },[])
+    
+            const refreshTokenUser = async ()=>{
+                const  resp = await refreshToken();    
+                if(resp === 204){  
+                  navigate('/registration')
+                }else{
+                    navigate('/')
+                }
+            }
+        
+          useEffect( () =>  {
+          refreshTokenUser()
+        },[])
       
      const getImagesUrls = (data:ImageItem[]) => {      
-         setImages(data)
+         setImages(data);
+         console.log(data)
                                      
     }
-   
 
     
     useEffect(() => {
@@ -74,7 +101,7 @@ const Registration = () =>{
             
             name:"",
             description:"",
-            type:"",
+            typeProperty:"",
             goal:"",
             numberRooms:"",
             bathRooms:"",
@@ -92,7 +119,46 @@ const Registration = () =>{
 
 
         })
-  
+
+        const cleanForm = () =>{
+
+            Array.from(document.querySelectorAll("input")).forEach(
+                input => (input.value = "")
+              );
+              Array.from(document.querySelectorAll("textarea")).forEach(
+                textarea => (textarea.value = "")
+              );
+
+              
+              Array.from(document.querySelectorAll("select")).forEach(
+                select => (select.value = "")
+              );
+              
+            setForm({ ...form,
+                name:"",
+            description:"",
+            typeProperty:"",
+            goal:"",
+            numberRooms:"",
+            bathRooms:"",
+            area:"",
+            iptu:"",
+            vacancies:"",
+            condominium:"",
+            price:"",
+            uf:"",
+            city:"",
+            district:"",
+            street:"",
+            number:"",
+            cep:""
+                
+            });
+            setCleanImagesForm(true);
+           }
+
+         
+           
 
         const [emptyValue,setEmptyValue]= useState(false);
 
@@ -113,12 +179,15 @@ const Registration = () =>{
                         
             }
 
-         
+    
 
             const handleKeyUp = (e: React.FormEvent<HTMLInputElement>) =>{
 
                 
                 if(e.currentTarget.name  === 'number'){
+                    number(e)
+                }
+                if(e.currentTarget.name  === 'area'){
                     number(e)
                 }
                 if(e.currentTarget.name === 'price'){
@@ -133,11 +202,11 @@ const Registration = () =>{
                 if(e.currentTarget.name === 'iptu'){
                     currency(e);
                 }
-               
+                setErrors([])
                     
             }
            
-            const handleSubmit = async (e:any) =>{
+            const handleSubmit = async (e:any) => {
               e.preventDefault();
 
         
@@ -152,10 +221,10 @@ const Registration = () =>{
                 let description: any;            
                 for (var prop1 in form) {if(prop1 === 'description'){ description=form[prop1];  }}
 
-                let type: any;            
-                for (var prop2 in form) {if(prop2 === 'type'){ type=form[prop2];}}
+                let typeProperty:any;      
+                for (var prop2 in form) {if(prop2 === 'typeProperty'){ typeProperty=form[prop2];}}
 
-                let goal: any;            
+                let goal:any;            
                 for (var prop3 in form) {if(prop3 === 'goal'){ goal=form[prop3];}}
 
                 let numberRooms: any;            
@@ -200,77 +269,93 @@ const Registration = () =>{
                 for (var prop16 in form) {if(prop16 === 'cep'){ cep=form[prop16];}}
                     
                 if(!emptyValues){
+
+                    setLoadingTenant(true)
+                    setTimeout(async() =>{
                     
-                const data = await newProperty(name, description, type, goal, numberRooms, bathRooms,area, iptu,vacancies,condominium,                                      
+                const data = await newProperty(name, description, goal, typeProperty, numberRooms, bathRooms,area, iptu,vacancies,condominium,                                      
                 price, state, city, district, street, number, cep, images)
-                
-                    
-                if(data.response.data.errors !== null){   
-                    setErrors(data.response.data.errors)
-                              
-                }else{
-                    navigate('/properties')
-                }
-            }
-            e.currentTarget.submit();
-           
-            }
+                 
+                if(data.status === 201){
+                    setCleanImagesForm(true);
+                    cleanForm()                    
+                    setSuccessMessage(true)
+                    setLoadingTenant(false)
 
+                    setTimeout(()=>{
+                        setSuccessMessage(false);
+                        setCleanImagesForm(false);
+                    },5000)
+                                                                       
+                  }
+                    if(data.response.data.errors){                       
+                        setErrors(data.response.data.errors);
+                        setSuccessMessage(false)
+                        setLoadingTenant(false)
+                                                                                       
+                    }  
+                    else if(data.response.status === 404){
+                        console.log(data.response.status)
+                        setOtherError(true)
+                        setSuccessMessage(false)
+                        setLoadingTenant(false)
 
-            const refreshTokenUser = async ()=>{
-                const  resp = await refreshToken();    
-                if(resp === 204){  
-                  navigate('/registration')
-                }else{
-                    navigate('/')
-                }
-            }
-        
-          useEffect( () =>  {
-          refreshTokenUser()
-        },[])
+                        setTimeout(()=>{
+                            setOtherError(false)
+                        },2000)
+                    }
+            },2000) 
+             
+         } 
+                        
+     }
+
+   
                 
     return(
+        <div>
+        { loadingLogin &&  <LoadingLogin/> }
+   { !loadingLogin ?  
        <RegistrationBackground>
         <Header />
         <BarTop />
         <BodyRegistrationContainer>
             <h1 className='title-registration'>Cadastrar imóvel</h1>
 
+        
             <form onSubmit={(e)=> {handleSubmit(e)}}>
             <FormContainer>
 
                 <label>Título*</label>
-                <Input id="name" name="name" onChange={(e) => handleChange(e)} /*maxLength={90} /*//>
-               
-                {errors.map(x => { if(x.fieldName === 'name') return  <p className=' formField__error'>{x.message}</p>})}
-                { emptyValue && form['name'] === '' ? <span className='formField__error'>Este campo é requerido</span>: ''}
+                <Input id="name" name="name" onChange={(e) => handleChange(e)} maxLength={80} onKeyUp={handleKeyUp}/>              
+                {errors.map(x => { if(x.fieldName === 'name') return  <p className=' formField__error_reg'>{x.message}</p>})}
+                { emptyValue && form['name'] === '' ? <span className='formField__error_reg'>Este campo é requerido</span>: ''}
 
                 <label>Descrição*</label>
-                <textarea id="description" name="description" rows={4}  onChange={(e) => handleChange(e)}></textarea>
-                {errors.map(x => { if(x.fieldName === 'description') return  <p className=' formField__error'>{x.message}</p>})}
-                { emptyValue && form['description'] === '' ?<span className='formField__error'>Este campo é requerido</span>: ''}
+                <textarea id="description" name="description" rows={4}  onChange={(e) => handleChange(e)} maxLength={250}></textarea>
+                {errors.map(x => { if(x.fieldName === 'description') return  <p className=' formField__error_reg'>{x.message}</p>})}
+                { emptyValue && form['description'] === '' ?<span className='formField__error_reg'>Este campo é requerido</span>: ''}
 
                 <label>Finalidade</label>
-                    <select  name='goal'  id='goal'  placeholder='selecione'  onChange={(e) => handleChange(e)} >
-                    <option value=''  >Selecione</option>
+                    <select  name='goal'  id='goal' value={form['goal']}  placeholder='selecione'  onChange={(e) => handleChange(e)} >
+                    <option value='' >Selecione</option>
                     <option key='1' value='1'>Vender</option>
-                    <option  key='2' value='2'>Alugar</option>               
+                    <option key='2' value='2'>Alugar</option>               
                 </select>
-                {errors.map(x => { if(x.fieldName === 'goal') return  <p className=' formField__error'>{x.message}</p>})}
-                { emptyValue && form['goal'] === '' ?<span className='formField__error'>Selecione uma Finalidade</span>: ''}
+                {errors.map(x => { if(x.fieldName === 'goal') return  <p className='formField__error_reg'>{x.message}</p>})}
+                { emptyValue && form['goal'] === '' ?<span className='formField__error_reg'>Selecione uma Finalidade</span>: ''}
                 
             
                 <label>Tipo*</label>
-                <select  name='type' placeholder='selecione' id='type'   onChange={(e) => handleChange(e)} >
+                <select  name='typeProperty' placeholder='selecione' id='typeProperty'   onChange={(e) => handleChange(e)} >
                     <option value=''  >Selecione</option>
                     <option key='1' value='1'>Casa</option>
                     <option  key='2' value='2'>Apartamento</option>
                     <option  key='3' value='3'>Terreno</option>
                     <option  key='4' value='4'>Comercial</option>
                 </select>
-                {errors.map(x => { if(x.fieldName === 'type') return  <p className=' formField__error'>{x.message}</p>})}
-                { emptyValue && form['type'] === '' ?<span className='formField__error'>Selecione um Tipo</span>: ''}
+                {errors.map(x => { if(x.fieldName === 'typeProperty') return  <p className='formField__error_reg'>{x.message}</p>})}
+                { emptyValue && form['typeProperty'] === '' ?<span className='formField__error_reg'>Selecione um Tipo</span>: ''}
 
           
                 <label>Quartos*</label>
@@ -282,8 +367,8 @@ const Registration = () =>{
                     <option key='3' value='3'>3</option>
                     <option key='4' value='4 ou mais'>4 ou mais</option>
                 </select>
-                {errors.map(x => { if(x.fieldName === 'numberRooms') return  <p className=' formField__error'>{x.message}</p>})}
-                { emptyValue && form['numberRooms'] === '' ?<span className='formField__error'>Selecione o número de Quartos</span>: ''}
+                {errors.map(x => { if(x.fieldName === 'numberRooms') return  <p className='formField__error_reg'>{x.message}</p>})}
+                { emptyValue && form['numberRooms'] === '' ?<span className='formField__error_reg'>Selecione o número de Quartos</span>: ''}
                 
 
                 <label>Banheiros*</label>
@@ -295,11 +380,12 @@ const Registration = () =>{
                     <option key='3' value='3'>3</option>
                     <option key='4' value='4 ou mais'>4 ou mais</option>
                 </select>
-                 {errors.map(x => { if(x.fieldName === 'bathRooms') return  <p className=' formField__error'>{x.message}</p>})}
-                { emptyValue && form['bathRooms'] === '' ? <span className='formField__error'>Selecione o número de Banheiros</span>: ''}
+                 {errors.map(x => { if(x.fieldName === 'bathRooms') return  <p className='formField__error_reg'>{x.message}</p>})}
+                { emptyValue && form['bathRooms'] === '' ? <span className='formField__error_reg'>Selecione o número de Banheiros</span>: ''}
+               
                 <label>Área(m2)*</label>
-                <Input id="area" name="area" onChange={(e) => handleChange(e)}/>
-                { emptyValue && form['area'] === '' ?<span className='formField__error'>Preencha o total da Área interna</span>: ''}
+                <Input id="area" name="area" onChange={(e) => handleChange(e)} maxLength={11} onKeyUp={handleKeyUp}/>
+                { emptyValue && form['area'] === '' ?<span className='formField__error_reg'>Preencha o total da Área interna</span>: ''}
 
                 <label>Vagas</label>
                 <select id="vacancies" name="vacancies"  placeholder='selecione' onChange={(e) => handleChange(e)}>
@@ -310,24 +396,24 @@ const Registration = () =>{
                     <option key='3' value='3'>3</option>
                     <option key='4' value='4 ou mais'>4 ou mais</option>
                 </select>
-                {errors.map(x => { if(x.fieldName === 'vacancies') return  <p className=' formField__error'>{x.message}</p>})}
-                { emptyValue && form['vacancies'] === '' ?<span className='formField__error'>Este campo é requerido</span>: ''}
+                {errors.map(x => { if(x.fieldName === 'vacancies') return  <p className=' formField__error_reg'>{x.message}</p>})}
+                { emptyValue && form['vacancies'] === '' ?<span className='formField__error_reg'>Este campo é requerido</span>: ''}
 
                 <label>IPTU(R$)</label>
                 <Input id="iptu" name="iptu" maxLength={14} onKeyUp={handleKeyUp} onBlur={(e) => handleChange(e)}/>
-                {errors.map(x => { if(x.fieldName === 'iptu') return  <p className=' formField__error'>{x.message}</p>})}
-                { emptyValue && form['iptu'] === '' ?<span className='formField__error'>Este campo é requerido</span>: ''}
+                {errors.map(x => { if(x.fieldName === 'iptu') return  <p className='formField__error_reg'>{x.message}</p>})}
+                { emptyValue && form['iptu'] === '' ?<span className='formField__error_reg'>Este campo é requerido</span>: ''}
 
                 <label>Condomínio(R$)</label>
                 <Input  id="condominium" name="condominium" maxLength={14} onKeyUp={handleKeyUp} onChange={(e) => handleChange(e)}/>
-                {errors.map(x => { if(x.fieldName === 'condominium') return  <p className=' formField__error'>{x.message}</p>})}
-                { emptyValue && form['condominium'] === '' ?<span className='formField__error'>Este campo é requerido</span>: ''}
+                {errors.map(x => { if(x.fieldName === 'condominium') return  <p className=' formField__error_reg'>{x.message}</p>})}
+                { emptyValue && form['condominium'] === '' ?<span className='formField__error_reg'>Este campo é requerido</span>: ''}
 
                
                 <label>Preço(R$)</label>
                 <Input type='text' id='price' name='price' maxLength={14} onKeyUp={handleKeyUp} onChange={(e) => handleChange(e)}/>  
-                {errors.map(x => { if(x.fieldName === 'price') return  <p className=' formField__error'>{x.message}</p>})}  
-                { emptyValue && form['price'] === '' ?<span className='formField__error'>Este campo é requerido</span>: ''}
+                {errors.map(x => { if(x.fieldName === 'price') return  <p className=' formField__error_reg'>{x.message}</p>})}  
+                { emptyValue && form['price'] === '' ?<span className='formField__error_reg'>Este campo é requerido</span>: ''}
                
              
                  <label>Estado</label>
@@ -338,8 +424,8 @@ const Registration = () =>{
                     <option  key={uf.id} value={uf.sigla}>{uf.nome}</option>
                  ))}
                 </select>
-                {errors.map(x => { if(x.fieldName === 'uf') return  <p className=' formField__error'>{x.message}</p>})}
-                { emptyValue && form['uf'] === '' ?<span className='formField__error'>Este campo é requerido</span>: ''}
+                {errors.map(x => { if(x.fieldName === 'uf') return  <p className=' formField__error_reg'>{x.message}</p>})}
+                { emptyValue && form['uf'] === '' ?<span className='formField__error_reg'>Este campo é requerido</span>: ''}
 
                 <label>Cidade</label>
                 <select placeholder='selecione'  name='city'  id='city'  onChange={(e) => handleChange(e)}>
@@ -348,37 +434,53 @@ const Registration = () =>{
                     <option key={city.id} value={city.nome}>{city.nome}</option>
                  ))}
                 </select>
-                {errors.map(x => { if(x.fieldName === 'city') return  <p className=' formField__error'>{x.message}</p>})}
-                { emptyValue && form['city'] === '' ?<span className='formField__error'>Este campo é requerido</span>: ''}
+                {errors.map(x => { if(x.fieldName === 'city') return  <p className='formField__error_reg'>{x.message}</p>})}
+                { emptyValue && form['city'] === '' ?<span className='formField__error_reg'>Este campo é requerido</span>: ''}
 
                 <label>Bairro</label>
                 <Input  name='district'  id='district'  onChange={(e) => handleChange(e)}/>
-                {errors.map(x => { if(x.fieldName === 'district') return  <p className=' formField__error'>{x.message}</p>})}
-                { emptyValue && form['district'] === '' ?<span className='formField__error'>Este campo é requerido</span>: ''}
+                {errors.map(x => { if(x.fieldName === 'district') return  <p className=' formField__error_reg'>{x.message}</p>})}
+                { emptyValue && form['district'] === '' ?<span className='formField__error_reg'>Este campo é requerido</span>: ''}
+
                 <label>Rua</label>
                 <Input   name='street'  id='street' onChange={(e) => handleChange(e)}/>
-                {errors.map(x => { if(x.fieldName === 'street') return  <p className=' formField__error'>{x.message}</p>})}
-                { emptyValue && form['street'] === '' ?<span className='formField__error'>Este campo é requerido</span>: ''}
+                {errors.map(x => { if(x.fieldName === 'street') return  <p className=' formField__error_reg'>{x.message}</p>})}
+                { emptyValue && form['street'] === '' ?<span className='formField__error_reg'>Este campo é requerido</span>: ''}
                 
                 <label>Número</label>
                 <div className='number-wrapper'>
                 <Input type='text'  name='number' id='number' onKeyUp={handleKeyUp} onChange={(e) => handleChange(e)}/>
                 </div>
-                {errors.map(x => { if(x.fieldName === 'number') return  <p className=' formField__error'>{x.message}</p>})}
-                { emptyValue && form['number'] === '' ?<span className='formField__error'>Este campo é requerido</span>: ''}
+                {errors.map(x => { if(x.fieldName === 'number') return  <p className=' formField__error_reg'>{x.message}</p>})}
+                { emptyValue && form['number'] === '' ?<span className='formField__error_reg'>Este campo é requerido</span>: ''}
+
                 <label>Cep</label>
                 <Input  name='cep'  id='cep' onKeyUp={handleKeyUp} onChange={(e) => handleChange(e)}/> 
-                {errors.map(x => { if(x.fieldName === 'cep') return  <p className=' formField__error'>{x.message}</p>})}
-                { emptyValue && form['cep'] === '' ?<span className='formField__error'>Este campo é requerido</span>: ''}
+                {errors.map(x => { if(x.fieldName === 'cep') return  <p className=' formField__error_reg'>{x.message}</p>})}
+                { emptyValue && form['cep'] === '' ?<span className='formField__error_reg'>Este campo é requerido</span>: ''}
                      
-                <UploadImages handleResult={getImagesUrls}/>
+                <UploadImages handleResult={getImagesUrls} cleanImages={cleanImagesForm}/>
+                <div className="message-registration">
+                    {successMessage   ? <span className='success'>Cadastrado com sucesso! <Link to="/properties" className='new-property-link'>Ver Imóveis</Link></span>: ''}
+                    </div>
                 <div className='buttom-register-wrapper'>
-                <Button type='submit'>Cadastrar</Button>
+                 { otherError &&   
+                <div className='other-error'>Erro Inesperado</div>
+                 }
+                  {
+                        loadingTenant && <Button className="button-send-email" type='submit'><Loading/></Button>
+                    }
+                    {
+                        !loadingTenant &&
+                    <Button className="button-send-email" type='submit'>Adicionar</Button>
+                    }
                 </div>
             </FormContainer>
             </form>
         </BodyRegistrationContainer>
        </RegistrationBackground>
+       :''}
+       </div>
             
         
     )

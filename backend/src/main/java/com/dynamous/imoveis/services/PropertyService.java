@@ -11,7 +11,7 @@ import com.dynamous.imoveis.entities.State;
 import com.dynamous.imoveis.entities.Tenant;
 import com.dynamous.imoveis.enums.Goal;
 import com.dynamous.imoveis.enums.Perfil;
-import com.dynamous.imoveis.enums.Type;
+import com.dynamous.imoveis.enums.TypeProperty;
 import com.dynamous.imoveis.repositories.AddressRepository;
 import com.dynamous.imoveis.repositories.CityRepository;
 import com.dynamous.imoveis.repositories.ImageUrlRepository;
@@ -61,7 +61,7 @@ public class PropertyService {
     @Autowired 
     ImageUrlRepository imageUrlRepository;
 
-
+    //PROCURA POR ID
     public Property find(Long id) {
         Optional<Property> property = propertyRepository.findById(id);
         return property.orElseThrow(() -> new ObjectNotFoundException(
@@ -100,7 +100,7 @@ public class PropertyService {
     private void updateData(Property newObj, Property property) {
         newObj.setName(property.getName());
         newObj.setDescription(property.getDescription());
-        newObj.setType(property.getType());
+        newObj.setTypeProperty(property.getTypeProperty());
         newObj.setGoal(property.getGoal());
         newObj.setNumberRooms(property.getNumberRooms());
         newObj.setBathRooms(property.getBathRooms());
@@ -178,9 +178,12 @@ public class PropertyService {
 
     public Property fromDTO(PropertyNewDTO propertyNewDTO) {
     	UserSS user = UserService.authenticated();
-    	        Property property = new Property(null, propertyNewDTO.getName(), propertyNewDTO.getDescription(), Type.toEnum(propertyNewDTO.getType()), Goal.toEnum(propertyNewDTO.getGoal()), 
-    	        									   propertyNewDTO.getNumberRooms(), propertyNewDTO.getBathRooms(), propertyNewDTO.getArea(), propertyNewDTO.getIptu(),
-    	        									   	propertyNewDTO.getVacancies(),propertyNewDTO.getCondominium(), propertyNewDTO.getPrice());
+  
+    		Property property = new Property(null, propertyNewDTO.getName(), propertyNewDTO.getDescription(), TypeProperty.toEnum(propertyNewDTO.getTypeProperty()),Goal.toEnum(propertyNewDTO.getGoal()), 
+					   propertyNewDTO.getNumberRooms(), propertyNewDTO.getBathRooms(), propertyNewDTO.getArea(), propertyNewDTO.getIptu(),
+					   	propertyNewDTO.getVacancies(),propertyNewDTO.getCondominium(), propertyNewDTO.getPrice());    		
+    	
+    	        
     	        
     	     State state= stateRepository.findByName(propertyNewDTO.getState());  	     
     	     City city = cityRepository.findByName(propertyNewDTO.getCity());
@@ -270,11 +273,13 @@ public class PropertyService {
     
 
     }
+    
+    
 
 	public Property fromDTOUpdate(PropertyUpdateDTO propertyUpdateDTO) {
 		
     	UserSS user = UserService.authenticated();
-        Property property = new Property(propertyUpdateDTO.getId(), propertyUpdateDTO.getName(), propertyUpdateDTO.getDescription(), Type.toEnum(propertyUpdateDTO.getType()), Goal.toEnum(propertyUpdateDTO.getGoal()), 
+        Property property = new Property(propertyUpdateDTO.getId(), propertyUpdateDTO.getName(), propertyUpdateDTO.getDescription(), TypeProperty.toEnum(propertyUpdateDTO.getTypeProperty()), Goal.toEnum(propertyUpdateDTO.getGoal()), 
         		propertyUpdateDTO.getNumberRooms(), propertyUpdateDTO.getBathRooms(), propertyUpdateDTO.getArea(), propertyUpdateDTO.getIptu(),
         		propertyUpdateDTO.getVacancies(),propertyUpdateDTO.getCondominium(), propertyUpdateDTO.getPrice());
         

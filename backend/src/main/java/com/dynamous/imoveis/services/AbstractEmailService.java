@@ -52,10 +52,8 @@ public abstract class AbstractEmailService implements EmailService {
     //confirmação de cadastro por email HTML
     protected String htmlFromTemplateTenant(Tenant obj) {
     	Context context = new Context();
-    	context.setVariable("tenant", obj);
-    	
-    	
-    	return templateEngine.process("email/registrationTenantEmail", context);
+    	context.setVariable("tenant", obj);   	
+    	return templateEngine.process("email/confirmationCodeTenantEmail", context);
     }
     
     @Override

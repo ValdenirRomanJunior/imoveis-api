@@ -9,6 +9,7 @@ import { useNavigate } from 'react-router-dom';
 import { newTenant } from '../../services/resources/tenant';
 import Loading from '../../components/Loading';
 import { refreshToken } from '../../services/resources/user';
+import LoadingLogin from '../../components/LoadingLogin';
 
 
 
@@ -19,13 +20,36 @@ type Error = {
 
 
 
-const Registration = () =>{
-    
+const RegistrationTenant = () =>{
+
+    const [otherError, setOtherError] = useState(false);
     const [errors, setErrors] = useState<Error[]>([]);
     const [successMessage, setSuccessMessage] = useState(false);
     const [loadingTenant, setLoadingTenant]=useState(false);
     const navigate = useNavigate();
+
+    const [loadingLogin,setLoadingLogin]= useState(true);
+
+    useEffect(() =>{
+       
+        setTimeout(() =>{
+            setLoadingLogin(false)
+        },1500)
+
+    },[])
    
+    const refreshTokenUser = async ()=>{
+        const  resp = await refreshToken();    
+        if(resp === 204){  
+          navigate('/registrationTenant')
+        }else{
+            navigate('/')
+        }
+    }
+
+  useEffect( () =>  {
+  refreshTokenUser()
+},[])
 
         const [form, setForm] = useState<any>({
             
@@ -71,16 +95,14 @@ const Registration = () =>{
                     
             }
            
-            const handleSubmit = async (e:any) =>{
+            const handleSubmit = async (e:any) => {
                 e.preventDefault();
 
         
                 let emptyValues=Object.values(form).some(obj => obj === '');
                 setEmptyValue(emptyValues);
 
-              
-                
-              
+                      
               
                 let slug: any;            
                 for (var prop in form) { if(prop === 'slug'){slug=form[prop]; } }
@@ -117,26 +139,28 @@ const Registration = () =>{
                         setLoadingTenant(false)
                                                                                        
                     }  
+                    else if(data.response.status === 404){
+                        console.log(data.response.status)
+                        setOtherError(true)
+                        setSuccessMessage(false)
+                        setLoadingTenant(false)
+
+                        setTimeout(()=>{
+                            setOtherError(false)
+                        },2000)
+                    }
             },2000)  
                              
         }                     
       }
 
       
-      const refreshTokenUser = async ()=>{
-          const  resp = await refreshToken();    
-          if(resp === 204){  
-            navigate('/registrationTenant')
-          }else{
-              navigate('/')
-          }
-      }
-  
-    useEffect( () =>  {
-    refreshTokenUser()
-  },[])
+ 
             
     return(
+        <div>
+        { loadingLogin &&  <LoadingLogin/> }
+   { !loadingLogin ?  
        <RegistrationBackground>
         <Header />
         <BarTop />
@@ -173,6 +197,9 @@ const Registration = () =>{
             
        
                 <div className='buttom-register-wrapper'>
+                { otherError &&   
+                <div className='other-error'>Erro Inesperado</div>
+                 }
                 {
                         loadingTenant && <Button className="button-send-email" type='submit'><Loading/></Button>
                     }
@@ -186,11 +213,13 @@ const Registration = () =>{
            
         </BodyRegistrationContainer>
        </RegistrationBackground>
+       :''}
+       </div>
             
         
     )
 }
 
-export default Registration;
+export default RegistrationTenant;
 
 

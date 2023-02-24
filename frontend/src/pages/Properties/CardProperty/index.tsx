@@ -35,7 +35,7 @@ const CardListItem = ({property}: Props) =>{
 
     return(
         <CardWrapper>
-        <Card width='100%' height='100%' noShadow={true}>
+        <Card width='100%' height='100%' noShadow={true} borderRadius="0" background={false}>
             
               <CardContent>
                     
@@ -44,7 +44,14 @@ const CardListItem = ({property}: Props) =>{
                      <div className='text-wrapper-card'>
                      <Link to={`/details/${property.id}`}> <p className='title-card-property'>{property.name}</p> </Link>  
                      <p className='value'>R${property.price}</p>
-                     <p className='localization'><BiMap className='localization-icon'/>{property.address.city.name}{property.address.district}</p>
+                     <div className='localization-wrapper'>
+                     <p className='localization'><BiMap className='localization-icon'/>
+                     {property.address.city.name}</p>
+
+                     <p className='localization district-localization'>
+                     {property.address.district}</p>
+                     </div>
+                         
                          <div className='links-card'>
                          <Link to={`/edit/${property.id}`}><p><AiOutlineEdit  className='icon-links' /> Editar</p></Link>                         
                          <a><p><BsTrash className='icon-links'/>Excluir</p></a>  
@@ -79,7 +86,6 @@ const CardProperty = ()=>{
         empty: true
     });
 
-   
    
     const getProperties = async () => {
         const {data}= await propertiesPageable(pageNumber);

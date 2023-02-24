@@ -14,6 +14,7 @@ import { newLead } from "../../services/resources/lead";
 import { Link, useNavigate } from "react-router-dom";
 import Loading from "../../components/Loading";
 import { refreshToken } from "../../services/resources/user";
+import LoadingLogin from "../../components/LoadingLogin";
 
 type Error = {
     fieldName:string;
@@ -25,6 +26,29 @@ const Leads = () => {
     const navigate = useNavigate();
 
     const [errors, setErrors] = useState<Error[]>([]);
+
+    const [loadingLogin,setLoadingLogin]= useState(true);
+
+    useEffect(() =>{
+       
+        setTimeout(() =>{
+            setLoadingLogin(false)
+        },1500)
+
+    },[])
+
+    const refreshTokenUser = async ()=>{
+        const  resp = await refreshToken();    
+        if(resp === 204){  
+          navigate('/leads')
+        }else{
+            navigate('/')
+        }
+    }
+
+  useEffect( () =>  {
+  refreshTokenUser()
+},[])
 
     const [form,setForm]=useState<any>({
         name:'',
@@ -145,20 +169,12 @@ const Leads = () => {
     }
 
  
-    const refreshTokenUser = async ()=>{
-        const  resp = await refreshToken();    
-        if(resp === 204){  
-          navigate('/leads')
-        }else{
-            navigate('/')
-        }
-    }
 
-  useEffect( () =>  {
-  refreshTokenUser()
-},[])
 
     return(
+        <div>
+        { loadingLogin &&  <LoadingLogin/> }
+   { !loadingLogin ?  
         <LeadsBackground>
             <Header />
             <BarTop />
@@ -213,6 +229,8 @@ const Leads = () => {
             
             </LeadsContainer>
         </LeadsBackground>
+        :''}
+        </div>
     )
 
 

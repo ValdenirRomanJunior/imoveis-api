@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import Button from '../../components/Button';
 import Header from '../../components/Header';
 
@@ -7,9 +7,21 @@ import BarTop from '../../components/Bartop';
 import { Link, useNavigate } from 'react-router-dom';
 import CardTenant from './CardTenant';
 import { refreshToken } from '../../services/resources/user';
+import LoadingLogin from '../../components/LoadingLogin';
 
 
 const Tenants = ()=>{
+
+  
+  const [loadingLogin,setLoadingLogin]= useState(true);
+
+  useEffect(() =>{
+     
+    setTimeout(() =>{
+        setLoadingLogin(false)
+    },2000)
+
+},[])
 
     const navigate = useNavigate();
     const refreshTokenUser = async ()=>{
@@ -26,6 +38,9 @@ const Tenants = ()=>{
 },[])
     
     return(
+      <div>
+      { loadingLogin &&  <LoadingLogin/> }
+ { !loadingLogin ?  
     <TenantsBackground>
        <Header /> 
       <BarTop />
@@ -39,6 +54,8 @@ const Tenants = ()=>{
         <CardTenant />
        </BodyTenantsContainer>
     </TenantsBackground>
+     :''}
+     </div>
     )
 
 }

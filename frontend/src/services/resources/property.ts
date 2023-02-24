@@ -4,14 +4,13 @@ import api from "../../utils/requests";
 
 
 export const findProperty = (id:string) => {
-    return api.get<Property>(`/properties/find/${id}`,) 
+    return api.get(`/properties/find/${id}`,) 
                   .then(response =>{
-                    if(response.data != null){
-                      return response.data as Property
-                     
-                    }
                    
+                      return response;
+                                   
                   }).catch((error) =>{
+                   
                     return error
                    
                 });
@@ -20,12 +19,12 @@ export const findProperty = (id:string) => {
 export const findPropertyLead = (id:string) => {
   return api.get<Property>(`/properties/findLeadProperty/${id}`,) 
                 .then(response =>{
-                  if(response.data != null){
-                    return response.data as Property
-                   
+                         
+                    return response; 
+                               
                   }
                  
-                }).catch((error) =>{
+                ).catch((error) =>{
                   return error
                  
               });
@@ -52,28 +51,28 @@ export const propertiesPageable = (pageNumber: number) => {
 
 
 
-export const newProperty = (name:string, description:string, goal: number, type: number,numberRooms:string,
+export const newProperty = (name:string, description:string, typeProperty: number,goal: number,numberRooms:string,
     bathRooms:string,area:string,iptu:string, vacancies:string, condominium:string, price:number, state:string, city:string,
      district: string, street: string, number: number, cep: string, images: ImageItem[]) => {
-    return api.post('/properties/save',{name, description, goal, type, numberRooms, bathRooms,area,iptu,vacancies,condominium,                                      
+    return api.post('/properties/save',{name, description, typeProperty, goal, numberRooms, bathRooms,area,iptu,vacancies,condominium,                                      
                                                 price,state,city, district, street, number, cep, images})
                                                  .then(response =>{
-                                                    console.log(response.data)
+                                                  return response
                                                  }).catch((error) =>{
                                                     return error
                                                    
                                                 });
 }
 
-export const editProperty = (name:string, description:string, goal: number, type: number,numberRooms:string,
+export const editProperty = (name:string, description:string, typeProperty: number,goal: number,numberRooms:string,
     bathRooms:string,area:string,iptu:string, vacancies:string, condominium:string, price:number, state:string, city:string,
      district: string, street: string, number: number, cep: string, images: ImageItem[], id:string) => {
         
-    return api.put(`/properties/update/${id}`,{name, description, goal, type, numberRooms, bathRooms,area,iptu,vacancies,condominium,                                      
+    return api.put(`/properties/update/${id}`,{name, description, typeProperty, goal, numberRooms, bathRooms,area,iptu,vacancies,condominium,                                      
                                                 price,state,city, district, street, number, cep, images})
                                                
                                                  .then(response =>{
-                                                    console.log(response.data)
+                                                    return response;
                                                  }).catch((error) =>{
                                                     return error
                                                    

@@ -64,7 +64,8 @@ public class PropertyController {
     
     @PostMapping(value="/save")
     public ResponseEntity<Void> save(@Valid @RequestBody PropertyNewDTO propertyNewDTO){
-    	  System.out.println(propertyNewDTO.getImages());
+    	  System.out.println(propertyNewDTO.getImages()+"recebi as imagens no controller"+ propertyNewDTO.getGoal());
+    	  
         Property property = service.fromDTO(propertyNewDTO);
       
         service.save(property);
@@ -77,6 +78,7 @@ public class PropertyController {
     @PutMapping(value = "/update/{id}")
     public ResponseEntity<Void> update(@RequestBody PropertyUpdateDTO propertyUpdateDTO, @PathVariable Long id){
     	propertyUpdateDTO.setId(id);
+    	System.out.println(propertyUpdateDTO.getTypeProperty() + " tipo da propriedade aqui"); 
     	Property property = service.fromDTOUpdate(propertyUpdateDTO); 
     	
         property.setId(id);			     				
@@ -110,14 +112,14 @@ public class PropertyController {
    public ResponseEntity <Page<Property>> findPageSearch(
             @RequestParam(value = "city",defaultValue = "") String city,
             @RequestParam(value = "goal",defaultValue = "") String goal,
-            @RequestParam(value = "type",defaultValue = "") String type,
+            @RequestParam(value = "typeProperty",defaultValue = "") String typeProperty,
             @RequestParam(value = "page",defaultValue = "0") Integer page,
             @RequestParam(value = "linesPerPage",defaultValue = "24")  Integer linesPerPage,
             @RequestParam(value = "orderBy",defaultValue = "name")String orderBy,
             @RequestParam(value = "direction",defaultValue = "ASC")  String direction){
         //verificar se vem nullo nos parametros
         
-       Page<Property> list =service.search(city,goal, type,page, linesPerPage, orderBy, direction);
+       Page<Property> list =service.search(city,goal, typeProperty,page, linesPerPage, orderBy, direction);
        
        	for( Property item : list) {
        		 		

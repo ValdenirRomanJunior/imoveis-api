@@ -5,7 +5,7 @@ package com.dynamous.imoveis.entities;
 import javax.persistence.*;
 
 import com.dynamous.imoveis.enums.Goal;
-import com.dynamous.imoveis.enums.Type;
+import com.dynamous.imoveis.enums.TypeProperty;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -22,7 +22,7 @@ public class Property implements Serializable {
     private Long id;
     private String name;
     private String description;
-    private Integer type;
+    private Integer typeProperty;
     private Integer goal;
     private String numberRooms;
     private String bathRooms;
@@ -47,13 +47,13 @@ public class Property implements Serializable {
     public Property() {
     }
 
-    public Property(Long id, String name, String description, Type type, Goal goal, String numberRooms,
+    public Property(Long id, String name, String description, TypeProperty typeProperty, Goal goal, String numberRooms,
     		String bathRooms,String area, String iptu,String vacancies,String condominium, String price) {
         this.id = id;
         this.name = name;
         this.description = description;
-        this.type = type.getCod();
-        this.goal = goal.getCod();
+        this.typeProperty = (typeProperty == null) ? null : typeProperty.getCod();
+        this.goal = (goal == null) ? null : goal.getCod();
         this.numberRooms=numberRooms;
         this.bathRooms=bathRooms;
         this.area=area;
@@ -89,12 +89,12 @@ public class Property implements Serializable {
         this.description = description;
     }
 
-    public Type getType() {
-        return Type.toEnum(type);
+    public TypeProperty getTypeProperty() {
+        return TypeProperty.toEnum(typeProperty);
     }
 
-    public void setType(Type type) {
-        this.type = type.getCod();
+    public void setTypeProperty(TypeProperty typeProperty) {
+        this.typeProperty = typeProperty.getCod();
     }
 
     public Goal getGoal() {

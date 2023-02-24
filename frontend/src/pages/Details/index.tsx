@@ -1,6 +1,6 @@
 import BarTop from '../../components/Bartop';
 import Header from '../../components/Header';
-import {DetailsBackground,DetailsBodyContainer, Localization,Description,PhotosContainer,CardWrapper} from './styles';
+import {DetailsBackground,DetailsBodyContainer, Localization,Description,PhotosContainer,CardWrapper,TitleWrapper} from './styles';
 import {BiMap} from 'react-icons/bi';
 import Detail from './Detail';
 import Address from './Address';
@@ -13,7 +13,9 @@ import "./styles.css";
 import Carousel from 'react-elastic-carousel';
 import defaultImage from '../../assets/images/no-pictures.png'
 import { refreshToken } from '../../services/resources/user';
-
+import {MdOutlineCopyAll} from 'react-icons/md'
+import PageNotFound from '../../components/PageNotFound';
+import LoadingLogin from '../../components/LoadingLogin';
 
 
 
@@ -21,13 +23,45 @@ const Details = ()=>{
     const navigate = useNavigate();
     const params = useParams();
 
+    const [loadingLogin,setLoadingLogin]= useState(true);
     const [property, setProperty]= useState<Property>();
+    const [copyUrl,setCopyUrl]= useState(false);
+    const [errors,setErrors]=useState();
 
-    
+
+
+    useEffect(() =>{
+       
+        setTimeout(() =>{
+            setLoadingLogin(false)
+        },1500)
+
+    },[])
+
+    const refreshTokenUser = async ()=>{
+        const  resp = await refreshToken();    
+        if(resp === 204){  
+          navigate(`/details/${params.propertyId}`)
+        }else{
+            navigate('/')
+        }
+    }
+
+  useEffect( () =>  {
+  refreshTokenUser()
+},[params.propertyId])
 
     const getProperty = async() => {             
         const dataProperty = await findProperty(`${params.propertyId}`);
-        setProperty(dataProperty);
+        if(dataProperty.status === 200){  
+            console.log(dataProperty.status) 
+            setProperty(dataProperty.data as Property) 
+          } 
+          else if(dataProperty.response.status === 404){ 
+            console.log(dataProperty.response.data.error)
+            setErrors(dataProperty.response.data.error);
+             
+          }  
       
         
     }
@@ -38,7 +72,7 @@ const Details = ()=>{
     }, [`${params.propertyId}`]);
 
     const details = {
-        type:property?.type as string, 
+        typeProperty:property?.typeProperty as string, 
         goal:property?.goal as string,
         area:property?.area as string,
         numberRooms:property?.numberRooms as string,
@@ -64,57 +98,67 @@ const Details = ()=>{
         {width: 1200, itemToShow: 4},
     ]
 
-    const refreshTokenUser = async ()=>{
-        const  resp = await refreshToken();    
-        if(resp === 204){  
-          navigate(`/details/${params.propertyId}`)
-        }else{
-            navigate('/')
-        }
+
+
+    
+
+    const copyPropertyUrl = () => {
+        var url_atual = window.location.href;
+       
+        navigator.clipboard.writeText(url_atual);
+        setCopyUrl(true)
+        setTimeout(() => {
+            setCopyUrl(false)
+        },3000)
+
     }
 
-  useEffect( () =>  {
-  refreshTokenUser()
-},[params.propertyId])
-
     return(
+        <div>
+        { loadingLogin &&  <LoadingLogin/> }
+   { !loadingLogin ?  
+        <>
+        {errors && <div><PageNotFound/></div> }
+    
     <DetailsBackground>
             <Header />
              <BarTop />
-        <DetailsBodyContainer>
+        <DetailsBodyContainer copyUrl={copyUrl}>
      
         <PhotosContainer>
-                  <div className='container'>
+                  <div className='container-photos'>
                     <div className='controls-wrapper'>
 
                     </div>
                     <hr className='seperator'/>
                     <div className='carousel-wrapper'>
-                        <Carousel isRTL breakPoints={breakPoints}>
-                         
+                        <Carousel isRTL breakPoints={breakPoints}>                        
                         {property?.images && property.images.map((photo) =>           
                                <CardWrapper>
                               <img src={photo.url}  alt="algo"/>
                               
                              </CardWrapper>)}
-                             {property?.images?.length===0 as number  && ( <CardWrapper><img src={defaultImage} alt='Foto Padrão'/></CardWrapper>)}
-                                 
-               
+                             {property?.images?.length===0 as number  && ( <CardWrapper><img src={defaultImage} alt='Foto Padrão'/></CardWrapper>)}             
                         </Carousel>
-
                     </div>
                   </div>
                
              </PhotosContainer>
          
          
-         <h2 className='price'>R$ {property?.price}</h2>
+         <h2  className='price'>R$ {property?.price}</h2>
          <Localization>
-        <BiMap />
-        <p>{property?.address.street}, {property?.address.number}, {property?.address.district}, {property?.address.city.name}</p>
+         <div className='localization-detail-wrapper'>               
+         <p  className='localization-district-detail-wrapper'><BiMap className='icon-localization-detail'/>{property?.address.district}</p>
+         <p  className='localization-city-detail-wrapper'>{property?.address.city.name}</p>
+        </div>
          </Localization>
-         <h3 className='title'>{property?.name}</h3>
-         <h4 >Descrição</h4>
+         
+        <TitleWrapper>
+         <h3>{property?.name}</h3>
+         </TitleWrapper>
+        
+         <h4 id='price'>Descrição</h4>
         <Description>
         <p>{property?.description}
         </p>
@@ -126,10 +170,13 @@ const Details = ()=>{
         <Address address={address}/>
 
         
-    <div className='button-wrapper'><Button style={{marginBottom: 0, borderRadius: "40px", width: "80%"}}>Copiar link</Button></div>
+    <div onClick={copyPropertyUrl} className='button-wrapper'> Copiar link<MdOutlineCopyAll className='icon-copy'/></div>
     </DetailsBodyContainer>
     </DetailsBackground>
-            
+         </> 
+         
+         : ''}
+         </div>     
         
     )
 }

@@ -26,8 +26,10 @@ public class PropertyUpdateDTO implements Serializable {
     @NotEmpty(message = "Preenchimento obrigatório")
     @Length(min=1, max=200, message = "O tamanho deve ser entre 1 e 200 caracteres")
     private String description;
-
-    private Integer type;
+    @NotEmpty(message = "Preenchimento obrigatório")
+    private Integer typeProperty;
+    
+    @NotEmpty(message = "Preenchimento obrigatório")   
     private Integer goal;
     private String numberRooms;
     private String bathRooms;
@@ -108,12 +110,12 @@ public class PropertyUpdateDTO implements Serializable {
         this.description = description;
     }
 
-    public Integer getType() {
-        return type;
+    public Integer getTypeProperty() {
+        return typeProperty;
     }
 
-    public void setType(Integer type) {
-        this.type = type;
+    public void setTypeProperty(Integer typeProperty) {
+        this.typeProperty = typeProperty;
     }
 
     public Integer getGoal() {

@@ -97,7 +97,7 @@ public class Tenant implements Serializable {
     }
     
     public void setVerification(Verification verification) {
-        this.verification = verification.getCod();
+        this.verification = (verification == null) ? null : verification.getCod();
     }
     
     
