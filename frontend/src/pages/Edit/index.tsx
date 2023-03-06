@@ -17,6 +17,7 @@ import { refreshToken } from '../../services/resources/user';
 import Loading from '../../components/Loading';
 import PageNotFound from '../../components/PageNotFound';
 import LoadingLogin from '../../components/LoadingLogin';
+import { ErrorBoundary } from 'react-error-boundary';
 
 type Error = {
     fieldName:string;
@@ -61,21 +62,12 @@ const EditComponent = ({property}: Prop) =>{
     const [cleanImagesForm,setCleanImagesForm] = useState(false);
     
     const imagesFromUpdate=(property.images?.map(x => {return {id: x.id, url: x.url, idTenant: x.idTenant, selected: true}})) as ImageItem[];
-    
-    const [loadingLogin,setLoadingLogin]= useState(true);
-
-    useEffect(() =>{
-       
-        setTimeout(() =>{
-            setLoadingLogin(false)
-        },1500)
-
-    },[])
+ 
      
      //pega imagens do UploadImages
   
      const getImagesUrls = (data:ImageItem[]) => {  
-        console.log(data)    
+          
          setImages(data);
        
                                           
@@ -199,7 +191,7 @@ const cleanForm = () =>{
 
         const [emptyValue,setEmptyValue]= useState(false);
 
-            const handleChange = (e:any) =>{
+            const handleChange = (e:any ) =>{
                              
                 const field= e.target.getAttribute('name');
                 const value= e.target.value
@@ -213,39 +205,68 @@ const cleanForm = () =>{
                     setState(e.target.value);
                 }
                
-                            
+            
+                    
+     
             }
 
 
-      
+               
             const handleKeyUp = (e: React.FormEvent<HTMLInputElement>) =>{
-           
-                if(e.currentTarget.name  === 'number') {
-                    number(e)
+
+               
+
+                if(e.currentTarget.name  === 'number'){                  
+                    number(e);
+                    setForm({ ...form,     
+                        number:e.currentTarget.value
+                                   
+                        });
+       
                 }
-                if(e.currentTarget.name  === 'area') {
-                    number(e)
+
+                if(e.currentTarget.name  === 'area'){
+                    number(e);
+                    setForm({ ...form,     
+                        area:e.currentTarget.value
+                                   
+                     });
                 }
-                if(e.currentTarget.name === 'price') {
+                if(e.currentTarget.name === 'price'){
                     currency(e);
+                    setForm({ ...form,     
+                        price:e.currentTarget.value
+                                   
+                     });
                 }
-                if(e.currentTarget.name === 'cep') {
+                if(e.currentTarget.name === 'cep'){
                     cep(e);
+                    setForm({ ...form,     
+                        cep:e.currentTarget.value
+                                   
+                     });
                 }
-                if(e.currentTarget.name === 'condominium') {
+                if(e.currentTarget.name === 'condominium'){
                     currency(e);
+                    setForm({ ...form,     
+                        condominium:e.currentTarget.value
+                                   
+                     });
                 }
-                if(e.currentTarget.name === 'iptu') {
+                if(e.currentTarget.name === 'iptu'){
                     currency(e);
+                    setForm({ ...form,     
+                        iptu:e.currentTarget.value
+                                   
+                     });
                 }
                 setErrors([])
-                        
                     
-            }   
+            }  
                
           
                 
-            const handleSubmit = async (e:any) =>{
+            const handleSubmitForm = async (e:any) =>{
               e.preventDefault();
 
         
@@ -338,6 +359,7 @@ const cleanForm = () =>{
                         setErrors(data.response.data.errors);
                         setSuccessMessage(false)
                         setLoadingTenant(false)
+                        console.log(data.response.data.errors)
                                                                                        
                     }
                     else if(data.response.status === 404){
@@ -352,26 +374,25 @@ const cleanForm = () =>{
                     } 
             },2000) 
            
-        }
+       }
     }
 
-  console.log(form['typeProperty'])
+
                  
     return(
         <div>
-        { loadingLogin &&  <LoadingLogin/> }
-   { !loadingLogin ?  
+     
+       
        <EditBackground>
         <Header />
         <BarTop />
         <BodyEditContainer>
             <h1 className='title-registration'>Editar imóvel</h1>
 
-            <form onSubmit={(e)=> {handleSubmit(e)}}>
+            <form onSubmit={(e)=> {handleSubmitForm(e)}}>
             <FormContainer>
 
-                <label>Título*</label>
-               
+                <label>Título*</label>           
                 <Input id="name" name="name" value={form['name'] } onChange={(e) => handleChange(e)}  maxLength={80}/>
                 {errors.map(x => { if(x.fieldName === 'name') return  <p className='formField__error'>{x.message}</p>})}
                { emptyValue && form['name'] === '' ? <span className='formField__error'>Este campo é requerido</span>: ''}
@@ -429,7 +450,7 @@ const cleanForm = () =>{
                 { emptyValue && form['bathRooms'] === '' ? <span className='formField__error'>Selecione o número de Banheiros</span>: ''}
               
                 <label>Área(m2)*</label>
-                <Input id="area" name="area" value={form['area'] }  onChange={(e) => handleChange(e)} maxLength={11} onKeyUp={handleKeyUp}/>
+                <Input id="area" name="area" value={form['area'] } onChange={(e) => handleChange(e)} maxLength={11} onKeyUp={handleKeyUp}/>
                 {errors.map(x => { if(x.fieldName === 'area') return  <p className=' formField__error'>{x.message}</p>})}
                 { emptyValue && form['area'] === '' ?<span className='formField__error'>Preencha o total da Área interna</span>: ''}
 
@@ -481,7 +502,7 @@ const cleanForm = () =>{
                  ))}
                 </select>
                 {errors.map(x => { if(x.fieldName === 'city') return  <p className=' formField__error'>{x.message}</p>})}
-                { emptyValue && form['city'] === '' ?<span className='formField__error'>Este campo é requerido</span>: ''}
+               
 
                 <label>Bairro</label>
                 <Input  name='district'  id='district' value={form['district'] }  onChange={(e) => handleChange(e)}/>
@@ -495,7 +516,7 @@ const cleanForm = () =>{
                 
                 <label>Número</label>
                 <div className='number-wrapper'>
-                <Input type='text'  name='number' id='number'value={form['number'] }  onKeyUp={handleKeyUp} onChange={(e) => handleChange(e)}/>       
+                <Input type='text'  name='number' id='number' value={form['number']}  onKeyUp={handleKeyUp} onChange={(e) => handleChange(e)}/>       
                 </div>
                 {errors.map(x => { if(x.fieldName === 'number') return  <p className=' formField__error'>{x.message}</p>})}
                 { emptyValue && form['number'] === '' ?<span className='formField__error'>Este campo é requerido</span>: ''}
@@ -515,7 +536,7 @@ const cleanForm = () =>{
                 <div className='other-error'>Erro Inesperado</div>
                  }
                 {
-                        loadingTenant && <Button className="button-send-email" type='submit'><Loading/></Button>
+                        loadingTenant && <Button className="button-send-email" ><Loading/></Button>
                     }
                     {
                         !loadingTenant &&
@@ -526,7 +547,7 @@ const cleanForm = () =>{
             </form>
         </BodyEditContainer>
        </EditBackground>
-       :''}
+  
         </div>    
         
     )
@@ -537,17 +558,18 @@ const Edit = () =>{
     const navigate = useNavigate();
     const params = useParams();
     const [property,setProperty]=useState<Property>();
-    const [errors,setErrors]= useState ('');
+    const [errors,setErrors]= useState (false);
+    const [otherError,setOtherError]= useState (false);
  
-
     const p = `${params.propertyId}`;
 
     const refreshTokenUser = async ()=>{
         const  resp = await refreshToken();    
-        if(resp === 204){  
+        if(resp === 204){             
           navigate(`/edit/${p}`)
-        }else{
-            navigate('/')
+        }else{         
+           navigate('/')
+         
         }
     }
 
@@ -555,17 +577,37 @@ const Edit = () =>{
   refreshTokenUser()
 },[p])
 
+   
+const [loadingLogin,setLoadingLogin]= useState(true);
+
+useEffect(() =>{
+   
+    setTimeout(() =>{
+        setLoadingLogin(false)
+    },1000)
+
+},[])
+
+
     const getProperty = async() => {
-                 
+       
         const data = await findProperty(p);
         if(data.status === 200){  
-            console.log(data.status) 
+         
             setProperty(data.data as Property) 
-          } else if(data.response.status === 404){ 
+          }if(data.response.status === 404){ 
             console.log(data.response.data.error)
-            setErrors(data.response.data.error);
+            setErrors(true);
              
-          }                         
+          }
+
+            if(data.response.status === 400){ 
+            console.log(data.response.data.error)
+            setErrors(true);
+             
+          }
+       
+                                  
     }
    
     useEffect(() => {
@@ -576,15 +618,20 @@ const Edit = () =>{
 
 
 
+     const ErrorHandler = () => {
+        return <PageNotFound/>;
+      }
+
     return(
-        <>
-        {errors && <div><PageNotFound/></div> }
-        <div>
-            {property && (
-            <EditComponent property={property as unknown as Property}/>
-            )}
-        </div>
-        </>
+        <ErrorBoundary FallbackComponent={ErrorHandler}>
+            { loadingLogin &&  <LoadingLogin/> }
+            {errors && <PageNotFound/>}
+           
+          { property?.id  && !errors &&      
+            <EditComponent property={property as unknown as Property}/> }                  
+            
+             
+        </ErrorBoundary>
     )
 }
 

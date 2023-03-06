@@ -4,11 +4,12 @@ import styled from "styled-components";
 export const BodyConfirmationPage = styled.div`
     width:100%;
     display: flex;
-    align-items: center;
+    
     justify-content: center;
     height:100vh;
 
    
+
     .verified-email{
         width: 100%;
         height:100vh;
@@ -20,6 +21,11 @@ export const BodyConfirmationPage = styled.div`
         .icon-verified-email{
             font-size:70px;
             color: green;
+        }
+
+        .icon-error-verification{
+            font-size:70px;
+            color:#ff000094;
         }
 
         p{
@@ -35,24 +41,60 @@ export const BodyConfirmationPage = styled.div`
         }
 
     }
+
+    .page-confirmation-wrapper{
+       margin-top:30px;
+
+       display: flex;
+       flex-direction:column;
+       align-items: center;
+
+        .logo-wrapper-confirmation{
+            width: 120px;
+            height:50px;
+
+            img{
+                width:100%;
+                height: 100%;
+                object-fit: contain;
+            }
+        }
+
+        h2{
+            font-family:"Nunito Sans", sans-serif;
+            color:#727272;
+            font-weight:600;
+            margin-top:10px;
+            font-size:20px;
+        }
+        
         .verify-buttom-register-wrapper {
           
             .loading-verify-button-send-confirmation {
-                background: blue;
+                background:#008ace;
                 position:relative;
-                padding:10px 15px;
-                color:blue;
-                width:175px;
-                height:45px;
+                margin-top:10px;
+                
+                width:155px;
+                height:35px;
+                border:none;
+                border-radius: 2px;
             }
 
             .verify-button-send-confirmation {
+                margin-top:10px;
+                background:#008ace;
                 position:relative;
-                padding:10px 15px;
-                color: blue;
+               font-size:15px;
+                color:#fff;
+                width:155px;
+                height:35px;
+                border:none;
+                border-radius: 2px;
             }
 
         
     }
+}
 
 `

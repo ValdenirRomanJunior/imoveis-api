@@ -7,7 +7,7 @@ const PageNotFound = () =>{
 
        <BodyPageNotFound>
         <div>
-            <p>Que pena, não encontramos esta página.</p>
+            <p>Que pena, Algum erro aconteceu.</p>
             <VscError className='not-found-icon'/>
             <Link to="/dashboard" className='link-back'>Voltar para o início</Link>
 

@@ -76,13 +76,14 @@
         justify-content: center;
     }
 
-    .Modal .message .success{
+    .Modal .message .success {
         font-size: 14px;
         color:green;
         position: absolute;
-        animation: buttons .3s linear;
+        animation: buttons .5s linear;
         background-color: #7fe87f29;
         padding:3px 15px;
+      
        
     }
 
@@ -90,12 +91,15 @@
         
         0%{
             transform: scale(0.1);
+            
         }
         50%{
             transform: scale(0.5);
+           
         }
         100%{
             transform: scale(1);
+           
           
         }
     }
@@ -105,7 +109,9 @@
         font-size: 14px;
         color:rgb(180, 0, 0);
         position: absolute;
-        animation: buttons .3s linear;
+        animation: buttons .5s linear;
         background-color: #e87f7f14;
+        text-align: center;
+       
        
     }

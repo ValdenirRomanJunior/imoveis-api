@@ -7,12 +7,14 @@ import com.dynamous.imoveis.enums.Status;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.MailException;
+import org.springframework.mail.MailSendException;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
+import java.net.UnknownHostException;
 import java.util.Date;
 
 import javax.mail.MessagingException;
@@ -32,17 +34,18 @@ public abstract class AbstractEmailService implements EmailService {
     @Autowired
     private JavaMailSender javaMailSender;
     
+    //verification
     @Override
-    public  void sendRegistrationTenantEmail(Tenant obj){
-        SimpleMailMessage sm = prepareSimpleMailMessageFromTenant(obj);
+    public  void sendVerificationTenantEmail(Tenant obj){
+        SimpleMailMessage sm = prepareSimpleMailMessageFromTenantVerification(obj);
         sendEmail(sm);
     }
 
-    protected  SimpleMailMessage prepareSimpleMailMessageFromTenant(Tenant obj){
+    protected  SimpleMailMessage prepareSimpleMailMessageFromTenantVerification(Tenant obj){
         SimpleMailMessage sm= new SimpleMailMessage();
         sm.setTo(obj.getEmail());
         sm.setFrom(sender);
-        sm.setSubject("Cadastro Dynamob");
+        sm.setSubject("Verificação Cadastro");
         sm.setSentDate(new Date(System.currentTimeMillis()));
         sm.setText(obj.toString());
         return sm;
@@ -50,46 +53,103 @@ public abstract class AbstractEmailService implements EmailService {
     
     
     //confirmação de cadastro por email HTML
-    protected String htmlFromTemplateTenant(Tenant obj) {
+    protected String htmlFromTemplateTenantVerification(Tenant obj) {
     	Context context = new Context();
     	context.setVariable("tenant", obj);   	
     	return templateEngine.process("email/confirmationCodeTenantEmail", context);
     }
     
     @Override
-    public void sendRegistrationHtmlEmail(Tenant obj){
+    public void sendVerificationHtmlEmail(Tenant obj) throws UnknownHostException{
     	try {
-    	MimeMessage mm= prepareMimeMessageFromTenant(obj);
+    	MimeMessage mm= prepareMimeMessageFromTenantVerification(obj);
     	sendHtmlEmail(mm);
     	
-    	}
-             
-    	 catch (MessagingException e) {
-    		 System.out.println("Email não enviado");
-     		sendRegistrationTenantEmail(obj);
-    	 }
-			
-	  	
-    	
+    	}            
+    	 catch (MessagingException | MailSendException e) {
+    		 
+    		 throw new UnknownHostException("Falha ao enviar email");
+    		
+    		 
+    	 }    	
     }
+    
 
-	protected MimeMessage prepareMimeMessageFromTenant(Tenant obj) throws MessagingException {
+	protected MimeMessage prepareMimeMessageFromTenantVerification(Tenant obj) throws MessagingException, MailSendException {
 		MimeMessage mimeMessage = javaMailSender.createMimeMessage();
 		MimeMessageHelper mmh;
 		
 			mmh = new MimeMessageHelper(mimeMessage, true);
 			mmh.setTo(obj.getEmail());
 			mmh.setFrom(sender);	
-			mmh.setSubject("Cadastro confirmado! :" +  obj.getSlug());
+			mmh.setSubject("Verificação de Cadastro :" +  obj.getSlug());
 			mmh.setSentDate(new Date(System.currentTimeMillis()));
-			mmh.setText(htmlFromTemplateTenant(obj),true);
+			mmh.setText(htmlFromTemplateTenantVerification(obj),true);
 					
 		return mimeMessage;
 	}
 	
 	
-	//nova senha por email
 	
+	
+	//registration
+    @Override
+    public  void sendRegistrationTenantEmail(Tenant obj){
+        SimpleMailMessage sm = prepareSimpleMailMessageFromTenantRegistration(obj);
+        sendEmail(sm);
+    }
+
+    protected  SimpleMailMessage prepareSimpleMailMessageFromTenantRegistration(Tenant obj){
+        SimpleMailMessage sm= new SimpleMailMessage();
+        sm.setTo(obj.getEmail());
+        sm.setFrom(sender);
+        sm.setSubject("Cadastro realizado");
+        sm.setSentDate(new Date(System.currentTimeMillis()));
+        sm.setText(obj.toString());
+        return sm;
+    }
+    
+    
+    protected String htmlFromTemplateTenantRegistration(Tenant obj) {
+    	Context context = new Context();
+    	context.setVariable("tenant", obj);   	
+    	return templateEngine.process("email/registrationTenantEmail", context);
+    }
+    
+    @Override
+    public void sendRegistrationHtmlEmail(Tenant obj) throws UnknownHostException{
+    	try {
+    	MimeMessage mm= prepareMimeMessageFromTenantRegistration(obj);
+    	sendHtmlEmail(mm);
+    	
+    	}            
+    	 catch (MessagingException | MailSendException e) {
+    		
+    		 throw new UnknownHostException("Falha ao enviar email");
+    		 
+     		
+    	 }    	
+    }
+
+	protected MimeMessage prepareMimeMessageFromTenantRegistration(Tenant obj) throws MessagingException, MailSendException {
+		MimeMessage mimeMessage = javaMailSender.createMimeMessage();
+		MimeMessageHelper mmh;
+		
+			mmh = new MimeMessageHelper(mimeMessage, true);
+			mmh.setTo(obj.getEmail());
+			mmh.setFrom(sender);	
+			mmh.setSubject("Cadastro realizado :" +  obj.getSlug());
+			mmh.setSentDate(new Date(System.currentTimeMillis()));
+			mmh.setText(htmlFromTemplateTenantRegistration(obj),true);
+					
+		return mimeMessage;
+	}
+	
+
+	
+	
+	
+	//nova senha por email/////////////////////////////////////////////////////////////////////////
 	@Override
 	public void sendNewPasswordEmail(Tenant tenant,String newPass) {
 		  SimpleMailMessage sm= prepareNewPasswordEmail(tenant,newPass);
@@ -108,8 +168,6 @@ public abstract class AbstractEmailService implements EmailService {
 	}
 	
 		
-	//nova senha por email HTML
-	
 	  protected String htmlFromTemplateNewPasswordTenant(Tenant obj,String newPass) {
 	    	Context context = new Context();
 	    	context.setVariable("tenant", obj);
@@ -142,7 +200,10 @@ public abstract class AbstractEmailService implements EmailService {
 			return mimeMessage;
 		}
 		
-		//lead send emails
+		
+		
+		
+		//lead send emails//////////////////////////////////////////////////////////////////////////
 		   public  void sendRegistrationLeadEmail(Lead obj){
 		        SimpleMailMessage sm = prepareSimpleMailMessageFromLead(obj);
 		        sendEmail(sm);

@@ -18,7 +18,7 @@ public class State implements Serializable {
     private String name;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "state")
+    @OneToMany(mappedBy = "state",cascade = CascadeType.ALL)
     private List<City> cities = new ArrayList<>();
 
 

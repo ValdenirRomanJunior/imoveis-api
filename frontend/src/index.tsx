@@ -6,17 +6,15 @@ import { ErrorBoundary} from 'react-error-boundary';
 import PageNotFound from './components/PageNotFound';
 
 
-const ErrorHandler = () => {
-  return <PageNotFound/>;
-}
+
 
 
 
 ReactDOM.render(  
   <React.StrictMode>
-  <ErrorBoundary FallbackComponent={ErrorHandler}>
+
     <App />
-    </ErrorBoundary>
+   
   </React.StrictMode>,
 
   document.getElementById('root')

@@ -76,7 +76,7 @@ public class PropertyController {
 
   
     @PutMapping(value = "/update/{id}")
-    public ResponseEntity<Void> update(@RequestBody PropertyUpdateDTO propertyUpdateDTO, @PathVariable Long id){
+    public ResponseEntity<Void> update(@Valid @RequestBody PropertyUpdateDTO propertyUpdateDTO, @PathVariable Long id){
     	propertyUpdateDTO.setId(id);
     	System.out.println(propertyUpdateDTO.getTypeProperty() + " tipo da propriedade aqui"); 
     	Property property = service.fromDTOUpdate(propertyUpdateDTO); 
@@ -88,7 +88,7 @@ public class PropertyController {
     }
 
   
-    @DeleteMapping(value = "/{id}")
+    @DeleteMapping(value = "/delete/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id){
         service.delete(id);
         return ResponseEntity.noContent().build();
@@ -115,7 +115,7 @@ public class PropertyController {
             @RequestParam(value = "typeProperty",defaultValue = "") String typeProperty,
             @RequestParam(value = "page",defaultValue = "0") Integer page,
             @RequestParam(value = "linesPerPage",defaultValue = "24")  Integer linesPerPage,
-            @RequestParam(value = "orderBy",defaultValue = "name")String orderBy,
+            @RequestParam(value = "orderBy",defaultValue = "id")String orderBy,
             @RequestParam(value = "direction",defaultValue = "ASC")  String direction){
         //verificar se vem nullo nos parametros
         

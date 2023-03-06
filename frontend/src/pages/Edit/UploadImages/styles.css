@@ -1,38 +1,132 @@
-.Modal{
+.ModalE{
     position: absolute;
-    top: 370px !important;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 90%;
-    padding: 1rem 1rem;
-    background-color: #F8FCFF;
-    z-index: 8000 !important;
-}
-
-.Modal .title-fileManager{
-    
-}
-
-.Modal .title-wrapper{
-    margin-top: 45px;
-
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-}
-
-.Modal .title-wrapper .button-add-image{
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    background-color: #009d43;
-    color: #fff;
-    width:35px;
-    height: 35px;
-    border: none;
-    border-radius: 2px;
-    font-size:  30px;
-    font-family: 'Poppins', sans-serif;
+     top:370px !important;
+     left: 50%;
+     transform: translate(-50%, -50%);
+     width: 90%;
    
-}
+     padding: 1rem 1rem;
+     background-color: #F8FCFF;
+     overflow: hidden;
+    
+    
+     
+ }
+ 
+ 
+ .ModalE .title-wrapper{
+     margin-top: 45px;
+     width:100%;
+     padding:12px 10px;
+     display: flex;
+     align-items: center;
+     justify-content: space-around;
+     border-bottom:1px solid #e7e7e7;
+ 
+    
+ }
+ .ModalE .title-wrapper h2{
+     font-family: "Nunito Sans", sans-serif;
+     font-weight: 600;
+     color:#545454;
+ 
+ }
+ 
+ .ModalE .title-wrapper .button-add-image{
+  
+     display: flex;
+     align-items: center;
+     justify-content: center;
+    
+     background: rgba(191,235,214,0.5);
+     color: green;
+     width:30px;
+     height: 30px;
+     border: none;
+     border-radius: 2px;
+     font-size:  30px;
+     font-family: "Nunito Sans", sans-serif;
+     font-weight: 400;
+    
+ }
+ 
+ .ModalE .button-close-modal-registration{
+     position: absolute;
+     top: 13px;
+     right: 6px;
+     font-size: 30px;
+ }
+ 
+ .ModalE form{
+     display: flex;
+     align-items: center;
+     justify-content: center;
+    
+     margin-top: 0;
+     background: rgba(191,235,214,0.5);
+     color: green;
+     width:30px;
+     height: 30px;
+     border: none;
+     border-radius: 2px;
+     font-size:  30px;
+     font-family: "Nunito Sans", sans-serif;
+     font-weight: 400;
+ }
+ .ModalE form input[type='file']{
+    position: absolute;
+    top:0;
+    left: 0;
+    opacity:0;
+    
+   
+ }
+ 
+ input[type=file]::-webkit-file-upload-button{
+     cursor:pointer;
+ }
+ 
+ .ModalE .message-add-image{
+     font-family: "Nunito Sans", sans-serif;
+     color: green;
+     margin-top:10px;
+     width: 100%;
+     padding:0 5px;
+ 
+     display: flex;
+     justify-content: space-between;
+     align-items: center;
+ }
+ 
+ .ModalE .message-add-image button{
+     border: none;
+     width:65px;
+     border-radius: 4px;
+     font-size: 13px;
+     width: 65px;
+     height: 30px;
+     
+ }
+ .ModalE .message-add-image .cancel-button-file{
+     background-color: #dbdbdb;
+     color:#5d5c5c;
+ 
+ }
+ 
+ .ModalE .message-add-image .send-button-file{
+     position: relative;
+     background: rgba(191,235,214,0.5);
+     color: green;
+ 
+ }
+ .ModalE .message-file-success{
+     text-align: center;
+     background: rgba(191,235,214,0.5);
+     color: green;
+ }
+ .ModalE .message-file-error{
+     text-align: center;
+     background: rgb(235 191 191 / 50%);
+     color:#bd2626f0;
+ }
+

@@ -21,7 +21,7 @@ const Properties = ()=>{
        
       setTimeout(() =>{
           setLoadingLogin(false)
-      },1500)
+      },1000)
 
   },[])
 
@@ -41,7 +41,7 @@ const Properties = ()=>{
     return(
       <div>
       { loadingLogin &&  <LoadingLogin/> }
- { !loadingLogin ?  
+ 
     <PropertiesBackground>
        <Header /> 
       <BarTop />
@@ -57,7 +57,7 @@ const Properties = ()=>{
         <CardProperty />
        </BodyPropertiesContainer>
     </PropertiesBackground>
-    :''}
+
     </div>
     )
 

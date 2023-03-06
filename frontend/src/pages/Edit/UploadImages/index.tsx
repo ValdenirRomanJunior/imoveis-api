@@ -8,6 +8,8 @@ import {AiFillCloseCircle} from 'react-icons/ai'
 import '../UploadImages/styles.css'
 import {ImageItem} from '../../../types/Images'
 import { Link, useParams } from 'react-router-dom';
+import { uploadPropertyImage } from '../../../services/resources/property';
+import LoadingFile from '../../../components/LoadingFile';
 
 
 interface PropImages{
@@ -20,11 +22,74 @@ const UploadImages = (props:PropImages) =>{
 
     const params = useParams(); 
     const [imagesSelecteds, setimagesSelecteds] = useState<ImageItem[]>([]);
-  
-  
-   
+
+    const [loading,setLoading]= useState(false);
+    const [error,setError]= useState(false);
+    const [successMessage,setSuccessMessage]= useState(false);
+
+    const [fileBase64,setFileBase64]= useState<string>("");
 
    
+    const handleFile= async()=> {
+        setLoading(true)
+      const data=await  uploadPropertyImage(fileBase64 as string);            
+      if(data.status === 201){     
+              setLoading(false)
+              setSuccessMessage(true)
+              cancelSendImage();
+
+              setTimeout(()=>{
+              setSuccessMessage(false);
+
+              },4000)
+             
+         
+      }
+
+      if(data.status !== 201){        
+              setLoading(false)
+              setError(true);
+              cancelSendImage();
+
+              setTimeout(() => {
+               setError(false);
+              
+              },4000)
+
+              
+                            
+         
+      }
+                
+}
+
+
+
+
+  function convertFile(files: FileList|null){
+        
+      if(files){
+          const fileRef= files[0] || ""
+          const fileType: string=fileRef.type || ""
+          const reader= new FileReader()
+          reader.readAsBinaryString(fileRef)
+          reader.onload=(ev: any) =>{        
+              setFileBase64(`data:${fileType as string};base64,${btoa(ev.target.result )}`);
+              
+                                    
+          }                 
+      }     
+  }
+
+  const cancelSendImage = () => {       
+      Array.from(document.querySelectorAll("input")).forEach(
+          input => (input.value = "")
+        );
+          setFileBase64('')
+      
+      }  
+
+
  const removePhoto =(url:string) => { 
   let  imgs=imagesSelecteds.filter((l => l.url !== url));
   localStorage.setItem('images',JSON.stringify(imgs))
@@ -41,7 +106,8 @@ const UploadImages = (props:PropImages) =>{
     }
     //fecha modal 
     const handleCloseModal =()=>{
-           setIsOpen(false)                     
+           setIsOpen(false) 
+           setFileBase64('');                    
     }
 
    
@@ -94,16 +160,21 @@ const UploadImages = (props:PropImages) =>{
              
                 isOpen={modalIsOpen}
                 onRequestClose={handleToRegistration}   
-                className='Modal'
+                className='ModalE'
               
-                
-                                      
+                                                 
             >
                 <div className='title-wrapper'>
-                <h2 className='title-fileManager'>Todas Minhas Imagens</h2>
-                <button className='button-add-image'>+</button>
+                <h2 className='title-fileManager'>Todas Imagens</h2>
+                <form id='form-image-profile' > +           
+               <input className='input-add-image'  name='file' type="file" accept="image/png,image/jpeg" onChange={(e) => convertFile(e.target.files)}/>
+                 
+             </form> 
+              
                 </div>
-                
+                { successMessage===true && <div className='message-file-success'>Adicionada com sucesso!</div>}
+                 {fileBase64.length>0 && <div className='message-add-image'>Imagem selecionada :<button className='cancel-button-file' onClick={cancelSendImage}>Cancelar</button> {loading===false ? <button className='send-button-file' onClick={handleFile}>Enviar</button>: <button className='send-button-file' ><LoadingFile/></button>}</div>}
+                 { error===true && <div className='message-file-error'>Tente mais tarde</div>}
               
                 
                 <IoCloseOutline onClick={handleCloseModal} className='button-close-modal' />
@@ -114,7 +185,9 @@ const UploadImages = (props:PropImages) =>{
                         selected: false
                     }} onSelectedChanged={function (image: ImageItem): void {
                         throw new Error('Function not implemented.');
-                    } } />
+                    }} onChange={function (image: ImageItem): void {
+                        throw new Error('Function not implemented.'); }}
+                        refreshImages={successMessage}/>                                            
                                
             </Modal>
             </div>

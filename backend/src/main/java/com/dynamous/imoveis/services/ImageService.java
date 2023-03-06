@@ -16,16 +16,19 @@ import java.io.InputStream;
 @Service
 public class ImageService {
 
-    //CONVERTE ALGUM TIPO DE IMAGEM E CONVERTE PARTA JPG
+    //VERIFICA SE É PNG OU JPG
     public BufferedImage getJpgImageFromFile(MultipartFile uploadfile){
+    	
+    	
         String ext = FilenameUtils.getExtension(uploadfile.getOriginalFilename());
-        if(!"png".equals(ext) && !"jpg".equals(ext)){
+       
+        if(!"png".equals(ext) && !"jpeg".equals(ext)){
             throw new FileException("Somente imagens PNG e JPG são permitidos");
         }
 
         try {
             BufferedImage img = ImageIO.read(uploadfile.getInputStream());
-            if("png".equals(ext)){
+            if("image/png".equals(ext)){
                 img = pgnToJpg(img);
             }
             return img;
@@ -34,7 +37,7 @@ public class ImageService {
         }
 
     }
-
+    //CONVERTE PARA GRAVAR NO BUCKET EM JPG
     public BufferedImage pgnToJpg(BufferedImage img) {
         BufferedImage jpgImage = new BufferedImage(img.getWidth(), img.getHeight(),BufferedImage.TYPE_INT_RGB);
         jpgImage.createGraphics().drawImage(img,0,0, Color.WHITE,null);

@@ -20,7 +20,7 @@ public class Address implements Serializable {
 
     @JsonIgnore
     @OneToOne
-    @JoinColumn(name = "property_id", unique=true)  
+    @JoinColumn(name = "property_id")  
     private Property property;
 
     @ManyToOne

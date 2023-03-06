@@ -12,6 +12,8 @@ import {MdOutlineChangeCircle} from 'react-icons/md'
 import Loading from '../../components/Loading';
 import { refreshToken } from '../../services/resources/user';
 import LoadingLogin from '../../components/LoadingLogin';
+import { ErrorBoundary } from 'react-error-boundary';
+import PageNotFound from '../../components/PageNotFound';
 
 type PropParam = {
     tenantId:string;
@@ -33,10 +35,11 @@ const EditTenantComponent = ({tenant}: Prop) =>{
 
     const params = useParams();  
     const [errors, setErrors] = useState<Error[]>([]);
+    
     const [loadingTenant, setLoadingTenant]=useState(false);
     const [successMessage, setSuccessMessage] = useState(false);
     
-    const navigate = useNavigate();
+   
 
     const [loadingLogin,setLoadingLogin]= useState(true);
 
@@ -44,23 +47,11 @@ const EditTenantComponent = ({tenant}: Prop) =>{
        
         setTimeout(() =>{
             setLoadingLogin(false)
-        },1500)
+        },1000)
 
     },[])
 
-    const tParam = `${params.tenantId}`;
-    const refreshTokenUser = async ()=>{
-        const  resp = await refreshToken();    
-        if(resp === 204){  
-          navigate(`/edittenant/${tParam}`)
-        }else{
-            navigate('/')
-        }
-    }
 
-  useEffect( () =>  {
-  refreshTokenUser()
-},[tParam])
   
 
 
@@ -159,29 +150,26 @@ const EditTenantComponent = ({tenant}: Prop) =>{
                 if(!emptySlug && !emptyLastName && !emptyEmail && !emptyStatus && !emptyStatusRange){
                     setLoadingTenant(true)
 
-                    setTimeout(async() =>{
+                
                     
                 const data = await editTenant(slug, lastName, email,password, status,initialValuesVerification() as string,`${params.tenantId} `)
                         console.log(data)
                 if(data.status === 204){
-                   
-                    
+                   console.log(data.status)                    
                     setSuccessMessage(true)
                     setLoadingTenant(false)
-        
-                                  
+                                         
                   }
-               
-                            
+                                           
                   if(data.response.data.errors){              
                     setErrors(data.response.data.errors);
                     setSuccessMessage(false)
                     setLoadingTenant(false)
                                                                                    
-                }  
-            },2000);
-            
-                 
+                } 
+               
+         
+               
          }
         }
 
@@ -190,7 +178,7 @@ const EditTenantComponent = ({tenant}: Prop) =>{
     return(
         <div>
         { loadingLogin &&  <LoadingLogin/> }
-   { !loadingLogin ?  
+ 
        <EditBackground>
         <Header />
         <BarTop />
@@ -247,7 +235,7 @@ const EditTenantComponent = ({tenant}: Prop) =>{
 
         </BodyEditContainer>
        </EditBackground>
-          :''}
+        
           </div>  
         
     )
@@ -257,16 +245,44 @@ const EditTenant = () =>{
 
    
     const params = useParams();
+    const [errorPage, setErrorPage] = useState('');
     const [tenant,setTenant]=useState<Tenant>();
     const p = `${params.tenantId}`;
 
+    const navigate = useNavigate();
 
+    const refreshTokenUser = async ()=>{
+        const  resp = await refreshToken();    
+        if(resp === 204){  
+          navigate(`/edittenant/${p}`)
+        }else{
+          //  navigate('/');
+        }
+    }
+
+  useEffect( () =>  {
+  refreshTokenUser()
+},[p])
 
   
     const getTenant = async() => {
                  
-        const data = await findTenant(p) ;          
-             setTenant(data as Tenant) 
+        const data = await findTenant(p);          
+          
+             if(data.status === 200){               
+                setTenant(data.data as Tenant) 
+              } 
+
+               if(data.response.status === 404){ 
+                console.log(data.response.data.error)
+                setErrorPage(data.response.data.error);
+                 
+              }
+               if(data.response.status === 400){ 
+                setErrorPage(data.response.data.error);
+                 
+              }
+              
                  
     }
 
@@ -278,13 +294,22 @@ const EditTenant = () =>{
      [p]);
 
 
+     const ErrorHandler = () => {
+        return <PageNotFound/>;
+      }
 
     return(
+        <ErrorBoundary FallbackComponent={ErrorHandler}>
+        
+        {errorPage && <PageNotFound/>}
+           
         <div>
-            {tenant && (
+            {tenant && 
             <EditTenantComponent tenant={tenant as unknown as Tenant}/>
-            )}
+        }
         </div>
+             
+          </ErrorBoundary>
     )
 }
 

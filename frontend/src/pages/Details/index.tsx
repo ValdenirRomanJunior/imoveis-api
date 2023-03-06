@@ -16,6 +16,7 @@ import { refreshToken } from '../../services/resources/user';
 import {MdOutlineCopyAll} from 'react-icons/md'
 import PageNotFound from '../../components/PageNotFound';
 import LoadingLogin from '../../components/LoadingLogin';
+import { ErrorBoundary } from 'react-error-boundary';
 
 
 
@@ -34,7 +35,7 @@ const Details = ()=>{
        
         setTimeout(() =>{
             setLoadingLogin(false)
-        },1500)
+        },1000)
 
     },[])
 
@@ -43,7 +44,7 @@ const Details = ()=>{
         if(resp === 204){  
           navigate(`/details/${params.propertyId}`)
         }else{
-            navigate('/')
+       navigate('/')
         }
     }
 
@@ -57,11 +58,16 @@ const Details = ()=>{
             console.log(dataProperty.status) 
             setProperty(dataProperty.data as Property) 
           } 
-          else if(dataProperty.response.status === 404){ 
+          if(dataProperty.response.status === 404){ 
             console.log(dataProperty.response.data.error)
             setErrors(dataProperty.response.data.error);
              
-          }  
+          }
+          if(dataProperty.response.status === 400){ 
+          
+            setErrors(dataProperty.response.data.error);
+             
+          } 
       
         
     }
@@ -113,13 +119,19 @@ const Details = ()=>{
 
     }
 
+    const ErrorHandler = () => {
+        return <PageNotFound/>;
+      }
+    
+
     return(
         <div>
         { loadingLogin &&  <LoadingLogin/> }
-   { !loadingLogin ?  
+   { !errors ?   
         <>
-        {errors && <div><PageNotFound/></div> }
-    
+        <ErrorBoundary FallbackComponent={ErrorHandler}>
+      
+        
     <DetailsBackground>
             <Header />
              <BarTop />
@@ -173,9 +185,10 @@ const Details = ()=>{
     <div onClick={copyPropertyUrl} className='button-wrapper'> Copiar link<MdOutlineCopyAll className='icon-copy'/></div>
     </DetailsBodyContainer>
     </DetailsBackground>
+    </ErrorBoundary>
          </> 
          
-         : ''}
+         : <div><PageNotFound/></div>}
          </div>     
         
     )

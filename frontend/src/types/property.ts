@@ -1,4 +1,7 @@
 export type Property = {
+    error:string;
+    close:boolean;
+    onChange:Function;
     id:number,
     name: string,
     description: string,

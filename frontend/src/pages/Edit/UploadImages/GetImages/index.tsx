@@ -1,12 +1,15 @@
 
 import { useEffect, useState } from 'react';
-import { getTenantImages } from '../../../../services/resources/fileManager';
+import { deleteImagesByTenant, getTenantImages } from '../../../../services/resources/fileManager';
 import {ImageWrapperManager, ImageWrapperGetImages} from './styles';
 import {ImageItem} from '../../../../types/Images'
 import { number } from '../../../Registration/masks';
-
+import Modal from 'react-modal';
 import Button from '../../../../components/Button';
 import { IoCloseOutline } from 'react-icons/io5';
+import React from 'react';
+import { AiFillCloseCircle } from 'react-icons/ai';
+import '../GetImages/stylesDeleteImage.css'
 
 
 
@@ -16,20 +19,43 @@ export type ImageProps = {
     image: ImageItem;
     onSelectedChanged: (image: ImageItem) => void;
     onClick:Function;
-   
-
-    
-   
-    
+    onChange:Function;
+    refreshImages:boolean;
+ 
+ 
+     
   };
 
   
  const ImageComponent = (props:ImageProps)=>{
 
+    const [loading,setLoading]=useState(false);
+    const [loadingSendEmail,setLoadingSendEmail]=useState(false);
+    const [successMessage, setSuccessMessage] = React.useState(false);
+    const [error,setError]=useState('');
+
+
+    const [modalIsOpen, setIsOpen] = React.useState(false);
+
+    function openModal() {
+      setIsOpen(true);
+    }
+  
+ 
+  
+    function closeModal() { 
+     
+      setIsOpen(false);
+      
+    }
+
+
 
     return(
-        <div>          
-          <ImageWrapperGetImages image={props.image.url} >      
+                
+          <ImageWrapperGetImages image={props.image.url} > 
+          <img src={props.image.url} alt='img'/>
+          <AiFillCloseCircle className='button-close-bucket-images' onClick={openModal}/>      
             <input 
             type='checkbox'  
             value={props.image.url}
@@ -42,9 +68,33 @@ export type ImageProps = {
                     selected: el.target.checked
                 }); 
                 }}
-                />                                         
+                /> 
+                <Modal
+        isOpen={modalIsOpen}       
+        onRequestClose={closeModal}      
+        contentLabel="Example Modal"
+        className='Modal-delete'
+        
+      >
+       
+        <h1>Tem certeza que deseja excluir?</h1>
+         
+         <div className="buttons-wrapper-lead">
+              <button onClick={closeModal}  className='cancel-button-lead'>Cancelar</button>
+              <p onClick={()=>props.onChange(props.image.id)}  className='delete-button-lead'>Excluir</p>
+              
+              </div>
+        
+              <div className="message">
+              { !loadingSendEmail && successMessage ===true ? <span className='formField__error success'>Algo deu errado</span>: ''}
+              {error && error ? <span className='formField__error'>{error}</span>: ''}
+             
+              </div>
+            
+      </Modal>                              
+                            
          </ImageWrapperGetImages>
-         </div>
+     
          
          )
         } 
@@ -132,6 +182,25 @@ const GetImages = (props:ImageProps) =>{
                
     },[])
 
+ 
+
+    useEffect(() => {
+        if(props.refreshImages===true){
+          getAllImages();
+        }
+      
+               
+    },[props.refreshImages])
+         
+      const removePhoto = async(id:string) => {  
+          
+            //chamar backend
+            const data = await deleteImagesByTenant(id); 
+            console.log(data)
+          //let newList=images.filter((l => l.url !== url));
+         // localStorage.setItem('images',JSON.stringify(newList))
+          //setImages(newList);          
+      }
 
    
     return(
@@ -143,14 +212,17 @@ const GetImages = (props:ImageProps) =>{
             key={index}
             onSelectedChanged={onChange}
             image={image}
-             onClick={props.onClick}
+            onClick={props.onClick}
+            onChange={removePhoto}
+            refreshImages={props.refreshImages}        
+        
            
            
         />
         
     ))}
       
-    <Button onClick={()=> props.onClick()}  disabled={disable} className="button-fileManager">Selecionar</Button>    
+    <Button onClick={()=> props.onClick()}  disabled={disable} className="button-file-Manager">Selecionar</Button>    
     </ImageWrapperManager>
    
  )

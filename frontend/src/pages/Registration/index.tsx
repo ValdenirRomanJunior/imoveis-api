@@ -52,7 +52,7 @@ const Registration = () =>{
        
         setTimeout(() =>{
             setLoadingLogin(false)
-        },1500)
+        },1000)
 
     },[])
     
@@ -315,7 +315,7 @@ const Registration = () =>{
     return(
         <div>
         { loadingLogin &&  <LoadingLogin/> }
-   { !loadingLogin ?  
+ 
        <RegistrationBackground>
         <Header />
         <BarTop />
@@ -479,7 +479,7 @@ const Registration = () =>{
             </form>
         </BodyRegistrationContainer>
        </RegistrationBackground>
-       :''}
+    
        </div>
             
         

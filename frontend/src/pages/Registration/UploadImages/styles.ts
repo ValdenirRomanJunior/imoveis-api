@@ -68,7 +68,7 @@ img{
 }
 
 .button-close{
-    z-index: 6000;
+   
     position: absolute;
     top:0;
     right: 0;

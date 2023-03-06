@@ -149,3 +149,23 @@ export const CardContainer = styled.main`
     }
    
     `
+
+    export const MessageNoProperties = styled.div`
+    width:100%;
+    height:100vh;
+
+    text- align center;
+
+    h4{
+        position: absolute;
+        top:50%;
+        left: 50%;
+        transform: translate(-50%,-50%);
+        
+        color: gray;
+        font-size:12px;
+        width:100%;
+        text-align: center;
+    }
+
+    `

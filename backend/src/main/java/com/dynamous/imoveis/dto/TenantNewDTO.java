@@ -5,6 +5,8 @@ import org.hibernate.validator.constraints.Length;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+
 import java.io.Serializable;
 
 @TenantInsert
@@ -27,6 +29,12 @@ public class TenantNewDTO implements Serializable {
     @NotEmpty(message = "Preenchimento obrigatório")
     @Length(min=8, max=20, message = "O tamanho deve ser entre 8 e 20 caracteres")
     private String password;
+    
+    @NotEmpty(message = "Preenchimento obrigatório")
+    private String creci;
+    
+    @NotNull
+    private Integer signedDays;
 
     public TenantNewDTO(){
 
@@ -63,6 +71,23 @@ public class TenantNewDTO implements Serializable {
 	public void setLastName(String lastName) {
 		this.lastName = lastName;
 	}
+
+	public String getCreci() {
+		return creci;
+	}
+
+	public void setCreci(String creci) {
+		this.creci = creci;
+	}
+
+	public Integer getSignedDays() {
+		return signedDays;
+	}
+
+	public void setSignedDays(Integer signedDays) {
+		this.signedDays = signedDays;
+	}
     
+	
     
 }

@@ -14,6 +14,10 @@ import { getImageIfExist, refreshToken } from '../../services/resources/user';
 import { getTotalPropertiesById } from '../../services/resources/property';
 import { getTotalLeadsById } from '../../services/resources/lead';
 
+import PageNotFound from '../../components/PageNotFound';
+import PageNotFoundDashboard from '../../components/PageNotFoundDashboard';
+import { ErrorBoundary } from 'react-error-boundary';
+
  
 
 const Dashboard = ()=>{
@@ -22,36 +26,65 @@ const Dashboard = ()=>{
 
     const [loadingLogin,setLoadingLogin]= useState(true);
 
-    const {user, getCurrentUser,refreshTokenUser} = useAuth();
+    const {user, getCurrentUser} = useAuth();
     const [imageUser,setImageUser]= useState<string>("");
     const [totalProperties,setTotalProperties]= useState();
     const [totalLeads,setTotalLeads]= useState();
-
-    const refreshTokens = async ()=>{
-        const  resp = await refreshTokenUser();    
-        if(resp === 204){
-           
-          navigate('/dashboard')
-        }else{
-            navigate('/')
-        }
-    }
-
-  useEffect( () => {
-  refreshTokens()
-},[])
-
+    const [errors,setErrors]= useState(false);
+    
+    
     useEffect(() =>{
-        getCurrentUser();
+       
+        setTimeout(() =>{
+            setLoadingLogin(false)
+        },1000)
 
     },[])
 
-console.log()
-    const userPerfil= user.perfis[0];
+    const refreshTokenUser = async ()=>{
+        const  resp = await refreshToken();    
+        if(resp === 204){  
+          navigate('/dashboard')
+        }else{         
+            navigate('/');
+       
+        }
+    }
+
+  useEffect( () =>  {
+  refreshTokenUser()
+},[])
+
+    useEffect(() =>{
+        
+         getCurrentUser();
+        if(user === null){
+         
+            setErrors(true)
+        }
+    
+        
+
+    },[])
+
+    const [initials, setInitials]= useState(() => {
+        if(user){
+            return user.slug?.substring(0,1)+ user.lastName?.substring(0,1) as string;
+
+        }
+        return 'error' as string;
+
+    });
+
+    const getUserPerfil= () => {
+        const userPerfil= user.perfis[0]; 
+        return userPerfil;
+    }
+   
 
     
     const getUrl = async() =>{       
-        const data=  await getImageIfExist(user.id,userPerfil);
+        const data=  await getImageIfExist(user.id,getUserPerfil());
             if(data){
                // const url=`${BASE_URL_FROM_BUCKET}cp${user.id}.jpg`;
                 setImageUser(data);
@@ -101,29 +134,26 @@ console.log()
                  
                 }, [user.id]);
     
-    useEffect(() =>{
-       
-        setTimeout(() =>{
-            setLoadingLogin(false)
-        },1500)
 
-    },[])
    
-
-
+    
+              
  
-
-    const initials= user.slug.substring(0,1)+ user.lastName.substring(0,1);
+                const ErrorHandler = () => {
+                    return <PageNotFound/>;
+                  }
+    
 
     
 
     
     return(
       
-        
+          
         <div>
-             { loadingLogin &&  <LoadingLogin/> }
-        { !loadingLogin ?  
+        { loadingLogin &&  <LoadingLogin/> }
+        <ErrorBoundary FallbackComponent={ErrorHandler}>
+         {!errors ?    
         <DashboardBackground>
                  
         <Header />     
@@ -178,7 +208,7 @@ console.log()
             <Card width='100%' height='100%' noShadow={true} border='1px solid #e6e9ed' borderRadius='2px' >
                 <UserInfo>
                     <div className='user-image-wrapper-dashboard'>
-                    {imageUser !== '' ? <img src={imageUser} alt='Foto Perfil'/>:<p className='initials'>{initials && initials}</p>}
+                    {imageUser !== '' ? <img src={imageUser} alt='Foto Perfil'/>:<p className='initials'>{initials ? initials : ''}</p>}
                     </div>
                     <p className='name-perfil-dashboard'>Valdenir Roman Junior</p>
                     <p className='message-welcome-perfil'><BsBuilding className='builder-icon'/> Seja bem vindo!</p>
@@ -195,10 +225,12 @@ console.log()
          
         </BodyContainer>
      
-        </DashboardBackground>
-        : ''}
+        </DashboardBackground> 
+        : <PageNotFound/>}  
+        </ErrorBoundary>
+      
         </div>
-        
+      
     )
 }
 

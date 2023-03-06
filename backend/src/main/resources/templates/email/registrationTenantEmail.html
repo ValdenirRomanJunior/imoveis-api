@@ -373,11 +373,11 @@
                       	<div class="img-wrapper">
                       	<img height="70" src="https://dynamous.s3.sa-east-1.amazonaws.com/logo-site.png"/>
                       	</div>
-                        <p>Olá, Valdenir Roman Junior</p>
+                        Olá<p th:text="${tenant.slug}"></p>
                         <p>Seja bem vindo! Você foi cadastrado com sucesso.</p>
                        
                         Login:<p th:text="${tenant.email}"></p>
-                        Senha:<p th:text="${tenant.password}"></p>
+                        <p>Não compartilhamos senhas de clientes por email, caso não se lembre reenvie uma nova senha por email </p>
                         <table role="presentation" border="0" cellpadding="0" cellspacing="0" class="btn btn-primary">
                           <tbody>
                             <tr>

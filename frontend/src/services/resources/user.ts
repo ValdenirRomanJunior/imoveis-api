@@ -1,7 +1,11 @@
 
+import { error } from 'console';
+import { errorMonitor } from 'events';
+import { request } from 'http';
 import apiImage, { BASE_URL_FROM_BUCKET } from '../../utils/request-image';
 import api from '../../utils/requests';
 import { convertToBlob } from './covertToBlob';
+import { getFileExtension } from './getExtImg';
 
 export interface SignInData{
     email: string;
@@ -24,6 +28,8 @@ export interface UserDto{
    perfis: string;
    lastName?:string;
    verification?:string;
+   creci?:string;
+   endDate:string;
    imageUrl?:string;
 
     
@@ -91,8 +97,9 @@ export const getImageIfExist = (id:string,perfil:string) => {
 export const uploadProfileImage = (image:string)=>{
         
         let imageBlob= convertToBlob(image)
+        let ext= getFileExtension(imageBlob.type);
         let formData : FormData = new FormData();
-        formData.set('file',imageBlob,'file.png');
+        formData.set('file',imageBlob,`file.${ext}`);
         return api.post('/pictures/save/profile', formData)
          .then(response =>{
             if(response.data != null){
@@ -122,8 +129,9 @@ export const refreshToken = async () => {
         }
     )
     .catch((error) =>{
+        localStorage.clear()  
         return error
-       
+      
     })
 }
 

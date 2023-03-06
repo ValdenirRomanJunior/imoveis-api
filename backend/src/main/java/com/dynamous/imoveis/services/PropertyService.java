@@ -38,6 +38,7 @@ import java.awt.image.BufferedImage;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @Service
@@ -89,7 +90,7 @@ public class PropertyService {
            }
   
         Property newObj = find(property.getId());
-        System.out.println(newObj.getImages().toString());
+    
         updateData(newObj, property);
         imageUrlRepository.saveAll(newObj.getImages());
         addressRepository.save(newObj.getAddress()); // problema em salvar adress
@@ -154,7 +155,8 @@ public class PropertyService {
     //DELETA UM IMÓVEL
     public void delete(Long id) {
         UserSS user = UserService.authenticated();
-        Property property= propertyRepository.findById(id).get();
+        Property property= find(id);
+       
         if(user==null || !user.hasRole(Perfil.TENANT) && !property.getTenant().getId().equals(user.getId())){
             throw new AuthorizationException("Acesso negado");
         }
@@ -279,12 +281,19 @@ public class PropertyService {
 	public Property fromDTOUpdate(PropertyUpdateDTO propertyUpdateDTO) {
 		
     	UserSS user = UserService.authenticated();
+    	 if(user == null){
+             throw new AuthorizationException("Acesso negado");
+         }
+    	
+    	//jogar excpetion ususrio nulo
         Property property = new Property(propertyUpdateDTO.getId(), propertyUpdateDTO.getName(), propertyUpdateDTO.getDescription(), TypeProperty.toEnum(propertyUpdateDTO.getTypeProperty()), Goal.toEnum(propertyUpdateDTO.getGoal()), 
         		propertyUpdateDTO.getNumberRooms(), propertyUpdateDTO.getBathRooms(), propertyUpdateDTO.getArea(), propertyUpdateDTO.getIptu(),
         		propertyUpdateDTO.getVacancies(),propertyUpdateDTO.getCondominium(), propertyUpdateDTO.getPrice());
         
-     State state= stateRepository.findByName(propertyUpdateDTO.getState());  	     
-     City city = cityRepository.findByName(propertyUpdateDTO.getCity());
+        State state= stateRepository.findByName(propertyUpdateDTO.getState());  	     
+        City city = cityRepository.findByName(propertyUpdateDTO.getCity());
+          
+	 
 	if(state == null) {
 		State stateAux = new State(null,propertyUpdateDTO.getState());
 		 City cityAux= new City(null,propertyUpdateDTO.getCity(), stateAux);		
@@ -292,11 +301,14 @@ public class PropertyService {
 		 property.setAddress(address);
 		       	
 	}else if(state != null && city == null){
-		 City cityAux= new City(null,propertyUpdateDTO.getCity(), state);		
+		
+		 City cityAux= new City(null,propertyUpdateDTO.getCity(), state);
+		 cityAux.setState(state);	
 		 Address address = new Address(propertyUpdateDTO.getId(), propertyUpdateDTO.getStreet(), propertyUpdateDTO.getNumber(), propertyUpdateDTO.getDistrict(), propertyUpdateDTO.getCep(), property, cityAux);
 		 property.setAddress(address);
 		 
 	}else {
+		
 	  	city.setState(state);
         Address address = new Address(propertyUpdateDTO.getId(), propertyUpdateDTO.getStreet(), propertyUpdateDTO.getNumber(), propertyUpdateDTO.getDistrict(), propertyUpdateDTO.getCep(), property, city);
         property.setAddress(address);

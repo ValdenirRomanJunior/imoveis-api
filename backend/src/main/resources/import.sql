@@ -28,8 +28,9 @@ INSERT INTO address(street, number, district, cep, property_id, city_id) VALUES 
 INSERT INTO address(street, number, district, cep, property_id, city_id) VALUES ('Av. Sul', '10','cumbuco', '61619015',3,2);
 INSERT INTO address(street, number, district, cep, property_id, city_id) VALUES ('Av. tabuba', '10','cumbuco', '61619015',4,2);
 
-INSERT INTO image(id, url, id_tenant) VALUES (1,'https://dynamous.s3.sa-east-1.amazonaws.com/1000_F_444090098_XSS1MaKnXeEkgXdfDTD3ODyNOpclDtsx.jpg',1);
-INSERT INTO image(id, url, id_tenant) VALUES (2,'https://dynamous.s3.sa-east-1.amazonaws.com/tp1jpg',1);
+INSERT INTO image(id, url, id_tenant) VALUES (1,'https://dynamous.s3.sa-east-1.amazonaws.com/tp1.jpg',1);
+INSERT INTO image(id, url, id_tenant) VALUES (2,'https://dynamous.s3.sa-east-1.amazonaws.com/tp2.jpg',1);
+
 
 
 INSERT INTO urls(id, id_tenant, url,property_id) VALUES (1,1,'https://dynamous.s3.sa-east-1.amazonaws.com/tp1jpg',1);

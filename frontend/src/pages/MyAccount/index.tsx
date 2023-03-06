@@ -15,6 +15,8 @@ import { BASE_URL_FROM_BUCKET } from '../../utils/request-image';
 import { hasFormSubmit } from '@testing-library/user-event/dist/utils';
 import { useNavigate } from 'react-router-dom';
 import LoadingLogin from '../../components/LoadingLogin';
+import PageNotFound from '../../components/PageNotFound';
+import { ErrorBoundary } from 'react-error-boundary';
 
 
 const MyAccount = ()=>{
@@ -27,15 +29,23 @@ const MyAccount = ()=>{
 
     const {user, getCurrentUser} = useAuth();
 
-    const initials= user.slug.substring(0,1)+ user.lastName.substring(0,1) || '';
+    const [initials, setInitials]= useState(() => {
+        if(user){
+            return user.slug?.substring(0,1)+ user.lastName?.substring(0,1) as string;
 
+        }
+        return 'error' as string;
+
+    });
     const [loadingLogin,setLoadingLogin]= useState(true);
+
+
 
     useEffect(() =>{
        
         setTimeout(() =>{
             setLoadingLogin(false)
-        },1500)
+        },1000)
 
     },[])
 
@@ -44,7 +54,7 @@ const MyAccount = ()=>{
         if(resp === 204){  
           navigate('/account')
         }else{
-            navigate('/')
+           navigate('/')
         }
     }
 
@@ -59,7 +69,10 @@ const MyAccount = ()=>{
     },[])
 
    
-
+    const getUserPerfil= () => {
+        const userPerfil= user.perfis[0]; 
+        return userPerfil;
+    }
     
   
     const formSubmit= async()=> {
@@ -95,12 +108,10 @@ useEffect(() => {
         }     
     }
 
-      //percorrer lista para pegar perfil
-      const userPerfil= user.perfis[0];
       
       
       const getUrl = async() =>{
-        const data=  await getImageIfExist(user.id,userPerfil);
+        const data=  await getImageIfExist(user.id,getUserPerfil());
             if(data !=null){
                // const url=`${BASE_URL_FROM_BUCKET}cp${user.id}.jpg`;
                 setImageUser(data as unknown as string);
@@ -116,19 +127,26 @@ useEffect(() => {
         }, [user.id]);
 
  
+        const ErrorHandler = () => {
+            return <PageNotFound/>;
+          }
 
     
     return(
+        <>
+        {user ? 
+        <ErrorBoundary FallbackComponent={ErrorHandler}>
         <div>
         { loadingLogin &&  <LoadingLogin/> }
-   { !loadingLogin ?  
+ 
     <MyAccountBackground>
        <Header /> 
       <BarTop />
        <BodyMyAccountContainer>
         
         <TitleWrapper>
-        <h1 className='title-account'>Minha Conta</h1>  
+        <h1 className='title-account'>Minha Conta</h1>
+        
         </TitleWrapper>
        <div className='upload'>
         <div className='imgWrapper'>
@@ -138,7 +156,7 @@ useEffect(() => {
         <div className='round'>
         <form id='form-image-profile' onSubmit={formSubmit}>
             
-            <input className='input-image-profile' type="file" onChange={(e) => convertFile(e.target.files)}/>
+            <input className='input-image-profile' type="file" accept="image/png,image/jpeg"  onChange={(e) => convertFile(e.target.files)}/>
             <MdPhotoCamera style={{color:'#fff'}}/>
       
         </form>  
@@ -160,7 +178,7 @@ useEffect(() => {
            
             <div className='card-account-wrapper-date'>
                 <label>Pago até</label>
-                <p>17/11/1988</p>
+                <p>{user.endDate}</p>
             </div>
             <div className='card-account-wrapper-status'>
                 <label>Status</label>
@@ -169,7 +187,7 @@ useEffect(() => {
 
             <div className='card-account-wrapper-email'>
                 <label>CRECI</label>
-                <p>nº - 12345</p>
+                <p>{user.creci}</p>
             </div>
            
             </div>
@@ -178,8 +196,11 @@ useEffect(() => {
         
        </BodyMyAccountContainer>
     </MyAccountBackground>
-      :''}
+  
       </div>
+      </ErrorBoundary>
+      : <PageNotFound/>}
+      </>
     )
 
 }

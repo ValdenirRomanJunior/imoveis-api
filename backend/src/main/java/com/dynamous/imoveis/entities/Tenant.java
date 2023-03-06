@@ -29,7 +29,10 @@ public class Tenant implements Serializable {
     private String password;
     private Integer status;
     private String lastName; 
-    private Integer verification; 
+    private Integer verification;
+    private String creci;
+    private String start;
+    private String endDate;
     
 
     @ElementCollection(fetch = FetchType.EAGER)
@@ -40,7 +43,7 @@ public class Tenant implements Serializable {
         addPerfil(Perfil.TENANT);
     }
 
-    public Tenant(Long id, String slug, String email, String password, Status status, String lastName, Verification verification) {
+    public Tenant(Long id, String slug, String email, String password, Status status, String lastName, Verification verification,String creci,String start, String endDate) {
         this.id = id;
         this.slug = slug;
         this.email = email;
@@ -48,6 +51,9 @@ public class Tenant implements Serializable {
         this.status= (status == null) ? null : status.getCod();
         this.lastName=lastName;
         this.verification=(verification == null) ? null : verification.getCod();
+        this.creci=creci;
+        this.start=start;
+        this.endDate=endDate;
         addPerfil(Perfil.TENANT);
 
     }
@@ -109,6 +115,30 @@ public class Tenant implements Serializable {
 
 	public void setLastName(String lastName) {
 		this.lastName = lastName;
+	}
+	
+    public String getCreci() {
+		return creci;
+	}
+
+	public void setCreci(String creci) {
+		this.creci = creci;
+	}
+
+	public String getStart() {
+		return start;
+	}
+
+	public void setStart(String start) {
+		this.start = start;
+	}
+
+	public String getEndDate() {
+		return endDate;
+	}
+
+	public void setEndDate(String endDate) {
+		this.endDate = endDate;
 	}
 
 	public Set<Perfil> getPerfis(){

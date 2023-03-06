@@ -8,7 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -27,6 +29,7 @@ public class FileManagerController {
     
     @PostMapping(value="/save")
     public ResponseEntity<Void> uploadPropertyPictures(@RequestParam(name="file") MultipartFile file){
+    	 System.out.println(file.getOriginalFilename() + "extensao vinda da img");
         URI uri = service.uploadPropertyPictures(file);
         return ResponseEntity.created(uri).build();
     }
@@ -45,5 +48,11 @@ public class FileManagerController {
             @RequestParam(value = "direction",defaultValue = "ASC")  String direction){
         Page<Image> list=service.findPage(page,linesPerPage,orderBy,direction);
         return ResponseEntity.ok().body(list);
+    }
+    
+    @DeleteMapping(value = "/delete/{id}")
+    public ResponseEntity<Void> delete(@PathVariable Long id){
+        service.deleteFile(id);
+        return ResponseEntity.noContent().build();
     }
 }

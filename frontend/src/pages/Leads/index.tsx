@@ -15,6 +15,8 @@ import { Link, useNavigate } from "react-router-dom";
 import Loading from "../../components/Loading";
 import { refreshToken } from "../../services/resources/user";
 import LoadingLogin from "../../components/LoadingLogin";
+import PageNotFound from "../../components/PageNotFound";
+import { ErrorBoundary } from "react-error-boundary";
 
 type Error = {
     fieldName:string;
@@ -33,7 +35,7 @@ const Leads = () => {
        
         setTimeout(() =>{
             setLoadingLogin(false)
-        },1500)
+        },1000)
 
     },[])
 
@@ -169,12 +171,15 @@ const Leads = () => {
     }
 
  
-
+    const ErrorHandler = () => {
+        return <PageNotFound/>;
+      }
 
     return(
+        <ErrorBoundary FallbackComponent={ErrorHandler}>
         <div>
         { loadingLogin &&  <LoadingLogin/> }
-   { !loadingLogin ?  
+    
         <LeadsBackground>
             <Header />
             <BarTop />
@@ -224,13 +229,14 @@ const Leads = () => {
                     </div>
                   
             </Modal>
-                   
+                            
             <LeadCard param={param as boolean}/>
             
             </LeadsContainer>
         </LeadsBackground>
-        :''}
+   
         </div>
+        </ErrorBoundary>
     )
 
 

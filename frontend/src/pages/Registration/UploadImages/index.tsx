@@ -1,6 +1,6 @@
 import {ImagesContainer, UploadImage,ImageWrapper} from './styles';
 import {MdPhotoCamera} from 'react-icons/md';
-import { useEffect, useState } from 'react';
+import { FormEvent, useEffect, useState } from 'react';
 import Modal from 'react-modal';
 import { IoCloseOutline } from 'react-icons/io5';
 import GetImages from './GetImages';
@@ -8,6 +8,9 @@ import {AiFillCloseCircle} from 'react-icons/ai'
 import '../UploadImages/styles.css'
 import {ImageItem} from '../../../types/Images'
 import { useNavigate } from 'react-router-dom';
+import { url } from 'inspector';
+import { uploadPropertyImage } from '../../../services/resources/property';
+import LoadingFile from '../../../components/LoadingFile';
 
 
 interface PropImages{ 
@@ -19,19 +22,93 @@ interface PropImages{
 const UploadImages = (props:PropImages) =>{
     const navigate = useNavigate();
     const [imagesSelected, setImagesSelected] = useState<ImageItem[]>([]);
+    const [loading,setLoading]= useState(false);
+    const [error,setError]= useState(false);
+    const [successMessage,setSuccessMessage]= useState(false);
    
+    const [fileBase64,setFileBase64]= useState<string>("");
+
+    const [messageFile, setMessageFile]= useState(false);
 
 
-    const removePhoto =(url:string) => {     
+
+    const formSubmit= async()=> {
+          setLoading(true)
+        const data=await  uploadPropertyImage(fileBase64 as string);            
+        if(data.status === 201){     
+                setLoading(false)
+                setSuccessMessage(true)
+                cancelSendImage();
+
+                setTimeout(()=>{
+                setSuccessMessage(false);
+
+                },4000)
+               
+           
+        }
+
+        if(data.status !== 201){        
+                setLoading(false)
+                setError(true);
+                cancelSendImage();
+
+                setTimeout(() => {
+                 setError(false);
+                
+                },4000)
+
+                
+                              
+           
+        }
+                  
+}
+
+useEffect(() => { 
+    if(fileBase64 !== " " || "" || null){
+     
+            //formSubmit()
+              
+    }
+}, [fileBase64]);
+
+
+    function convertFile(files: FileList|null){
+          
+        if(files){
+            const fileRef= files[0] || ""
+            const fileType: string=fileRef.type || ""
+            const reader= new FileReader()
+            reader.readAsBinaryString(fileRef)
+            reader.onload=(ev: any) =>{        
+                setFileBase64(`data:${fileType as string};base64,${btoa(ev.target.result )}`);
+                
+                                      
+            }                 
+        }     
+    }
+
+    const cancelSendImage = () => {       
+        Array.from(document.querySelectorAll("input")).forEach(
+            input => (input.value = "")
+          );
+            setFileBase64('')
+        
+        }            
+    
+        
+
+    const removePhoto =(url:string) => { 
+    
         let newList=imagesSelected.filter((l => l.url !== url));
         localStorage.setItem('images',JSON.stringify(newList))
         setImagesSelected(newList);          
     }
   
+  
  
- 
- 
-useEffect(() => {
+ useEffect(() => {
   
      if(props.cleanImages === true){
         setImagesSelected([]);
@@ -51,6 +128,7 @@ useEffect(() => {
 
     const handleCloseModal =() =>{                 
             setIsOpen(false)
+            setFileBase64('');
                     
     }
 
@@ -70,6 +148,8 @@ useEffect(() => {
         
     }
     localStorage.setItem('images',JSON.stringify(imagesSelected))
+
+
         
     return(
         <ImagesContainer>
@@ -83,19 +163,26 @@ useEffect(() => {
                 <span>PNG e JPG somente</span>
             </UploadImage>
 
-            <Modal 
+            <Modal
                 isOpen={modalIsOpen}
                 onRequestClose={handleToRegistration}   
-                className='Modal'
+                className='ModalR'
                 
                                          
             >
                 <div className='title-wrapper'>
-                <h2 className='title-fileManager'>Todas Minhas Imagens</h2>
-                <button className='button-add-image'>+</button>
+                <h2 className='title-fileManager'>Todas Imagens</h2>
+                
+                <form id='form-image-profile' onSubmit={formSubmit}> +           
+               <input className='input-add-image' name='file' type="file" accept="image/png,image/jpeg" onChange={(e) => convertFile(e.target.files)}/>
+                 
+             </form> 
+                   
                 </div>
-              
-                <IoCloseOutline onClick={handleCloseModal}  className='button-close-modal' />        
+                { successMessage===true && <div className='message-file-success'>Adicionada com sucesso!</div>}
+                 {fileBase64.length>0 && <div className='message-add-image'>Imagem selecionada :<button className='cancel-button-file' onClick={cancelSendImage}>Cancelar</button> {loading===false ? <button className='send-button-file' onClick={formSubmit}>Enviar</button>: <button className='send-button-file' ><LoadingFile/></button>}</div>}
+                 { error===true && <div className='message-file-error'>Tente mais tarde</div>}
+                <IoCloseOutline onClick={handleCloseModal} className='button-close-modal-registration' />        
                 <GetImages  onClick={handleToRegistration} image={{
                         id: 0,
                         url: '',
@@ -103,7 +190,9 @@ useEffect(() => {
                         selected: false
                     }} onSelectedChanged={function (image: ImageItem): void {
                         throw new Error('Function not implemented.');
-                    } } />
+                    } } onChange={function (image: ImageItem): void {
+                        throw new Error('Function not implemented.'); }}
+                        refreshImages={successMessage}/>
                 
                 
             </Modal>

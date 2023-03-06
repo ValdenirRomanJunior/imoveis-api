@@ -9,6 +9,7 @@ import com.dynamous.imoveis.enums.TypeProperty;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
@@ -31,8 +32,10 @@ public class Property implements Serializable {
     private String vacancies;
     private String condominium;
     private String price;
-
-    @OneToMany(fetch = FetchType.EAGER,mappedBy = "property",cascade=CascadeType.REMOVE, orphanRemoval = true)
+    
+    
+    //fetch = FetchType.EAGER,mappedBy = "property",cascade=CascadeType.REMOVE, orphanRemoval = true
+    @OneToMany(mappedBy = "property",fetch = FetchType.EAGER,cascade = CascadeType.REMOVE,orphanRemoval = true)
     private List<ImageUrl> images= new ArrayList<ImageUrl>();
 
 
@@ -41,8 +44,10 @@ public class Property implements Serializable {
     @JoinColumn(name="tenant_id")
     private Tenant tenant;
 
-    @OneToOne(mappedBy = "property",cascade=CascadeType.ALL)
+    @OneToOne(mappedBy = "property",cascade = CascadeType.ALL,orphanRemoval = true)
     private Address address;
+    
+ 
 
     public Property() {
     }
@@ -61,6 +66,7 @@ public class Property implements Serializable {
         this.vacancies=vacancies;
         this.condominium=condominium;
         this.price=price;
+       
      
 
     }
@@ -183,10 +189,9 @@ public class Property implements Serializable {
         this.images = images;
     }
    
-  
 
 
-    @Override
+	@Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;

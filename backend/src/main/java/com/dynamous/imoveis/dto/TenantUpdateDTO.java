@@ -2,6 +2,7 @@ package com.dynamous.imoveis.dto;
 
 
 import com.dynamous.imoveis.enums.Status;
+import com.dynamous.imoveis.services.validation.TenantUpdate;
 
 import org.hibernate.validator.constraints.Length;
 
@@ -11,6 +12,7 @@ import javax.validation.constraints.NotEmpty;
 import java.io.Serializable;
 
 
+@TenantUpdate
 public class TenantUpdateDTO implements Serializable {
     private static final long serialVersionUID = 1L;
 
@@ -35,6 +37,8 @@ public class TenantUpdateDTO implements Serializable {
     private Integer verification; 
     
     private String password;
+    
+    private String creci;
 
     public TenantUpdateDTO(){
 
@@ -97,6 +101,16 @@ public class TenantUpdateDTO implements Serializable {
 
 	public void setVerification(Integer verification) {
 		this.verification = (verification == null) ? null : verification;
+	}
+
+
+	public String getCreci() {
+		return creci;
+	}
+
+
+	public void setCreci(String creci) {
+		this.creci = creci;
 	}
 	
 	

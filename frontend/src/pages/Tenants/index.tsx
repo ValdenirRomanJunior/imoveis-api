@@ -12,14 +12,13 @@ import LoadingLogin from '../../components/LoadingLogin';
 
 const Tenants = ()=>{
 
-  
   const [loadingLogin,setLoadingLogin]= useState(true);
 
   useEffect(() =>{
      
     setTimeout(() =>{
         setLoadingLogin(false)
-    },2000)
+    },1000)
 
 },[])
 
@@ -40,7 +39,7 @@ const Tenants = ()=>{
     return(
       <div>
       { loadingLogin &&  <LoadingLogin/> }
- { !loadingLogin ?  
+
     <TenantsBackground>
        <Header /> 
       <BarTop />
@@ -54,7 +53,7 @@ const Tenants = ()=>{
         <CardTenant />
        </BodyTenantsContainer>
     </TenantsBackground>
-     :''}
+  
      </div>
     )
 

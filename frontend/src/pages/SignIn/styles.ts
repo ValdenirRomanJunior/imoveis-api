@@ -56,7 +56,7 @@ export const Background = styled.div<{image: any}>`
 
 
 `
-export const InputContainer = styled.div`
+export const InputContainer = styled.div<{rotate:boolean}>`
     margin-top: 67px;
     width: 90%;
     flex: 1;
@@ -78,13 +78,31 @@ export const InputContainer = styled.div`
         .resend-verification{
             display: block;
             margin-top:10px;
-            color:#119c47;
+            color:#757575c7;
 
 
             .resend-icon{
-               font-size:20px;
+                transform: rotate(0deg);
+                overflow: hidden;
+                transition: all .3s ease-out;
+                font-size:20px;
                 margin-right:10px;
+                -webkit-transition-delay: now;
+                -webkit-animation-timing-function: linear;
+                animation: ${(props) => (props.rotate ? `rotation 1s infinite  linear` : 'false')}; 
             }
+
+            @keyframes rotation {
+                from {
+                  transform: rotate(0deg);
+                }
+                to {
+                    transform: rotate(360deg);
+                }
+              }
+
+
+          
         }
 
     }

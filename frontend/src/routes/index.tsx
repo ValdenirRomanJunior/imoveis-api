@@ -16,7 +16,6 @@ import RegistrationTenant from "../pages/RegistrationTenant";
 import SignIn from "../pages/SignIn";
 import SignUp from "../pages/SignUp";
 import Tenants from "../pages/Tenants";
-import { ErrorBoundary} from 'react-error-boundary';
 import PageNotFound from "../components/PageNotFound";
 import ConfirmationPage from "../pages/ConfirmationPage";
 
@@ -35,7 +34,8 @@ export const Router = () => {
                 <Route path="/properties" element={<Properties />} />
                 <Route path="/registration" element={<Registration />} />
                 <Route path="/details/:propertyId" element={<Details />} />
-                <Route path="/edit/:propertyId"  element={<Edit/>}/>               
+                <Route path="/edit/:propertyId"  element={<Edit/>}/>
+                             
                 <Route path="/leads" element={<Leads />} />
                 <Route path="/account" element={<MyAccount />} />
                 <Route path="/registrationTenant" element={<RegistrationTenant />} />

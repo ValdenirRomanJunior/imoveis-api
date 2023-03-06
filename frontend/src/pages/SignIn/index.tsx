@@ -11,7 +11,7 @@ import Button from "../../components/Button";
 import { Link, useNavigate } from "react-router-dom";
 import useAuth from '../../hooks/useAuth';
 import './modal.css';
-import { sendNewPasswordForEmail } from "../../services/resources/tenant";
+import { resendEmailConfirmationTenant, sendNewPasswordForEmail } from "../../services/resources/tenant";
 import Loading from "../../components/Loading";
 
 import { refreshToken, UserDto } from "../../services/resources/user";
@@ -42,10 +42,15 @@ const SignIn = () => {
     const [email,setEmail] = useState('');
     const [password,setPassword] = useState('');
     const [error,setError]=useState('');
-    const [errorEmail, setErrorEmail]=useState<ErrorProp[]>([]);
+    const [errorEmail, setErrorEmail]=useState('');
     const [emailNewPassword,setEmailNewPassword]= useState('');
     const [emptyValue,setEmptyValue]= useState(false);
     const [emptyValuePassword,setEmptyValuePassword]= useState(false);
+    const [emptyValueSendEmail,setEmptyValueSendEmail]= useState(false);
+    const [successResend, setSuccessResend] = useState(false);
+    const [rotate, setRotateIcon] = useState(false);
+    const [otherSuccess, setotherSuccess] = useState(false);
+   
 
     const [loading,setLoading]=useState(false);
     const [loadingSendEmail,setLoadingSendEmail]=useState(false);
@@ -53,12 +58,28 @@ const SignIn = () => {
     const [verificationAccount,setVerificationAccount]= useState(true);
     
 
-   // const {user, getCurrentUser} = useAuth();
-    //useEffect(() =>{
-      // se user voltar nulo ir para login
-      //getCurrentUser();
+    const refreshTokenUser = async ()=>{
+      const  resp = await refreshToken();    
+      if(resp === 204){  
+        navigate('/dashboard')
+      }
+        else{
+          navigate('/')
+          setLoading(false)
+        }
+      
+  }
 
-  //},[])
+useEffect( () =>  {
+refreshTokenUser()
+},[])
+
+    const {user, getCurrentUser} = useAuth();
+    useEffect(() =>{
+     
+      getCurrentUser();
+
+  },[])
   
 
 
@@ -67,44 +88,41 @@ const SignIn = () => {
     const {userSignIn} = useAuth();
 
     //Handle Login
-
     const handleToSignIn = async() =>{
       setLoading(true) 
         
 
-  
-       
       let emptyValues=email === '';
       setEmptyValue(emptyValues);
       let emptyValuesPassword=password==='';
       setEmptyValuePassword(emptyValuesPassword);
 
-      if(emptyValues && emptyValuesPassword) {
+      if(emptyValues || emptyValuesPassword) {
         setLoading(false)
       }
      
       if(!emptyValues && !emptyValuesPassword) {
         setTimeout(async () =>{
-
-      
-      
+ 
         const data ={
             email,
             password
         }
 
                              
-       const response =  await userSignIn(data); 
+       const response =  await userSignIn(data);
+    
        const initialsLogin= response.substring(0,3) as string;
        const initialsSecondPart= response.substring(3,13) as string;
-        
           
-          if (initialsLogin !== '200' && initialsSecondPart !== 'VERIFICADO') {         
+          if (initialsLogin !== '200' && initialsSecondPart !== 'VERIFICADO') {  
+            localStorage.clear();       
             setError(response as any)
             setLoadingLogin(false)
             setLoading(false)
           }
           if (initialsLogin === '200' && initialsSecondPart !== 'VERIFICADO') {
+            localStorage.clear();
             setLoadingLogin(false)
             setLoading(false)
             setVerificationAccount(false);
@@ -121,7 +139,7 @@ const SignIn = () => {
           setTimeout(() =>{        
             navigate('/dashboard')
                      
-        },2000) 
+        },1000) 
                  
         }
 
@@ -136,10 +154,10 @@ const SignIn = () => {
         setTimeout(() =>{        
           navigate('/dashboard')
                    
-      },2000) 
+      },1000) 
                
       }
-    },2000)                              
+    },1500)                              
     }   
     setEmail('');
     setPassword('');
@@ -161,75 +179,79 @@ const SignIn = () => {
      
       setIsOpen(false);
       setEmailNewPassword('');
-      setErrorEmail([])
+      setErrorEmail('')
       setSuccessMessage(false)
       setLoadingSendEmail(false)
       setEmptyValue(false)
+      setEmptyValueSendEmail(false)
       
     }
 
-
-    const [successMessage, setSuccessMessage] = React.useState(false); 
-
+    //SEND EMAIL
+    const [successMessage, setSuccessMessage] = React.useState(false);
     const sendNewEmail = async(e:any) =>{ 
+     
       
-      let emptyValuesSendEmail=emailNewPassword === '';
-      setEmptyValue(emptyValuesSendEmail); 
+      let emptyValuesSendEmails=emailNewPassword === '';
+      setEmptyValueSendEmail(emptyValuesSendEmails); 
 
        e.preventDefault();
-       if(emailNewPassword){
-       setLoadingSendEmail(true)
 
-     
-     
+       if(!emptyValuesSendEmails){ 
+        setLoadingSendEmail(true)
         
         const emailDto= emailNewPassword;
           
         const response =  await sendNewPasswordForEmail(emailDto);
        
        
-        try {
-          if(response.response.data.errors !== null){         
-            setErrorEmail(response.response.data.errors as ErrorProp[])
-
+          if(response.status === 204){         
             setLoadingSendEmail(false)
-            setSuccessMessage(false)
+            setTimeout(()=> {
+              setLoadingSendEmail(false)
+              setSuccessMessage(false)
+            },1000)         
+            cleanForm()
         }
-        else{
-          setLoadingSendEmail(false)
-          setSuccessMessage(true);
-          cleanForm()
-         
-         
-        
-        }
+        if(response.response.status === 404){         
           
-        } catch (response) {
-          setLoadingSendEmail(false)       
-          setSuccessMessage(true);
-          cleanForm()
-                     
+          setTimeout(()=> {
+            setErrorEmail(response.response.data.message)
+            setLoadingSendEmail(false)
+          },1000)
+          
+          
+                    
         }
-           
+          else if(response.response.status === 422){          
+          
+          setTimeout(()=> {
+            setErrorEmail(response.response.data.error)
+            setLoadingSendEmail(false)
+          },1000)
+          
+                    
+        }  
+
       }
-      cleanForm()
+     
     }
 
     const handleKeyUp = (e: React.FormEvent<HTMLInputElement>) =>{
              
       if(e.currentTarget.name  === 'email'){
-      
+        setEmptyValue(false)
        setError('');
       }
 
       if(e.currentTarget.name  === 'password'){
-       
+       setEmptyValuePassword(false)
         setError('');
        }
 
        if(e.currentTarget.name  === 'emailNewPass'){
-        setErrorEmail([])
-        setError('');
+        setErrorEmail('')
+        
        }
 
       
@@ -245,27 +267,47 @@ const SignIn = () => {
   
     //refreshtoken
     
-      const refreshTokenUser = async ()=>{
-            const  resp = await refreshToken();    
-            if(resp === 204){  
-              navigate('/dashboard')
-            }
-        }
 
-      useEffect( () =>  {
-      refreshTokenUser()
-    },[])
    
+    const resendVerification = async () => {
+        setRotateIcon(true);
+        setSuccessResend(true);
+        const data= await resendEmailConfirmationTenant(user.email);
+    
+        if(data.status === 204){
+          setTimeout(() => {
+
+            setRotateIcon(false)
+            setotherSuccess(true); 
+          },500)
+          
+          
+          
+          setTimeout(()=>{
+            setotherSuccess(false)    
+            setSuccessResend(false);
+          },4000)
+                                      
+          }
+          else if(data.response.status === 404){
+         
+            setError(data.response.data.message)
+           
+                      
+        }
+    
+    }
 
     return (
     <Wrapper>
         <Background image={background} />
         <Card width="403px" paddingTop="30px">
         <img src={logo} width={172} height={27}  alt="logo dynamous" />
-        <InputContainer>
+        <InputContainer rotate={rotate}>
         
         {!verificationAccount && <p className="account-verification ">Por favor Verifique sua conta no seu email
-        <span className="resend-verification"><BsArrowRepeat className="resend-icon"/>reenviar</span></p>}
+       
+        <span onClick={resendVerification} className="resend-verification"> <BsArrowRepeat className="resend-icon"/>{successResend===false && 'reenviar'}{rotate===true &&'aguarde'}{otherSuccess===true && 'enviado'}</span></p>}
         
         <Input placeholder="EMAIL" onKeyUp={handleKeyUp} name='email' value={email} onChange={e => setEmail(e.target.value)}/>
         { emptyValue && email === '' ? <span className='formField__error'>Por favor digite seu email</span>: ''}
@@ -309,9 +351,9 @@ const SignIn = () => {
                 <Button  onClick={sendNewEmail} className="button-send-email">Enviar</Button>}
             </div>
               <div className="message">
-              { !loadingSendEmail && successMessage ===true   ? <span className='formField__error success'>Email enviado com sucesso!</span>: ''}
-              {errorEmail && errorEmail ? <span className='formField__error'>{errorEmail.map(x => x.message)}</span>: ''}
-              {emptyValue && emailNewPassword === '' ? <span className='formField__error'>Por favor digite seu e-mail</span>:''}
+              { !loadingSendEmail && successMessage ===true ? <span className='formField__error success'>Email enviado com sucesso!</span>: ''}
+              {errorEmail && errorEmail ? <span className='formField__error'>{errorEmail}</span>: ''}
+              {emptyValueSendEmail ? <span className='formField__error'>Por favor digite seu e-mail</span>:''}
               </div>
             
             

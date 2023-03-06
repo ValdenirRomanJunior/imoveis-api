@@ -34,7 +34,7 @@ const RegistrationTenant = () =>{
        
         setTimeout(() =>{
             setLoadingLogin(false)
-        },1500)
+        },1000)
 
     },[])
    
@@ -56,7 +56,9 @@ const RegistrationTenant = () =>{
             slug:"",
             lastName:"",
             email:"",
-            password:""
+            password:"",
+            creci:"",
+            signedDays:"",
          
     
         })
@@ -70,7 +72,9 @@ const RegistrationTenant = () =>{
                 slug:"",
                 lastName:"",
                 email:"",
-                password:""
+                password:"",
+                creci:"",
+                signedDays:"",
                 
             });
             
@@ -95,6 +99,7 @@ const RegistrationTenant = () =>{
                     
             }
            
+          
             const handleSubmit = async (e:any) => {
                 e.preventDefault();
 
@@ -116,14 +121,20 @@ const RegistrationTenant = () =>{
                 let password: any;            
                 for (var prop1 in form) {if(prop1 === 'password'){ password=form[prop1];  }}
 
+                let creci: any;            
+                for (var prop4 in form) {if(prop4 === 'creci'){ creci=form[prop4];  }}
+
+                let signedDays: any;            
+                for (var prop5 in form) {if(prop5 === 'signedDays'){ signedDays=form[prop5];  }}
+
    
                 if(!emptyValues){
                     setLoadingTenant(true)
 
-                    setTimeout(async() =>{
+                   
                     
-                const data = await newTenant(slug, lastName,email,password)
-                
+                const data = await newTenant(slug, lastName,email,password,creci,signedDays)
+                console.log(data.response)
                     
                 if(data.status === 201){
                     cleanForm()
@@ -139,7 +150,7 @@ const RegistrationTenant = () =>{
                         setLoadingTenant(false)
                                                                                        
                     }  
-                    else if(data.response.status === 404){
+                    else if(data.response.status === 404 || data.response.status === 400){
                         console.log(data.response.status)
                         setOtherError(true)
                         setSuccessMessage(false)
@@ -149,7 +160,7 @@ const RegistrationTenant = () =>{
                             setOtherError(false)
                         },2000)
                     }
-            },2000)  
+         
                              
         }                     
       }
@@ -160,15 +171,13 @@ const RegistrationTenant = () =>{
     return(
         <div>
         { loadingLogin &&  <LoadingLogin/> }
-   { !loadingLogin ?  
+  
        <RegistrationBackground>
         <Header />
         <BarTop />
         <BodyRegistrationContainer>
             <h1 className='title-registration'>Cadastrar Imobiliária</h1>
-            <div className="message">
-                    {successMessage   ? <span className='success'>Cadastrado com sucesso!</span>: ''}
-                    </div>
+          
 
             <form onSubmit={(e)=> {handleSubmit(e)}}>
             <FormContainer>
@@ -193,12 +202,25 @@ const RegistrationTenant = () =>{
                 {errors.map(x => { if(x.fieldName === 'password') return  <p className=' formField__error'>{x.message}</p>})}
                 { emptyValue && form['password'] === '' ?<span className='formField__error'>Este campo é requerido</span>: ''}
               
+                <label>creci*</label>
+                <Input id="creci" name="creci"   onChange={(e) => handleChange(e)} onKeyUp={handleKeyUp} maxLength={20}/>
+                {errors.map(x => { if(x.fieldName === 'creci') return  <p className=' formField__error'>{x.message}</p>})}
+                { emptyValue && form['creci'] === '' ?<span className='formField__error'>Este campo é requerido</span>: ''}
 
-            
-       
+                <label>Plano</label>
+                <select  name='signedDays' placeholder='signedDays' id='signedDays'   onChange={(e) => handleChange(e)} >
+                    <option value=''  >Selecione</option>
+                    <option key='1' value='30'>1 mês</option>
+                    <option  key='2' value='90'>3 meses</option>
+                    <option  key='3' value='180'>6 meses</option>
+                    <option  key='4' value='360'>1 ano</option>
+                </select>
+                {errors.map(x => { if(x.fieldName === 'signedDays') return  <p className=' formField__error'>{x.message}</p>})}
+                { emptyValue && form['signedDays'] === '' ?<span className='formField__error'>Este campo é requerido</span>: ''}
+      
                 <div className='buttom-register-wrapper'>
                 { otherError &&   
-                <div className='other-error'>Erro Inesperado</div>
+                <div className='other-error-tenant'>Tente mais tarde</div>
                  }
                 {
                         loadingTenant && <Button className="button-send-email" type='submit'><Loading/></Button>
@@ -208,12 +230,15 @@ const RegistrationTenant = () =>{
                     <Button className="button-send-email" type='submit'>Adicionar</Button>
                     }
                 </div>
+                <div className="messageTenant">
+                    {successMessage   ? <span className='success'>Cadastrado com sucesso!</span>: ''}
+            </div>
             </FormContainer>
             </form>
            
         </BodyRegistrationContainer>
        </RegistrationBackground>
-       :''}
+    
        </div>
             
         

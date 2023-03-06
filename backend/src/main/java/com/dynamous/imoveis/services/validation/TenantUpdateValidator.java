@@ -2,7 +2,7 @@ package com.dynamous.imoveis.services.validation;
 
 import com.dynamous.imoveis.controllers.exceptions.FieldMessage;
 import com.dynamous.imoveis.dto.TenantDTO;
-
+import com.dynamous.imoveis.dto.TenantUpdateDTO;
 import com.dynamous.imoveis.entities.Tenant;
 import com.dynamous.imoveis.repositories.TenantRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class TenantUpdateValidator implements ConstraintValidator<TenantUpdate, TenantDTO> {
+public class TenantUpdateValidator implements ConstraintValidator<TenantUpdate, TenantUpdateDTO> {
 
     @Autowired
     private HttpServletRequest request;
@@ -26,7 +26,7 @@ public class TenantUpdateValidator implements ConstraintValidator<TenantUpdate, 
     public void initialize(TenantUpdate ann) {
     }
     @Override
-    public boolean isValid(TenantDTO tenantDTO, ConstraintValidatorContext context) {
+    public boolean isValid(TenantUpdateDTO tenantUpdateDTO, ConstraintValidatorContext context) {
 
         Map<String, String> map = (Map<String,String>) request.getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE);
         Long uriId= Long.parseLong(map.get("id"));
@@ -34,7 +34,7 @@ public class TenantUpdateValidator implements ConstraintValidator<TenantUpdate, 
 
         List<FieldMessage> list = new ArrayList<>();
 
-        Tenant aux =tenantRepository.findByEmail(tenantDTO.getEmail());
+        Tenant aux =tenantRepository.findByEmail(tenantUpdateDTO.getEmail());
 
         if(aux != null && !aux.getId().equals(uriId)){
             list.add(new FieldMessage("email", "Email já existente"));
@@ -48,4 +48,5 @@ public class TenantUpdateValidator implements ConstraintValidator<TenantUpdate, 
         }
         return list.isEmpty();
     }
+	
 }

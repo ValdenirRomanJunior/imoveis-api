@@ -60,8 +60,7 @@ public class AuthController {
     }
     
     @PostMapping(value = "/forgot")
-    public ResponseEntity<Void> forgot(@Valid @RequestBody EmailDTO emaildDto){
-    	
+    public ResponseEntity<Void> forgot(@Valid @RequestBody EmailDTO emaildDto){  	
     	authService.sendNewPassword(emaildDto);
         return ResponseEntity.noContent().build();
     }

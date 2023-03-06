@@ -1,5 +1,6 @@
 package com.dynamous.imoveis.services;
 
+import java.net.UnknownHostException;
 import java.util.Random;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,7 +64,7 @@ public class AuthService {
 		}
 }
 	
-public void sendConfirmationRegistration(Tenant tenant) {
+public void sendConfirmationRegistration(Tenant tenant) throws UnknownHostException {
 					
 		tenantRepository.save(tenant);
 		emailService.sendRegistrationHtmlEmail(tenant);

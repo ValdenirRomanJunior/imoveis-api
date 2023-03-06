@@ -11,6 +11,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,22 +28,32 @@ public class PropertyUpdateDTO implements Serializable {
     @NotEmpty(message = "Preenchimento obrigatório")
     @Length(min=1, max=200, message = "O tamanho deve ser entre 1 e 200 caracteres")
     private String description;
-    @NotEmpty(message = "Preenchimento obrigatório")
+    
+    @NotNull 
     private Integer typeProperty;
     
-    @NotEmpty(message = "Preenchimento obrigatório")   
+    @NotNull 
     private Integer goal;
+    @NotEmpty(message = "Preenchimento obrigatório")
     private String numberRooms;
+    @NotEmpty(message = "Preenchimento obrigatório")
     private String bathRooms;
+    @NotEmpty(message = "Preenchimento obrigatório")
     private String area;
+    @NotEmpty(message = "Preenchimento obrigatório")
     private String iptu;
+    @NotEmpty(message = "Preenchimento obrigatório")
     private String vacancies;
+    @NotEmpty(message = "Preenchimento obrigatório")
     private String condominium;
+    @NotEmpty(message = "Preenchimento obrigatório")
     private String price;
     
+    @NotEmpty(message = "Preenchimento obrigatório")
     @Column(unique=true)
     private String uf;
     
+    @NotEmpty(message = "Preenchimento obrigatório")   
     @Column(unique=true)
     private String city;
 

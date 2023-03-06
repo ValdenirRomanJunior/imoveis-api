@@ -5,12 +5,12 @@ import api from "../../utils/requests";
 
 
 export const findTenant = (id:string) => {
-    return api.get<Tenant>(`/tenants/find/${id}`,) 
+    return api.get(`/tenants/find/${id}`,) 
                   .then(response =>{
-                    if(response.data != null){
-                      return response.data 
+                 
+                      return response
                      
-                    }
+                 
                    
                   }).catch((error) =>{
                     return error
@@ -25,8 +25,8 @@ export const tenantsPageable = (pageNumber: number) => {
 
 
 
-export const newTenant = (slug:string, lastName:string, email: string, password:string ) => {
-    return api.post('/tenants/save',{slug, lastName, email,password})
+export const newTenant = (slug:string, lastName:string, email: string, password:string,creci:string,signedDays:number ) => {
+    return api.post('/tenants/save',{slug, lastName, email,password,creci,signedDays})
                                                  .then(response =>{
                                                     return response
                                                  }).catch((error) =>{
@@ -50,10 +50,9 @@ export const editTenant = (slug:string, lastName:string, email: string,password:
   export const sendNewPasswordForEmail=(email:string) => {
     return api.post('/auth/forgot',email,
    
-    )
-    
+    ) 
               .then(response =>{
-                
+                return response;
               }).catch((error) =>{
                 return error;
               })
@@ -76,7 +75,6 @@ export const editTenant = (slug:string, lastName:string, email: string,password:
   export const sendConfirmationTenant=(email:string) =>{
     return api.put('/verification/confirmation',{email})
    
-  
               .then(response =>{
                 return response;
                
@@ -84,3 +82,16 @@ export const editTenant = (slug:string, lastName:string, email: string,password:
                 return error;
               })
   }
+
+  export const resendEmailConfirmationTenant=(email:string) =>{
+    return api.post('/verification/resend',{email})
+   
+              .then(response =>{
+                return response;
+               
+              }).catch((error) =>{
+                return error;
+              })
+  }
+
+  

@@ -46,7 +46,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 			"/auth/forgot/**",
 			"/properties/totalProperties/**",
 			"/verification/**",
-			"/leads/**"
+			"/leads/**",
+			"/properties/delete/**"
+			
 			
 			
 				
@@ -111,7 +113,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		return source;
 	}
 	@Bean
-	public BCryptPasswordEncoder bCryptPasswordEncoder(){
+	public BCryptPasswordEncoder bCryptPasswordEncoder(){		
 		return new BCryptPasswordEncoder();
 	}
 	

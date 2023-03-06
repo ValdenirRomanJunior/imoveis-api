@@ -16,6 +16,7 @@ import { IoCloseOutline } from "react-icons/io5";
 import "./ModalStyleLeadCard.css";
 import LoadingLogin from "../../../components/LoadingLogin";
 import PageNotFound from "../../../components/PageNotFound";
+import PaginationLead from "../../../components/PaginationLead";
 
 
 type Prop={
@@ -46,7 +47,7 @@ const LeadCardItem = ({id,name,lastName,email,phone, message, propertyId, onChan
             console.log(data.status) 
             setProperty(data.data as Property) 
           } else if(data.response.status === 404){ 
-            console.log(data.response.data.error)
+         
             setErrors(data.response.data.error);
              
           }  
@@ -99,6 +100,8 @@ const LeadCardItem = ({id,name,lastName,email,phone, message, propertyId, onChan
         }, 1000);
        
       }
+
+
       const handleOpenModal =() => {
           setIsOpen(true)
       }
@@ -114,8 +117,8 @@ const LeadCardItem = ({id,name,lastName,email,phone, message, propertyId, onChan
   
      
     return(
-        <>
-        {errors && <div><PageNotFound/></div> }
+       
+       // {errors && <div><PageNotFound/></div> }
      <LeadWrapper prop={hiddenMessage}>
                 {loading &&<LoadingLogin/>}
                 <div className="content-first" onClick={openMessage}>
@@ -131,7 +134,7 @@ const LeadCardItem = ({id,name,lastName,email,phone, message, propertyId, onChan
                 <MdKeyboardArrowDown className="icon-arrow-lead" />     
                 </div>
 
-                {propertyId !==null &&
+                {(!errors && propertyId) ?
                 <Link to={`/details/${propertyId}`} className='link-detail-property-lead'>
                 <PropertyItemLeadContainer prop={hiddenMessage}>
                  { property?.images && property.images.map((image) => {
@@ -145,16 +148,16 @@ const LeadCardItem = ({id,name,lastName,email,phone, message, propertyId, onChan
                         
                           <div className="data-property-lead-wrapper">
                                 <span>{property?.name}</span>
-                                <span>{property?.address.street}, {property?.address.number},{property?.address.district}, {property?.address.city.name}</span>
-                               
+                                <span>{property?.address.street}  {property?.address.number} {property?.address.district} {property?.address.city.name}</span>                              
                             </div>
                            
-                            </PropertyItemLeadContainer></Link> } 
-    
+                            </PropertyItemLeadContainer></Link> : ''} 
+                            {(!errors && propertyId) ?
                     <div className="message-lead" >           
                     <FiCornerDownRight className="icon-arrow-down-message"/>               
                     {message}            
-                 </div>
+                     </div>
+                    :''}
                  <div>
                  
             <Modal 
@@ -174,10 +177,12 @@ const LeadCardItem = ({id,name,lastName,email,phone, message, propertyId, onChan
               </div>
               </Modal>
                 
-                </div>  
-                <button onClick={handleOpenModal} className='icon-trash'><BsTrash /> </button>     
+                </div> 
+                <div className="icon-lead-trash">
+                <button onClick={handleOpenModal} className='icon-trash'><BsTrash /> </button>
+                </div>      
        </LeadWrapper>
-       </>
+       
        
    
 
@@ -209,6 +214,7 @@ const LeadCard = (param:Prop)=>{
    
    
      const getLeads = async () => {
+       
         const {data}= await leadsPageable(pageNumber);
         setPage(data as LeadPage) ;
         localStorage.removeItem('images')
@@ -235,14 +241,17 @@ const LeadCard = (param:Prop)=>{
         if(data !== '204'){
             setError(data)
         }
-        console.log(data)
-        console.log(id)
+      
           
         getLeads();
     },1000)
       }
 
+      const handlePageChange = (newPageNumber : number)=>{
+        setPageNumber(newPageNumber);
+    }   
     
+
 
     return(
         <>
@@ -251,7 +260,8 @@ const LeadCard = (param:Prop)=>{
         <LeadItemContainer>
            
             {page.content.map(lead => <LeadCardItem {...lead} onChange={handleToDelete} close={closeModalLead} error={error}/>)}
-         </LeadItemContainer> :<MessageNoLeads><h4 className="message-no-leads">Voce não possui leads no momento...</h4></MessageNoLeads> 
+            <PaginationLead page={page} onChange={handlePageChange}/>
+         </LeadItemContainer> : <MessageNoLeads><h4 className="message-no-leads">Você não possui leads no momento...</h4></MessageNoLeads> 
         }
         </>
     )

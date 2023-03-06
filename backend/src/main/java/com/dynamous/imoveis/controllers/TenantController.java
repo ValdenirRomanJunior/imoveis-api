@@ -5,7 +5,10 @@ import com.dynamous.imoveis.dto.TenantDTO;
 import com.dynamous.imoveis.dto.TenantNewDTO;
 import com.dynamous.imoveis.dto.TenantUpdateDTO;
 import com.dynamous.imoveis.entities.Tenant;
+import com.dynamous.imoveis.enums.Status;
+import com.dynamous.imoveis.enums.Verification;
 import com.dynamous.imoveis.repositories.TenantRepository;
+import com.dynamous.imoveis.services.EmailService;
 import com.dynamous.imoveis.services.TenantService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -16,12 +19,16 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.validation.Valid;
 import java.net.URI;
+import java.net.UnknownHostException;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping(value = "/tenants")
 public class TenantController {
+	
+	  @Autowired
+	    private EmailService emailService;
 
     @Autowired
     private TenantService service;
@@ -38,10 +45,11 @@ public class TenantController {
 
 
     @PostMapping(value="/save")
-    public ResponseEntity<Void> save(@Valid @RequestBody TenantNewDTO objDto){
+    public ResponseEntity<Void> save(@Valid @RequestBody TenantNewDTO objDto) throws UnknownHostException{
         Tenant obj = service.fromDTO(objDto);
 
         service.insert(obj);
+       
         
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").
                   buildAndExpand(obj.getId()).toUri();

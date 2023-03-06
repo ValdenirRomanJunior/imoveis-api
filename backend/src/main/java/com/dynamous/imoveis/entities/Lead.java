@@ -29,9 +29,8 @@ public class Lead implements Serializable {
     private String phone;
     private String message;
     
-    @ManyToOne
-    @JoinColumn(name="property_id")
-    private Property property;
+    
+    private Long propertyId;
     
     @ManyToOne
     @JoinColumn(name="tenant_id")
@@ -93,12 +92,12 @@ public class Lead implements Serializable {
 		this.message = message;
 	}
 
-	public Property getProperty() {
-		return property;
+	public Long getPropertyId() {
+		return propertyId;
 	}
 
-	public void setProperty(Property property) {
-		this.property = property;
+	public void setPropertyId(Long property) {
+		this.propertyId = property;
 	}
 	
 	

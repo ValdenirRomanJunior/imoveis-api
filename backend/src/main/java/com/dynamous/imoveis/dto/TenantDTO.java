@@ -10,6 +10,7 @@ import org.hibernate.validator.constraints.Length;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
 import java.io.Serializable;
+import java.util.Date;
 
 @TenantUpdate
 public class TenantDTO implements Serializable {
@@ -23,6 +24,9 @@ public class TenantDTO implements Serializable {
     private String lastName;  
     private String password;
     private Verification verification;
+    private String creci;
+    private String endDate;
+   
 
     public TenantDTO(){
 
@@ -36,6 +40,10 @@ public class TenantDTO implements Serializable {
         lastName=tenant.getLastName();
         password=tenant.getPassword();
         verification= tenant.getVerification();
+        creci=tenant.getCreci();
+        endDate=tenant.getEndDate();
+       
+        
     }
 
     public Long getId() {
@@ -92,6 +100,22 @@ public class TenantDTO implements Serializable {
 
 	public void setVerification(Verification verification) {
 		this.verification = verification;
+	}
+
+	public String getCreci() {
+		return creci;
+	}
+
+	public void setCreci(String creci) {
+		this.creci = creci;
+	}
+
+	public String getEndDate() {
+		return endDate;
+	}
+
+	public void setEndDate(String endDate) {
+		this.endDate = endDate;
 	}
 	
 	

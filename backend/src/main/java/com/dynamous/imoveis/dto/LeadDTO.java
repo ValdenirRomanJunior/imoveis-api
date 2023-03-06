@@ -40,7 +40,7 @@ public class LeadDTO implements Serializable {
         email= lead.getEmail(); 
         phone=lead.getPhone();
         message=lead.getMessage();
-        propertyId=(lead.getProperty() == null) ? null : lead.getProperty().getId();
+        propertyId=(lead.getPropertyId() == null) ? null : lead.getPropertyId();
         tenantId=lead.getTenant().getId();
     }
 

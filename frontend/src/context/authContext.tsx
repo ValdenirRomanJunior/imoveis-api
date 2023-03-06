@@ -20,6 +20,8 @@ interface UserDto{
     perfis: string;
     lastName:string;
     verification:string;
+    creci?:string;
+    endDate:string;
     imageUrl?:string;
     
 }
@@ -101,7 +103,8 @@ export const AuthProvider:React.FC = ({children}) => {
         const data = await refreshToken();
       
         try {
-            if(data.response.data !== null){         
+            if(data.response.data !== null){ 
+                      
                 return data.response.data.message;
          
             }

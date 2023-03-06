@@ -7,6 +7,8 @@ import com.dynamous.imoveis.entities.ImageUrl;
 
 import javax.persistence.Column;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,9 +23,10 @@ public class PropertyNewDTO implements Serializable {
     @Length(min=1, max=250, message = "O tamanho deve ser entre 1 e 250 caracteres")
     private String description;
 
-  
+    @NotNull 
     private Integer typeProperty;
   
+    @NotNull 
     private Integer goal;
     @NotEmpty(message = "Preenchimento obrigatório")
     private String numberRooms;

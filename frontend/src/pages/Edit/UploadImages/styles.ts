@@ -64,5 +64,13 @@ img{
     max-width: 100%;
     object-fit: cover;
 }
+.button-close{
+    
+    position: absolute;
+    top:0;
+    right: 0;
+    font-size: 25px;
+}
+
 
 `

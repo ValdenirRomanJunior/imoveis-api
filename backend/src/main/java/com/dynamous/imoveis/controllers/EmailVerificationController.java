@@ -1,5 +1,6 @@
 package com.dynamous.imoveis.controllers;
 
+import java.net.UnknownHostException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -30,8 +31,14 @@ public class EmailVerificationController {
 	private VerifyEmailTenantService verifyEmailTenantService;
 	
 	@PutMapping(value="/confirmation")
-	  public ResponseEntity<Void> emailVerification(@Valid @RequestBody EmailDTO email){
+	  public ResponseEntity<Void> emailVerification(@Valid @RequestBody EmailDTO email) throws UnknownHostException{
 		verifyEmailTenantService.verifyEmailTenant(email);
+		return ResponseEntity.noContent().build();
+	}
+	
+	@PostMapping(value="/resend")
+	  public ResponseEntity<Void> resendVerification(@Valid @RequestBody EmailDTO email) throws UnknownHostException{
+		verifyEmailTenantService.resendEmailTenant(email);
 		return ResponseEntity.noContent().build();
 	}
 }
