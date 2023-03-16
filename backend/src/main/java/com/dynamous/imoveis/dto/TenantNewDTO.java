@@ -31,6 +31,7 @@ public class TenantNewDTO implements Serializable {
     private String password;
     
     @NotEmpty(message = "Preenchimento obrigatório")
+    @Length( max=20, message = "O tamanho deve ser no máximo 15 caracteres")
     private String creci;
     
     @NotNull

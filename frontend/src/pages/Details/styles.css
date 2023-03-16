@@ -5,23 +5,51 @@
     align-items: center;
     justify-content: center;
     
+    
    
 }
 
 .seperator{
-    width: 100%;
+    width: 100vw;
 }
 
-.controls-wrapper{
-    width: 100%;
-}
+
+
 .carousel-wrapper{
-    width: 100%;
+    width: 100vw;
+    position: relative;
+  
+
+}
+
+.carousel-wrapper button{
+    position: absolute;
+
+    z-index: 1;
+
+ 
 }
 
 .res-carousel-item:focus{
     outline: none;
     box-shadow: inset 0 0 1px 0px violet;
+
    
 }
 
+.rec-arrow-right{
+    right: 0;
+  
+}
+.rec-arrow-left{
+    left: 0;
+}
+.cSujuS{
+    background-color: #fff !important;
+}
+.sc-bBHxTw{
+    background-color: #fff !important;
+}
+.cSujuS:hover:enabled, .cSujuS:focus:enabled {
+    color:#000 !important;
+}

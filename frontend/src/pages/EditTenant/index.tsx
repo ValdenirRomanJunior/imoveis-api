@@ -14,6 +14,7 @@ import { refreshToken } from '../../services/resources/user';
 import LoadingLogin from '../../components/LoadingLogin';
 import { ErrorBoundary } from 'react-error-boundary';
 import PageNotFound from '../../components/PageNotFound';
+import useAuth from '../../hooks/useAuth';
 
 type PropParam = {
     tenantId:string;
@@ -35,24 +36,11 @@ const EditTenantComponent = ({tenant}: Prop) =>{
 
     const params = useParams();  
     const [errors, setErrors] = useState<Error[]>([]);
-    
+    const [otherError, setOtherError] = useState(false);
     const [loadingTenant, setLoadingTenant]=useState(false);
     const [successMessage, setSuccessMessage] = useState(false);
     
    
-
-    const [loadingLogin,setLoadingLogin]= useState(true);
-
-    useEffect(() =>{
-       
-        setTimeout(() =>{
-            setLoadingLogin(false)
-        },1000)
-
-    },[])
-
-
-  
 
 
     const intialValueStatusRange = () =>{
@@ -82,6 +70,7 @@ const EditTenantComponent = ({tenant}: Prop) =>{
             email:tenant?.email,
             password:'',
             status:tenant?.status,
+            creci:tenant?.creci,
             statusRange:initialValueStatus as string
             
     
@@ -99,7 +88,7 @@ const EditTenantComponent = ({tenant}: Prop) =>{
                     [field]:value,
                 }); 
 
-                
+            
                              
                     }   
                        
@@ -167,6 +156,16 @@ const EditTenantComponent = ({tenant}: Prop) =>{
                     setLoadingTenant(false)
                                                                                    
                 } 
+                else if(data.response.status === 404 || data.response.status === 400 || data.response.status === 403){
+                    console.log(data.response.status)
+                    setOtherError(true)
+                    setSuccessMessage(false)
+                    setLoadingTenant(false)
+
+                    setTimeout(()=>{
+                        setOtherError(false)
+                    },2000)
+                }
                
          
                
@@ -176,8 +175,8 @@ const EditTenantComponent = ({tenant}: Prop) =>{
      
                  
     return(
-        <div>
-        { loadingLogin &&  <LoadingLogin/> }
+ 
+      
  
        <EditBackground>
         <Header />
@@ -185,7 +184,7 @@ const EditTenantComponent = ({tenant}: Prop) =>{
         <BodyEditContainer>
             <h1 className='title-registration'>Editar Cliente</h1>
             <div className="message">
-                    {successMessage   ? <span className='success'>Editado com sucesso!</span>: ''}
+                    {successMessage  ? <span className='success'>Editado com sucesso!</span>: ''}
                     </div>
 
             <form onSubmit={(e)=> {handleSubmit(e)}}>
@@ -206,6 +205,11 @@ const EditTenantComponent = ({tenant}: Prop) =>{
                 {errors.map(x => { if(x.fieldName === 'email') return  <p className='formField__error'>{x.message}</p>})}
                 { emptyValue && form['email'] === '' ?<span className='formField__error'>Selecione o número de Quartos</span>: ''}
 
+                <label>Creci*</label>            
+                <Input id="creci" name="creci" value={form['creci'] } onChange={(e) => handleChange(e)} onKeyUp={handleKeyUp} maxLength={30} />
+                {errors.map(x => { if(x.fieldName === 'creci') return  <p className='formField__error'>{x.message}</p>})}
+                { emptyValue && form['creci'] === '' ?<span className='formField__error'>Selecione o número de Quartos</span>: ''}
+
                 <label>Nova Senha</label>            
                 <Input id="password" name="password" value={form['password'] } onChange={(e) => handleChange(e)} onKeyUp={handleKeyUp} maxLength={20} />
                 {errors.map(x => { if(x.fieldName === 'password') return  <p className='formField__error'>{x.message}</p>})}
@@ -221,6 +225,9 @@ const EditTenantComponent = ({tenant}: Prop) =>{
                 <Input id="status" name="status" disabled value='DESATIVADO' onChange={(e) => handleChange(e)} maxLength={90} />
         }        
                 <div className='buttom-register-wrapper'>
+                { otherError &&   
+              <div className='message-other-error-wrapper'>  <div className='other-error-tenant'>Tente mais tarde</div></div>
+                 }
 
                  {
                         loadingTenant && <Button className="button-send-email" type='submit'><Loading/></Button>
@@ -236,7 +243,7 @@ const EditTenantComponent = ({tenant}: Prop) =>{
         </BodyEditContainer>
        </EditBackground>
         
-          </div>  
+         
         
     )
 }
@@ -256,7 +263,7 @@ const EditTenant = () =>{
         if(resp === 204){  
           navigate(`/edittenant/${p}`)
         }else{
-          //  navigate('/');
+           navigate('/');
         }
     }
 
@@ -265,6 +272,15 @@ const EditTenant = () =>{
 },[p])
 
   
+const [loadingLogin,setLoadingLogin]= useState(true);
+
+useEffect(() =>{
+   
+    setTimeout(() =>{
+        setLoadingLogin(false)
+    },1000)
+
+},[])
     const getTenant = async() => {
                  
         const data = await findTenant(p);          
@@ -273,7 +289,7 @@ const EditTenant = () =>{
                 setTenant(data.data as Tenant) 
               } 
 
-               if(data.response.status === 404){ 
+               if(data.response.status === 404 ){ 
                 console.log(data.response.data.error)
                 setErrorPage(data.response.data.error);
                  
@@ -293,6 +309,13 @@ const EditTenant = () =>{
     },
      [p]);
 
+     const {user, getCurrentUser} = useAuth();
+     useEffect(() =>{
+           
+       getCurrentUser();
+   
+   
+   },[])
 
      const ErrorHandler = () => {
         return <PageNotFound/>;
@@ -300,14 +323,16 @@ const EditTenant = () =>{
 
     return(
         <ErrorBoundary FallbackComponent={ErrorHandler}>
-        
+          { loadingLogin &&  <LoadingLogin/> }
         {errorPage && <PageNotFound/>}
-           
-        <div>
-            {tenant && 
+      
+           {user?.perfis?.[0] === 'ADMIN' ?
+        <>
+            {tenant && !errorPage && 
             <EditTenantComponent tenant={tenant as unknown as Tenant}/>
         }
-        </div>
+        </>
+        : <PageNotFound/>}
              
           </ErrorBoundary>
     )

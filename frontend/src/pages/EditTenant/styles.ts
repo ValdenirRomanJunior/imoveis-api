@@ -101,7 +101,72 @@ export const BodyEditContainer = styled.main`
 
     .buttom-register-wrapper{
         margin-top: 30px;
+
+        .message-other-error-wrapper{
+            width:100%;
+            text-align: center;
+
+            display:flex;
+            justify-content: center;
+     
+        .other-error-tenant{
+            width:40%;
+            background-color: rgba(255, 27, 27, 0.573);          
+            text-align: center;
+            color:#fff;
+            font-size:12px;
+            padding:5px 15px;
+            -webkit-box-shadow: 0px 0px 13px -5px rgba(214,214,214,1);
+            -moz-box-shadow: 0px 0px 13px -5px rgba(214,214,214,1);
+            box-shadow: 0px 0px 13px -5px rgba(214,214,214,1);
+            text-align: center;    
+            font-weight: bold;
+            transition: transform .3s;
+            animation: copy 4s ease-in-out;
+            transform: translateY(0) scale(0);
+            opacity:0;
+            font-weight:400;
+            border-radius: 2px;
+        }
+        @keyframes copy {
+        
+            0%{
+                transition: .1s;
+                transform: translateY(0) scale(1.2);
+                opacity:0.3;
+               
+               
+            } 
+            25%{
+               
+                transform: translateY(5px) scale(1.2);
+                opacity:1;   
+                
+                      
+            }
+        
+            50%{
+               
+                transform: translateY(5px) scale(1.2);
+                opacity:.9; 
+                        
+            }
+            75%{
+               
+                transform: translateY(5px) scale(1.2);
+                opacity:.3;
+                            
+            }
+            100%{
+               
+                transform: translateY(5px) scale(1.2);
+                opacity:0;
+                            
+            }
+          }
+        
     }
+}
     .formField__error{
         color:red;
         font-size: 12px;

@@ -6,7 +6,9 @@ width: 100%;
 display: flex;  
 flex-direction: column;
 justify-content: center;
+align-items: center;
 background-color: ${({theme}) => theme.colors.backgroundLight};
+
 
 @media screen and (min-width:1000px){
     align-items: center;
@@ -17,6 +19,8 @@ export const BodyRegistrationContainer = styled.main`
     width:100%;
     display:flex;
     flex-direction: column;
+    justify-content: center;
+  
      
     padding: 50px 0 30px 0;
 
@@ -29,6 +33,18 @@ export const BodyRegistrationContainer = styled.main`
         margin-bottom: 50px;
         padding: 0 30px;
         
+    }
+    @media screen and (min-width: 450px){
+        width:90%;
+        padding: 50px 0 0 0;
+    }
+    @media screen and (min-width: 550px){
+        width:80%;
+        padding: 50px 0 0 0;
+    }
+    @media screen and (min-width: 700px){
+        width:70%;
+        padding: 50px 0 0 0;
     }
 
 
@@ -100,6 +116,9 @@ export const BodyRegistrationContainer = styled.main`
     .buttom-register-wrapper{
         margin-top: 30px;
         position: relative;
+       
+           
+      
 
         .other-error{
             position: absolute;

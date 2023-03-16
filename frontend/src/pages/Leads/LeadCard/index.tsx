@@ -230,7 +230,7 @@ const LeadCard = (param:Prop)=>{
         if(param){
         getLeads();
         }
-    },[param])
+    },[])
    
    
     const handleToDelete = async(id: number) => {

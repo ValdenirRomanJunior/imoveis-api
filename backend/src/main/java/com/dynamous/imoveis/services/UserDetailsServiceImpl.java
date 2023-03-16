@@ -4,7 +4,6 @@ import com.dynamous.imoveis.entities.Tenant;
 import com.dynamous.imoveis.entities.TenantCustomer;
 import com.dynamous.imoveis.entities.UserAdmin;
 import com.dynamous.imoveis.enums.Perfil;
-import com.dynamous.imoveis.repositories.TenantCustomerRepository;
 import com.dynamous.imoveis.repositories.TenantRepository;
 import com.dynamous.imoveis.repositories.UserAdminRepository;
 import com.dynamous.imoveis.security.UserSS;
@@ -22,8 +21,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     @Autowired
     private TenantRepository tenantRepository;
 
-    @Autowired
-    private TenantCustomerRepository tenantCustomerRepository;
+
 
     @Autowired
     private UserAdminRepository userAdminRepository;
@@ -32,11 +30,11 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     public UserDetails loadUserByUsername(String email){
     	
     	try {
-    		 TenantCustomer tenantCustomer = tenantCustomerRepository.findByEmail(email);
+    	
     	        Tenant tenant = tenantRepository.findByEmail(email);
     	        UserAdmin userAdmin = userAdminRepository.findByEmail(email);
     	        
-    	        if (tenant == null && tenantCustomer == null && userAdmin == null) {
+    	        if (tenant == null && userAdmin == null) {
                     throw new UsernameNotFoundException(email);
                     
                     //exception security context
@@ -45,12 +43,13 @@ public class UserDetailsServiceImpl implements UserDetailsService {
                     return new UserSS(tenant.getId(), tenant.getEmail(), tenant.getPassword(), tenant.getPerfis(), tenant.getVerification());
                     
 
-                } else if (tenantCustomer != null && tenantCustomer.getPerfis().contains(Perfil.TENANT_CUSTOMER)) {
-                    return new UserSS(tenantCustomer.getId(), tenantCustomer.getEmail(), tenantCustomer.getPassword(), tenantCustomer.getPerfis(),tenant.getVerification());
 
-                } else {
-                    return new UserSS(userAdmin.getId(), userAdmin.getEmail(), userAdmin.getPassword(),userAdmin.getPerfis(),null);
+                } else if (userAdmin != null && userAdmin.getPerfis().contains(Perfil.ADMIN)) {
+                    return new UserSS(userAdmin.getId(), userAdmin.getEmail(), userAdmin.getPassword(),userAdmin.getPerfis(),userAdmin.getVerification());
 
+                }
+                else {
+                	return new UserSS();
                 }
     	}catch (UsernameNotFoundException e) {
 			return new UserSS();

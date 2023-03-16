@@ -10,6 +10,7 @@ import {AiOutlineUser} from 'react-icons/ai';
 import {IoIosArrowForward} from 'react-icons/io';
 import {MdLogout} from 'react-icons/md'
 import { getImageIfExist, refreshToken, UserDto } from '../../services/resources/user';
+import {IoSettingsOutline} from 'react-icons/io5';
 
 
 const Header = () =>{
@@ -64,7 +65,6 @@ const Header = () =>{
        localStorage.clear();
        
 
-        
         navigate('/')
     }
 
@@ -91,10 +91,9 @@ const Header = () =>{
                 </Hambuguer>
                 <img src={logo} className="logo"  alt='logo dynamous' />
                 </MenuLogoWrapper>
-                <VscComment  fontSize={22} color="gray" className="message-icon"/>
-                <UserInfo onClick={showLinksModal}>
-                   
-                   
+               <a href='https://dynamous.com.br' target="_blank"> <VscComment  fontSize={22} color="gray" className="message-icon"/></a>
+
+                <UserInfo onClick={showLinksModal}>                           
                    <div className='user-image-wrapper'>
                        {imageUser !== '' ? <img src={imageUser} alt='Foto Perfil'/>:<p className='initials'>{initials}</p>}
                    </div>
@@ -112,14 +111,12 @@ const Header = () =>{
                 <SideBarTop >
                     <NavIcon to="#" >
                         <IoIosArrowForward  className='icon-sidebar'/>
-                        <p className='text-sidebar-top'> Olá ,<span>Valdenir Roman Júnior</span></p>
+                        <p className='text-sidebar-top'><Link className='site-link' to={''}>https://corretor1.com.br</Link></p>
                     </NavIcon>
                     
                 </SideBarTop>
-            <NavIcon to="/dashboard" >          
-             <a href=''>https://corretor1.com.br</a>          
-            </NavIcon>
-
+                {user.perfis[0] === 'TENANT' &&
+                <>
             <NavIcon to="/dashboard" >
             <VscDashboard className='icon-sidebar'/>
             <p className='description-icon' >Painel</p>
@@ -134,12 +131,14 @@ const Header = () =>{
             <AiOutlineUser className='icon-sidebar'/>
             <p className='description-icon'>Contatos</p>
             </NavIcon>
-
+            </>
+    }
+            {user.perfis[0] === 'ADMIN' &&
             <NavIcon to="/tenants"   >
-            <AiOutlineUser className='icon-sidebar'/>
-            <p className='description-icon'>Clientes Dynamous</p>
+            <IoSettingsOutline className='icon-sidebar'/>
+            <p className='description-icon'>Configurações</p>
             </NavIcon>
-
+        }
 
           <SidebarFooter className='footer-sidebar'>
             <p>Dynamob</p>

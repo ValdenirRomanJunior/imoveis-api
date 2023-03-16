@@ -32,7 +32,7 @@ export const BodyContainer = styled.main`
     flex-direction: column-reverse;
     align-items: center;
     padding: 20px 0 30px 0;
-    
+    font-family:'Nunito Sans', sans-serif;
        
     .left-side{
         margin-top: 50px;
@@ -51,6 +51,10 @@ export const BodyContainer = styled.main`
                 padding: 5px 30px;
                 font-family:'Nunito Sans', sans-serif;
             }
+            p{
+                font-family: "Nunito Sans", sans-serif;
+                
+               }
         }     
 
         .cards-left-side-title{
@@ -133,14 +137,14 @@ export const BodyContainer = styled.main`
        
         flex-direction: row;
         align-items: start;
-        padding: 40px 20px 30px 20px;
+        padding: 40px 15px 30px 15px;
        
          
         .left-side{
             
 
-            width: 75%;
-            margin: 0 30px 0 80px;
+            width: 60%;
+            margin: 0 25px 0 60px;
     
     
             .card-wrapper-top{
@@ -155,6 +159,7 @@ export const BodyContainer = styled.main`
                }
 
                p{
+                font-size:13px;
                 margin-bottom: 0;
                }
 
@@ -188,21 +193,28 @@ export const BodyContainer = styled.main`
             }
 
                 .card-wrapper-left{
-                    width: 300px;
+                    width: 200px;
                     height: 130px;
-                    margin: 10px;
+                   
+
+                    p{
+                        font-size:13px;
+                        margin-bottom:0;
+                    }
+                    .number-card-dashboard{
+                        font-size:25px;
+                    } 
 
                 }
                
-                .number-card-dashboard{
-                    font-size:40px;
-                }                         
+                                       
         }       
     }
     
 
         .right-side{
-            width:25%;
+            min-width:300px;
+            width:300px;
             
 
             display: flex;
@@ -224,11 +236,228 @@ export const BodyContainer = styled.main`
 
 
         }
+
+        @media screen and (min-width:1200px){
+        
+       
+            flex-direction: row;
+            align-items: start;
+            padding: 40px 15px 30px 15px;
+           
+             
+            .left-side{
+                
+    
+                width: 70%;
+                margin: 0 25px 0 60px;
+        
+        
+                .card-wrapper-top{
+                    padding:33px 40px;
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+    
+                   .button-top{
+                    width:auto;
+                    padding:10px 20px;
+                   }
+    
+                   p{
+                    
+                    font-size:18px;
+                    margin-bottom: 0;
+                   }
+    
+                }     
+                
+              
+        
+              .cards-left-side{
+    
+                margin-top: 30px;
+                padding: 10px 10px;
+                display: flex;
+                justify-content: space-around;
+                align-items: center;
+                border: 1px solid #e6e9ed;
+    
+                .cards-left-side-title{
+                    font-size: 1.30rem;
+                    color:#707780;
+                    margin-top:10px;
+                    text-align: left;
+                    width:100%;
+                    margin-left:10px;
+                    padding-left: 15px;
+                    font-weight: 400;
+                }
+    
+                .cards-wrapper{
+                    display:flex;
+                    justify-content: center;
+                }
+    
+                    .card-wrapper-left{
+                        width: 250px;
+                        height: 130px;
+                       
+    
+                        p{
+                            font-size:18px;
+                            margin-bottom:0;
+                           
+                        }
+                        .number-card-dashboard{
+                            font-size:30px;
+                        } 
+    
+                    }
+                   
+                                           
+            }       
+        }
+        
+    
+            .right-side{
+                min-width:320px;
+                width:320px;
+                
+    
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                flex-direction: column;
+                
+    
+                .img-right{
+                    width:100%;
+                    height:230px;
+                    object-fit: cover;
+                    border-radius: 10px;
+                    display:block;
+                }
+                .eMWcUt{
+                    display:block;
+                }
+    
+    
+            }
+
+            @media screen and (min-width:1300px){
+        
+       
+                flex-direction: row;
+                align-items: start;
+                padding: 40px 15px 30px 15px;
+               
+                 
+                .left-side{
+                    
+        
+                    width: 70%;
+                    margin: 0 25px 0 60px;
+            
+            
+                    .card-wrapper-top{
+                        padding:33px 40px;
+                        display: flex;
+                        justify-content: space-between;
+                        align-items: center;
+        
+                       .button-top{
+                        width:auto;
+                        padding:10px 20px;
+                       }
+        
+                       p{
+                        
+                        font-size:18px;
+                        margin-bottom: 0;
+                       }
+        
+                    }     
+                    
+                  
+            
+                  .cards-left-side{
+        
+                    margin-top: 30px;
+                    padding: 10px 10px;
+                    display: flex;
+                    justify-content: space-around;
+                    align-items: center;
+                    border: 1px solid #e6e9ed;
+        
+                    .cards-left-side-title{
+                        font-size: 1.30rem;
+                        color:#707780;
+                        margin-top:10px;
+                        text-align: left;
+                        width:100%;
+                        margin-left:10px;
+                        padding-left: 15px;
+                        font-weight: 400;
+                    }
+        
+                    .cards-wrapper{
+                        display:flex;
+                        justify-content: center;
+                    }
+        
+                        .card-wrapper-left{
+                            width: 290px;
+                            height: 130px;
+                           
+        
+                            p{
+                                font-size:18px;
+                                margin-bottom:0;
+                               
+                            }
+                            .number-card-dashboard{
+                                font-size:30px;
+                            } 
+        
+                        }
+                       
+                                               
+                }       
+            }
+            
+        
+                .right-side{
+                    min-width:320px;
+                    width:320px;
+                    
+        
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    flex-direction: column;
+                    
+        
+                    .img-right{
+                        width:100%;
+                        height:230px;
+                        object-fit: cover;
+                        border-radius: 10px;
+                        display:block;
+                    }
+                    .eMWcUt{
+                        display:block;
+                    }
+        
+        
+                }
+
+          
         
 `
 
 
 export const UserInfo = styled.div`
+    width:100%;
     display: flex;
     flex-direction: column;
     align-items: center;

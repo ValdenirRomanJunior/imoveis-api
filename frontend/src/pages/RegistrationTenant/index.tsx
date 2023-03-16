@@ -10,6 +10,8 @@ import { newTenant } from '../../services/resources/tenant';
 import Loading from '../../components/Loading';
 import { refreshToken } from '../../services/resources/user';
 import LoadingLogin from '../../components/LoadingLogin';
+import useAuth from '../../hooks/useAuth';
+import PageNotFound from '../../components/PageNotFound';
 
 
 
@@ -49,6 +51,15 @@ const RegistrationTenant = () =>{
 
   useEffect( () =>  {
   refreshTokenUser()
+},[])
+
+
+const {user, getCurrentUser} = useAuth();
+useEffect(() =>{
+      
+  getCurrentUser();
+
+
 },[])
 
         const [form, setForm] = useState<any>({
@@ -144,14 +155,15 @@ const RegistrationTenant = () =>{
         
                                   
                   }
-                    if(data.response.data.errors){              
+                    if(data.response.data.errors){ 
+                                   
                         setErrors(data.response.data.errors);
                         setSuccessMessage(false)
                         setLoadingTenant(false)
                                                                                        
                     }  
-                    else if(data.response.status === 404 || data.response.status === 400){
-                        console.log(data.response.status)
+                    else if(data.response.status === 404 || data.response.status === 400 || data.response.status === 403){
+                       
                         setOtherError(true)
                         setSuccessMessage(false)
                         setLoadingTenant(false)
@@ -169,6 +181,9 @@ const RegistrationTenant = () =>{
  
             
     return(
+         
+     <>
+     {user?.perfis?.[0] === 'ADMIN' ?
         <div>
         { loadingLogin &&  <LoadingLogin/> }
   
@@ -203,7 +218,7 @@ const RegistrationTenant = () =>{
                 { emptyValue && form['password'] === '' ?<span className='formField__error'>Este campo é requerido</span>: ''}
               
                 <label>creci*</label>
-                <Input id="creci" name="creci"   onChange={(e) => handleChange(e)} onKeyUp={handleKeyUp} maxLength={20}/>
+                <Input id="creci" name="creci"   onChange={(e) => handleChange(e)} onKeyUp={handleKeyUp} maxLength={15}/>
                 {errors.map(x => { if(x.fieldName === 'creci') return  <p className=' formField__error'>{x.message}</p>})}
                 { emptyValue && form['creci'] === '' ?<span className='formField__error'>Este campo é requerido</span>: ''}
 
@@ -240,8 +255,8 @@ const RegistrationTenant = () =>{
        </RegistrationBackground>
     
        </div>
-            
-        
+           :<PageNotFound/>} 
+       </> 
     )
 }
 

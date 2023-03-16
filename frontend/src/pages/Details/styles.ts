@@ -237,12 +237,16 @@ background-color: ${({theme}) => theme.colors.backgroundLight};
 `
 
 export const CardWrapper = styled.div`
-max-width: 100%;  
+    width:100vw; 
+    aspect-ratio: 16/ 9;
 
 img{
     width:100%;
-    height:250px;
-    object-fit:contain;
+    object-fit: cover;
+    object-position: top left;
+    aspect-ratio: 16/ 9;
+
+
 }
 
 

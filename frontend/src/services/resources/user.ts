@@ -29,7 +29,8 @@ export interface UserDto{
    lastName?:string;
    verification?:string;
    creci?:string;
-   endDate:string;
+   start?:string;
+   endDate?:string;
    imageUrl?:string;
 
     
@@ -67,20 +68,20 @@ export const signUp = async (data:SignUpData) => {
 }
 
 export const getImageIfExist = (id:string,perfil:string) => {
-    if(perfil === 'ADMIN'){
+   // if(perfil === 'ADMIN'){
 
-        return apiImage.get(`ad${id}.jpg`,{responseType: 'blob'})
-        .then(response => {
-           if(response.status === 200){
-            const url=`${BASE_URL_FROM_BUCKET}ad${id}.jpg`;
-            return url;
+      //  return apiImage.get(`ad${id}.jpg`,{responseType: 'blob'})
+      //  .then(response => {
+       //    if(response.status === 200){
+         //   const url=`${BASE_URL_FROM_BUCKET}ad${id}.jpg`;
+        //    return url;
 
-           }
-          return null;
+          // }
+        //  return null;
                      
-        })
+       // })
 
-    }
+  //  }
 
     return apiImage.get(`cp${id}.jpg`,{responseType: 'blob'})
         .then(response => {
@@ -123,7 +124,7 @@ export const refreshToken = async () => {
         response =>{                   
             const tokenString =JSON.stringify(response.headers.authorization);         
              localStorage.setItem('token', tokenString)
-             console.log(response.status)      
+               
              return response.status;
             
         }

@@ -11,6 +11,7 @@ import com.dynamous.imoveis.entities.State;
 import com.dynamous.imoveis.entities.Tenant;
 import com.dynamous.imoveis.enums.Goal;
 import com.dynamous.imoveis.enums.Perfil;
+import com.dynamous.imoveis.enums.StatusProperty;
 import com.dynamous.imoveis.enums.TypeProperty;
 import com.dynamous.imoveis.repositories.AddressRepository;
 import com.dynamous.imoveis.repositories.CityRepository;
@@ -28,6 +29,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
@@ -61,6 +63,9 @@ public class PropertyService {
 
     @Autowired 
     ImageUrlRepository imageUrlRepository;
+    
+    @Autowired
+    TenantService tenantService;
 
     //PROCURA POR ID
     public Property find(Long id) {
@@ -110,6 +115,7 @@ public class PropertyService {
         newObj.setVacancies(property.getVacancies());
         newObj.setCondominium(property.getCondominium());
         newObj.setPrice(property.getPrice());
+        newObj.setStatusProperty(property.getStatusProperty());
                	        			
         			for(ImageUrl img : property.getImages()) {      
         				
@@ -183,7 +189,7 @@ public class PropertyService {
   
     		Property property = new Property(null, propertyNewDTO.getName(), propertyNewDTO.getDescription(), TypeProperty.toEnum(propertyNewDTO.getTypeProperty()),Goal.toEnum(propertyNewDTO.getGoal()), 
 					   propertyNewDTO.getNumberRooms(), propertyNewDTO.getBathRooms(), propertyNewDTO.getArea(), propertyNewDTO.getIptu(),
-					   	propertyNewDTO.getVacancies(),propertyNewDTO.getCondominium(), propertyNewDTO.getPrice());    		
+					   	propertyNewDTO.getVacancies(),propertyNewDTO.getCondominium(), propertyNewDTO.getPrice(),StatusProperty.NAO_PUBLICADO);    		
     	
     	        
     	        
@@ -227,56 +233,25 @@ public class PropertyService {
            
         }
    
-        return property;
-    }
-
-    //SERVIÇO PARA BUSCA PAGINADA DE IMÓVEIS
-    public Page<Property> search(String city,  String goal, String type, Integer page, Integer linesPerPage, String orderBy, String direction) {
-            UserSS user = UserService.authenticated();
-            if(user == null){
-                throw new AuthorizationException("Acesso negado");
-            }
-            Tenant tenant= tenantRepository.findById(user.getId()).get();
-            
-            if((city.isEmpty()) && (goal.isEmpty()) && (type.isEmpty())) {            	
-            	 Page<Property>listAll = findPage(page,linesPerPage,orderBy,direction);           	
-            	return listAll;
-            }
-            else if ((city.isEmpty()) && (!goal.isEmpty()) && (!type.isEmpty())) {  
-            	  Integer goalAux = Integer.parseInt(goal);
-                  Integer typeAux=Integer.parseInt(type);
-                  PageRequest pageRequest = PageRequest.of(page, linesPerPage, Sort.Direction.valueOf(direction), orderBy);
-            	return propertyRepository.findByGoalAndTenant(tenant, goalAux, typeAux, pageRequest);
-            }
-            // se tem cidade, não tem goal e não tem type
-            else if ((!city.isEmpty()) && (goal.isEmpty()) && (type.isEmpty())) {  
-            	Long cityId = Long.parseLong(city);
-                PageRequest pageRequest = PageRequest.of(page, linesPerPage, Sort.Direction.valueOf(direction), orderBy);
-          	return propertyRepository.findByCityAndTenant(cityId,tenant, pageRequest);
-          }
-            else if ((!city.isEmpty()) && (!goal.isEmpty()) && (type.isEmpty())) {  
-            	Long cityId = Long.parseLong(city);
-            	 Integer goalAux = Integer.parseInt(goal);
-                PageRequest pageRequest = PageRequest.of(page, linesPerPage, Sort.Direction.valueOf(direction), orderBy);
-          	return propertyRepository.findByCityAndGoal(cityId,goalAux,tenant, pageRequest);
-          }
-            
-            else if ((city.isEmpty()) && (goal.isEmpty()) && (!type.isEmpty())) {            	
-            	 Integer typeAux=Integer.parseInt(type);
-                 PageRequest pageRequest = PageRequest.of(page, linesPerPage, Sort.Direction.valueOf(direction), orderBy);
-          	return propertyRepository.findByTypeAndTenant(typeAux,tenant, pageRequest);
-          }
-             Long cityId = Long.parseLong(city);
-             Integer goalAux = Integer.parseInt(goal);
-             Integer typeAux=Integer.parseInt(type);
-          
-        PageRequest pageRequest = PageRequest.of(page, linesPerPage, Sort.Direction.valueOf(direction), orderBy);
-        return propertyRepository.findByAddressAndTenant(cityId, tenant, goalAux, typeAux, pageRequest);
-    
-
+        return property;	
     }
     
-    
+    public Page<Property> search(Long state, Long city, Integer goal, Integer type, Integer page, Integer linesPerPage, String orderBy, String direction) {
+        UserSS user = UserService.authenticated();
+        if(user == null){
+            throw new AuthorizationException("Acesso negado");
+        }
+        
+
+        	  Tenant tenant= tenantRepository.findById(user.getId()).get();
+          	PageRequest pageRequest = PageRequest.of(page, linesPerPage, Sort.Direction.valueOf(direction), orderBy);
+              return propertyRepository.findByPageReq(tenant,state, city,  goal, type,  page, linesPerPage, orderBy,  direction, pageRequest);
+        	
+        }
+       
+      
+   
+
 
 	public Property fromDTOUpdate(PropertyUpdateDTO propertyUpdateDTO) {
 		
@@ -284,11 +259,12 @@ public class PropertyService {
     	 if(user == null){
              throw new AuthorizationException("Acesso negado");
          }
-    	
+    	 
+    	 Property propAux= find(propertyUpdateDTO.getId());
     	//jogar excpetion ususrio nulo
         Property property = new Property(propertyUpdateDTO.getId(), propertyUpdateDTO.getName(), propertyUpdateDTO.getDescription(), TypeProperty.toEnum(propertyUpdateDTO.getTypeProperty()), Goal.toEnum(propertyUpdateDTO.getGoal()), 
         		propertyUpdateDTO.getNumberRooms(), propertyUpdateDTO.getBathRooms(), propertyUpdateDTO.getArea(), propertyUpdateDTO.getIptu(),
-        		propertyUpdateDTO.getVacancies(),propertyUpdateDTO.getCondominium(), propertyUpdateDTO.getPrice());
+        		propertyUpdateDTO.getVacancies(),propertyUpdateDTO.getCondominium(), propertyUpdateDTO.getPrice(),propAux.getStatusProperty());
         
         State state= stateRepository.findByName(propertyUpdateDTO.getState());  	     
         City city = cityRepository.findByName(propertyUpdateDTO.getCity());

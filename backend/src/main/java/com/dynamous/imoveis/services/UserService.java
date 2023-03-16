@@ -12,6 +12,7 @@ public class UserService {
             return (UserSS) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         }
         catch (Exception e) {
+        	System.out.println(e.getMessage() +"usuario nao autorizado");
             return null;
         }
     }

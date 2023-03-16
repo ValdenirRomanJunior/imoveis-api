@@ -97,14 +97,49 @@
   
 }
 
+@media screen and (min-width: 700px){
+  .Modall {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width:70% !important;
+    padding: 2rem 2rem;
+    background-color: #F8FCFF;
+
+    
+  }
+}
 
   @media screen and (min-width: 1000px){
-    .Modal {
+    .Modall {
       position: absolute;
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      width:30%;
+      width:40% !important;
+      padding: 2rem 2rem;
+      background-color: #F8FCFF;
+  
+      
+    }
+  
+    .Overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: rebeccapurple;
+    }
+  }
+  @media screen and (min-width: 1300px){
+    .Modall {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width:40% !important;
       padding: 2rem 2rem;
       background-color: #F8FCFF;
   

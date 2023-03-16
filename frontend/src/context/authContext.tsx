@@ -21,7 +21,8 @@ interface UserDto{
     lastName:string;
     verification:string;
     creci?:string;
-    endDate:string;
+    start?:string;
+    endDate?:string;
     imageUrl?:string;
     
 }

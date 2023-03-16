@@ -5,6 +5,7 @@ export type Tenant ={
     email:string;
     password:string;
     status:string;
+    creci:string;
     verification:string;
     images:[{
         id:number;

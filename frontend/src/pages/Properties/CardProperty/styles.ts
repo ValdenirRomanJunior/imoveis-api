@@ -3,16 +3,24 @@ import styled from "styled-components";
 
 export const CardWrapper = styled.div`
 width: 90%;
-height: 110px;
+
 border-bottom: 1px solid rgb(222, 222, 222);
 margin-top: 10px;
 padding: 10px 0;
+
+@media screen and (min-width: 700px){
+    width:70%;
+}
+
+@media screen and (min-width: 1000px){
+    width:50%;
+}
 `
 
 export const CardContent = styled.div`
 width: 100%;
 height:100%;
-padding: 10px;
+padding: 0 10px 0 10px;
 display: flex;
 justify-content: space-around;
 align-items: center;
@@ -102,10 +110,11 @@ font-family: "Poppins", sans-serif;
         }
 
         .links-card{
+
             display: flex;
             color:#0b90d1;
             justify-content: space-between;  
-            width: 65%;
+            width:150px;
             font-size: 11px;
             font-weight: 300;
             
@@ -117,17 +126,22 @@ font-family: "Poppins", sans-serif;
             }
 
         }
+     
+        
 
-    }
+ 
 
-    @media screen and (min-width: 1000px){
+    @media screen and (min-width: 700px){
         .text-wrapper-card{
             .links-card{
-                width:17%;
+                width:150px;
             }
 
         }
     }
+
+   
+
 
    
 `
@@ -154,7 +168,7 @@ export const CardContainer = styled.main`
     width:100%;
     height:100vh;
 
-    text- align center;
+    text-align: center;
 
     h4{
         position: absolute;
@@ -169,3 +183,47 @@ export const CardContainer = styled.main`
     }
 
     `
+
+    export const StatusProperty = styled.div<{
+    statusProperty:string}>`
+
+    width:100%;
+    color: ${({statusProperty}) => statusProperty ==='1' ? 'green' : 'red'};
+    display: flex;
+    align-items: center;
+    justify-content: start;
+    text-align:left;
+    padding-left: 10px;
+   
+  
+
+    p{
+        text-align:left;      
+        font-size:12px;
+        margin-left:3px;
+        text-transform: uppercase;
+        margin-bottom: 0;
+      
+    }
+
+    
+
+    `
+
+    export const InputRangeProperty =styled.div`
+    width:25px;
+    margin-left:20px;
+
+
+    input{
+        width:100%;
+     
+        transition: .4s all ease-out;
+        outline: none;
+
+    }
+
+ 
+ 
+
+`

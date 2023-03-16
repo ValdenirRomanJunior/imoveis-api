@@ -1,7 +1,13 @@
 package com.dynamous.imoveis.config;
 
+import java.io.IOException;
 import java.util.Arrays;
 
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import com.dynamous.imoveis.security.CustomAccessDeniedHandler;
 import com.dynamous.imoveis.security.JWTAuthenticationFilter;
 import com.dynamous.imoveis.security.JWTAuthorizationFilter;
 import com.dynamous.imoveis.security.JWTUtil;
@@ -17,8 +23,11 @@ import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.web.AuthenticationEntryPoint;
+import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -38,32 +47,24 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	private JWTUtil jwtUtil;
 
 	private static final String[] PUBLIC_MATCHERS = {
-			"/h2-console/**",
-			"/properties/**",
+			"/h2-console/**",			
 			"/pictures/**",
-			"/properties/find/**",
-			"/properties/update/**",
-			"/auth/forgot/**",
-			"/properties/totalProperties/**",
+			"/auth/forgot/**",			
 			"/verification/**",
-			"/leads/**",
-			"/properties/delete/**"
 			
 			
 			
-				
 			
 	};
 
 	private static final String[] PUBLIC_MATCHERS_GET = {		
 			"/templateemail/**",		
 			"/states/**",
-			"/properties/**",
-			"/properties/totalProperties/**"
-			
-			
-			
+			"/properties/find/**",
+			"/properties/search/**",
 		
+		
+	
 
 	};
 	private static final String[] PUBLIC_MATCHERS_POST = {
@@ -86,10 +87,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 				.antMatchers(HttpMethod.GET, PUBLIC_MATCHERS_GET).permitAll()
 				//.antMatchers(HttpMethod.GET,"/images/").permitAll()
 				//.antMatchers(HttpMethod.GET,"/images/**").permitAll()
-				.anyRequest().authenticated();
+				.anyRequest().authenticated()
+				.and()
+                .exceptionHandling().accessDeniedHandler(accessDeniedHandler());
+ 
 		    http.addFilter(new JWTAuthenticationFilter(authenticationManager(), jwtUtil));
-			http.addFilter(new JWTAuthorizationFilter(authenticationManager(), jwtUtil, userDetailsService));
+			http.addFilter(new JWTAuthorizationFilter(authenticationManager(), jwtUtil, userDetailsService));			
 		    http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+		    
+		    
 	}
 
 	@Override
@@ -128,6 +134,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
    
 	
 }
+	 
+	 @Bean
+	    public AccessDeniedHandler accessDeniedHandler(){
+	        return new CustomAccessDeniedHandler();
+	    }
 	  //@Override
 	//public void configure(WebSecurity web) throws Exception {
 	//	  web.ignoring().antMatchers(HttpMethod.GET,"/resources/**","static/**","/**");

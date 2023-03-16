@@ -20,8 +20,7 @@ export const findProperty = (id:string) => {
 
 export const findPropertyLead = (id:string) => {
   return api.get<Property>(`/properties/findLeadProperty/${id}`,) 
-                .then(response =>{
-                         
+                .then(response =>{                       
                     return response; 
                                
                   }
@@ -35,19 +34,29 @@ export const findPropertyLead = (id:string) => {
 export const getTotalPropertiesById = (id:string) => {
   return api.get(`/properties/totalProperties/${id}`,) 
                 .then(response =>{
-                  if(response.data != null){
-                    return response.data
-                   
-                  }
                  
+                    return response
+                       
+                }).catch((error) =>{
+                  return error
+                 
+              });
+}
+
+export const getPublishedPropertiesById = (id:string) => {
+  return api.get(`/properties/publishedProperties/${id}`,) 
+                .then(response =>{
+                 
+                    return response
+                       
                 }).catch((error) =>{
                   return error
                  
               });
 }
         
-export const propertiesPageable = (pageNumber: number) => {
-    return api.get(`/properties/search?size=12&page=${pageNumber}&sort=id`)
+export const propertiesPageable = (id:string,state:string, city:string,goal:string, typeProperty:string ,pageNumber: number) => {
+    return api.get(`/properties/search?id=${id}&state=${state}&city=${city}&goal=${goal}&typeProperty=${typeProperty}&size=12&page=${pageNumber}&sort=name`)
               
 }
 
@@ -113,4 +122,43 @@ export const uploadPropertyImage = (image:string)=>{
   });
 
 
+}
+
+export const changeStatusPropertyReq = (id: string,statusP:number) => {
+      
+  return api.put(`/properties/updateStatus/${id}/${statusP}`)
+                                             
+                                               .then(response =>{
+                                                  return response;
+                                               }).catch((error) =>{
+                                                  return error
+                                                 
+                                              });
+}
+
+
+export const getAllStates = () => {
+  return api.get('/states') 
+                .then(response =>{                       
+                    return response; 
+                               
+                  }
+                 
+                ).catch((error) =>{
+                  return error
+                 
+              });
+}
+
+export const getAllCities = (id:string) => {
+  return api.get(`/states/${id}/cities`) 
+                .then(response =>{                       
+                    return response; 
+                               
+                  }
+                 
+                ).catch((error) =>{
+                  return error
+                 
+              });
 }

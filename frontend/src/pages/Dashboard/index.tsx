@@ -11,7 +11,7 @@ import LoadingLogin from '../../components/LoadingLogin';
 import {BsBuilding} from 'react-icons/bs'
 import { Link, useNavigate } from 'react-router-dom';
 import { getImageIfExist, refreshToken } from '../../services/resources/user';
-import { getTotalPropertiesById } from '../../services/resources/property';
+import { getPublishedPropertiesById, getTotalPropertiesById } from '../../services/resources/property';
 import { getTotalLeadsById } from '../../services/resources/lead';
 
 import PageNotFound from '../../components/PageNotFound';
@@ -29,9 +29,11 @@ const Dashboard = ()=>{
     const {user, getCurrentUser} = useAuth();
     const [imageUser,setImageUser]= useState<string>("");
     const [totalProperties,setTotalProperties]= useState();
+    const [publishedProperties,setPublishedProperties]= useState();
     const [totalLeads,setTotalLeads]= useState();
     const [errors,setErrors]= useState(false);
-    
+    const [errorMessage,setErrorMessage]= useState("");
+    const [errorMessageTotalLeads,setErrorMessageTotalLeads]= useState("");
     
     useEffect(() =>{
        
@@ -44,11 +46,11 @@ const Dashboard = ()=>{
     const refreshTokenUser = async ()=>{
         const  resp = await refreshToken();    
         if(resp === 204){  
-          navigate('/dashboard')
+         navigate('/dashboard')
         }else{         
-            navigate('/');
+           navigate('/');
        
-        }
+ }
     }
 
   useEffect( () =>  {
@@ -62,7 +64,7 @@ const Dashboard = ()=>{
          
             setErrors(true)
         }
-    
+    console.log(user)
         
 
     },[])
@@ -101,14 +103,14 @@ const Dashboard = ()=>{
 
 
         const getTotalProperties = async() =>{
-            const data=  await getTotalPropertiesById(user.id);
-                if(data !=null){
+            const data=  await getTotalPropertiesById(user.id);                
+                if(data.status === 200){
                    // const url=`${BASE_URL_FROM_BUCKET}cp${user.id}.jpg`;
-                    setTotalProperties(data);
-                    return data
+                    setTotalProperties(data.data);                   
                 }
-            
-        
+                if(data.response.data.status === 403){
+                  setErrorMessage(data.response.data.error)                 
+                 }     
           }  
 
         useEffect(() => {  
@@ -119,14 +121,16 @@ const Dashboard = ()=>{
 
 
             const getTotalLeads = async() =>{
-                const data=  await getTotalLeadsById(user.id);
-                    if(data !=null){
-                       // const url=`${BASE_URL_FROM_BUCKET}cp${user.id}.jpg`;
-                        setTotalLeads(data);
-                        return data
+             
+                const dataL=  await getTotalLeadsById(user.id);
+               
+                    if(dataL.status === 200){                   
+                        setTotalLeads(dataL.data);                    
                     }
-                
-            
+                    if(dataL.response.data.status === 403){
+                        setErrorMessageTotalLeads(dataL.response.data.error)
+                       }
+                           
               }  
     
             useEffect(() => {  
@@ -136,19 +140,33 @@ const Dashboard = ()=>{
     
 
    
-    
-              
+                const getPublishedProperties = async() =>{
+                    const data=  await getPublishedPropertiesById(user.id);                
+                        if(data.status === 200){
+                           // const url=`${BASE_URL_FROM_BUCKET}cp${user.id}.jpg`;
+                            setPublishedProperties(data.data);                   
+                        }
+                        if(data.response.data.status === 403){
+                          setErrorMessage(data.response.data.error)                 
+                         }     
+                  }  
+        
+                useEffect(() => {  
+                    
+                    getPublishedProperties();
+                     
+                    }, [user.id]);
  
                 const ErrorHandler = () => {
-                    return <PageNotFound/>;
+                   
+                    return <PageNotFoundDashboard/>;
                   }
     
 
     
-
-    
     return(
-      
+        <>
+        {user?.perfis?.[0] === 'TENANT' || user?.perfis?.[0] === 'ADMIN' ? 
           
         <div>
         { loadingLogin &&  <LoadingLogin/> }
@@ -181,7 +199,8 @@ const Dashboard = ()=>{
              <div className='card-wrapper-left'>
                    <Card  width='100%' height='100%' noShadow={true}  borderRadius='2px'   background={false}>
                      <p>Imóveis Cadastrados</p>
-                     <span className='number-card-dashboard'>{totalProperties}</span>
+
+                     <span className='number-card-dashboard'>{totalProperties && totalProperties}</span>
                    </Card>
                    </div>
                             <div className='card-wrapper-left'>
@@ -193,8 +212,8 @@ const Dashboard = ()=>{
                           
                             <div className='card-wrapper-left'>
                     <Card width='100%' height='100%' noShadow={true}  borderRadius='2px'    background={false}>
-                        <p>Visitas no site</p>
-                        <span className='number-card-dashboard'>1</span>
+                        <p>Imóveis Publicados</p>
+                        <span className='number-card-dashboard'>{publishedProperties && publishedProperties}</span>
                     </Card>
                     </div>
                    
@@ -216,7 +235,7 @@ const Dashboard = ()=>{
                 
             </Card>
 
-            <Card width='90%' height='auto' noShadow={true} margin='25px 0' border='1px solid #e6e9ed' paddingTop='0' borderRadius='2px'>    
+            <Card width='100%' height='auto' noShadow={true} margin='25px 0' border='1px solid #e6e9ed' paddingTop='0' borderRadius='2px'>    
                <img className='img-right' src={rightSideImage} />
                                           
             </Card>
@@ -230,7 +249,8 @@ const Dashboard = ()=>{
         </ErrorBoundary>
       
         </div>
-      
+      : <PageNotFound/>}
+      </>
     )
 }
 

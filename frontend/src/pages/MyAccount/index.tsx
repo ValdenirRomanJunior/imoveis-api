@@ -134,7 +134,9 @@ useEffect(() => {
     
     return(
         <>
-        {user ? 
+       
+        {user?.perfis?.[0] === 'TENANT' || user?.perfis?.[0] === 'ADMIN' ? 
+        
         <ErrorBoundary FallbackComponent={ErrorHandler}>
         <div>
         { loadingLogin &&  <LoadingLogin/> }
@@ -200,6 +202,7 @@ useEffect(() => {
       </div>
       </ErrorBoundary>
       : <PageNotFound/>}
+   
       </>
     )
 

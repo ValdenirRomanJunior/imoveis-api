@@ -18,6 +18,7 @@ import Loading from '../../components/Loading';
 import PageNotFound from '../../components/PageNotFound';
 import LoadingLogin from '../../components/LoadingLogin';
 import { ErrorBoundary } from 'react-error-boundary';
+import useAuth from '../../hooks/useAuth';
 
 type Error = {
     fieldName:string;
@@ -268,7 +269,7 @@ const cleanForm = () =>{
                 
             const handleSubmitForm = async (e:any) =>{
               e.preventDefault();
-
+              setLoadingTenant(true)
         
                 let emptyValues=Object.values(form).some(obj => obj === '');
                 setEmptyValue(emptyValues);
@@ -328,10 +329,7 @@ const cleanForm = () =>{
                     
                 
                 if(!emptyValues){
-                    
-                    setLoadingTenant(true)
-
-                    setTimeout(async() =>{
+                        
                   
                 const data = await editProperty(name, description,typeProperty, goal, numberRooms, bathRooms,area, iptu,vacancies,condominium,                                      
                 price, state, city, district, street, number, cep, images,`${params.propertyId}`)
@@ -348,6 +346,7 @@ const cleanForm = () =>{
                         setLoadingTenant(true);
                     },1000)
                     setTimeout(()=>{
+                        setLoadingTenant(false)
                         setSuccessMessage(false);
                         setCleanImagesForm(false);
                         navigate(`/details/${params.propertyId}`)
@@ -362,7 +361,7 @@ const cleanForm = () =>{
                         console.log(data.response.data.errors)
                                                                                        
                     }
-                    else if(data.response.status === 404){
+                    else if(data.response.status === 404 || data.response.status === 403 ){
                         console.log(data.response.status)
                         setOtherError(true)
                         setSuccessMessage(false)
@@ -372,7 +371,7 @@ const cleanForm = () =>{
                             setOtherError(false)
                         },2000)
                     } 
-            },2000) 
+      
            
        }
     }
@@ -533,7 +532,7 @@ const cleanForm = () =>{
                
                 <div className='buttom-register-wrapper'>
                 { otherError &&   
-                <div className='other-error'>Erro Inesperado</div>
+                <div className='other-error-update'>Erro Inesperado</div>
                  }
                 {
                         loadingTenant && <Button className="button-send-email" ><Loading/></Button>
@@ -616,21 +615,32 @@ useEffect(() =>{
     },
      [p]);
 
-
+ 
 
      const ErrorHandler = () => {
         return <PageNotFound/>;
       }
 
+      const {user, getCurrentUser} = useAuth();
+useEffect(() =>{
+      
+  getCurrentUser();
+
+
+},[])
+ 
     return(
         <ErrorBoundary FallbackComponent={ErrorHandler}>
             { loadingLogin &&  <LoadingLogin/> }
             {errors && <PageNotFound/>}
-           
+
+            {user?.perfis?.[0] === 'TENANT' ? 
+         <>
           { property?.id  && !errors &&      
-            <EditComponent property={property as unknown as Property}/> }                  
-            
-             
+            <EditComponent property={property as unknown as Property}/> } 
+            </>                
+            : <PageNotFound/>}
+        
         </ErrorBoundary>
     )
 }

@@ -2,19 +2,30 @@ package com.dynamous.imoveis.controllers.exceptions;
 
 import java.io.Serializable;
 
+
 public class StandardError implements Serializable {
     private static final long serialVersionUID = 1L;
-
-    private Integer status;
-    private String message;
+    
     private Long timeStamp;
+    private Integer status;
     private String error;
+    private String message; 
     private String path;
 
+    public StandardError(Long timeStamp, Integer status, String error, String message, String path) {
+        super();
+        this.timeStamp = timeStamp;
+        this.status = status;
+        this.error = error;
+        this.message = message;
+        this.path = path;
+    }
 
     public Integer getStatus() {
         return status;
     }
+    
+    
 
     public void setStatus(Integer status) {
         this.status = status;
@@ -52,12 +63,5 @@ public class StandardError implements Serializable {
         this.path = path;
     }
 
-    public StandardError(Long timeStamp, Integer status, String error, String message, String path) {
-        super();
-        this.timeStamp = timeStamp;
-        this.status = status;
-        this.error = error;
-        this.message = message;
-        this.path = path;
-    }
+   
 }

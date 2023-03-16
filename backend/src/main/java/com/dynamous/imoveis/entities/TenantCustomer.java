@@ -8,30 +8,26 @@ import javax.persistence.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
-@Entity
+
 public class TenantCustomer {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+ 
     private Long id;
 
     private String name;
 
     private String email;
-    @JsonIgnore
+
     private String password;
 
 
-    @ManyToOne
-    @JoinColumn(name = "tenant_id")
+
     private Tenant tenant;
 
-    @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name="CUSTOMER_PERFIS")
+
     private Set<Integer> perfis = new HashSet<>();
 
-    @OneToMany(mappedBy = "tenantCustomer",fetch = FetchType.EAGER)
-    @ElementCollection
+  
     private List<Contract> contracts = new ArrayList<>();
 
     public TenantCustomer(){

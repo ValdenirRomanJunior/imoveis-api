@@ -2,6 +2,8 @@ import {
     BrowserRouter,
     Routes,
     Route,
+   
+    Link,
 } from "react-router-dom";
 import Dashboard from "../pages/Dashboard";
 import Details from "../pages/Details";
@@ -18,12 +20,22 @@ import SignUp from "../pages/SignUp";
 import Tenants from "../pages/Tenants";
 import PageNotFound from "../components/PageNotFound";
 import ConfirmationPage from "../pages/ConfirmationPage";
+import useAuth from "../hooks/useAuth";
+import { useEffect } from "react";
+import { ErrorBoundary } from "react-error-boundary";
+import { refreshToken } from "../services/resources/user";
 
 
 
 export const Router = () => {
+
+  
+
+
+
     return (
-      
+        
+       
         <BrowserRouter>
 
             <Routes>
@@ -32,22 +44,22 @@ export const Router = () => {
                 <Route path='*' element={<PageNotFound/>}/>             
                 <Route path="/dashboard" element={<Dashboard />} />           
                 <Route path="/properties" element={<Properties />} />
-                <Route path="/registration" element={<Registration />} />
+                <Route path="/registration" element={<Registration />}/>
                 <Route path="/details/:propertyId" element={<Details />} />
-                <Route path="/edit/:propertyId"  element={<Edit/>}/>
-                             
-                <Route path="/leads" element={<Leads />} />
+                 <Route path="/edit/:propertyId"  element={<Edit/>}/>                 
+                 <Route path="/leads" element={<Leads />}/>
                 <Route path="/account" element={<MyAccount />} />
-                <Route path="/registrationTenant" element={<RegistrationTenant />} />
-                <Route path="/tenants" element={<Tenants />} />
-                <Route path="/edittenant/:tenantId" element={<EditTenant />} />
+               <Route path="/registrationTenant" element={<RegistrationTenant />}/>
+                 <Route path="/tenants" element={<Tenants />} /> 
+                 <Route path="/edittenant/:tenantId" element={<EditTenant />} /> 
                 <Route path="/verification/:tenantEmail" element={<ConfirmationPage />} />
                 
-                
+              
             
             
             </Routes>
         </BrowserRouter>
+       
        
     )
 }

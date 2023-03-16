@@ -75,7 +75,7 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         response.addHeader("access-control-expose-headers", "Authorization");
         if(verification !=null) {
         	 response.addHeader("Verification", verification.toString());        	
-        }else {
+        }if (verification == null) {
         	response.addHeader("Verification", "admin"); 
         }
        
@@ -96,6 +96,9 @@ private class JWTAuthenticationFailureHandler implements AuthenticationFailureHa
         response.getWriter().append(json());
      
     }
+    
+    
+
 
     private String json() {
         long date = new Date().getTime();

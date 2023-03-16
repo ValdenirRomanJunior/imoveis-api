@@ -8,9 +8,19 @@ import { Link, useNavigate } from 'react-router-dom';
 import CardTenant from './CardTenant';
 import { refreshToken } from '../../services/resources/user';
 import LoadingLogin from '../../components/LoadingLogin';
+import useAuth from '../../hooks/useAuth';
+import PageNotFound from '../../components/PageNotFound';
 
 
 const Tenants = ()=>{
+
+  const {user, getCurrentUser} = useAuth();
+  useEffect(() =>{
+        
+    getCurrentUser();
+
+
+},[])
 
   const [loadingLogin,setLoadingLogin]= useState(true);
 
@@ -37,6 +47,9 @@ const Tenants = ()=>{
 },[])
     
     return(
+    
+     <>
+       {user?.perfis?.[0] === 'ADMIN' ? 
       <div>
       { loadingLogin &&  <LoadingLogin/> }
 
@@ -55,6 +68,8 @@ const Tenants = ()=>{
     </TenantsBackground>
   
      </div>
+     : <PageNotFound/>}
+     </>
     )
 
 }

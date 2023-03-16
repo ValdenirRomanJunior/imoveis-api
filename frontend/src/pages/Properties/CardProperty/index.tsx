@@ -2,11 +2,11 @@
 
 import React, { useEffect, useState } from 'react'
 import Card from '../../../components/Card';
-import {CardWrapper,CardContent,CardContainer,MessageNoProperties} from './styles';
+import {CardWrapper,CardContent,CardContainer,MessageNoProperties,StatusProperty, InputRangeProperty} from './styles';
 import {AiOutlineEdit} from 'react-icons/ai';
 import {BsTrash} from 'react-icons/bs';
 import {BiMap} from 'react-icons/bi';
-import {  deletePropertyReq, propertiesPageable} from '../../../services/resources/property';
+import {  changeStatusPropertyReq, deletePropertyReq, propertiesPageable} from '../../../services/resources/property';
 import { Link } from 'react-router-dom';
 import { Property, PropertyPage } from "../../../types/property";
 import Pagination from '../../../components/Pagination';
@@ -14,21 +14,42 @@ import defaultImage from '../../../assets/images/no-pictures.png';
 import Modal from 'react-modal';
 import { IoCloseOutline } from 'react-icons/io5';
 import LoadingLogin from '../../../components/LoadingLogin';
+import {MdPublishedWithChanges} from 'react-icons/md';
 
 
 
+type Props={
+    onChange: Function;
+    id:string
+    state:string;
+    city:string;
+    goal:string;
+    type:string;
+ 
+}
 
 
-const CardListItem = ({id,name,images,price,address,onChange,close,error}: Property) =>{
+
+const CardListItem = ({id,name,images,price,address,statusProperty,onChange,close,error,booleanModal}: Property) =>{
 
     const [loading,setLoading]= useState(false);
    
+    useEffect(()=>{
+        if(booleanModal){
+            setLoading(true)
+            setTimeout(()=>{
+                setLoading(false)
+            },500)
+           
+           }
+    },[booleanModal])
+ 
 
    const imgs= images?.map((post) =>{
     return(
        
     <div key={post.id}>
-    <img src={post.url}/>
+    <img  src={post.url}/>
     </div> 
         
 );
@@ -62,17 +83,97 @@ const handleCloseModal =() =>{
   
 
 }
+
+const intialValueStatusProperty = () =>{
+    if(statusProperty === 'PUBLICADO'){
   
+        return '1' as string;
+    }
+    if(statusProperty === 'NAO_PUBLICADO'){
+        return '2' as string;
+    }
+  
+}
+
+
+const [statusPropertyState,setStatusProperty]= useState(()=> intialValueStatusProperty());
+const [colorStatus,setColorStatus]= useState(false);
+
+const [form, setForm] = useState({
+            
+    status:statusPropertyState as string
+});
+
+const handleChange = async(e:any) =>{
+                             
+    const field= e.target.getAttribute('name');
+    const value= e.target.value;
+    setForm({ ...form,
+        [field]:value,
+        
+    }); 
+    setColorStatus(true);
+              
+            // console.log(data)
+      }  
+
+      const sendChangeStatus = async() => {
+        const data= await changeStatusPropertyReq(String(id),Number(form['status']));
+
+        if(data.status === 204){
+            setLoading(true);
+            setTimeout(()=> {
+            setLoading(false)
+          
+            },500)
+        }
+        if(data.response.status === 404 || data.response.status === 403){
+            setLoading(true);
+            setTimeout(()=> {
+            setLoading(false)
+            
+          
+            },500)
+            
+            setForm({ ...form,
+                ['status']:intialValueStatusProperty() as string,
+                
+            }); 
+           
+            
+
+        }
+
+      }
+      
+      useEffect(()=> {
+        if(colorStatus=== true){
+            sendChangeStatus()
+        }
+      },[form.status])
+    
 
     return(
         <CardWrapper>
             {loading &&<LoadingLogin/>}
-        <Card width='100%' height='100%' noShadow={true} borderRadius="0" background={false}>
-            
+            <StatusProperty statusProperty={form['status'] as string}><MdPublishedWithChanges/>
+            { form['status'] ==='1' &&
+                 <p>PUBLICADO</p> } 
+                  { form['status'] ==='2' &&
+                 <p>NÃO PUBLICADO</p> } 
+           
+               
+                    <InputRangeProperty> 
+                         <input id="status" name="status" value={form['status']} min='1' max='2'  type='range'   onChange={(e) => handleChange(e)}/>    
+                    </InputRangeProperty>
+                </StatusProperty> 
+
+         <Card width='100%' height='100%' noShadow={true} borderRadius="0" background={false}> 
+                 
               <CardContent>
                     
-                    <Link to={`/details/${id}`}> {imgs && imgs} </Link>
-                    {imgs?.length=== 0 && ( <Link to={`/details/${id}`}><img src={defaultImage}/> </Link>)}            
+                   
+                    {imgs ?  <Link to={`/details/${id}`}> {imgs[0]} </Link> :  <Link to={`/details/${id}`}><img src={defaultImage}/> </Link>}            
                      <div className='text-wrapper-card'>
                      <Link to={`/details/${id}`}> <p className='title-card-property'>{name}</p> </Link>  
                      <p className='value'>R${price}</p>
@@ -115,17 +216,16 @@ const handleCloseModal =() =>{
       
 
     )
-
-
 }
 
-const CardProperty = ()=>{
+const CardProperty = ({id,state,city,goal,type,onChange}:Props)=>{
 
     const [pageNumber, setPageNumber] = useState(0);
     const[closeModalProperty, setCloseModalProperty]= useState(true);
     const [error,setError]= useState('');
+    const [booleanLoadingModal, setBooleanLoadingModal]= useState(false);
 
-
+    
     const [page, setPage] = useState<PropertyPage>({
 
         content: [],
@@ -139,23 +239,45 @@ const CardProperty = ()=>{
         empty: true
     });
 
+
    
     const getProperties = async () => {
-        console.log('chemai')
-        const {data}= await propertiesPageable(pageNumber);
+      
+        const {data}= await propertiesPageable(id,state,city,goal,type,pageNumber);
+       
         setPage(data as PropertyPage) ;
+        if(data){
+          
+            onChange(true)
+        }
+        setTimeout(() => {
+            setBooleanLoadingModal(true)
+        })
+       
+        setBooleanLoadingModal(true);
         localStorage.removeItem('images')
           
     }
 
+    
+
     useEffect(() =>{
-        getProperties();
-    },[ pageNumber])
+        if(pageNumber>0   && (state.length !==0 || id.length !==0 || city.length !==0 || goal.length !==0 || type.length !==0)){
+            setPageNumber(0); 
+           
+        }
+        getProperties(); 
+    },[pageNumber, state, city, goal, type, id, onChange])
 
    
 
     const handlePageChange = (newPageNumber : number)=>{
-        setPageNumber(newPageNumber);
+        if(id !== ''){
+            setPageNumber(0);
+        }else{
+            setPageNumber(newPageNumber);
+        }
+        
     }
 
 
@@ -167,26 +289,29 @@ const CardProperty = ()=>{
    const data = await deletePropertyReq(String(id));
    setTimeout(async ()=> {
     if(data.status === 204){
-        console.log(data.status)
+       
        getProperties();
      console.log('entrei aqui')
     }
     if(data.status !== 204){
-        console.log(data.response.data.error)
+    
         setError(data.response.data.error);
     }
       
    },500)
   }
+
+
     
 
     return(
         <> { page.content.length && page.content.length ?
         
         <CardContainer>
+            
             {page.content.map(property => (
             <div className='wrapper-properties' key={property.id}>  
-            <CardListItem {...property} onChange={deleteProperty} close={closeModalProperty} error={error} />
+            <CardListItem {...property} onChange={deleteProperty} close={closeModalProperty} error={error} booleanModal={booleanLoadingModal} />
 
             </div>  
             )

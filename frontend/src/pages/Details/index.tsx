@@ -17,6 +17,7 @@ import {MdOutlineCopyAll} from 'react-icons/md'
 import PageNotFound from '../../components/PageNotFound';
 import LoadingLogin from '../../components/LoadingLogin';
 import { ErrorBoundary } from 'react-error-boundary';
+import useAuth from '../../hooks/useAuth';
 
 
 
@@ -106,7 +107,6 @@ const Details = ()=>{
 
 
 
-    
 
     const copyPropertyUrl = () => {
         var url_atual = window.location.href;
@@ -123,8 +123,19 @@ const Details = ()=>{
         return <PageNotFound/>;
       }
     
+      const {user, getCurrentUser} = useAuth();
+      useEffect(() =>{
+            
+        getCurrentUser();
+      
+      
+      },[])
+  
 
     return(
+        <>
+        {user?.perfis?.[0] === 'TENANT' ? 
+     
         <div>
         { loadingLogin &&  <LoadingLogin/> }
    { !errors ?   
@@ -139,18 +150,26 @@ const Details = ()=>{
      
         <PhotosContainer>
                   <div className='container-photos'>
-                    <div className='controls-wrapper'>
-
-                    </div>
+       
                     <hr className='seperator'/>
                     <div className='carousel-wrapper'>
-                        <Carousel isRTL breakPoints={breakPoints}>                        
+                        <Carousel
+                         isRTL={false}                      
+                         breakPoints={breakPoints}
+                         enableSwipe={true}
+                         initialActiveIndex={1}
+                       
+  
+                         >  
+                                              
                         {property?.images && property.images.map((photo) =>           
-                               <CardWrapper>
-                              <img src={photo.url}  alt="algo"/>
-                              
+                               <CardWrapper key={photo.id}>
+                            
+                              <img  src={photo.url}  alt="algo"/>
+                               
                              </CardWrapper>)}
-                             {property?.images?.length===0 as number  && ( <CardWrapper><img src={defaultImage} alt='Foto Padrão'/></CardWrapper>)}             
+                             {property?.images?.length===0 as number  && ( <CardWrapper><img src={defaultImage} alt='Foto Padrão'/></CardWrapper>)} 
+                            
                         </Carousel>
                     </div>
                   </div>
@@ -189,8 +208,9 @@ const Details = ()=>{
          </> 
          
          : <div><PageNotFound/></div>}
-         </div>     
-        
+         </div>  
+         : <PageNotFound/>}   
+        </>
     )
 }
 

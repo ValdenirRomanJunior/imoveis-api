@@ -4,7 +4,10 @@ package com.dynamous.imoveis.entities;
 
 import javax.persistence.*;
 
+import org.springframework.data.domain.Page;
+
 import com.dynamous.imoveis.enums.Goal;
+import com.dynamous.imoveis.enums.StatusProperty;
 import com.dynamous.imoveis.enums.TypeProperty;
 
 import java.io.Serializable;
@@ -32,6 +35,7 @@ public class Property implements Serializable {
     private String vacancies;
     private String condominium;
     private String price;
+    private Integer statusProperty;
     
     
     //fetch = FetchType.EAGER,mappedBy = "property",cascade=CascadeType.REMOVE, orphanRemoval = true
@@ -48,12 +52,12 @@ public class Property implements Serializable {
     private Address address;
     
  
-
     public Property() {
-    }
-
+		// TODO Auto-generated constructor stub
+	}
+   
     public Property(Long id, String name, String description, TypeProperty typeProperty, Goal goal, String numberRooms,
-    		String bathRooms,String area, String iptu,String vacancies,String condominium, String price) {
+    		String bathRooms,String area, String iptu,String vacancies,String condominium, String price, StatusProperty statusProperty) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -66,6 +70,7 @@ public class Property implements Serializable {
         this.vacancies=vacancies;
         this.condominium=condominium;
         this.price=price;
+        this.statusProperty= statusProperty.getCod();
        
      
 
@@ -109,6 +114,14 @@ public class Property implements Serializable {
 
     public void setGoal(Goal goal) {
         this.goal = goal.getCod();
+    }
+    
+    public StatusProperty getStatusProperty() {
+        return StatusProperty.toEnum(statusProperty);
+    }
+
+    public void setStatusProperty(StatusProperty statusProperty) {
+        this.statusProperty = statusProperty.getCod();
     }
     
     public String getNumberRooms() {

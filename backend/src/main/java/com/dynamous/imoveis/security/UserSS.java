@@ -1,9 +1,11 @@
 package com.dynamous.imoveis.security;
 
 import com.dynamous.imoveis.entities.Tenant;
+import com.dynamous.imoveis.entities.UserAdmin;
 import com.dynamous.imoveis.enums.Perfil;
 import com.dynamous.imoveis.enums.Verification;
 import com.dynamous.imoveis.repositories.TenantRepository;
+import com.dynamous.imoveis.repositories.UserAdminRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
@@ -20,6 +22,9 @@ public class UserSS implements UserDetails {
 
 	 @Autowired
 	 private TenantRepository tenantRepository;
+	 
+	 @Autowired
+	 private UserAdminRepository userAdminRepository;
 
     private Long id;
     private String email;
@@ -65,11 +70,24 @@ public class UserSS implements UserDetails {
 	public void setVerification(Verification verification) {
 		
 		//logica para buscar os useradmin com
-		Tenant tenant = tenantRepository.findByEmail(email);
-		if(tenant == null) {
+		
+		UserAdmin userAdmin = userAdminRepository.findByEmail(email);
+		if(userAdmin == null) {
 			throw new UsernameNotFoundException(email);
+			
 		}
-		this.verification = (verification == null) ? null : tenant.getVerification(); 
+		
+		if(userAdmin !=null) {
+			this.verification = (verification == null) ? null : userAdmin.getVerification(); 
+		}
+	Tenant tenant = tenantRepository.findByEmail(email);
+		if(tenant == null) {
+		throw new UsernameNotFoundException(email);
+	}
+		if(tenant !=null) {
+			this.verification = (verification == null) ? null : tenant.getVerification(); 
+		}
+		
 	}
 
 	@Override

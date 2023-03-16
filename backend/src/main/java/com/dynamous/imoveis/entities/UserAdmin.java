@@ -28,6 +28,9 @@ public class UserAdmin implements Serializable {
     private Integer status;
     private String lastName; 
     private Integer verification;
+    private String creci;
+    private String start;
+    private String endDate;
 
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name="USER_ADMIN_PERFIS")
@@ -38,14 +41,17 @@ public class UserAdmin implements Serializable {
 
     }
 
-    public UserAdmin(Long id, String slug, String email, String password, Status status, String lastName, Verification verification) {
+    public UserAdmin(Long id, String slug, String email, String password, Status status, String lastName, Verification verification,String creci,String start, String endDate) {
         this.id = id;
         this.slug = slug;
         this.email = email;
         this.password = password;
         this.status= (status == null) ? null : status.getCod();
         this.lastName=lastName;
-        this.verification=null;
+        this.verification=(verification == null) ? null : verification.getCod();
+        this.creci=creci;
+        this.start=start;
+        this.endDate=endDate;
         addPerfil(Perfil.ADMIN);
     }
 
@@ -107,12 +113,39 @@ public class UserAdmin implements Serializable {
 		this.lastName = lastName;
 	}
 
-	public Integer getVerification() {
-		return verification;
+	 public Verification getVerification() {
+	        return Verification.toEnum(verification);
+	    }
+	    
+	    public void setVerification(Verification verification) {
+	        this.verification = (verification == null) ? null : verification.getCod();
+	    }
+	    
+	
+	
+
+	public String getCreci() {
+		return creci;
 	}
 
-	public void setVerification(Integer verification) {
-		this.verification = verification;
+	public void setCreci(String creci) {
+		this.creci = creci;
+	}
+
+	public String getStart() {
+		return start;
+	}
+
+	public void setStart(String start) {
+		this.start = start;
+	}
+
+	public String getEndDate() {
+		return endDate;
+	}
+
+	public void setEndDate(String endDate) {
+		this.endDate = endDate;
 	}
 
 	@Override

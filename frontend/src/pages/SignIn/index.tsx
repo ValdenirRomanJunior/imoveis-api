@@ -114,6 +114,7 @@ refreshTokenUser()
     
        const initialsLogin= response.substring(0,3) as string;
        const initialsSecondPart= response.substring(3,13) as string;
+       console.log(initialsSecondPart)
           
           if (initialsLogin !== '200' && initialsSecondPart !== 'VERIFICADO') {  
             localStorage.clear();       
@@ -121,7 +122,8 @@ refreshTokenUser()
             setLoadingLogin(false)
             setLoading(false)
           }
-          if (initialsLogin === '200' && initialsSecondPart !== 'VERIFICADO') {
+          if (initialsLogin === '200' && initialsSecondPart !== 'VERIFICADO' && initialsSecondPart !== 'admin') {
+            console.log("caiu aqui")
             localStorage.clear();
             setLoadingLogin(false)
             setLoading(false)

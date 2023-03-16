@@ -7,18 +7,15 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import java.util.Objects;
 
-@Entity
 public class Contract {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+
     private Long id;
     private String name;
     private String description;
     private String fileUrl;
 
-    @ManyToOne
-    @JoinColumn(name = "tenant_customer_id")
+
     private TenantCustomer tenantCustomer;
 
     public Contract(){

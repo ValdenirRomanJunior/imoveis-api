@@ -1,4 +1,5 @@
 export type Property = {
+    booleanModal:boolean;
     error:string;
     close:boolean;
     onChange:Function;
@@ -14,6 +15,7 @@ export type Property = {
     vacancies:string,
     condominium:string,
     price:string,
+    statusProperty:string,
     images?:[{
         id:number,
         url:string,

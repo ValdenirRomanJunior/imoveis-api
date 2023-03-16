@@ -17,6 +17,7 @@ import { refreshToken } from "../../services/resources/user";
 import LoadingLogin from "../../components/LoadingLogin";
 import PageNotFound from "../../components/PageNotFound";
 import { ErrorBoundary } from "react-error-boundary";
+import useAuth from "../../hooks/useAuth";
 
 type Error = {
     fieldName:string;
@@ -28,6 +29,7 @@ const Leads = () => {
     const navigate = useNavigate();
 
     const [errors, setErrors] = useState<Error[]>([]);
+    const [otherError, setOtherError] = useState(false);
 
     const [loadingLogin,setLoadingLogin]= useState(true);
 
@@ -102,7 +104,7 @@ const Leads = () => {
 
     
             
-    const handleSubmit = async (e:React.FormEvent<HTMLFormElement>) =>{   
+    const handleSubmit = async (e:any) =>{   
         e.preventDefault()
         
         let emptyValues=Object.values(form).some(obj => obj === '');
@@ -112,27 +114,31 @@ const Leads = () => {
         if(!emptyValues){
         setLoadingAddLead(true)
 
-              setTimeout(async() =>{
-               
+             
             const data = await newLead(form['name'],form['email'],form['phone'])
           if(data.status === 201){
-            cleanForm()
-            
+            cleanForm()         
             setSuccessMessage(true)
             setLoadingAddLead(false)
-
-         
-            
+     
           }
             if(data.response.data.errors){              
                 setErrors(data.response.data.errors);
                 setSuccessMessage(false)
                 setLoadingAddLead(false)
                                                                                
-            }  
-            
-        },2000)   
-                                             
+            } 
+            else if(data.response.status === 404 || data.response.status === 403){
+                   
+                setOtherError(true)
+                setSuccessMessage(false)
+                setLoadingAddLead(false)
+               
+                setTimeout(()=>{
+                    setOtherError(false)
+                },2000)
+            }
+
         }      
                                              
     }
@@ -175,11 +181,24 @@ const Leads = () => {
         return <PageNotFound/>;
       }
 
+      const {user, getCurrentUser} = useAuth();
+     
+      useEffect(() =>{
+            
+        getCurrentUser();
+       
+       
+    
+    },[])
+    
     return(
+        <>
+        {user?.perfis?.[0] === 'TENANT'  ? 
         <ErrorBoundary FallbackComponent={ErrorHandler}>
+
         <div>
         { loadingLogin &&  <LoadingLogin/> }
-    
+        
         <LeadsBackground>
             <Header />
             <BarTop />
@@ -216,6 +235,8 @@ const Leads = () => {
                     {errors.map(x => { if(x.fieldName === 'phone') return  <p className=' formField__error'>{x.message}</p>})}
                     { emptyValue && form['phone'] === '' ? <span className='formField__error'>Este campo é requerido</span>: ''}
                     { form['phone'].length >1 && form['phone'].length <14 &&  <span className='formField__error'>Formato de telefone errado</span>}
+                    
+
                     {
                         loadingAddLead && <Button className="button-send-email" type='submit'><Loading/></Button>
                     }
@@ -223,7 +244,11 @@ const Leads = () => {
                         !loadingAddLead &&
                     <Button className="button-send-email" type='submit'>Adicionar</Button>
                     }
+
                 </form>
+                { otherError &&   
+                <div className='other-error'>Erro Inesperado</div>
+                 }
                 <div className="message">
                     {successMessage   ? <span className='success'>Lead salvo com sucesso!</span>: ''}
                     </div>
@@ -234,9 +259,12 @@ const Leads = () => {
             
             </LeadsContainer>
         </LeadsBackground>
+      
    
         </div>
         </ErrorBoundary>
+        : <PageNotFound/>}
+        </>
     )
 
 

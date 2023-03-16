@@ -45,9 +45,9 @@ public class TenantService {
     
    
     public Tenant find(Long id) {
-       // UserSS user = UserService.authenticated();
+        UserSS user = UserService.authenticated();
        
-        if(id==null){
+        if(id==null || !user.hasRole(Perfil.ADMIN) && !id.equals(user.getId())){
             throw new AuthorizationException("Acesso negado");
         }
         Optional<Tenant> tenant = tenantRepository.findById(id);

@@ -15,12 +15,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping(value = "/tenantCustomers")
 public class TenantCustomerController {
 
-    @Autowired
-    private TenantCustomerService service;
+
 
     @GetMapping(value = "/{id}")
     public ResponseEntity<?> findById(@PathVariable Long id){
-        TenantCustomer tenant=service.find(id);
-        return ResponseEntity.ok().body(tenant);
+      
+        return ResponseEntity.ok().body("");
     }
 }

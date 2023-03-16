@@ -1,6 +1,8 @@
 package com.dynamous.imoveis.enums;
 
-public enum TypeProperty {
+import java.io.Serializable;
+
+public enum TypeProperty  implements Serializable {
 
         Casa(1,"Casa"),
         Apartamento(2,"Apartamento"),

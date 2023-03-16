@@ -54,10 +54,8 @@ export const newLead = (name:string, email: string, phone:string) => {
   export const getTotalLeadsById = (id:string) => {
     return api.get(`/leads/totalLeads/${id}`,) 
                   .then(response =>{
-                    if(response.data != null){
-                      return response.data
-                     
-                    }
+                 
+                      return response;                 
                    
                   }).catch((error) =>{
                     return error

@@ -5,7 +5,6 @@ import com.dynamous.imoveis.entities.Tenant;
 import com.dynamous.imoveis.entities.TenantCustomer;
 import com.dynamous.imoveis.entities.UserAdmin;
 import com.dynamous.imoveis.enums.Perfil;
-import com.dynamous.imoveis.repositories.TenantCustomerRepository;
 import com.dynamous.imoveis.repositories.TenantRepository;
 import com.dynamous.imoveis.repositories.UserAdminRepository;
 import com.dynamous.imoveis.security.JWTUtil;
@@ -32,8 +31,7 @@ public class AuthController {
 	@Autowired
 	private TenantRepository tenantRepository;
 	
-	@Autowired
-	private TenantCustomerRepository tenantCustomerRepository;
+
 	
 	@Autowired
 	private UserAdminRepository userAdminRepository;
@@ -45,11 +43,13 @@ public class AuthController {
     private AuthService authService;
 
     @PostMapping(value = "/refresh_token")
-    public ResponseEntity<Void> refreshToken(HttpServletResponse response){
+    public ResponseEntity<Void> refreshToken(HttpServletResponse response) throws UsernameNotFoundException{
     	
     	//se user for 1= null busca ele
         UserSS user= UserService.authenticated();
-        if(user != null) {
+        
+        if(user != null ) {
+        	System.out.println(user.getUsername());
         	 String token = jwtUtil.GenerateToken(user.getUsername());
              response.addHeader("Authorization", "Bearer " + token);
              response.addHeader("access-control-expose-headers", "Authorization");
@@ -73,22 +73,18 @@ public class AuthController {
     	String email=user.getUsername();
     		
     	// se user for tenant buscar email, if user for tenantcustomer buscar
-    	  TenantCustomer tenantCustomer = tenantCustomerRepository.findByEmail(email);
+    	 
           Tenant tenant = tenantRepository.findByEmail(email);
           UserAdmin userAdmin = userAdminRepository.findByEmail(email);
           
           
           
-          if (tenant == null && tenantCustomer == null && userAdmin == null) {
+          if (tenant == null && userAdmin == null) {
               throw new UsernameNotFoundException(email);
               
           } else if (tenant != null && tenant.getPerfis().contains(Perfil.TENANT)) {       	  
               return  ResponseEntity.ok().body(tenant);
               
-
-          } else if (tenantCustomer != null && tenantCustomer.getPerfis().contains(Perfil.TENANT_CUSTOMER)) {
-        	  return  ResponseEntity.ok().body(tenantCustomer);
-
           } else {
         	  return  ResponseEntity.ok().body(userAdmin);
 

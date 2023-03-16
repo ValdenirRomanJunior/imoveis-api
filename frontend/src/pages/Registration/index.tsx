@@ -14,6 +14,9 @@ import {number, currency, cep} from './masks';
 import { refreshToken } from '../../services/resources/user';
 import Loading from '../../components/Loading';
 import LoadingLogin from '../../components/LoadingLogin';
+import PageNotFound from '../../components/PageNotFound';
+import { ErrorBoundary } from 'react-error-boundary';
+import useAuth from '../../hooks/useAuth';
 
 
 type Error = {
@@ -37,6 +40,7 @@ const Registration = () =>{
     
     const [errors, setErrors] = useState<Error[]>([]);
     const [otherError, setOtherError] = useState(false);
+    
     const navigate = useNavigate();
     const [ufs, setUfs]= useState<IBGEUFResponse[]>([]);
     const [cities, setCities]= useState<IBGECYTYResponse[]>([]);
@@ -48,6 +52,19 @@ const Registration = () =>{
    
     const [loadingLogin,setLoadingLogin]= useState(true);
 
+    const refreshTokenUser = async ()=>{
+        const  resp = await refreshToken();    
+        if(resp === 204){  
+          navigate('/registration')
+        }else{
+            navigate('/')
+        }
+    }
+
+  useEffect( () =>  {
+  refreshTokenUser()
+},[])
+
     useEffect(() =>{
        
         setTimeout(() =>{
@@ -56,18 +73,7 @@ const Registration = () =>{
 
     },[])
     
-            const refreshTokenUser = async ()=>{
-                const  resp = await refreshToken();    
-                if(resp === 204){  
-                  navigate('/registration')
-                }else{
-                    navigate('/')
-                }
-            }
-        
-          useEffect( () =>  {
-          refreshTokenUser()
-        },[])
+          
       
      const getImagesUrls = (data:ImageItem[]) => {      
          setImages(data);
@@ -206,76 +212,24 @@ const Registration = () =>{
                     
             }
            
+                console.log(form['typeProperty'])
+
             const handleSubmit = async (e:any) => {
               e.preventDefault();
-
+            
         
                 let emptyValues=Object.values(form).some(obj => obj === '');
                 setEmptyValue(emptyValues);
                 
-              
-              
-                let name: any;            
-                for (var prop in form) { if(prop === 'name'){name=form[prop]; } }
-                        
-                let description: any;            
-                for (var prop1 in form) {if(prop1 === 'description'){ description=form[prop1];  }}
-
-                let typeProperty:any;      
-                for (var prop2 in form) {if(prop2 === 'typeProperty'){ typeProperty=form[prop2];}}
-
-                let goal:any;            
-                for (var prop3 in form) {if(prop3 === 'goal'){ goal=form[prop3];}}
-
-                let numberRooms: any;            
-                for (var prop4 in form) {if(prop4 === 'numberRooms'){ numberRooms=form[prop4];}}
-
-                let bathRooms: any;            
-                for (var prop5 in form) {if(prop5 === 'bathRooms'){ bathRooms=form[prop5];}}
-
-                let area: any;            
-                for (var prop6 in form) {if(prop6 === 'area'){ area=form[prop6];}}
-
-                let iptu: any;            
-                for (var prop7 in form) {if(prop7 === 'iptu'){ iptu=form[prop7];}}
-
-                let vacancies: any;            
-                for (var prop8 in form) {if(prop8 === 'vacancies'){ vacancies=form[prop8];}}
-
-                let condominium: any;            
-                for (var prop9 in form) {if(prop9 === 'condominium'){ condominium=form[prop9];}}
-
-                let price: any;            
-                for (var prop10 in form) {if(prop10 === 'price'){ price=form[prop10];}}
-              
-
-                let state: any; 
-                for (var prop11 in form) {if(prop11 === 'uf'){ state=form[prop11];}  }
-              
-    
-                let city: any;            
-                for (var prop12 in form) {if(prop12 === 'city'){ city=form[prop12];}}
-
-                let district: any;            
-                for (var prop13 in form) {if(prop13 === 'district'){ district=form[prop13];}}
-
-                let street: any;            
-                for (var prop14 in form) {if(prop14 === 'street'){ street=form[prop14];}}
-
-                let number: any;            
-                for (var prop15 in form) {if(prop15 === 'number'){ number=form[prop15];}}
-
-                let cep: any;            
-                for (var prop16 in form) {if(prop16 === 'cep'){ cep=form[prop16];}}
-                    
-                if(!emptyValues){
-
+                                
+                if(!emptyValues) {
                     setLoadingTenant(true)
-                    setTimeout(async() =>{
-                    
-                const data = await newProperty(name, description, goal, typeProperty, numberRooms, bathRooms,area, iptu,vacancies,condominium,                                      
-                price, state, city, district, street, number, cep, images)
+                  
+                             
+                const data = await newProperty(form['name'],form['description'],form['goal'], form['typeProperty'], form['numberRooms'],form['bathRooms'],form['area'], form['iptu'],form['vacancies'],form['condominium'],                                      
+                form['price'],form['uf'],form['city'],form['district'],form['street'],form['number'],form['cep'], images)
                  
+                
                 if(data.status === 201){
                     setCleanImagesForm(true);
                     cleanForm()                    
@@ -294,28 +248,42 @@ const Registration = () =>{
                         setLoadingTenant(false)
                                                                                        
                     }  
-                    else if(data.response.status === 404){
-                        console.log(data.response.status)
+                    else if(data.response.status === 404 || data.response.status === 403){
+                   
                         setOtherError(true)
                         setSuccessMessage(false)
                         setLoadingTenant(false)
-
+                       
                         setTimeout(()=>{
                             setOtherError(false)
                         },2000)
                     }
-            },2000) 
+          
              
          } 
                         
      }
 
-   
+     const ErrorHandler = () => {
+        return <PageNotFound/>;
+      }
+
+      const {user, getCurrentUser} = useAuth();
+      
+      useEffect(() =>{
+            
+        getCurrentUser();
+       
+    
+    },[])
                 
     return(
+        <ErrorBoundary FallbackComponent={ErrorHandler}>
         <div>
         { loadingLogin &&  <LoadingLogin/> }
  
+  
+       {user?.perfis?.[0] === 'TENANT' ? 
        <RegistrationBackground>
         <Header />
         <BarTop />
@@ -340,7 +308,8 @@ const Registration = () =>{
                     <select  name='goal'  id='goal' value={form['goal']}  placeholder='selecione'  onChange={(e) => handleChange(e)} >
                     <option value='' >Selecione</option>
                     <option key='1' value='1'>Vender</option>
-                    <option key='2' value='2'>Alugar</option>               
+                    <option key='2' value='2'>Alugar</option>   
+                                
                 </select>
                 {errors.map(x => { if(x.fieldName === 'goal') return  <p className='formField__error_reg'>{x.message}</p>})}
                 { emptyValue && form['goal'] === '' ?<span className='formField__error_reg'>Selecione uma Finalidade</span>: ''}
@@ -479,10 +448,11 @@ const Registration = () =>{
             </form>
         </BodyRegistrationContainer>
        </RegistrationBackground>
+       : <PageNotFound/>}
     
        </div>
             
-        
+       </ErrorBoundary>
     )
 }
 

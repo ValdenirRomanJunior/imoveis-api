@@ -67,6 +67,38 @@ export const BarTopContainer = styled.div`
           
 
         }
+        @media screen and (min-width:550px){
+
+            button{
+                width:auto;
+                height: auto;
+                padding: 5px 10px !important;
+                margin-bottom:0;
+                background:#7b62e2 !important;
+                border-radius:3px;
+                font-size:14px;
+              
+                margin-left: 45px;
+             
+               
+              }
+        }
+        @media screen and (min-width:750px){
+
+            button{
+                width:auto;
+                height: auto;
+                padding: 5px 10px !important;
+                margin-bottom:0;
+                background:#7b62e2 !important;
+                border-radius:3px;
+                font-size:14px;
+              
+                margin-left: 75px;
+             
+               
+              }
+        }
 
         @media screen and (min-width:1000px){
 
@@ -107,7 +139,7 @@ export const BarTopContainer = styled.div`
                 height: auto;
                 padding: 5px 10px;
                 margin-bottom:0;
-                font-size: 17px;
+                font-size: 15px;
     
             }
     

@@ -43,7 +43,7 @@ public class TenantController {
         return ResponseEntity.ok().body(tenant);
     }
 
-
+    @PreAuthorize("hasAnyRole('ADMIN')")
     @PostMapping(value="/save")
     public ResponseEntity<Void> save(@Valid @RequestBody TenantNewDTO objDto) throws UnknownHostException{
         Tenant obj = service.fromDTO(objDto);
@@ -56,6 +56,7 @@ public class TenantController {
         return ResponseEntity.created(uri).build();
     }
    
+    @PreAuthorize("hasAnyRole('ADMIN')")
     @PutMapping(value = "/update/{id}")
     public ResponseEntity<Void> update(@Valid @RequestBody TenantUpdateDTO objDto, @PathVariable Long id){
     	System.out.println(objDto.getStatus());
@@ -79,13 +80,14 @@ public class TenantController {
 
     }
     
+    @PreAuthorize("hasAnyRole('ADMIN')")
     @DeleteMapping(value = "/delete/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id){
         service.delete(id);
         return ResponseEntity.noContent().build();
     }
 
-   
+    @PreAuthorize("hasAnyRole('ADMIN')")
     @GetMapping(value = "/page")
     public ResponseEntity <Page<TenantDTO>> findPage(
             @RequestParam(value = "page",defaultValue = "0") Integer page,

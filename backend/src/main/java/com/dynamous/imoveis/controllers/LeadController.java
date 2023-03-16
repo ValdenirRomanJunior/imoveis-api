@@ -33,14 +33,14 @@ public class LeadController {
     @Autowired
     private LeadRepository leadRepository;
    
-   // @PreAuthorize("hasAnyRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('TENANT')")
     @GetMapping(value = "/find/{id}")
     public ResponseEntity<?> findById(@PathVariable Long id){
         Lead lead=service.find(id);
         return ResponseEntity.ok().body(lead);
     }
 
-
+    
     @PostMapping(value="/save")
     public ResponseEntity<Void> save(@Valid @RequestBody LeadNewDTO objDto){
     	
@@ -53,14 +53,14 @@ public class LeadController {
     }
    
 
-    
+    @PreAuthorize("hasAnyRole('TENANT')")
     @DeleteMapping(value = "/delete/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id){
         service.delete(id);
         return ResponseEntity.noContent().build();
     }
 
-   
+    @PreAuthorize("hasAnyRole('TENANT')")
     @GetMapping(value = "/page")
     public ResponseEntity <Page<LeadDTO>> findPage(
             @RequestParam(value = "page",defaultValue = "0") Integer page,
@@ -72,6 +72,7 @@ public class LeadController {
         return ResponseEntity.ok().body(listDTO);
     }
     
+    @PreAuthorize("hasAnyRole('TENANT')")
     @GetMapping(value = "/totalLeads/{id}")
     public ResponseEntity<?> getTotalLeads(@PathVariable Long id){    	  	
        Long total= leadRepository.countLeadByTenantId(id);      

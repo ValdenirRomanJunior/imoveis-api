@@ -16,7 +16,9 @@ export const HeaderContainer = styled.header`
     position: fixed;
     top:0;
     left:0;
-    z-index: 6000;
+    z-index:5000;
+    
+   
 
    
 `
@@ -24,17 +26,49 @@ export const HeaderContainer = styled.header`
 export const HeaderWrapper = styled.div`
     width:92%;
     height: 60px;
-
+    position: relative;
     display: flex;
     align-items: center;
     justify-content: space-between;
 
     .message-icon{
-        margin-left:190px;
+        position:absolute;
+        top:50%;
+        right:10%;
+        transform:translate(-50%,-50%);
+       
+    }
+
+    @media screen and (min-width: 550px){
+        .message-icon{
+            position:absolute;
+            top:50%;
+            right:8%;
+            transform:translate(-50%,-50%);
+           
+        }
+    }
+
+    @media screen and (min-width: 768px){
+        .message-icon{
+            position:absolute;
+            top:50%;
+            right:6%;
+            transform:translate(-50%,-50%);
+           
+        }
     }
 
     @media screen and (min-width: 1000px){
-        width:99%;
+        width:100%;
+        padding:0 15px;
+        .message-icon{
+            position:absolute;
+            top:50%;
+            right:4%;
+            transform:translate(-50%,-50%);
+           
+        }
     }
 
    
@@ -74,7 +108,7 @@ export const BoxLinks = styled.div<{ linksModal: boolean}>`
     width: 120px;
     height:80px;
 
-    display:flex;
+   
     flex-direction:column;
     justify-content: space-around;
     align-items: center;
@@ -83,7 +117,7 @@ export const BoxLinks = styled.div<{ linksModal: boolean}>`
     position: absolute !important;
     bottom:-95px;
     left:100px;
-   
+    display: ${({linksModal}) => (linksModal ? 'none' : 'flex')};
     background:#FFF;
     border: 1px solid #e6e9ed;
     border-radius:5px;
@@ -265,6 +299,10 @@ export const NavIcon = styled(Link)`
         margin-left:10px;
         position:relative;
 
+    }
+    .site-link{
+        color:#008ace;
+        font-size: 18px;
     }
 
     @media screen and (min-width: 1000px){

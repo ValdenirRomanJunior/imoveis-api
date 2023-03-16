@@ -1,46 +1,59 @@
 package com.dynamous.imoveis.security;
 
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.web.access.AccessDeniedHandler;
+import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
+
+import com.dynamous.imoveis.services.exceptions.AuthorizationException;
+import com.dynamous.imoveis.services.exceptions.DataIntegrityException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Date;
 
 public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
 
     private JWTUtil jwtUtil;
     private  UserDetailsService userDetailsService;
 
-    public JWTAuthorizationFilter(AuthenticationManager authenticationManager, JWTUtil jwtUtil, UserDetailsService userDetailsService) {
+    public JWTAuthorizationFilter(AuthenticationManager authenticationManager, JWTUtil jwtUtil, UserDetailsService userDetailsService) {  	
         super(authenticationManager);
+       
         this.jwtUtil=jwtUtil;
         this.userDetailsService=userDetailsService;
     }
 
     //intercept a requisição e vê se o usuario está autorizado
 
-    @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
 
+
+	@Override
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
+		
         //pegar o token Bearer
         String header =request.getHeader("Authorization");
        
+ 	
         //libera o usuario que esta tentando acessar o endpoint
         if (header != null && header.startsWith("Bearer ")){
             UsernamePasswordAuthenticationToken auth= getAuthentication(request,header.substring(7));
             if(auth !=null) {
             	SecurityContextHolder.getContext().setAuthentication(auth);
-            }
-          
-         
+            }      
         }
+           
         chain.doFilter(request,response);
     }
 
@@ -57,4 +70,11 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
         }
         return null;
     }
+    
+    
+    
+  
+    
+    
+    
 }

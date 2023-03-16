@@ -6,7 +6,7 @@ export const LeadWrapper = styled.div<{prop:boolean}>`
     display: flex; 
     flex-direction:column;
     justify-content: space-between;
-    position:relative;
+  
 
     
     
