@@ -117,74 +117,7 @@ export const BodyRegistrationContainer = styled.main`
         margin-top: 30px;
         position: relative;
        
-           
-      
-
-        .other-error{
-            position: absolute;
-            top:-55px;
-            left:50%;
-            transform: translate(-50%,-50%);
-            content: "copiado";
-        
-            background-color:#f81e1ec2;
-            display: flex;
-            color:#fff;
-            font-size:12px;
-            padding:5px 15px;
-            -webkit-box-shadow: 0px 0px 13px -5px rgba(214,214,214,1);
-            -moz-box-shadow: 0px 0px 13px -5px rgba(214,214,214,1);
-            box-shadow: 0px 0px 13px -5px rgba(214,214,214,1);
-            text-align: center;
-           
-            font-weight: bold;
-            transition: transform .3s;
-            animation: copy 4s ease-in-out;
-            transform: translateY(0) scale(0);
-            opacity:0;
-            font-weight:400;
-           
-        
-        
-          }
-        
-          @keyframes copy {
-            
-            0%{
-                transition: .1s;
-                transform: translateY(0) scale(1.2);
-                opacity:0.3;
-               
-               
-            } 
-            25%{
-               
-                transform: translateY(10px) scale(1.2);
-                opacity:1;   
-                
-                      
-            }
-        
-            50%{
-               
-                transform: translateY(10px) scale(1.2);
-                opacity:.9; 
-                        
-            }
-            75%{
-               
-                transform: translateY(10px) scale(1.2);
-                opacity:.3;
-                            
-            }
-            100%{
-               
-                transform: translateY(10px) scale(1.2);
-                opacity:0;
-                            
-            }
-          }
-        
+             
     }
 
     .formField__error_reg{
@@ -195,12 +128,32 @@ export const BodyRegistrationContainer = styled.main`
     
         width:100%;
     }
-
+    .other-error{
+        position: relative;
+    
+        background-color:#f81e1ec2;
+        display: flex;
+        justify-content: center;
+        color:#fff;
+        font-size:12px;
+        padding:5px 15px;
+        -webkit-box-shadow: 0px 0px 13px -5px rgba(214,214,214,1);
+        -moz-box-shadow: 0px 0px 13px -5px rgba(214,214,214,1);
+        box-shadow: 0px 0px 13px -5px rgba(214,214,214,1);
+        text-align: center; 
+        font-weight: bold;
+        font-weight:400;
+        margin-bottom: 20px;
+     
+       
+    
+    
+      }
     .message-registration{
         width:100%;
         position:relative;
-        margin-top:5px;
-        margin-bottom:25px;
+     
+        margin-bottom:35px;
         display: flex;
         justify-content: center;
     }
@@ -212,7 +165,7 @@ export const BodyRegistrationContainer = styled.main`
         animation: buttons .3s linear;
         background-color: #7fe87f29;
         padding:10px 15px;
-        margin-top:20px;
+      
        
 
         .new-property-link{

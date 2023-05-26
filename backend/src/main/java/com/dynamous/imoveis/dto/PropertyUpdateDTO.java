@@ -1,5 +1,7 @@
 package com.dynamous.imoveis.dto;
 
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
 import org.hibernate.validator.constraints.Length;
 
 
@@ -66,7 +68,7 @@ public class PropertyUpdateDTO implements Serializable {
     @NotEmpty(message = "Preenchimento obrigatório")
     private String cep;
     
-    
+   
     private List<ImageUrl> images= new ArrayList<>();
 
   

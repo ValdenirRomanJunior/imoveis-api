@@ -1,7 +1,18 @@
 package com.dynamous.imoveis.services;
 
+import com.dynamous.imoveis.entities.Image;
+import com.dynamous.imoveis.entities.Property;
+import com.dynamous.imoveis.enums.Perfil;
+import com.dynamous.imoveis.repositories.ImageRepository;
+import com.dynamous.imoveis.security.UserSS;
+import com.dynamous.imoveis.services.exceptions.AuthorizationException;
+import com.dynamous.imoveis.services.exceptions.DataIntegrityException;
 import com.dynamous.imoveis.services.exceptions.FileException;
+import com.dynamous.imoveis.services.exceptions.ObjectNotFoundException;
+
 import org.apache.commons.io.FilenameUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -12,9 +23,13 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Optional;
 
 @Service
 public class ImageService {
+	
+    @Autowired
+    private ImageRepository imageRepository;
 
     //VERIFICA SE É PNG OU JPG
     public BufferedImage getJpgImageFromFile(MultipartFile uploadfile){
@@ -56,5 +71,21 @@ public class ImageService {
         }
     }
     
-    //metodo para buscar todas imagens de cada cliente
+    
+    
+    public com.dynamous.imoveis.entities.Image find(Long id) {
+        Optional<com.dynamous.imoveis.entities.Image> image = imageRepository.findById(id);
+        return image.orElseThrow(() -> new ObjectNotFoundException(
+                "Object Not Found! Id:" + ", Type" + Image.class.getName()));
+
+    }
+    
+    public void delete(Long id) {
+ 
+        try {
+            imageRepository.deleteById(id);
+        } catch (DataIntegrityViolationException e) {
+            throw new DataIntegrityException("impossible delete with other objects: ");
+        }
+    }
 }

@@ -456,3 +456,33 @@ h4{
 }
 
 `
+
+export const LeadSearchWrapper = styled.div`
+    width: 100%;
+    height: 35px;
+    margin-top:15px;
+    background:#fff;
+
+    display: flex;
+    align-items: center;
+
+    .icon-search-leads{
+        color: #88888894;
+        font-size:20px;
+        margin-left:5px;
+    }
+    input{
+        width:100%;
+        height:100%;
+        border: none;
+
+    }
+
+    button{
+        background: ${({theme}) => theme.colors.primary}; 
+        border: 1px solid transparent;
+        color: #fff;
+        padding: 3px 12px;
+        border-radius: 20px;
+    }
+`

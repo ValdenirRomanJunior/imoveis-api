@@ -43,6 +43,6 @@ public enum Verification {
                 return x;
             }
         }
-        throw  new IllegalArgumentException("id inválido: "+ cod);
+        throw  new IllegalArgumentException("id inválido Verific: "+ cod);
     }
 }

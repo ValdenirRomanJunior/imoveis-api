@@ -98,6 +98,9 @@ const EditComponent = ({property}: Prop) =>{
         //verificar valores  goal
         const changeGoal = () => {
             if(property.goal === 'ALUGUEL'){
+                return '1';
+            }
+            if(property.goal === 'VENDA'){
                 return '2';
             }
         }
@@ -349,8 +352,8 @@ const cleanForm = () =>{
                         setLoadingTenant(false)
                         setSuccessMessage(false);
                         setCleanImagesForm(false);
-                        navigate(`/details/${params.propertyId}`)
-                    },2000)
+                      navigate(`/details/${params.propertyId}`)
+                    },1500)
         
                                   
                   }
@@ -404,8 +407,8 @@ const cleanForm = () =>{
                 <label>Finalidade</label>
                     <select  name='goal'  id='goal' value={form['goal'] }   placeholder='selecione'  onChange={(e) => handleChange(e)} >
                     <option value='' >Selecione</option>
-                    <option key='VENDA' value='1'>Vender</option>
-                    <option  key='ALUGUEL' value='2'>Alugar</option>                   
+                    <option key='ALUGUEL' value='1'>Alugar</option>
+                    <option  key='VENDA' value='2'>Vender</option>                   
                 </select>
                 {errors.map(x => { if(x.fieldName === 'goal') return  <p className=' formField__error'>{x.message}</p>})}
                 { emptyValue && form['goal'] === '' ?<span className='formField__error'>Selecione uma Finalidade</span>: ''}
@@ -449,7 +452,7 @@ const cleanForm = () =>{
                 { emptyValue && form['bathRooms'] === '' ? <span className='formField__error'>Selecione o número de Banheiros</span>: ''}
               
                 <label>Área(m2)*</label>
-                <Input id="area" name="area" value={form['area'] } onChange={(e) => handleChange(e)} maxLength={11} onKeyUp={handleKeyUp}/>
+                <Input id="area" name="area" value={form['area'] } onBlur={(e) => handleChange(e)} maxLength={6} onKeyUp={handleKeyUp}/>
                 {errors.map(x => { if(x.fieldName === 'area') return  <p className=' formField__error'>{x.message}</p>})}
                 { emptyValue && form['area'] === '' ?<span className='formField__error'>Preencha o total da Área interna</span>: ''}
 
@@ -471,13 +474,13 @@ const cleanForm = () =>{
                 { emptyValue && form['iptu'] === '' ?<span className='formField__error'>Este campo é requerido</span>: ''}
 
                 <label>Condomínio(R$)</label>
-                <Input  id="condominium" name="condominium" value={form['condominium'] }  maxLength={14} onKeyUp={handleKeyUp} onChange={(e) => handleChange(e)}/>
+                <Input  id="condominium" name="condominium" value={form['condominium'] }  maxLength={14} onKeyUp={handleKeyUp} onBlur={(e) => handleChange(e)}/>
                 {errors.map(x => { if(x.fieldName === 'condominium') return  <p className=' formField__error'>{x.message}</p>})}
                 { emptyValue && form['condominium'] === '' ?<span className='formField__error'>Este campo é requerido</span>: ''}
 
                
                 <label>Preço(R$)</label>
-                <Input type='text' id='price' name='price'value={form['price'] }  maxLength={14} onKeyUp={handleKeyUp} onChange={(e) => handleChange(e)}/>    
+                <Input type='text' id='price' name='price'value={form['price'] }  maxLength={14} onKeyUp={handleKeyUp} onBlur={(e) => handleChange(e)}/>    
                 {errors.map(x => { if(x.fieldName === 'price') return  <p className=' formField__error'>{x.message}</p>})}
                 { emptyValue && form['price'] === '' ?<span className='formField__error'>Este campo é requerido</span>: ''}
                
@@ -526,14 +529,10 @@ const cleanForm = () =>{
                 { emptyValue && form['cep'] === '' ?<span className='formField__error'>Este campo é requerido</span>: ''}
                      
                 <UploadImages images={imagesFromUpdate}  handleResult={getImagesUrls}/>
-                <div className="message-edit">
-                    {successMessage   ? <span className='success'>Editado com sucesso! <Link to={`/details/${params.propertyId}`}className='new-property-link'>Ver Imóvel</Link></span>: ''}
-                    </div>
+               
                
                 <div className='buttom-register-wrapper'>
-                { otherError &&   
-                <div className='other-error-update'>Erro Inesperado</div>
-                 }
+                
                 {
                         loadingTenant && <Button className="button-send-email" ><Loading/></Button>
                     }
@@ -541,6 +540,13 @@ const cleanForm = () =>{
                         !loadingTenant &&
                     <Button className="button-send-email" type='submit'>Salvar</Button>
                     }
+
+                <div className="message-edit">
+                    {successMessage   ? <span className='success'>Editado com sucesso! <Link to={`/details/${params.propertyId}`}className='new-property-link'>Ver Imóvel</Link></span>: ''}
+                    </div>
+                    { otherError &&   
+                <div className='other-error-update'>Erro Inesperado</div>
+                 }
                 </div>
             </FormContainer>
             </form>
@@ -577,15 +583,7 @@ const Edit = () =>{
 },[p])
 
    
-const [loadingLogin,setLoadingLogin]= useState(true);
 
-useEffect(() =>{
-   
-    setTimeout(() =>{
-        setLoadingLogin(false)
-    },1000)
-
-},[])
 
 
     const getProperty = async() => {
@@ -625,13 +623,11 @@ useEffect(() =>{
 useEffect(() =>{
       
   getCurrentUser();
-
-
 },[])
  
     return(
         <ErrorBoundary FallbackComponent={ErrorHandler}>
-            { loadingLogin &&  <LoadingLogin/> }
+          
             {errors && <PageNotFound/>}
 
             {user?.perfis?.[0] === 'TENANT' ? 

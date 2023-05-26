@@ -15,10 +15,13 @@ import Modal from 'react-modal';
 import { IoCloseOutline } from 'react-icons/io5';
 import LoadingLogin from '../../../components/LoadingLogin';
 import {MdPublishedWithChanges} from 'react-icons/md';
+import PaginationSearch from '../../../components/PaginationSearch';
+import '../styleModal.css';
 
 
 
 type Props={
+    paramToGetAll:boolean;
     onChange: Function;
     id:string
     state:string;
@@ -45,15 +48,7 @@ const CardListItem = ({id,name,images,price,address,statusProperty,onChange,clos
     },[booleanModal])
  
 
-   const imgs= images?.map((post) =>{
-    return(
-       
-    <div key={post.id}>
-    <img  src={post.url}/>
-    </div> 
-        
-);
-  });
+
 
   const [putId,setPutId]= useState(false);
       
@@ -123,27 +118,20 @@ const handleChange = async(e:any) =>{
         if(data.status === 204){
             setLoading(true);
             setTimeout(()=> {
-            setLoading(false)
-          
+            setLoading(false)         
             },500)
         }
         if(data.response.status === 404 || data.response.status === 403){
             setLoading(true);
             setTimeout(()=> {
-            setLoading(false)
-            
-          
+            setLoading(false)        
             },500)
             
             setForm({ ...form,
                 ['status']:intialValueStatusProperty() as string,
                 
-            }); 
-           
-            
-
+            });           
         }
-
       }
       
       useEffect(()=> {
@@ -173,7 +161,7 @@ const handleChange = async(e:any) =>{
               <CardContent>
                     
                    
-                    {imgs ?  <Link to={`/details/${id}`}> {imgs[0]} </Link> :  <Link to={`/details/${id}`}><img src={defaultImage}/> </Link>}            
+                    {images?.[0] ?  <Link to={`/details/${id}`}> <img src={images?.[0]?.url }/> </Link> : <Link to={`/details/${id}`}><img src={defaultImage}/> </Link>}            
                      <div className='text-wrapper-card'>
                      <Link to={`/details/${id}`}> <p className='title-card-property'>{name}</p> </Link>  
                      <p className='value'>R${price}</p>
@@ -188,7 +176,7 @@ const handleChange = async(e:any) =>{
                          <div className='links-card'>
                          <Link to={`/edit/${id}`}><p><AiOutlineEdit  className='icon-links' /> Editar</p></Link>
                            
-                         <a><p><BsTrash  onClick={handleOpenModal}  className='icon-links'/>Excluir</p></a>  
+                         <p onClick={handleOpenModal} ><BsTrash   className='icon-links'/>Excluir</p>
                          </div>
 
                          <Modal 
@@ -218,13 +206,17 @@ const handleChange = async(e:any) =>{
     )
 }
 
-const CardProperty = ({id,state,city,goal,type,onChange}:Props)=>{
+const CardProperty = ({id,state,city,goal,type,onChange,paramToGetAll}:Props)=>{
 
     const [pageNumber, setPageNumber] = useState(0);
+    const [pageNumberSearch, setPageNumberSearch] = useState(0);
     const[closeModalProperty, setCloseModalProperty]= useState(true);
     const [error,setError]= useState('');
     const [booleanLoadingModal, setBooleanLoadingModal]= useState(false);
+    const [errorBadRequest,setErrorBadRequest]=useState(false);
 
+    
+  
     
     const [page, setPage] = useState<PropertyPage>({
 
@@ -239,62 +231,104 @@ const CardProperty = ({id,state,city,goal,type,onChange}:Props)=>{
         empty: true
     });
 
+    const [pageSearch, setPageSearch] = useState<PropertyPage>({
+
+        content: [],
+        last: true,
+        totalPages: 0,
+        totalElements: 0,
+        size: 12,
+        number: 0,
+        first: true,
+        numberOfElements: 0,
+        empty: true
+    });
+
+    useEffect(() => {
+        const getPropertiesS = async () => {
+        if( paramToGetAll===true ){
+            const data= await propertiesPageable('','','','','',pageNumberSearch); 
+            setPageSearch(data.data as PropertyPage);
+            onChange(true)
+            setPage( {
+                content: [],
+                last: true,
+                totalPages: 0,
+                totalElements: 0,
+                size: 12,
+                number: 0,
+                first: true,
+                numberOfElements: 0,
+                empty: true
+            })
+
+        }
+
+    }
+    getPropertiesS()
+    },[paramToGetAll, pageNumberSearch, onChange])
 
    
     const getProperties = async () => {
-      
-        const {data}= await propertiesPageable(id,state,city,goal,type,pageNumber);
-       
-        setPage(data as PropertyPage) ;
-        if(data){
-          
+     
+        const data= await propertiesPageable(id,state,city,goal,type,pageNumber);  
+     
+        if(data.data){     
+            setPage(data.data as PropertyPage);              
             onChange(true)
+            if(page.content.length>0){
+            setPageSearch( {
+                content: [],
+                last: true,
+                totalPages: 0,
+                totalElements: 0,
+                size: 12,
+                number: 0,
+                first: true,
+                numberOfElements: 0,
+                empty: true
+            }) 
+        }           
         }
-        setTimeout(() => {
-            setBooleanLoadingModal(true)
-        })
-       
+        if(data.response.status === 400){
+            console.log(data.status)
+              
+         }
         setBooleanLoadingModal(true);
         localStorage.removeItem('images')
-          
-    }
-
-    
-
-    useEffect(() =>{
-        if(pageNumber>0   && (state.length !==0 || id.length !==0 || city.length !==0 || goal.length !==0 || type.length !==0)){
-            setPageNumber(0); 
-           
-        }
-        getProperties(); 
-    },[pageNumber, state, city, goal, type, id, onChange])
-
-   
-
-    const handlePageChange = (newPageNumber : number)=>{
-        if(id !== ''){
-            setPageNumber(0);
-        }else{
-            setPageNumber(newPageNumber);
-        }
         
     }
 
+    useEffect (() =>{ 
+    if(pageNumber>0  && (state.length !==0 || id.length !== 0 || city.length !== 0 || goal.length !==0 || type.length !== 0)){
+           setPageNumber(0)
+                    
+     }
+       
+        getProperties(); 
+    },[pageNumber,state, city, goal, type, id, onChange])
 
+   
+
+    const handlePageChange = (newPageNumber : number)=>{          
+            setPageNumber(newPageNumber);
+               
+    }
+
+    const handlePageChangeSearch = (newPageNumberSearch : number)=>{           
+        setPageNumberSearch(newPageNumberSearch);
+           
+    }
 
     const deleteProperty = async (id: number) => { 
-
         setCloseModalProperty(false);
-
    const data = await deletePropertyReq(String(id));
    setTimeout(async ()=> {
     if(data.status === 204){
-       
-       getProperties();
-     console.log('entrei aqui')
+       setPageNumber(0);
+       getProperties();   
     }
-    if(data.status !== 204){
-    
+    if(data.status !== 204){    
         setError(data.response.data.error);
     }
       
@@ -302,22 +336,31 @@ const CardProperty = ({id,state,city,goal,type,onChange}:Props)=>{
   }
 
 
-    
 
     return(
-        <> { page.content.length && page.content.length ?
+        <> { page.content.length>0 ?
         
-        <CardContainer>
-            
-            {page.content.map(property => (
+        <CardContainer>   
+               
+            {page.content && page.content.map(property => (
             <div className='wrapper-properties' key={property.id}>  
             <CardListItem {...property} onChange={deleteProperty} close={closeModalProperty} error={error} booleanModal={booleanLoadingModal} />
 
             </div>  
             )
             )}
-            <Pagination page={page} onChange={handlePageChange}/>
-         </CardContainer>: <MessageNoProperties><h4>Você não tem Imóveis cadastrados</h4></MessageNoProperties>
+         <Pagination page={page} onChange={handlePageChange}/>
+         </CardContainer>:  <CardContainer>   
+               
+               {pageSearch.content && pageSearch.content.map(property => (
+               <div className='wrapper-properties' key={property.id}>  
+               <CardListItem {...property} onChange={deleteProperty} close={closeModalProperty} error={error} booleanModal={booleanLoadingModal} />
+   
+               </div>  
+               )
+               )}
+            <PaginationSearch page={pageSearch} onChange={handlePageChangeSearch}/>
+            </CardContainer>
 
             }
          </>

@@ -59,6 +59,7 @@ public class TenantController {
     @PreAuthorize("hasAnyRole('ADMIN')")
     @PutMapping(value = "/update/{id}")
     public ResponseEntity<Void> update(@Valid @RequestBody TenantUpdateDTO objDto, @PathVariable Long id){
+    	System.out.println(objDto.getDomain() + "ASFDSDFSFSFSFSFSFFSFSFSS");
     	System.out.println(objDto.getStatus());
     	if(objDto.getPassword() ==null || objDto.getPassword().isEmpty()) {
     		Tenant tenantAux=service.find(id);

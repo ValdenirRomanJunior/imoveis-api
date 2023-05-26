@@ -11,7 +11,7 @@
     api.interceptors.request.use(config =>{
     
     const token = localStorage.getItem('token') || '';
-    console.log(token)
+
      if  (!token || token === null){
         localStorage.setItem('token',JSON.stringify('adaddadaadgrtr435'))
         return config;

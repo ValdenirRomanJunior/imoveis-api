@@ -6,6 +6,7 @@ export const AddressContainer = styled.div`
     padding-bottom: 15px;
     margin-bottom: 20px;
     height: auto;
+    background:none !important;
  
     div{
         display: flex;

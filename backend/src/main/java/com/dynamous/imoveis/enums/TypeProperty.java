@@ -42,7 +42,7 @@ public enum TypeProperty  implements Serializable {
                 return x;
             }
         }
-            throw new com.dynamous.imoveis.services.exceptions.IllegalArgumentException("Codigo invalido"+ cod);
+            throw new com.dynamous.imoveis.services.exceptions.IllegalArgumentException("Tipo invalido"+ cod);
         }
 
 }

@@ -32,6 +32,7 @@ export interface UserDto{
    start?:string;
    endDate?:string;
    imageUrl?:string;
+   domain?:string;
 
     
 }
@@ -103,12 +104,8 @@ export const uploadProfileImage = (image:string)=>{
         formData.set('file',imageBlob,`file.${ext}`);
         return api.post('/pictures/save/profile', formData)
          .then(response =>{
-            if(response.data != null){
-              return response.data;
-              
-        
-             
-            }
+            
+              return response;
            
           }).catch((error) =>{
             return error

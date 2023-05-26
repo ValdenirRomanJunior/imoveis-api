@@ -102,6 +102,11 @@ export const BodyEditContainer = styled.main`
     .buttom-register-wrapper{
         margin-top: 30px;
 
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+       
+
         .message-other-error-wrapper{
             width:100%;
             text-align: center;
@@ -121,13 +126,11 @@ export const BodyEditContainer = styled.main`
             box-shadow: 0px 0px 13px -5px rgba(214,214,214,1);
             text-align: center;    
             font-weight: bold;
-            transition: transform .3s;
-            animation: copy 4s ease-in-out;
-            transform: translateY(0) scale(0);
-            opacity:0;
             font-weight:400;
             border-radius: 2px;
         }
+
+  
         @keyframes copy {
         
             0%{
@@ -163,8 +166,26 @@ export const BodyEditContainer = styled.main`
                 opacity:0;
                             
             }
-          }
-        
+          }  
+    }
+
+    .message{
+        width:50%;
+        background-color:#7fe87f29;       
+        text-align: center;
+        color:green;
+        font-size:14px;
+        padding:4px 15px;
+        -webkit-box-shadow: 0px 0px 13px -5px rgba(214,214,214,1);
+        -moz-box-shadow: 0px 0px 13px -5px rgba(214,214,214,1);
+        box-shadow: 0px 0px 13px -5px rgba(214,214,214,1);
+        text-align: center;    
+        font-weight: bold;
+    
+        font-weight:500;
+        border-radius: 2px;
+
+    
     }
 }
     .formField__error{

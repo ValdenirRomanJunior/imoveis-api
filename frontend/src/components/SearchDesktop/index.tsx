@@ -4,8 +4,10 @@ import { FormEvent, useEffect, useState } from "react";
 import { IoCloseOutline } from "react-icons/io5";
 import { BiSearch } from "react-icons/bi";
 import { getAllCities, getAllStates } from "../../services/resources/property";
+import { number } from "../../pages/Registration/masks";
 
 type Props = {
+    param:boolean;
     onChange:Function;
 }
 
@@ -22,7 +24,7 @@ type CityProp={
 
 }
 
-const SearchDesktop = ({onChange}:Props)=>{
+const SearchDesktop = ({onChange,param}:Props)=>{
 
     const[id,setId]= useState('');
     const[state,setState]= useState('');
@@ -36,17 +38,34 @@ const SearchDesktop = ({onChange}:Props)=>{
     const [disabled,setDisabled]=useState(false);
 
 
+     
+    useEffect(() => { 
+     
+        if(param){
+            setState('')
+            setCity('')
+        }
+ 
+
+    },[param])
+
+    useEffect(() => { 
+     
+        if(state === ''){
+            setCity('')
+        }
+ 
+
+    },[state])
+
 
     const getStates = async() => {
-        const data= await getAllStates();
-     
+        const data= await getAllStates();   
         setStates(data.data)
     }
 
-    useEffect(() => {
-     
-            getStates()
-           
+    useEffect(() => {  
+            getStates()        
     },[id])
 
 
@@ -64,7 +83,7 @@ const SearchDesktop = ({onChange}:Props)=>{
     useEffect(() => {
       
         disableIfId()
-    },[id])
+    },[id,state,city,goal,type])
 
 
 
@@ -84,6 +103,8 @@ const SearchDesktop = ({onChange}:Props)=>{
        getCities()
     },[state])
 
+    
+
     const handleKeyUp = (e: React.FormEvent<HTMLInputElement>) => {
        
         setState('')
@@ -93,6 +114,17 @@ const SearchDesktop = ({onChange}:Props)=>{
         setStates([])
         if(id ===''){
             getStates()
+            setDisabled(false)
+
+        }
+        if(e.currentTarget.name  === 'id'){
+            number(e)
+           
+             getStates()
+        }
+
+        if(e.currentTarget.name  === 'state'){
+            console.log('cai aqui')
         }
        
     }
@@ -104,7 +136,7 @@ const SearchDesktop = ({onChange}:Props)=>{
    
       
             <SearchContent>
-            <select placeholder='selecione' name='state' disabled={disabled} id='state'  onChange={(e)=>setState(e.target.value)}> 
+            <select placeholder='selecione' name='state' disabled={disabled} id='state' value={state} onChange={(e)=>setState(e.target.value)}> 
                 <option value='' >Estado</option>
                        
                 { states.map((uf) => (       
@@ -113,7 +145,7 @@ const SearchDesktop = ({onChange}:Props)=>{
                            
                 </select>
 
-                <select placeholder='selecione' disabled={disabled} name='city'  id='city' onChange={(e)=>setCity(e.target.value)}> 
+                <select placeholder='selecione' disabled={disabled} name='city'  id='city' value={city} onChange={(e)=>setCity(e.target.value)}> 
                 <option value='' >Cidade</option>                
                 { cities.map((ct) => (       
                     <option  key={ct.id} value={ct.id}>{ct.name}</option>            
@@ -135,7 +167,7 @@ const SearchDesktop = ({onChange}:Props)=>{
                 </select>
                 <SearchButtonContainer>
                   
-                    <button className="search-button-send" disabled={disabled} onClick={()=> onChange(id,state,city,goal,type)}>Buscar</button>
+                    <button className="search-button-send"  disabled={disabled}  onClick={()=> onChange(id,state,city,goal,type)}>Buscar</button>
                 </SearchButtonContainer>
 
            
@@ -143,7 +175,7 @@ const SearchDesktop = ({onChange}:Props)=>{
             </SearchContent>
 
             <SearchCodeWrapper>
-                <input type="search" placeholder="Busca por código" onKeyUp={handleKeyUp} onChange={(e)=>setId(e.target.value)}/>
+                <input type="number" name='id'  placeholder="Busca por código" onKeyUp={handleKeyUp} onChange={(e)=>setId(e.target.value)}/>
                 <button onClick={()=> onChange(id,state,city,goal,type)}>Buscar</button>
             </SearchCodeWrapper>
     </SearchContainer>

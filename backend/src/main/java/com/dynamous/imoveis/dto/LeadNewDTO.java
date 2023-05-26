@@ -16,7 +16,6 @@ public class LeadNewDTO implements Serializable {
     private static final long serialVersionUID = 1L;
 
 
-  
     @NotEmpty(message = "Preenchimento obrigatório")
     @Length(min=2, max=41, message = "O tamanho deve ser entre 2 e 41 caracteres")
     private String name;
@@ -26,12 +25,10 @@ public class LeadNewDTO implements Serializable {
     @Email(message = "E-mail inválido")
     private String email;
  
-     
     @NotEmpty(message = "Preenchimento obrigatório")
     @Length(min=14, max=14, message = "O tamanho deve ser entre 14 e 14 caracteres")
     private String phone;
     
-   
     @Length(max=80, message = "O tamanho deve ser de no máximo 80 caracteres")
     private String message;
     

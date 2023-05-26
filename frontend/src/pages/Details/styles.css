@@ -4,7 +4,7 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    
+  
     
    
 }
@@ -18,6 +18,7 @@
 .carousel-wrapper{
     width: 100vw;
     position: relative;
+    touch-action: none;
   
 
 }
@@ -48,8 +49,130 @@
     background-color: #fff !important;
 }
 .sc-bBHxTw{
-    background-color: #fff !important;
+  
 }
 .cSujuS:hover:enabled, .cSujuS:focus:enabled {
     color:#000 !important;
+}
+
+@media screen and (min-width:750px){
+
+    .container-photos{
+        font-family: sans-serif;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        
+        
+       
+    }
+    
+    .seperator{
+        width: 100vw;
+    }
+    
+    
+    
+    .carousel-wrapper{
+        width: 100vw;
+        position: relative;
+      
+    
+    }
+    
+    .carousel-wrapper button{
+        position: absolute;
+    
+        z-index: 1;
+    
+     
+    }
+    
+    .res-carousel-item:focus{
+        outline: none;
+        box-shadow: inset 0 0 1px 0px violet;
+    
+       
+    }
+    
+    .rec-arrow-right{
+        right: 0;
+      
+    }
+    .rec-arrow-left{
+        left: 0;
+    }
+    .cSujuS{
+        background-color: #fff !important;
+    }
+    .sc-bBHxTw{
+      
+    }
+    .cSujuS:hover:enabled, .cSujuS:focus:enabled {
+        color:#000 !important;
+    }
+}
+
+@media screen and (min-width:1000px){
+    .rec-arrow-right{
+        right: 10%;
+       
+      
+    }
+    .rec-arrow-left{
+        left: 10%;
+    }
+    .IYGIB{
+        width: 60px;
+        height: 60px;
+    }
+}
+
+@media screen and (min-width:1200px){
+    .rec-arrow-right{
+        right: 14%;
+       
+      
+    }
+    .rec-arrow-left{
+        left: 14%;
+    }
+    .IYGIB{
+        width: 60px;
+        height: 60px;
+       
+    }
+}
+
+@media screen and (min-width:1300px){
+    .rec-arrow-right{
+        right: 15%;
+       
+      
+    }
+    .rec-arrow-left{
+        left: 15%;
+    }
+    .IYGIB{
+        width: 70px;
+        height: 70px;
+    }
+}
+
+@media screen and (min-width:1400px){
+    .rec-arrow-right{
+        right: 22%;
+       
+      
+    }
+    .rec-arrow-left{
+        left: 22%;
+    }
+    .IYGIB{
+        width: 60px;
+        height: 60px;
+      
+    }
+
 }

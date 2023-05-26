@@ -4,10 +4,11 @@ import { useEffect, useState } from "react";
 import { IoCloseOutline } from "react-icons/io5";
 import { BiSearch } from "react-icons/bi";
 import { getAllCities, getAllStates } from "../../services/resources/property";
+import { number } from "../../pages/Registration/masks";
 
 
 type Props = {
-    param:Function;
+    param:boolean;
     onChange:Function;
 }
 
@@ -33,22 +34,14 @@ const Search = ({onChange,param}:Props)=>{
 
     const[states,setStates]= useState<StateProp[]>([]);
     const[cities,setCities]= useState<CityProp[]>([]);
-
-    const [disabled,setDisabled]=useState(false);
+    const[disabled,setDisabled]=useState(false);
    
  
     
     useEffect(() => { 
+     
         if(param){
-          
-            setId('')
-            setState('')
-            setCity('')      
-            setGoal('')
-            setType('')    
-        handleCloseModal()
-  
-       
+         
         }
  
 
@@ -68,8 +61,7 @@ const Search = ({onChange,param}:Props)=>{
 
 
     const disableIfId = () => {
-      
-
+    
         if(id !== '' ){
           
            setDisabled(true)
@@ -107,9 +99,16 @@ const Search = ({onChange,param}:Props)=>{
         setCity('')      
         setGoal('')
         setType('')
-        setStates([])
+      
         if(id ===''){
             getStates()
+            setDisabled(false)
+        }
+
+        if(e.currentTarget.name  === 'id'){
+            number(e)
+          
+          
         }
        
     }
@@ -117,6 +116,7 @@ const Search = ({onChange,param}:Props)=>{
 const [modalIsOpen, setIsOpen] = useState(false);
 
 const handleOpenModal =() => {
+
     setIsOpen(true)
 }
 
@@ -139,15 +139,12 @@ const handleCloseModal =() =>{
           <Modal 
                 isOpen={modalIsOpen}
                 onRequestClose={handleCloseModal}    
-                className='ModalSearch'
-              
+                className='ModalSearch'            
               >
-
-             
-          
+        
        <BarTopSearch>
             <p>Busca</p>
-            <IoCloseOutline onClick={handleCloseModal} className='button-close-modal' /> 
+            <IoCloseOutline onClick={handleCloseModal} className='button-close-modal-mobile' /> 
        </BarTopSearch>
             <SearchContent>
             <select placeholder='selecione' name='state'  id='state' disabled={disabled}  onChange={(e)=>setState(e.target.value)}> 
@@ -183,11 +180,11 @@ const handleCloseModal =() =>{
                 </div>
                 <SearchButtonContainer onClick={handleCloseModal}>
                 
-                    <button className="search-button-send"  disabled={disabled} onClick={()=> onChange(id,state,city,goal,type)}>Buscar</button>
+                    <button className="search-button-send"  disabled={disabled} onClick={()=> onChange(id,state,city,goal,type,)}>Buscar</button>
                 </SearchButtonContainer>
                 
                 <SearchCodeWrapper >
-                <input type="search" placeholder="Busca por código"  onKeyUp={handleKeyUp} onChange={(e)=>setId(e.target.value)}/>
+                <input type="number" name='id' placeholder="Busca por código"  onKeyUp={handleKeyUp} onChange={(e)=>setId(e.target.value)}/>
                 <div  onClick={handleCloseModal}>
                 <button  onClick={()=> onChange(id,state,city,goal,type)}>Buscar</button>
                 </div>

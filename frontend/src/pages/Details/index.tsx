@@ -15,7 +15,6 @@ import defaultImage from '../../assets/images/no-pictures.png'
 import { refreshToken } from '../../services/resources/user';
 import {MdOutlineCopyAll} from 'react-icons/md'
 import PageNotFound from '../../components/PageNotFound';
-import LoadingLogin from '../../components/LoadingLogin';
 import { ErrorBoundary } from 'react-error-boundary';
 import useAuth from '../../hooks/useAuth';
 
@@ -25,20 +24,13 @@ const Details = ()=>{
     const navigate = useNavigate();
     const params = useParams();
 
-    const [loadingLogin,setLoadingLogin]= useState(true);
+
     const [property, setProperty]= useState<Property>();
     const [copyUrl,setCopyUrl]= useState(false);
     const [errors,setErrors]=useState();
 
 
 
-    useEffect(() =>{
-       
-        setTimeout(() =>{
-            setLoadingLogin(false)
-        },1000)
-
-    },[])
 
     const refreshTokenUser = async ()=>{
         const  resp = await refreshToken();    
@@ -90,6 +82,7 @@ const Details = ()=>{
 
     const address = {
         cep:property?.address.cep as string,
+        state:property?.address.city.state.name as string,
         city:property?.address.city.name as string,
         district:property?.address.district as string,
         street:property?.address.street as string,
@@ -137,7 +130,7 @@ const Details = ()=>{
         {user?.perfis?.[0] === 'TENANT' ? 
      
         <div>
-        { loadingLogin &&  <LoadingLogin/> }
+       
    { !errors ?   
         <>
         <ErrorBoundary FallbackComponent={ErrorHandler}>
@@ -158,18 +151,18 @@ const Details = ()=>{
                          breakPoints={breakPoints}
                          enableSwipe={true}
                          initialActiveIndex={1}
-                       
-  
+                         enableMouseSwipe={false}
+                        pagination={false}
+                        
                          >  
-                                              
-                        {property?.images && property.images.map((photo) =>           
-                               <CardWrapper key={photo.id}>
-                            
-                              <img  src={photo.url}  alt="algo"/>
-                               
-                             </CardWrapper>)}
-                             {property?.images?.length===0 as number  && ( <CardWrapper><img src={defaultImage} alt='Foto Padrão'/></CardWrapper>)} 
-                            
+                                       
+                        { property?.images && property.images.map((photo) =>           
+                               <CardWrapper key={photo.id}>                          
+                               <img  src={photo.url}  alt="algo"/>                          
+                               </CardWrapper>)}
+
+                             {property?.images?.length===0 as number  && <CardWrapper><img src={defaultImage} alt='Foto Padrão' className='default-image-detail'/></CardWrapper>} 
+                       
                         </Carousel>
                     </div>
                   </div>

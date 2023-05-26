@@ -24,7 +24,7 @@ height: auto;
 .price{
     width:100%;
     font-weight: 400;
-    font-size: 34px;
+    font-size: 25px;
     margin-top: 10px;
     font-family: 'Roboto', sans-serif;
     color: #585858;
@@ -130,19 +130,107 @@ h4{
     }
   }
 
+  @media screen and (min-width:450px){
+    
+    width:80%;
+
+    .button-wrapper{
+        width:35%;
+        position: relative;
+         margin-top: 15px;
+         margin-bottom:30px;
+
+     
+       
+    
+        display: flex;
+        justify-content: center;
+
+        
+    }
+
+  @media screen and (min-width:550px){
+    
+    width:80%;
+
+    .button-wrapper{
+        width:35%;
+        position: relative;
+         margin-top: 15px;
+         margin-bottom:30px;
+
+ 
+    
+        display: flex;
+        justify-content: center;
+
+        
+    }
+
+    @media screen and (min-width:750px){
+    
+        width:80%;
+    
+        .button-wrapper{
+            width:35%;
+            position: relative;
+             margin-top: 15px;
+             margin-bottom:30px;
+    
+            display: flex;
+            justify-content: center;
+    
+            
+        }
+
 @media screen and (min-width:1000px){
     
     width:50%;
 
     .button-wrapper{
-        width:200px;
-        position: fixed;
-        bottom: 0;
-        left: 1400px;    
+        width:45%;
+        position: relative;
+         margin-top: 15px;
+         margin-bottom:30px;
+
         display: flex;
         justify-content: center;
 
+        .icon-copy{
+            color:#52b0de;
+            font-size:30px;
+        }
         
+    }
+
+  
+
+    .button-wrapper::before{
+        font-size:12px;
+    }
+}
+
+@media screen and (min-width:1200px){
+    
+    width:50%;
+
+    .button-wrapper{
+        width:55%;
+        position: relative;
+         margin-top: 15px;
+         margin-bottom:30px;
+
+        display: flex;
+        justify-content: center;
+
+        .icon-copy{
+            color:#52b0de;
+            font-size:32px;
+        }
+        
+    }
+    .button-wrapper::before{
+        font-size:13px;
     }
 }
 `
@@ -237,22 +325,107 @@ background-color: ${({theme}) => theme.colors.backgroundLight};
 `
 
 export const CardWrapper = styled.div`
-    width:100vw; 
-    aspect-ratio: 16/ 9;
+    width:100vw;
+  
+  display:flex;
+  align-items: center;
+  justify-content: center;
 
 img{
     width:100%;
-    object-fit: cover;
-    object-position: top left;
+    object-fit: contain;
+    object-position: top center;
     aspect-ratio: 16/ 9;
-
-
+    cursor: grab;
+    
+ 
 }
+.default-image-detail{
+    width:100%;
+    height:250px !important;
+    object-fit: contain;
+    object-position: center;
+  
+    cursor: grab;
+}
+@media screen and (min-width:730px){
+    width:100vw; 
+  
+  
 
+img{
+    width:95%;
 
+    }
+
+    .default-image-detail{
+        width:100%;
+        height:320px !important;
+        object-fit: contain;
+        object-position: center;
+      
+        cursor: grab;
+    }
+}
 @media screen and (min-width:1000px){
     align-items: center;
+ 
+  
+    width:90vw;
+
+    img{
+        width:80%;
+        
+        touch-action: none !important;   
+    
+        }
+
+        .default-image-detail{
+            width:100%;
+            height:350px !important;
+            object-fit: contain;
+            object-position: center;
+          
+            cursor: grab;
+        }
+}
+
+@media screen and (min-width:1200px){
+    align-items: center;
+    width:90vw;
+
+    img{
+        width:70%;
+        
+        }
+        .default-image-detail{
+            width:100%;
+            height:380px !important;
+            object-fit: contain;
+            object-position: center;
+          
+            cursor: grab;
+        }
+}
+
+@media screen and (min-width:1400px){
+    align-items: center;
+  
+  
     width:100vw;
+
+    img{
+        width:50%;
+             
+        }
+
+        .default-image-detail{
+            width:100%;
+            height:400px !important;
+            object-fit: contain;
+            object-position: center;        
+            cursor: grab;
+        }
 }
 
 

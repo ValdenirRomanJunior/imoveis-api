@@ -6,6 +6,7 @@ import com.amazonaws.services.s3.model.AmazonS3Exception;
 import com.dynamous.imoveis.services.exceptions.AuthorizationException;
 import com.dynamous.imoveis.services.exceptions.DataIntegrityException;
 import com.dynamous.imoveis.services.exceptions.FileException;
+import com.dynamous.imoveis.services.exceptions.FileMaxSizeException;
 import com.dynamous.imoveis.services.exceptions.IllegalArgumentException;
 import com.dynamous.imoveis.services.exceptions.ObjectNotFoundException;
 import com.dynamous.imoveis.services.exceptions.UserNameNotFoundException;
@@ -16,6 +17,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
 import java.net.UnknownHostException;
 
@@ -68,6 +70,14 @@ public class ControllerExceptionHandler {
         StandardError err = new StandardError(System.currentTimeMillis(), HttpStatus.BAD_REQUEST.value(), "Integridade do upload FileExc", e.getMessage(), request.getRequestURI());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(err);
     }
+    
+    @ExceptionHandler(MaxUploadSizeExceededException.class)
+    public ResponseEntity<StandardError> fileMaxUpload(MaxUploadSizeExceededException e, HttpServletRequest request) {
+
+        StandardError err = new StandardError(System.currentTimeMillis(), HttpStatus.LENGTH_REQUIRED.value(), "Tamanho Máximo permitido é de 10 Megabytes", e.getMessage(), request.getRequestURI());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(err);
+    }
+    
     @ExceptionHandler(AmazonServiceException.class)
     public ResponseEntity<StandardError> amazonService(AmazonServiceException e, HttpServletRequest request) {
 

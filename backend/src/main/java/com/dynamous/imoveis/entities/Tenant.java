@@ -4,6 +4,8 @@ import com.dynamous.imoveis.enums.Perfil;
 import com.dynamous.imoveis.enums.Status;
 import com.dynamous.imoveis.enums.Verification;
 import com.dynamous.imoveis.services.validation.TenantInsert;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import org.hibernate.validator.constraints.Length;
 
 import javax.persistence.*;
@@ -21,11 +23,12 @@ public class Tenant implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
+    
     private String slug;
 
     @Column(unique = true)
     private String email;
+    @JsonIgnore
     private String password;
     private Integer status;
     private String lastName; 
@@ -33,6 +36,7 @@ public class Tenant implements Serializable {
     private String creci;
     private String start;
     private String endDate;
+    private String domain;
     
 
     @ElementCollection(fetch = FetchType.EAGER)
@@ -54,6 +58,7 @@ public class Tenant implements Serializable {
         this.creci=creci;
         this.start=start;
         this.endDate=endDate;
+        
         addPerfil(Perfil.TENANT);
 
     }
@@ -139,6 +144,16 @@ public class Tenant implements Serializable {
 
 	public void setEndDate(String endDate) {
 		this.endDate = endDate;
+	}
+	
+	
+
+	public String getDomain() {
+		return domain;
+	}
+
+	public void setDomain(String domain) {
+		this.domain = domain;
 	}
 
 	public Set<Perfil> getPerfis(){

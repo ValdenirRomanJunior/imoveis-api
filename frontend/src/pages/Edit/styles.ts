@@ -116,12 +116,14 @@ export const BodyEditContainer = styled.main`
 
     .buttom-register-wrapper{
         margin-top: 30px;
+        padding-bottom: 10px;
 
         .other-error-update{
             text-align:center;
             width:100%;
             color:red;
             background: #e87f7f14;
+
         }
     }
     .formField__error{
@@ -151,7 +153,8 @@ export const BodyEditContainer = styled.main`
         animation: buttons .3s linear;
         background-color: #7fe87f29;
         padding:10px 15px;
-        margin-top:20px;
+     
+      
        
 
         .new-property-link{

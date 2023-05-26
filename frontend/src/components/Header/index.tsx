@@ -111,7 +111,7 @@ const Header = () =>{
                 <SideBarTop >
                     <NavIcon to="#" >
                         <IoIosArrowForward  className='icon-sidebar'/>
-                        <p className='text-sidebar-top'><Link className='site-link' to={''}>https://corretor1.com.br</Link></p>
+                        <p className='text-sidebar-top'><a href=''><Link className='site-link' to={''}>{user.domain}</Link></a></p>
                     </NavIcon>
                     
                 </SideBarTop>

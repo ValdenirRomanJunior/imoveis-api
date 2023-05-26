@@ -30,15 +30,7 @@ const RegistrationTenant = () =>{
     const [loadingTenant, setLoadingTenant]=useState(false);
     const navigate = useNavigate();
 
-    const [loadingLogin,setLoadingLogin]= useState(true);
 
-    useEffect(() =>{
-       
-        setTimeout(() =>{
-            setLoadingLogin(false)
-        },1000)
-
-    },[])
    
     const refreshTokenUser = async ()=>{
         const  resp = await refreshToken();    
@@ -185,7 +177,7 @@ useEffect(() =>{
      <>
      {user?.perfis?.[0] === 'ADMIN' ?
         <div>
-        { loadingLogin &&  <LoadingLogin/> }
+       
   
        <RegistrationBackground>
         <Header />

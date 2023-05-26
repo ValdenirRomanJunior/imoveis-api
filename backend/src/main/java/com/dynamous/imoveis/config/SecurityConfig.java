@@ -51,10 +51,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 			"/pictures/**",
 			"/auth/forgot/**",			
 			"/verification/**",
-			
-			
-			
-			
+			"/leads/saveSite/**",
+			"/leads/saveLeadHome/**",
+			"/properties/findAll/**"
+							
 	};
 
 	private static final String[] PUBLIC_MATCHERS_GET = {		
@@ -62,6 +62,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 			"/states/**",
 			"/properties/find/**",
 			"/properties/search/**",
+			"/properties/searchTest/**",
+			"/properties/getAllAddress/**"
 		
 		
 	

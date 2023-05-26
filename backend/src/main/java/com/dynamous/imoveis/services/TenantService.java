@@ -54,6 +54,14 @@ public class TenantService {
         return tenant.orElseThrow(() -> new ObjectNotFoundException(
                 "Página não encontrada! Id:" + ", Type" + Tenant.class.getName()));
     }
+    
+    public Tenant findSite(Long id) {
+      
+        Optional<Tenant> tenant = tenantRepository.findById(id);
+        return tenant.orElseThrow(() -> new ObjectNotFoundException(
+                "Página não encontrada! Id:" + ", Type" + Tenant.class.getName()));
+    }
+    
     @Transactional
     public Tenant insert(Tenant obj) throws UnknownHostException{
         obj.setId(null);
@@ -83,6 +91,8 @@ public class TenantService {
         newObj.setStatus(tenant.getStatus());
         newObj.setPassword(tenant.getPassword());
         newObj.setVerification(tenant.getVerification());
+        newObj.setDomain(tenant.getDomain());
+        newObj.setCreci(tenant.getCreci());
 
     }
 
@@ -111,6 +121,7 @@ public class TenantService {
     		String newDate= sdf.format(new Date());
     		String endDate= generateEndDate(new Date(),objDto.getSignedDays());
     		Tenant tenant = new Tenant(null, objDto.getSlug(), objDto.getEmail(),pe.encode(objDto.getPassword()), Status.ATIVO,objDto.getLastName(),Verification.NAO_VERIFICADO,objDto.getCreci(),newDate,endDate);
+    		
             tenant.addPerfil(Perfil.TENANT);
             return tenant;
     		
@@ -123,6 +134,7 @@ public class TenantService {
     	Tenant ten = find(objDto.getId());
 		Tenant tenant = new Tenant(objDto.getId(), objDto.getSlug(), objDto.getEmail(),pe.encode(objDto.getPassword()), Status.toEnum(objDto.getStatus()),objDto.getLastName(),Verification.toEnum(objDto.getVerification()),objDto.getCreci(),ten.getStart(),ten.getEndDate());
         tenant.addPerfil(Perfil.TENANT);
+        tenant.setDomain(objDto.getDomain());
         return tenant;
 		
 	   
@@ -146,5 +158,12 @@ public class TenantService {
     	return sdf.format(cal.getTime());
     	
     }
-    
+
+	   public Tenant findByDomain(String domain) {
+		      
+		        Optional<Tenant> tenant = tenantRepository.findByDomain(domain);
+		        return tenant.orElseThrow(() -> new ObjectNotFoundException(
+		                "Página não encontrada! Id:" + ", Type" + Tenant.class.getName()));
+		    }
+	  
 }

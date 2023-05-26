@@ -1,5 +1,5 @@
 
-import {LeadItemContainer, LeadWrapper,PropertyItemLeadContainer,MessageNoLeads} from "./styles";
+import {LeadItemContainer, LeadWrapper,PropertyItemLeadContainer,MessageNoLeads, LeadSearchWrapper} from "./styles";
 import {BsPersonFill, BsTrash} from 'react-icons/bs';
 import {MdKeyboardArrowDown} from 'react-icons/md';
 import { useEffect, useState } from "react";
@@ -17,13 +17,9 @@ import "./ModalStyleLeadCard.css";
 import LoadingLogin from "../../../components/LoadingLogin";
 import PageNotFound from "../../../components/PageNotFound";
 import PaginationLead from "../../../components/PaginationLead";
+import { BiSearch } from "react-icons/bi";
 
 
-type Prop={
-    param:boolean;
-  
-   
-}
 
 
 
@@ -66,10 +62,12 @@ const LeadCardItem = ({id,name,lastName,email,phone, message, propertyId, onChan
 
 
     const [hiddenMessage, setHiddenMessage]= useState(false);
+  
 
     const openMessage = () =>{
-        console.log('cliquei')
+    
         setHiddenMessage(true);
+        
         closeMessage()
     }
 
@@ -152,10 +150,10 @@ const LeadCardItem = ({id,name,lastName,email,phone, message, propertyId, onChan
                             </div>
                            
                             </PropertyItemLeadContainer></Link> : ''} 
-                            {(!errors && propertyId) ?
+                            {(!errors && !propertyId || property?.id) ?
                     <div className="message-lead" >           
                     <FiCornerDownRight className="icon-arrow-down-message"/>               
-                    {message}            
+                    {message && message}            
                      </div>
                     :''}
                  <div>
@@ -190,11 +188,11 @@ const LeadCardItem = ({id,name,lastName,email,phone, message, propertyId, onChan
 }
 
 
-const LeadCard = (param:Prop)=>{
+const LeadCard = (props:{param:string})=>{
 
     const[closeModalLead, setCloseModalLead]= useState(true);
     const [pageNumber, setPageNumber] = useState(0);
-    
+    const[name,setName]= useState('');
     const [error,setError]=useState('');
 
     const [page, setPage] = useState<LeadPage>({
@@ -214,23 +212,25 @@ const LeadCard = (param:Prop)=>{
    
    
      const getLeads = async () => {
-       
-        const {data}= await leadsPageable(pageNumber);
+     
+        const {data}= await leadsPageable(name.toLowerCase(),pageNumber);
         setPage(data as LeadPage) ;
         localStorage.removeItem('images')
           
     }
     useEffect(() =>{
+        
         getLeads();
-    },[pageNumber,])
+       
+    },[pageNumber,name])
 
 
 
     useEffect(() =>{
-        if(param){
-        getLeads();
+        if(props.param !==''){
+       getLeads();
         }
-    },[])
+    },[props.param])
    
    
     const handleToDelete = async(id: number) => {
@@ -241,7 +241,8 @@ const LeadCard = (param:Prop)=>{
         if(data !== '204'){
             setError(data)
         }
-      
+
+        setPageNumber(0);
           
         getLeads();
     },1000)
@@ -254,16 +255,25 @@ const LeadCard = (param:Prop)=>{
 
 
     return(
-        <>
+      
          
-        { page.content.length && page.content.length ?
+      
         <LeadItemContainer>
-           
+            <LeadSearchWrapper>
+            <BiSearch className='icon-search-leads' />
+             <input type="search"  placeholder="Busca por nome" onChange={(e)=>setName(e.target.value)} maxLength={35}/>
+          
+             </LeadSearchWrapper>
+             { page.content.length && page.content.length ?
+               <>
             {page.content.map(lead => <LeadCardItem {...lead} onChange={handleToDelete} close={closeModalLead} error={error}/>)}
-            <PaginationLead page={page} onChange={handlePageChange}/>
-         </LeadItemContainer> : <MessageNoLeads><h4 className="message-no-leads">Você não possui leads no momento...</h4></MessageNoLeads> 
-        }
-        </>
+            <PaginationLead page={page} onChange={handlePageChange}/> 
+            </>
+            : <MessageNoLeads><h4 className="message-no-leads">Você não possui leads no momento...</h4></MessageNoLeads>}
+           
+            </LeadItemContainer>
+    
+      
     )
     
 }

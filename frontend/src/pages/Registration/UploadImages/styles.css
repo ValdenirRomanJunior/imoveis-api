@@ -3,7 +3,7 @@
     top:370px !important;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 90%;
+    width: 80%;
   
     padding: 1rem 1rem;
     background-color: #F8FCFF;
@@ -61,7 +61,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-   
+    position: relative;
     margin-top: 0;
     background: rgba(191,235,214,0.5);
     color: green;
@@ -128,4 +128,127 @@ input[type=file]::-webkit-file-upload-button{
     text-align: center;
     background: rgb(235 191 191 / 50%);
     color:#bd2626f0;
+}
+
+
+    
+
+
+.Modal-delete{
+
+    position: absolute;
+    top: 370px;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width:80%;
+    padding: 1.7rem 1rem;
+   
+    background-color: #F8FCFF;
+}
+
+.Modal-delete h1{
+text-align: left;
+font-family: 'Nunito Sans', sans-serif;
+font-size: 18px;
+font-weight: 600;
+margin-bottom: 1rem;
+
+}
+
+.Modal-delete p{
+font-family: 'Nunito Sans', sans-serif;
+color: rgb(105, 105, 105);
+}
+
+.Modal-delete .delete-button-lead{
+background-color: rgb(231, 44, 44);
+color:#fff;
+padding:5px 10px;
+border: none;
+border-radius: 2px;
+font-weight: 400;
+font-size: 13px;
+margin-bottom: 0;
+}
+
+.Modal-delete .cancel-button-lead{
+background-color: rgb(216, 216, 216);
+color:#000000;
+padding:5px 10px;
+border: none;
+font-weight: 400;
+margin-right: 10px;
+border-radius: 2px;
+font-size: 13px;
+}
+
+.Modal-delete .buttons-wrapper-lead{
+width: 100%;
+display: flex;
+align-items: center;
+justify-content: end;
+
+}
+
+@media screen and (min-width:450px){
+    .Modal-delete{
+
+    width:70%;
+    padding: 1.7rem 1rem;
+   
+    background-color: #F8FCFF;
+}
+
+}
+
+@media screen and (min-width:600px){
+    .Modal-delete{
+
+
+
+    width:60%;
+    padding: 1.7rem 1rem;
+   
+    background-color: #F8FCFF;
+}
+
+}
+
+@media screen and (min-width:800px){
+    .Modal-delete{
+
+
+
+    width:50%;
+    padding: 1.7rem 1rem;
+   
+    background-color: #F8FCFF;
+}
+
+}
+
+@media screen and (min-width:1000px){
+    .Modal-delete{
+
+
+
+    width:37%;
+    padding: 1.7rem 1rem;
+   
+    background-color: #F8FCFF;
+}
+
+}
+
+@media screen and (min-width:1400px){
+    .Modal-delete{
+
+
+
+    width:30%;
+    padding: 1.7rem 1rem;
+   
+    background-color: #F8FCFF;
+}
+
 }

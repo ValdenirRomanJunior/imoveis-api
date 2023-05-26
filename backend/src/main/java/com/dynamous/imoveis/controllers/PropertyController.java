@@ -4,11 +4,13 @@ import com.dynamous.imoveis.dto.PropertyDTO;
 import com.dynamous.imoveis.dto.PropertyNewDTO;
 import com.dynamous.imoveis.dto.PropertySimpleDTO;
 import com.dynamous.imoveis.dto.PropertyUpdateDTO;
+import com.dynamous.imoveis.dto.StateDTO;
 import com.dynamous.imoveis.dto.TenantDTO;
 import com.dynamous.imoveis.entities.Address;
 import com.dynamous.imoveis.entities.City;
 import com.dynamous.imoveis.entities.ImageUrl;
 import com.dynamous.imoveis.entities.Property;
+import com.dynamous.imoveis.entities.State;
 import com.dynamous.imoveis.entities.Tenant;
 import com.dynamous.imoveis.enums.StatusProperty;
 import com.dynamous.imoveis.repositories.AddressRepository;
@@ -48,11 +50,18 @@ public class PropertyController {
     private PropertyRepository propertyRepository;
     
     @Autowired
+    private CityRepository cityReposisitory;
+    
+    @Autowired
     private  PropertyCustomRepository propertyCustomRepo;
+    
+    @Autowired
+    private TenantService tenantService;
 
     
     @GetMapping(value = "/find/{id}")
-    public ResponseEntity<?> findById(@PathVariable Long id){    
+    public ResponseEntity<?> findById(@PathVariable Long id){ 
+    	System.out.println("adasdadadda cheguei aqui");
         Property property=service.find(id);
         return ResponseEntity.ok().body(property);
     }
@@ -73,7 +82,7 @@ public class PropertyController {
     @PutMapping(value = "/update/{id}")
     public ResponseEntity<Void> update(@Valid @RequestBody PropertyUpdateDTO propertyUpdateDTO, @PathVariable Long id){
     	propertyUpdateDTO.setId(id);
-    	System.out.println(propertyUpdateDTO.getTypeProperty() + " tipo da propriedade aqui"); 
+  
     	Property property = service.fromDTOUpdate(propertyUpdateDTO); 
     	
         property.setId(id);			     				
@@ -106,19 +115,19 @@ public class PropertyController {
     @GetMapping(value = "/search")
    public ResponseEntity <Page<Property>> findPageSearch(
 		    @RequestParam(value = "id",defaultValue = "",required = false) Long id,
-		    @RequestParam(value = "state",defaultValue = "", required = false) Long state,
+		    @RequestParam(value = "state",defaultValue = "",required = false) Long state,
             @RequestParam(value = "city",defaultValue = "",required = false) Long city,
             @RequestParam(value = "goal",defaultValue = "",required = false) Integer goal,
             @RequestParam(value = "typeProperty",defaultValue = "",required = false) Integer typeProperty,
             @RequestParam(value = "page",defaultValue = "0") Integer page,
-            @RequestParam(value = "linesPerPage",defaultValue = "2")  Integer linesPerPage,
+            @RequestParam(value = "linesPerPage",defaultValue = "12")  Integer linesPerPage,
             @RequestParam(value = "orderBy",defaultValue = "name")String orderBy,
             @RequestParam(value = "direction",defaultValue = "ASC")  String direction){
         //verificar se vem nullo nos parametros
         
     	
-    	// Page<Property> list= service.search(state, city, goal, typeProperty, page, linesPerPage, orderBy, direction);
-      Page<Property> list = propertyCustomRepo.findByPage(id,state, city, goal, typeProperty, page, linesPerPage, orderBy, direction);
+    	 //Page<Property> list= service.search(id,state, city, goal, typeProperty, page, linesPerPage, orderBy, direction);
+         Page<Property> list = propertyCustomRepo.findByPage(id,state, city, goal, typeProperty, page, linesPerPage, orderBy, direction);
        
        	for( Property item : list) {
        		 		
@@ -159,11 +168,11 @@ public class PropertyController {
     @PreAuthorize("hasAnyRole('TENANT')")
     @PutMapping(value = "/updateStatus/{id}/{statusP}")
     public ResponseEntity<Void> updateStatus(@PathVariable Long id, @PathVariable Integer statusP ){
-    		System.out.println(statusP + "dadadadadada");
-    	Property property= service.find(id);   	
-        property.setStatusProperty(StatusProperty.toEnum(statusP));		
-    	 	     				
-        service.update(property);
+    	
+    	Property property= service.find(id);
+    	property.setStatusProperty(StatusProperty.toEnum(statusP));
+        //service.updateStatus(property);
+    	service.update(property);
         return ResponseEntity.noContent().build();
 
     }
@@ -176,6 +185,48 @@ public class PropertyController {
        Long total= propertyRepository.publishedByTenantId(id);     
         return ResponseEntity.ok().body(total);
     }
-
+    
+    @GetMapping(value = "/searchTest")
+   public ResponseEntity <Page<Property>> findByTenantWithParams(
+		   @RequestParam(value = "name",defaultValue = "",required = false) String name,   
+		   @RequestParam(value = "goal",defaultValue = "",required = false) Integer goal,
+		   @RequestParam(value = "typeProperty",defaultValue = "",required = false) Integer typeProperty,               
+		   @RequestParam(value = "nameUrl",defaultValue = "",required = false) String nameUrl,   
+            @RequestParam(value = "page",defaultValue = "0") Integer page,
+            @RequestParam(value = "linesPerPage",defaultValue = "12")  Integer linesPerPage,
+            @RequestParam(value = "orderBy",defaultValue = "name")String orderBy,
+            @RequestParam(value = "direction",defaultValue = "ASC")  String direction){
+        //verificar se vem nullo nos parametros
+    		System.out.println(nameUrl + "ajdDIJASJDAJDAJDIAJDJ");
+          
+    	 //Page<Property> list= service.search(id,state, city, goal, typeProperty, page, linesPerPage, orderBy, direction);
+         Page<Property> list = service.findByTenantMatchAnyParam(goal,typeProperty,name, nameUrl,page, linesPerPage, orderBy, direction);
+       
+       	for( Property item : list) {
+       		 		
+       		if( item.getImages().size() >0 ) {  
+       		ImageUrl imgux = item.getImages().get(0);    		
+       		List<ImageUrl> OneImg = new ArrayList<ImageUrl>();
+       		item.setImages(OneImg);
+       		item.getImages().add(imgux);
+       		}
+       	}
+       	     
+        return ResponseEntity.ok().body(list);
+    }
+    
+    
+    @GetMapping(value = "/getAllAddress")
+   public ResponseEntity <List<Address>>getResultSearch() {         	        	
+    	List<Address> list = service.findResultSearch();            
+        return ResponseEntity.ok().body(list);
+    }
+    
+    @GetMapping(value= "/findAll/{nameUrl}")
+	public ResponseEntity <List<Property>> findAll(@PathVariable String nameUrl){
+    	List<Property> list = service.findFourByTenant(nameUrl);	
+		return ResponseEntity.ok().body(list);
+		
+	}
 
 }

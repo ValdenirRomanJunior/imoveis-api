@@ -25,6 +25,7 @@ const UploadImages = (props:PropImages) =>{
 
     const [loading,setLoading]= useState(false);
     const [error,setError]= useState(false);
+    const [errorMaxSize,setErrorMaxSize]= useState(false);
     const [successMessage,setSuccessMessage]= useState(false);
 
     const [fileBase64,setFileBase64]= useState<string>("");
@@ -33,7 +34,8 @@ const UploadImages = (props:PropImages) =>{
     const handleFile= async()=> {
         setLoading(true)
       const data=await  uploadPropertyImage(fileBase64 as string);            
-      if(data.status === 201){     
+      if(data.status === 201){  
+        console.log(data.status )   
               setLoading(false)
               setSuccessMessage(true)
               cancelSendImage();
@@ -41,12 +43,11 @@ const UploadImages = (props:PropImages) =>{
               setTimeout(()=>{
               setSuccessMessage(false);
 
-              },4000)
-             
-         
+              },4000)  
       }
 
-      if(data.status !== 201){        
+      if(data.response.data.status !== 201 && data.response.data.status !== 411 ){ 
+        console.log(data.response.data.status)         
               setLoading(false)
               setError(true);
               cancelSendImage();
@@ -54,12 +55,22 @@ const UploadImages = (props:PropImages) =>{
               setTimeout(() => {
                setError(false);
               
-              },4000)
-
-              
-                            
+              },4000)                 
          
       }
+
+      if(data.response.data.status === 411){ 
+           
+        setLoading(false)
+        setErrorMaxSize(true);
+        cancelSendImage();
+
+        setTimeout(() => {
+         setErrorMaxSize(false);
+        
+        },4000)                 
+   
+}
                 
 }
 
@@ -82,8 +93,8 @@ const UploadImages = (props:PropImages) =>{
   }
 
   const cancelSendImage = () => {       
-      Array.from(document.querySelectorAll("input")).forEach(
-          input => (input.value = "")
+    Array.from(document.querySelectorAll('[class=".input-add-image"]')).forEach(
+         input => (input.classList.value = "")
         );
           setFileBase64('')
       
@@ -175,9 +186,10 @@ const UploadImages = (props:PropImages) =>{
                 { successMessage===true && <div className='message-file-success'>Adicionada com sucesso!</div>}
                  {fileBase64.length>0 && <div className='message-add-image'>Imagem selecionada :<button className='cancel-button-file' onClick={cancelSendImage}>Cancelar</button> {loading===false ? <button className='send-button-file' onClick={handleFile}>Enviar</button>: <button className='send-button-file' ><LoadingFile/></button>}</div>}
                  { error===true && <div className='message-file-error'>Tente mais tarde</div>}
+                 { errorMaxSize===true && <div className='message-file-error'>Tamanho Máximo é de 10M</div>}
               
                 
-                <IoCloseOutline onClick={handleCloseModal} className='button-close-modal' />
+                <IoCloseOutline onClick={handleCloseModal} className='button-close-modal-edit' />
                 <GetImages onClick={handleToRegistration} image={{
                         id: 0,
                         url: '',

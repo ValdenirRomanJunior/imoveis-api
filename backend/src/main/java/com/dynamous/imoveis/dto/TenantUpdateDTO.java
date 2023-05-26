@@ -37,8 +37,11 @@ public class TenantUpdateDTO implements Serializable {
     private Integer verification; 
     
     private String password;
-    
+    @Length(max=15, message = "O tamanho deve ser no máximo 15 caracteres")
     private String creci;
+    
+    @Length( max=100, message = "O tamanho deve ser no máximo 100 caracteres")
+    private String domain;
 
     public TenantUpdateDTO(){
 
@@ -111,6 +114,15 @@ public class TenantUpdateDTO implements Serializable {
 
 	public void setCreci(String creci) {
 		this.creci = creci;
+	}
+	
+	public String getDomain() {
+		return domain;
+	}
+
+
+	public void setDomain(String domain) {
+		this.domain = domain;
 	}
 	
 	

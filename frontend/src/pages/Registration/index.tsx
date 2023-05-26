@@ -50,7 +50,7 @@ const Registration = () =>{
     const [loadingTenant, setLoadingTenant]=useState(false);
     const [cleanImagesForm,setCleanImagesForm] = useState(false);
    
-    const [loadingLogin,setLoadingLogin]= useState(true);
+ 
 
     const refreshTokenUser = async ()=>{
         const  resp = await refreshToken();    
@@ -65,15 +65,7 @@ const Registration = () =>{
   refreshTokenUser()
 },[])
 
-    useEffect(() =>{
        
-        setTimeout(() =>{
-            setLoadingLogin(false)
-        },1000)
-
-    },[])
-    
-          
       
      const getImagesUrls = (data:ImageItem[]) => {      
          setImages(data);
@@ -164,7 +156,7 @@ const Registration = () =>{
            }
 
          
-           
+          
 
         const [emptyValue,setEmptyValue]= useState(false);
 
@@ -196,9 +188,7 @@ const Registration = () =>{
                 if(e.currentTarget.name  === 'area'){
                     number(e)
                 }
-                if(e.currentTarget.name === 'price'){
-                    currency(e);
-                }
+          
                 if(e.currentTarget.name === 'cep'){
                     cep(e);
                 }
@@ -208,11 +198,13 @@ const Registration = () =>{
                 if(e.currentTarget.name === 'iptu'){
                     currency(e);
                 }
+                if(e.currentTarget.name === 'price'){
+                    currency(e);
+                  }
                 setErrors([])
                     
             }
            
-                console.log(form['typeProperty'])
 
             const handleSubmit = async (e:any) => {
               e.preventDefault();
@@ -226,8 +218,8 @@ const Registration = () =>{
                     setLoadingTenant(true)
                   
                              
-                const data = await newProperty(form['name'],form['description'],form['goal'], form['typeProperty'], form['numberRooms'],form['bathRooms'],form['area'], form['iptu'],form['vacancies'],form['condominium'],                                      
-                form['price'],form['uf'],form['city'],form['district'],form['street'],form['number'],form['cep'], images)
+                const data = await newProperty(form['name'],form['description'],form['typeProperty'],form['goal'] , form['numberRooms'],form['bathRooms'],form['area'], form['iptu'],form['vacancies'],form['condominium'],                                      
+                form['price'],form['uf'],form['city'],form['street'],form['number'],form['district'],form['cep'], images)
                  
                 
                 if(data.status === 201){
@@ -276,13 +268,13 @@ const Registration = () =>{
        
     
     },[])
-                
+             
+
     return(
         <ErrorBoundary FallbackComponent={ErrorHandler}>
         <div>
-        { loadingLogin &&  <LoadingLogin/> }
+       
  
-  
        {user?.perfis?.[0] === 'TENANT' ? 
        <RegistrationBackground>
         <Header />
@@ -307,8 +299,8 @@ const Registration = () =>{
                 <label>Finalidade</label>
                     <select  name='goal'  id='goal' value={form['goal']}  placeholder='selecione'  onChange={(e) => handleChange(e)} >
                     <option value='' >Selecione</option>
-                    <option key='1' value='1'>Vender</option>
-                    <option key='2' value='2'>Alugar</option>   
+                    <option key='1' value='1'>Alugar</option>
+                    <option key='2' value='2'>Vender</option>   
                                 
                 </select>
                 {errors.map(x => { if(x.fieldName === 'goal') return  <p className='formField__error_reg'>{x.message}</p>})}
@@ -353,7 +345,7 @@ const Registration = () =>{
                 { emptyValue && form['bathRooms'] === '' ? <span className='formField__error_reg'>Selecione o número de Banheiros</span>: ''}
                
                 <label>Área(m2)*</label>
-                <Input id="area" name="area" onChange={(e) => handleChange(e)} maxLength={11} onKeyUp={handleKeyUp}/>
+                <Input id="area" name="area" onBlur={(e) => handleChange(e)} maxLength={6} onKeyUp={handleKeyUp}/>
                 { emptyValue && form['area'] === '' ?<span className='formField__error_reg'>Preencha o total da Área interna</span>: ''}
 
                 <label>Vagas</label>
@@ -374,13 +366,13 @@ const Registration = () =>{
                 { emptyValue && form['iptu'] === '' ?<span className='formField__error_reg'>Este campo é requerido</span>: ''}
 
                 <label>Condomínio(R$)</label>
-                <Input  id="condominium" name="condominium" maxLength={14} onKeyUp={handleKeyUp} onChange={(e) => handleChange(e)}/>
+                <Input  id="condominium" name="condominium" maxLength={14} onKeyUp={handleKeyUp} onBlur={(e) => handleChange(e)}/>
                 {errors.map(x => { if(x.fieldName === 'condominium') return  <p className=' formField__error_reg'>{x.message}</p>})}
                 { emptyValue && form['condominium'] === '' ?<span className='formField__error_reg'>Este campo é requerido</span>: ''}
 
                
                 <label>Preço(R$)</label>
-                <Input type='text' id='price' name='price' maxLength={14} onKeyUp={handleKeyUp} onChange={(e) => handleChange(e)}/>  
+                <Input type='text' id='price' name='price' maxLength={14} onKeyUp={handleKeyUp} onBlur={(e) => handleChange(e)}/>  
                 {errors.map(x => { if(x.fieldName === 'price') return  <p className=' formField__error_reg'>{x.message}</p>})}  
                 { emptyValue && form['price'] === '' ?<span className='formField__error_reg'>Este campo é requerido</span>: ''}
                
@@ -429,13 +421,9 @@ const Registration = () =>{
                 { emptyValue && form['cep'] === '' ?<span className='formField__error_reg'>Este campo é requerido</span>: ''}
                      
                 <UploadImages handleResult={getImagesUrls} cleanImages={cleanImagesForm}/>
-                <div className="message-registration">
-                    {successMessage   ? <span className='success'>Cadastrado com sucesso! <Link to="/properties" className='new-property-link'>Ver Imóveis</Link></span>: ''}
-                    </div>
+               
                 <div className='buttom-register-wrapper'>
-                 { otherError &&   
-                <div className='other-error'>Erro Inesperado</div>
-                 }
+                
                   {
                         loadingTenant && <Button className="button-send-email" type='submit'><Loading/></Button>
                     }
@@ -444,6 +432,12 @@ const Registration = () =>{
                     <Button className="button-send-email" type='submit'>Adicionar</Button>
                     }
                 </div>
+                <div className="message-registration">
+                    {successMessage   ? <span className='success'>Cadastrado com sucesso! <Link to="/properties" className='new-property-link'>Ver Imóveis</Link></span>: ''}
+                    </div>
+                    { otherError &&   
+                <div className='other-error'>Erro Inesperado</div>
+                 }
             </FormContainer>
             </form>
         </BodyRegistrationContainer>

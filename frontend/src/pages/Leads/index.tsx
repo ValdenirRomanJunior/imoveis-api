@@ -31,15 +31,7 @@ const Leads = () => {
     const [errors, setErrors] = useState<Error[]>([]);
     const [otherError, setOtherError] = useState(false);
 
-    const [loadingLogin,setLoadingLogin]= useState(true);
 
-    useEffect(() =>{
-       
-        setTimeout(() =>{
-            setLoadingLogin(false)
-        },1000)
-
-    },[])
 
     const refreshTokenUser = async ()=>{
         const  resp = await refreshToken();    
@@ -78,7 +70,7 @@ const Leads = () => {
 
     const [emptyValue,setEmptyValue]= useState(false);
     const [successMessage, setSuccessMessage] = useState(false); 
-    const [param, setParam]= useState(false);
+    const [param, setParam]= useState("");
     const [loadingAddLead, setLoadingAddLead]=useState(false);
 
     const handleChange = (e:any) => {
@@ -120,12 +112,15 @@ const Leads = () => {
             cleanForm()         
             setSuccessMessage(true)
             setLoadingAddLead(false)
+            setParam("getLeads")
+            setParam('');
      
           }
             if(data.response.data.errors){              
                 setErrors(data.response.data.errors);
                 setSuccessMessage(false)
                 setLoadingAddLead(false)
+                setParam('')
                                                                                
             } 
             else if(data.response.status === 404 || data.response.status === 403){
@@ -133,6 +128,7 @@ const Leads = () => {
                 setOtherError(true)
                 setSuccessMessage(false)
                 setLoadingAddLead(false)
+                setParam('')
                
                 setTimeout(()=>{
                     setOtherError(false)
@@ -151,7 +147,7 @@ const Leads = () => {
     }
 
     const handleCloseModal =() =>{
-        setParam(true);
+        setParam('')
         setIsOpen(false)
 
       
@@ -164,19 +160,7 @@ const Leads = () => {
     }
 
     
-    const customStyles = {
-        content: {
-            top: '350px',
-            left:'50%',
-            width: '90%',
-            height: '60vh',
-            transform:'translate(-50%,-50%)',
-            
-        
-        }
-    }
 
- 
     const ErrorHandler = () => {
         return <PageNotFound/>;
       }
@@ -197,7 +181,7 @@ const Leads = () => {
         <ErrorBoundary FallbackComponent={ErrorHandler}>
 
         <div>
-        { loadingLogin &&  <LoadingLogin/> }
+        
         
         <LeadsBackground>
             <Header />
@@ -255,7 +239,7 @@ const Leads = () => {
                   
             </Modal>
                             
-            <LeadCard param={param as boolean}/>
+            <LeadCard  param={param as string}/>
             
             </LeadsContainer>
         </LeadsBackground>

@@ -71,6 +71,7 @@ const EditTenantComponent = ({tenant}: Prop) =>{
             password:'',
             status:tenant?.status,
             creci:tenant?.creci,
+            domain:tenant?.domain,
             statusRange:initialValueStatus as string
             
     
@@ -141,11 +142,15 @@ const EditTenantComponent = ({tenant}: Prop) =>{
 
                 
                     
-                const data = await editTenant(slug, lastName, email,password, status,initialValuesVerification() as string,`${params.tenantId} `)
+                const data = await editTenant(slug, lastName, email,password, status,form['creci'],form['domain'],initialValuesVerification() as string,`${params.tenantId} `)
                         console.log(data)
                 if(data.status === 204){
                    console.log(data.status)                    
                     setSuccessMessage(true)
+                    setTimeout(()=> {
+                        setSuccessMessage(false);
+                    },3000)
+
                     setLoadingTenant(false)
                                          
                   }
@@ -159,6 +164,7 @@ const EditTenantComponent = ({tenant}: Prop) =>{
                 else if(data.response.status === 404 || data.response.status === 400 || data.response.status === 403){
                     console.log(data.response.status)
                     setOtherError(true)
+                 
                     setSuccessMessage(false)
                     setLoadingTenant(false)
 
@@ -183,9 +189,7 @@ const EditTenantComponent = ({tenant}: Prop) =>{
         <BarTop />
         <BodyEditContainer>
             <h1 className='title-registration'>Editar Cliente</h1>
-            <div className="message">
-                    {successMessage  ? <span className='success'>Editado com sucesso!</span>: ''}
-                    </div>
+          
 
             <form onSubmit={(e)=> {handleSubmit(e)}}>
             <FormContainer>
@@ -206,13 +210,17 @@ const EditTenantComponent = ({tenant}: Prop) =>{
                 { emptyValue && form['email'] === '' ?<span className='formField__error'>Selecione o número de Quartos</span>: ''}
 
                 <label>Creci*</label>            
-                <Input id="creci" name="creci" value={form['creci'] } onChange={(e) => handleChange(e)} onKeyUp={handleKeyUp} maxLength={30} />
+                <Input id="creci" name="creci" value={form['creci'] } onChange={(e) => handleChange(e)} onKeyUp={handleKeyUp} maxLength={15} />
                 {errors.map(x => { if(x.fieldName === 'creci') return  <p className='formField__error'>{x.message}</p>})}
                 { emptyValue && form['creci'] === '' ?<span className='formField__error'>Selecione o número de Quartos</span>: ''}
 
                 <label>Nova Senha</label>            
                 <Input id="password" name="password" value={form['password'] } onChange={(e) => handleChange(e)} onKeyUp={handleKeyUp} maxLength={20} />
                 {errors.map(x => { if(x.fieldName === 'password') return  <p className='formField__error'>{x.message}</p>})}
+
+                <label>Domínio</label>            
+                <Input id="domain" name="domain" value={form['domain'] } onChange={(e) => handleChange(e)} onKeyUp={handleKeyUp} maxLength={20} />
+                {errors.map(x => { if(x.fieldName === 'domain') return  <p className='formField__error'>{x.message}</p>})}
               
                 <label>Status</label>
                 <InputRange> 
@@ -225,9 +233,7 @@ const EditTenantComponent = ({tenant}: Prop) =>{
                 <Input id="status" name="status" disabled value='DESATIVADO' onChange={(e) => handleChange(e)} maxLength={90} />
         }        
                 <div className='buttom-register-wrapper'>
-                { otherError &&   
-              <div className='message-other-error-wrapper'>  <div className='other-error-tenant'>Tente mais tarde</div></div>
-                 }
+           
 
                  {
                         loadingTenant && <Button className="button-send-email" type='submit'><Loading/></Button>
@@ -236,9 +242,19 @@ const EditTenantComponent = ({tenant}: Prop) =>{
                         !loadingTenant &&
                     <Button className="button-send-email" type='submit'>Salvar</Button>
                     }
+
+            { otherError &&   
+              <div className='message-other-error-wrapper'>  <div className='other-error-tenant'>Tente mais tarde</div></div>
+              
+                 }
+                  { successMessage  &&  <div className="message">
+                    <span className='success'>Editado com sucesso!</span>
+                    </div>
+                     }
                 </div>
             </FormContainer>
             </form>
+           
 
         </BodyEditContainer>
        </EditBackground>
@@ -272,15 +288,7 @@ const EditTenant = () =>{
 },[p])
 
   
-const [loadingLogin,setLoadingLogin]= useState(true);
 
-useEffect(() =>{
-   
-    setTimeout(() =>{
-        setLoadingLogin(false)
-    },1000)
-
-},[])
     const getTenant = async() => {
                  
         const data = await findTenant(p);          
@@ -323,7 +331,7 @@ useEffect(() =>{
 
     return(
         <ErrorBoundary FallbackComponent={ErrorHandler}>
-          { loadingLogin &&  <LoadingLogin/> }
+       
         {errorPage && <PageNotFound/>}
       
            {user?.perfis?.[0] === 'ADMIN' ?

@@ -27,6 +27,7 @@ const UploadImages = (props:PropImages) =>{
     const [successMessage,setSuccessMessage]= useState(false);
    
     const [fileBase64,setFileBase64]= useState<string>("");
+    const [errorMaxSize,setErrorMaxSize]= useState(false);
 
     const [messageFile, setMessageFile]= useState(false);
 
@@ -48,7 +49,7 @@ const UploadImages = (props:PropImages) =>{
            
         }
 
-        if(data.status !== 201){        
+        if(data.response.data.status !== 201 && data.response.data.status !== 411 ){        
                 setLoading(false)
                 setError(true);
                 cancelSendImage();
@@ -56,12 +57,22 @@ const UploadImages = (props:PropImages) =>{
                 setTimeout(() => {
                  setError(false);
                 
-                },4000)
-
-                
-                              
+                },4000)                         
            
         }
+
+        if(data.response.data.status === 411){ 
+           
+            setLoading(false)
+            setErrorMaxSize(true);
+            cancelSendImage();
+    
+            setTimeout(() => {
+             setErrorMaxSize(false);
+            
+            },4000)                 
+       
+    }
                   
 }
 
@@ -182,6 +193,7 @@ useEffect(() => {
                 { successMessage===true && <div className='message-file-success'>Adicionada com sucesso!</div>}
                  {fileBase64.length>0 && <div className='message-add-image'>Imagem selecionada :<button className='cancel-button-file' onClick={cancelSendImage}>Cancelar</button> {loading===false ? <button className='send-button-file' onClick={formSubmit}>Enviar</button>: <button className='send-button-file' ><LoadingFile/></button>}</div>}
                  { error===true && <div className='message-file-error'>Tente mais tarde</div>}
+                 { errorMaxSize===true && <div className='message-file-error'>Tamanho Máximo é de 10M</div>}
                 <IoCloseOutline onClick={handleCloseModal} className='button-close-modal-registration' />        
                 <GetImages  onClick={handleToRegistration} image={{
                         id: 0,

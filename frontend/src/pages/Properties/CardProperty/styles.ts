@@ -32,8 +32,10 @@ font-family: "Poppins", sans-serif;
     
     img{
         max-width: 75px;
+        width:75px;
         height: 75px;
         object-fit: cover;
+        
         border-radius: 5px;
     }
 
@@ -117,6 +119,7 @@ font-family: "Poppins", sans-serif;
             width:150px;
             font-size: 11px;
             font-weight: 300;
+            cursor: pointer;
             
             
         
@@ -151,7 +154,7 @@ export const CardContainer = styled.main`
     display:flex;
     flex-direction: column;
     align-items: center;
-    padding: 30px 0 30px 0;
+   
     border-top: 1px solid #e6e9ed;
 
     .wrapper-properties{
@@ -162,6 +165,16 @@ export const CardContainer = styled.main`
         justify-content: center;
     }
    
+    .pagination-button-wrapper{
+        display: flex;
+        align-items: center;
+        padding-right:20px;
+     
+
+        .button-all-properties{
+            margin-right:20px;
+        }
+    }
     `
 
     export const MessageNoProperties = styled.div`

@@ -2,12 +2,21 @@ package com.dynamous.imoveis.repositories;
 
 import com.dynamous.imoveis.entities.Address;
 import com.dynamous.imoveis.entities.City;
+import com.dynamous.imoveis.entities.Lead;
 import com.dynamous.imoveis.entities.Property;
 import com.dynamous.imoveis.entities.Tenant;
+import com.dynamous.imoveis.enums.Goal;
+import com.dynamous.imoveis.enums.TypeProperty;
+import com.dynamous.imoveis.security.UserSS;
+import com.dynamous.imoveis.services.UserService;
+import com.dynamous.imoveis.services.exceptions.AuthorizationException;
+
 
 import org.hibernate.query.NativeQuery;
 import org.hibernate.query.internal.NativeQueryImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -20,65 +29,20 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 
 @Repository
 @Transactional
 public interface PropertyRepository extends JpaRepository<Property,Long> {
 	
-	
-
-
-
-	
-	public default Page<Property> findByPageReq(Tenant tenant,Long state, Long city, Integer goal, Integer typeProperty, Integer page, Integer linesPerPage, String orderBy, String direction, Pageable pageRequest) {
-		
-	
-		String query="select P from Property P ";
-		String condition = "where";
-		
-		
-    	
-    	if(tenant != null) {
-    		query += condition + " P.tenant= :tenant ";
-    		condition = " and ";
-    	}
-    	
-    	if(state != null) {
-    		query += condition + " P.address.city.state.id= :state ";
-    		condition = " and ";
-    	}
-    	
-    	if(city != null) {
-    		query += condition + " P.address.city.id= :city ";
-    		condition = " and ";
-    	}
-    	
-    	if(goal != null) {
-    		query += condition + " P.goal= :goal ";
-    		condition = " and ";
-    	}
-    	
-    	if(typeProperty != null) {
-    		query += condition + " P.typeProperty= :typeProperty ";
-    		condition = " and ";
-    		
-    	}
-    	
-    	PageRequest pageReques = PageRequest.of(page, linesPerPage, Sort.Direction.valueOf(direction), orderBy);
-     	Pageable pr= pageReques;
-    	
-    
  
-    	 return null;
-			
-		
-	}
-	
-	
+	 
 	
 	@Transactional(readOnly = true)	
 	Page<Property> findByTenant(Tenant tenant, Pageable PageRequest);
@@ -102,10 +66,25 @@ public interface PropertyRepository extends JpaRepository<Property,Long> {
     @Query("SELECT count(p) FROM Property p WHERE p.tenant.id= :id")
 	Long countByTenantId(Long id);
 
-
     @Query("SELECT count(p) FROM Property p WHERE p.tenant.id= :id and p.statusProperty =1")
 	Long publishedByTenantId(Long id);
+    
+    
+   
+    @Query("SELECT p FROM Property p left JOIN p.address.city c where c.name like %:name% AND (:goal IS NULL or p.goal = :goal) AND (:typeProperty IS NULL or p.typeProperty = :typeProperty) AND p.tenant = :tenant AND p.statusProperty = 1")
+    Page<Property> findByGoalAndTEnantPropertiesIn(@Param("name")String name,@Param("goal")Integer goal,@Param("typeProperty")Integer typeProperty, @Param("tenant") Tenant tenant, Pageable pageable);
+    
+   
+	List<Property> findFirst4ByTenant(Tenant tenant);
+	
+	
+
+   
+
+  
+    
 }
+
 
 
 

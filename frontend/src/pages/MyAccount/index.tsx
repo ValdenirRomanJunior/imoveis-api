@@ -23,6 +23,11 @@ const MyAccount = ()=>{
 
     const navigate = useNavigate();
 
+    const [loading,setLoading]= useState(false);
+    const [error,setError]= useState(false);
+    const [errorMaxSize,setErrorMaxSize]= useState(false);
+    const [successMessage,setSuccessMessage]= useState(false);
+
     const [fileBase64,setFileBase64]= useState<string>("");
 
     const [imageUser,setImageUser]= useState<string>("");
@@ -37,17 +42,7 @@ const MyAccount = ()=>{
         return 'error' as string;
 
     });
-    const [loadingLogin,setLoadingLogin]= useState(true);
-
-
-
-    useEffect(() =>{
-       
-        setTimeout(() =>{
-            setLoadingLogin(false)
-        },1000)
-
-    },[])
+   
 
     const refreshTokenUser = async ()=>{
         const  resp = await refreshToken();    
@@ -77,9 +72,49 @@ const MyAccount = ()=>{
   
     const formSubmit= async()=> {
        
-        const data=await  uploadProfileImage(fileBase64 as string);            
+        const data=await  uploadProfileImage(fileBase64 as string);
+        
         let a=getUrl();
         setImageUser(a as unknown as string);
+
+        setLoading(true)
+       
+            if(data.status === 201){  
+                setTimeout(()=>{
+                  setLoading(false)
+                  setSuccessMessage(true)
+                    },1000) 
+              
+            
+           
+              setTimeout(()=>{
+              setSuccessMessage(false);
+
+              },4000)  
+      }      
+        if(data.response.data.status !== 201 && data.response.data.status !== 411 ){ 
+            console.log(data.response.data.status)         
+                  setLoading(false)
+                  setError(true);
+               
+                  setTimeout(() => {
+                   setError(false);
+                  
+                  },4000)                 
+             
+          }
+    
+          if(data.response.data.status === 411){ 
+            console.log(data.response.data.status)  
+            setLoading(false)
+            setErrorMaxSize(true);
+        
+            setTimeout(() => {
+             setErrorMaxSize(false);
+            
+            },4000)                 
+       
+    }
         
            
 }
@@ -139,7 +174,7 @@ useEffect(() => {
         
         <ErrorBoundary FallbackComponent={ErrorHandler}>
         <div>
-        { loadingLogin &&  <LoadingLogin/> }
+       
  
     <MyAccountBackground>
        <Header /> 
@@ -164,6 +199,11 @@ useEffect(() => {
         </form>  
         </div>
         </div>
+        { loading ===true && <div className='message-file-success-account'>Aguarde...</div>}
+        { successMessage===true && <div className='message-file-success-account'>Adicionada com sucesso!</div>}
+
+        { error===true && <div className='message-file-error-account'>Tente mais tarde</div>}
+                 { errorMaxSize===true && <div className='message-file-error-account'>Tamanho Máximo é de 10M</div>}
         
         <CardAccount status='ACTIVE'>
             <div className='card-account-wrapper'>
@@ -180,7 +220,7 @@ useEffect(() => {
            
             <div className='card-account-wrapper-date'>
                 <label>Pago até</label>
-                <p>{user.endDate}</p>
+                {user.endDate ? <p>{user.endDate}</p>: <p>00/00/00</p>}
             </div>
             <div className='card-account-wrapper-status'>
                 <label>Status</label>
@@ -189,7 +229,7 @@ useEffect(() => {
 
             <div className='card-account-wrapper-email'>
                 <label>CRECI</label>
-                <p>{user.creci}</p>
+                {user.creci ? <p>{user.creci}</p>:<p>Por favor atualize o creci</p>}
             </div>
            
             </div>

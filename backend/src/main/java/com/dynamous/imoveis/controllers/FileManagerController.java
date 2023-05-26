@@ -29,7 +29,7 @@ public class FileManagerController {
     
     @PostMapping(value="/save")
     public ResponseEntity<Void> uploadPropertyPictures(@RequestParam(name="file") MultipartFile file){
-    	 System.out.println(file.getOriginalFilename() + "extensao vinda da img");
+    	
         URI uri = service.uploadPropertyPictures(file);
         return ResponseEntity.created(uri).build();
     }

@@ -22,22 +22,15 @@ const Properties = ()=>{
 
     const navigate = useNavigate();
 
-    const[id,setId]= useState('');
-    const[state,setState]= useState('');
-    const[city,setCity]= useState('');
-    const[goal,setGoal]= useState('');
-    const[type,setType]= useState('');
+    const[idAux,setId]= useState('');
+    const[stateAux,setState]= useState('');
+    const[cityAux,setCity]= useState('');
+    const[goalAux,setGoal]= useState('');
+    const[typeAux,setType]= useState('');
+    const[paramToCloseModal,setParamToCloseModal]= useState(false);
+    const[paramToGetAllProperties,setParamToAllProperties]= useState(false);
   
 
-    const [loadingLogin,setLoadingLogin]= useState(true);
-
-    useEffect(() =>{
-       
-      setTimeout(() =>{
-          setLoadingLogin(false)
-      },1000)
-
-  },[])
 
     const refreshTokenUser = async ()=>{
         const  resp = await refreshToken();    
@@ -52,29 +45,42 @@ const Properties = ()=>{
   refreshTokenUser()
 },[])
 
-const {user, getCurrentUser} = useAuth();
-useEffect(() =>{
-      
-  getCurrentUser();
 
+const {user, getCurrentUser} = useAuth();
+useEffect(() =>{     
+  getCurrentUser();
 
 },[])
 
 
   const getParamsToSearch = (id:string,state:string,city:string,goal:string,type:string) => {
-    setState(state);
-    setCity(city);
-    setGoal(goal);
-    setType(type);
-    setId(id);
-   
-
- 
+    console.log('param city'+city)
+    
+     if(id.length === 0 && state.length === 0 && city.length === 0 && goal.length === 0 && type.length === 0){
+      console.log('entrou tudo vazio')
+      setState('');
+      setCity('');
+      setGoal('');
+      setType('');
+      setId('');
+      setParamToAllProperties(true);
+     }
+     else{
+      setState(state);
+      setCity(city);
+      setGoal(goal);
+      setType(type);
+      setId(id);
+      setParamToAllProperties(false)
+     }   
   }
 
-   const getBooleanCloseModal = (param:boolean)=> {
-    
-    return param;
+      
+  
+      console.log(cityAux)
+   const getBooleanCloseModal = (param:boolean)=> { 
+ 
+    setParamToCloseModal(param);
     
    }
 
@@ -83,7 +89,7 @@ useEffect(() =>{
       <>
         {user?.perfis?.[0] === 'TENANT' ? 
       <div>
-      { loadingLogin &&  <LoadingLogin/> }
+    
  
     <PropertiesBackground>
        <Header /> 
@@ -94,14 +100,14 @@ useEffect(() =>{
          
         <h1 className='title-properties'>Meus Imóveis</h1>
         
-        <Search param={getBooleanCloseModal} onChange={getParamsToSearch} />
+        <Search param={paramToCloseModal} onChange={getParamsToSearch} />
         <Link to="/registration"> <button className="button-add-lead" >
         <VscHome className="icon-add-lead"/> <IoIosAdd className='icon-add-lead-positive'/></button> </Link>
-        <SearchDesktop onChange={getParamsToSearch}/>
+        <SearchDesktop param={paramToCloseModal}  onChange={getParamsToSearch}/>
        
         </TitleWrapper>
        
-        <CardProperty onChange={getBooleanCloseModal}  id={id} state={state} city={city} goal={goal} type={type}  />
+        <CardProperty paramToGetAll={paramToGetAllProperties} onChange={getBooleanCloseModal}  id={idAux} state={stateAux} city={cityAux} goal={goalAux} type={typeAux}  />
        </BodyPropertiesContainer>
     </PropertiesBackground>
 

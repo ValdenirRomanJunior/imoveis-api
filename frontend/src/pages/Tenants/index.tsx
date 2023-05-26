@@ -22,15 +22,7 @@ const Tenants = ()=>{
 
 },[])
 
-  const [loadingLogin,setLoadingLogin]= useState(true);
 
-  useEffect(() =>{
-     
-    setTimeout(() =>{
-        setLoadingLogin(false)
-    },1000)
-
-},[])
 
     const navigate = useNavigate();
     const refreshTokenUser = async ()=>{
@@ -51,7 +43,7 @@ const Tenants = ()=>{
      <>
        {user?.perfis?.[0] === 'ADMIN' ? 
       <div>
-      { loadingLogin &&  <LoadingLogin/> }
+     
 
     <TenantsBackground>
        <Header /> 

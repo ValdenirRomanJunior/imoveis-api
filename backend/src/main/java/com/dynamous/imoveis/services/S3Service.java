@@ -8,7 +8,9 @@ import com.amazonaws.services.s3.model.MultiObjectDeleteException.DeleteError;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.dynamous.imoveis.entities.Image;
+import com.dynamous.imoveis.entities.ImageUrl;
 import com.dynamous.imoveis.repositories.ImageRepository;
+import com.dynamous.imoveis.repositories.ImageUrlRepository;
 import com.dynamous.imoveis.security.UserSS;
 import com.dynamous.imoveis.services.exceptions.AuthorizationException;
 import com.dynamous.imoveis.services.exceptions.FileException;
@@ -25,7 +27,9 @@ import java.io.InputStream;
 import java.lang.reflect.Array;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 
@@ -37,6 +41,15 @@ public class S3Service {
     @Autowired
     private ImageRepository imageRepository;
 
+    @Autowired
+    private ImageService imageService;
+    
+    @Autowired
+    private ImageUrlService imageUrlService;
+    
+    @Autowired
+    private ImageUrlRepository imageUrlRepository;
+    
     @Autowired
     private AmazonS3 s3client;
 
@@ -130,8 +143,9 @@ public class S3Service {
       }
     try {
         
-    	 Optional<Image> image= imageRepository.findById(id);
-    	 String deleteFileName ="tp"+user.getId()+image.get().getId()+".jpg";
+    	 Image image= imageService.find(id);
+    	
+    	 String deleteFileName ="tp"+user.getId()+image.getId()+".jpg";
     	 
          LOG.info("Iniciando delete");
          
@@ -139,7 +153,19 @@ public class S3Service {
         
          LOG.info("Finalizado delete");
                    
-         imageRepository.deleteById(id);
+         imageService.delete(id);
+         List<ImageUrl> imageUrl =imageUrlService.findByIdTenantAndUrl(image.getIdTenant(),image.getUrl());
+         List<Long> ids= new ArrayList<Long>();
+         for( ImageUrl img: imageUrl ) {
+        	 if(img !=null) {
+        		 ids.add(img.getId());
+        	 }
+         }
+         System.out.println(ids + " dadadadSWDADWWQEWEWEWQDEQWDEADAD");
+         imageUrlService.deleteAllById(ids);
+        
+         
+         
       
         
     } catch (AmazonServiceException e) {

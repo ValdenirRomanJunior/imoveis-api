@@ -76,6 +76,14 @@ export const BodyMyAccountContainer = styled.main`
       
     }
 
+    .message-file-success-account{
+        color: #13ac49;
+    }
+
+    .message-file-error-account{
+        color: red;
+    }
+
     input[type=file]::-webkit-file-upload-button{
         cursor:pointer;
     }

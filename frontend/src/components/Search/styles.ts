@@ -42,6 +42,12 @@ export const BarTopSearch = styled.div`
         font-weight:700;
         color: #63666a;
     }
+
+    .button-close-modal-mobile{
+        position: absolute;
+        right:5%;
+        font-size:20px;
+    }
     
 `
 

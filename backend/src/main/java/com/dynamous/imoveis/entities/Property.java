@@ -39,7 +39,7 @@ public class Property implements Serializable {
     
     
     //fetch = FetchType.EAGER,mappedBy = "property",cascade=CascadeType.REMOVE, orphanRemoval = true
-    @OneToMany(mappedBy = "property",fetch = FetchType.EAGER,cascade = CascadeType.REMOVE,orphanRemoval = true)
+    @OneToMany(mappedBy = "property",fetch = FetchType.EAGER,cascade = CascadeType.DETACH,orphanRemoval = true)
     private List<ImageUrl> images= new ArrayList<ImageUrl>();
 
 

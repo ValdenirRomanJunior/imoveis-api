@@ -40,6 +40,6 @@ public enum Perfil {
                 return x;
             }
         }
-        throw  new IllegalArgumentException("id inválido: "+ cod);
+        throw  new IllegalArgumentException("id inválido: Perfil"+ cod);
     }
 }

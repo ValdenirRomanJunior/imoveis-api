@@ -31,9 +31,9 @@ public class Address implements Serializable {
 
     }
 
-    public Address(Long id, String publicPlace, String number, String district, String cep, Property property, City city) {
+    public Address(Long id, String street, String number, String district, String cep, Property property, City city) {
         this.id = id;
-        this.street = publicPlace;
+        this.street = street;
         this.number = number;
         this.district = district;
         this.cep = cep;

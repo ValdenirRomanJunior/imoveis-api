@@ -6,8 +6,6 @@ import java.io.Serializable;
 
 
 
-
-
 public enum Goal implements Serializable {
 
 	
@@ -47,7 +45,7 @@ public enum Goal implements Serializable {
                 return x;
             }
         }
-            throw new com.dynamous.imoveis.services.exceptions.IllegalArgumentException("Codigo invalido"+ cod);
+            throw new com.dynamous.imoveis.services.exceptions.IllegalArgumentException("Codigo invalido goal"+ cod);
 
     }
 }

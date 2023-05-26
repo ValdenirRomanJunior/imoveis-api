@@ -5,6 +5,7 @@ export const DetailContainer = styled.div`
    border-bottom:1px solid #e6e9ed;
    padding-bottom: 15px;
    height: auto;
+   background: transparent !important;
 
  
    

@@ -16,6 +16,7 @@ import com.dynamous.imoveis.enums.TypeProperty;
 import com.dynamous.imoveis.repositories.AddressRepository;
 import com.dynamous.imoveis.repositories.CityRepository;
 import com.dynamous.imoveis.repositories.ImageUrlRepository;
+import com.dynamous.imoveis.repositories.PropertyCustomRepository;
 import com.dynamous.imoveis.repositories.PropertyRepository;
 import com.dynamous.imoveis.repositories.StateRepository;
 import com.dynamous.imoveis.repositories.TenantRepository;
@@ -23,16 +24,19 @@ import com.dynamous.imoveis.security.UserSS;
 import com.dynamous.imoveis.services.exceptions.AuthorizationException;
 import com.dynamous.imoveis.services.exceptions.DataIntegrityException;
 import com.dynamous.imoveis.services.exceptions.ObjectNotFoundException;
-import org.apache.tomcat.websocket.AuthenticationException;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
+
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -42,11 +46,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class PropertyService {
 
-    @Autowired
+	 @Autowired
+	 private  PropertyCustomRepository propertyCustomRepo;
+
+	@Autowired
     private PropertyRepository propertyRepository;
 
     @Autowired
@@ -86,19 +94,17 @@ public class PropertyService {
     }
 
     //ATUALIZA UM IMOVEL
+    
     public Property update(Property property) {
     	
-    	 try {
-     	    	imageUrlRepository.deleteByPropertyId(property.getId());
-           } catch (DataIntegrityViolationException e) {
-               throw new DataIntegrityException("impossible delete with other objects: ");
-           }
+    
   
         Property newObj = find(property.getId());
-    
+        
         updateData(newObj, property);
         imageUrlRepository.saveAll(newObj.getImages());
         addressRepository.save(newObj.getAddress()); // problema em salvar adress
+       
         return propertyRepository.save(newObj);
     }
 
@@ -117,15 +123,15 @@ public class PropertyService {
         newObj.setPrice(property.getPrice());
         newObj.setStatusProperty(property.getStatusProperty());
                	        			
-        			for(ImageUrl img : property.getImages()) {      
+        			//for(ImageUrl img : property.getImages()) {      
         				
-        				img.setId(null);
-                		img.setUrl(img.getUrl());
-                		img.setIdTenant(newObj.getTenant().getId());       		
-                		img.setProperty(newObj);
+        				//img.setId(null);
+                		//img.setUrl(img.getUrl());
+                		//img.setIdTenant(newObj.getTenant().getId());       		
+                		//img.setProperty(property);
                 		newObj.getImages().addAll(property.getImages());
                                           		            		
-                	}
+                	//}
         			
         			
         				// VERIFICA SE TEM ESTADO E CIDADE JÁ CADASTRADA
@@ -157,6 +163,14 @@ public class PropertyService {
         	        	
         
     }
+    
+    //ATUALIZA STATUS IMÓVEL
+    public Property updateStatus(Property property) {
+    	   
+       imageUrlRepository.saveAll(property.getImages());
+       addressRepository.save(property.getAddress()); 
+       return propertyRepository.save(property);
+   }
 
     //DELETA UM IMÓVEL
     public void delete(Long id) {
@@ -236,22 +250,8 @@ public class PropertyService {
         return property;	
     }
     
-    public Page<Property> search(Long state, Long city, Integer goal, Integer type, Integer page, Integer linesPerPage, String orderBy, String direction) {
-        UserSS user = UserService.authenticated();
-        if(user == null){
-            throw new AuthorizationException("Acesso negado");
-        }
-        
 
-        	  Tenant tenant= tenantRepository.findById(user.getId()).get();
-          	PageRequest pageRequest = PageRequest.of(page, linesPerPage, Sort.Direction.valueOf(direction), orderBy);
-              return propertyRepository.findByPageReq(tenant,state, city,  goal, type,  page, linesPerPage, orderBy,  direction, pageRequest);
-        	
-        }
        
-      
-   
-
 
 	public Property fromDTOUpdate(PropertyUpdateDTO propertyUpdateDTO) {
 		
@@ -296,20 +296,49 @@ public class PropertyService {
 
 
 //salvo aqui  o objeto depois pego o id no banco da propriedade
-if(propertyUpdateDTO.getImages() != null){
+
+	try {
+  	  	imageUrlRepository.deleteByPropertyId(propertyUpdateDTO.getId()); // pode haver um erro  aqui nesta deleção
+  	  	
+       } catch (DataIntegrityViolationException  e) {
+      new DataIntegrityException("impossible delete with other objects: ");
+        }
+	 
 	for(ImageUrl img : propertyUpdateDTO.getImages()) {
+		
 		img.setId(null);
 		img.setUrl(img.getUrl());
 		img.setIdTenant(img.getIdTenant());       		
 		img.setProperty(property);
-		 property.getImages().addAll(propertyUpdateDTO.getImages());
-	}
-   
-}
+	    property.getImages().addAll(propertyUpdateDTO.getImages());
+    	}
+	
 
-return property;
+	return property;
+	
+}
+	
+	
+	 @Transactional(readOnly = true)
+	 public Page<Property> findByTenantMatchAnyParam(Integer goal,Integer typeProperty, String name, String domain, Integer page, Integer linesPerPage, String orderBy, String direction){
+		  PageRequest pageRequest = PageRequest.of(page, linesPerPage, Direction.valueOf(direction), orderBy);		  
+		  	
+		  	Tenant tenant = tenantService.findByDomain(domain);
+		  	return propertyRepository.findByGoalAndTEnantPropertiesIn(name,goal, typeProperty, tenant, pageRequest);
+
+	}
+
+	 @Transactional(readOnly = true)
+	public List<Address> findResultSearch() {
+			List<Address>resultList= addressRepository.findAll();
+			return resultList;
+	}
+
+	 @Transactional(readOnly = true)
+	public List<Property> findFourByTenant(String domain) {
+		 Tenant tenant = tenantService.findByDomain(domain);
+		List<Property> list = propertyRepository.findFirst4ByTenant(tenant);
+		return list;
 	}
 	
-	//IMPLEMENTAR PAGINATION
-
 }

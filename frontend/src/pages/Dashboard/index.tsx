@@ -24,7 +24,6 @@ const Dashboard = ()=>{
   
     const navigate = useNavigate();
 
-    const [loadingLogin,setLoadingLogin]= useState(true);
 
     const {user, getCurrentUser} = useAuth();
     const [imageUser,setImageUser]= useState<string>("");
@@ -35,13 +34,7 @@ const Dashboard = ()=>{
     const [errorMessage,setErrorMessage]= useState("");
     const [errorMessageTotalLeads,setErrorMessageTotalLeads]= useState("");
     
-    useEffect(() =>{
-       
-        setTimeout(() =>{
-            setLoadingLogin(false)
-        },1000)
-
-    },[])
+ 
 
     const refreshTokenUser = async ()=>{
         const  resp = await refreshToken();    
@@ -169,7 +162,7 @@ const Dashboard = ()=>{
         {user?.perfis?.[0] === 'TENANT' || user?.perfis?.[0] === 'ADMIN' ? 
           
         <div>
-        { loadingLogin &&  <LoadingLogin/> }
+       
         <ErrorBoundary FallbackComponent={ErrorHandler}>
          {!errors ?    
         <DashboardBackground>

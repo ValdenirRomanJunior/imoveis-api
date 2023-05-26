@@ -34,6 +34,8 @@ public class TenantNewDTO implements Serializable {
     @Length( max=20, message = "O tamanho deve ser no máximo 15 caracteres")
     private String creci;
     
+    
+    
     @NotNull
     private Integer signedDays;
 
@@ -88,7 +90,8 @@ public class TenantNewDTO implements Serializable {
 	public void setSignedDays(Integer signedDays) {
 		this.signedDays = signedDays;
 	}
-    
-	
+
+
+   	
     
 }
