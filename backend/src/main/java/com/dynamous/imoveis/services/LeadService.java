@@ -18,8 +18,11 @@ import com.dynamous.imoveis.security.UserSS;
 import com.dynamous.imoveis.services.exceptions.AuthorizationException;
 import com.dynamous.imoveis.services.exceptions.DataIntegrityException;
 import com.dynamous.imoveis.services.exceptions.ObjectNotFoundException;
+
+import org.hibernate.StaleStateException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -66,7 +69,7 @@ public class LeadService {
         find(id);
        try {
             leadRepository.deleteById(id);
-        } catch (DataIntegrityViolationException e) {
+        } catch (DataIntegrityViolationException  | EmptyResultDataAccessException | StaleStateException e) {
           throw new DataIntegrityException("Não é possivel deletar porque tem objetos anexados: ");
         }
     }

@@ -11,8 +11,10 @@ import com.dynamous.imoveis.services.exceptions.FileException;
 import com.dynamous.imoveis.services.exceptions.ObjectNotFoundException;
 
 import org.apache.commons.io.FilenameUtils;
+import org.hibernate.StaleStateException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -84,7 +86,7 @@ public class ImageService {
  
         try {
             imageRepository.deleteById(id);
-        } catch (DataIntegrityViolationException e) {
+        } catch (DataIntegrityViolationException | EmptyResultDataAccessException | StaleStateException e) {
             throw new DataIntegrityException("impossible delete with other objects: ");
         }
     }

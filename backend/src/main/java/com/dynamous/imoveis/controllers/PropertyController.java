@@ -171,8 +171,8 @@ public class PropertyController {
     	
     	Property property= service.find(id);
     	property.setStatusProperty(StatusProperty.toEnum(statusP));
-        //service.updateStatus(property);
-    	service.update(property);
+        service.updateStatus(property);
+
         return ResponseEntity.noContent().build();
 
     }

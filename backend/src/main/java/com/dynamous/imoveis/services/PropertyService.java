@@ -25,9 +25,11 @@ import com.dynamous.imoveis.services.exceptions.AuthorizationException;
 import com.dynamous.imoveis.services.exceptions.DataIntegrityException;
 import com.dynamous.imoveis.services.exceptions.ObjectNotFoundException;
 
+import org.hibernate.StaleStateException;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.data.domain.Page;
@@ -122,6 +124,7 @@ public class PropertyService {
         newObj.setCondominium(property.getCondominium());
         newObj.setPrice(property.getPrice());
         newObj.setStatusProperty(property.getStatusProperty());
+        newObj.setAreaTotal(property.getAreaTotal());
                	        			
         			//for(ImageUrl img : property.getImages()) {      
         				
@@ -183,7 +186,7 @@ public class PropertyService {
 
         try {
             propertyRepository.deleteById(id);
-        } catch (DataIntegrityViolationException e) {
+        } catch (DataIntegrityViolationException  | EmptyResultDataAccessException | StaleStateException e) {
             throw new DataIntegrityException("impossible delete with other objects: ");
         }
     }
@@ -203,7 +206,7 @@ public class PropertyService {
   
     		Property property = new Property(null, propertyNewDTO.getName(), propertyNewDTO.getDescription(), TypeProperty.toEnum(propertyNewDTO.getTypeProperty()),Goal.toEnum(propertyNewDTO.getGoal()), 
 					   propertyNewDTO.getNumberRooms(), propertyNewDTO.getBathRooms(), propertyNewDTO.getArea(), propertyNewDTO.getIptu(),
-					   	propertyNewDTO.getVacancies(),propertyNewDTO.getCondominium(), propertyNewDTO.getPrice(),StatusProperty.NAO_PUBLICADO);    		
+					   	propertyNewDTO.getVacancies(),propertyNewDTO.getCondominium(), propertyNewDTO.getPrice(), propertyNewDTO.getAreaTotal(),StatusProperty.NAO_PUBLICADO);    		
     	
     	        
     	        
@@ -264,7 +267,7 @@ public class PropertyService {
     	//jogar excpetion ususrio nulo
         Property property = new Property(propertyUpdateDTO.getId(), propertyUpdateDTO.getName(), propertyUpdateDTO.getDescription(), TypeProperty.toEnum(propertyUpdateDTO.getTypeProperty()), Goal.toEnum(propertyUpdateDTO.getGoal()), 
         		propertyUpdateDTO.getNumberRooms(), propertyUpdateDTO.getBathRooms(), propertyUpdateDTO.getArea(), propertyUpdateDTO.getIptu(),
-        		propertyUpdateDTO.getVacancies(),propertyUpdateDTO.getCondominium(), propertyUpdateDTO.getPrice(),propAux.getStatusProperty());
+        		propertyUpdateDTO.getVacancies(),propertyUpdateDTO.getCondominium(), propertyUpdateDTO.getPrice(), propertyUpdateDTO.getAreaTotal(),propAux.getStatusProperty());
         
         State state= stateRepository.findByName(propertyUpdateDTO.getState());  	     
         City city = cityRepository.findByName(propertyUpdateDTO.getCity());
@@ -300,7 +303,7 @@ public class PropertyService {
 	try {
   	  	imageUrlRepository.deleteByPropertyId(propertyUpdateDTO.getId()); // pode haver um erro  aqui nesta deleção
   	  	
-       } catch (DataIntegrityViolationException  e) {
+       } catch (DataIntegrityViolationException  | EmptyResultDataAccessException | StaleStateException e ) {
       new DataIntegrityException("impossible delete with other objects: ");
         }
 	 

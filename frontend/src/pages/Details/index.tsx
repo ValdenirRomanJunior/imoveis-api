@@ -77,6 +77,7 @@ const Details = ()=>{
         numberRooms:property?.numberRooms as string,
         bathRooms:property?.bathRooms as string,
         vacancies:property?.vacancies as string,
+        areaTotal:property?.areaTotal as string,
 
     }
 

@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.net.URI;
+import java.net.URISyntaxException;
 
 @RestController
 @RequestMapping(value ="/pictures")
@@ -51,7 +52,7 @@ public class FileManagerController {
     }
     
     @DeleteMapping(value = "/delete/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id){
+    public ResponseEntity<Void> delete(@PathVariable Long id) throws URISyntaxException{
         service.deleteFile(id);
         return ResponseEntity.noContent().build();
     }

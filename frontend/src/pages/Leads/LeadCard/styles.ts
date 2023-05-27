@@ -475,6 +475,7 @@ export const LeadSearchWrapper = styled.div`
         width:100%;
         height:100%;
         border: none;
+        padding:0 10px;
 
     }
 

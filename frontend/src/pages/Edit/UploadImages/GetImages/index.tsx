@@ -51,6 +51,7 @@ export type ImageProps = {
 
 
 
+
     return(
                 
           <ImageWrapperGetImages image={props.image.url} > 
@@ -195,8 +196,11 @@ const GetImages = (props:ImageProps) =>{
       const removePhoto = async(id:string) => {  
           
             //chamar backend
-            const data = await deleteImagesByTenant(id); 
-            console.log(data)
+            const data = await deleteImagesByTenant(id);
+            
+            getAllImages();
+
+
           //let newList=images.filter((l => l.url !== url));
          // localStorage.setItem('images',JSON.stringify(newList))
           //setImages(newList);          

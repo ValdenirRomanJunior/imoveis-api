@@ -101,8 +101,8 @@ useEffect(() => {
     }
 
     const cancelSendImage = () => {       
-        Array.from(document.querySelectorAll("input")).forEach(
-            input => (input.value = "")
+        Array.from(document.querySelectorAll('[class=".input-add-image"]')).forEach(
+            input => (input.classList.value = "")
           );
             setFileBase64('')
         

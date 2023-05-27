@@ -16,6 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.awt.image.BufferedImage;
 import java.net.URI;
+import java.net.URISyntaxException;
 
 @Service
 public class FileManagerService {
@@ -67,7 +68,7 @@ public class FileManagerService {
     }
 
     
-	public void deleteFile(Long id) {		
+	public void deleteFile(Long id) throws URISyntaxException {		
 	     UserSS user = UserService.authenticated();
 	        if (user == null) {
 	            throw new AuthorizationException("erro");

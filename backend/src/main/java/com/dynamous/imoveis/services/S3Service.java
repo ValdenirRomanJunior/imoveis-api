@@ -3,6 +3,8 @@ package com.dynamous.imoveis.services;
 import com.amazonaws.AmazonClientException;
 import com.amazonaws.AmazonServiceException;
 import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.model.DeleteObjectTaggingResult;
+import com.amazonaws.services.s3.model.DeleteObjectsResult.DeletedObject;
 import com.amazonaws.services.s3.model.ListObjectsV2Result;
 import com.amazonaws.services.s3.model.MultiObjectDeleteException.DeleteError;
 import com.amazonaws.services.s3.model.ObjectMetadata;
@@ -14,6 +16,9 @@ import com.dynamous.imoveis.repositories.ImageUrlRepository;
 import com.dynamous.imoveis.security.UserSS;
 import com.dynamous.imoveis.services.exceptions.AuthorizationException;
 import com.dynamous.imoveis.services.exceptions.FileException;
+
+import software.amazon.awssdk.services.clouddirectory.model.DeleteObjectResponse;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -95,6 +100,8 @@ public class S3Service {
              Image imageComplete = new Image(imageId.get().getId(),url,user.getId());
              
              imageRepository.save(imageComplete);
+             boolean exist = s3client.doesObjectExist(bucketName, newFileName);
+             System.out.println(exist + "SE OBJETO EXISTE NO UPLOAD");
              return s3client.getUrl(bucketName,newFileName).toURI();
             
         } catch (URISyntaxException | AmazonClientException e) {
@@ -136,40 +143,47 @@ public class S3Service {
     
     
     
-    public void deleteFile(Long id) {
+    public void deleteFile(Long id) throws URISyntaxException {
    	  UserSS user = UserService.authenticated();
       if (user == null) {
     	  throw new AuthorizationException("erro");
       }
+ 	 Image image= imageService.find(id);
+ 	
+	 String deleteFileName ="tp"+user.getId()+image.getId()+".jpg";
     try {
-        
-    	 Image image= imageService.find(id);
-    	
-    	 String deleteFileName ="tp"+user.getId()+image.getId()+".jpg";
-    	 
+         
          LOG.info("Iniciando delete");
+                  
+           s3client.deleteObject(bucketName, deleteFileName);
          
-         s3client.deleteObject(bucketName,deleteFileName);
-        
+           boolean exist = s3client.doesObjectExist(bucketName, deleteFileName);
+           System.out.println(exist + "SE OBJETO EXISTE");
+           
+   	    if(exist == false) {
+   	         
+   	        imageService.delete(id);
+   	        List<ImageUrl> imageUrl =imageUrlService.findByIdTenantAndUrl(image.getIdTenant(),image.getUrl());
+   	        List<Long> ids= new ArrayList<Long>();
+   	        for( ImageUrl img: imageUrl ) {
+   	       	 if(img !=null) {
+   	       		 ids.add(img.getId());
+   	       	 }
+   	        }
+   	        
+   	        imageUrlService.deleteAllById(ids);
+   	   	 
+   	    }
          LOG.info("Finalizado delete");
-                   
-         imageService.delete(id);
-         List<ImageUrl> imageUrl =imageUrlService.findByIdTenantAndUrl(image.getIdTenant(),image.getUrl());
-         List<Long> ids= new ArrayList<Long>();
-         for( ImageUrl img: imageUrl ) {
-        	 if(img !=null) {
-        		 ids.add(img.getId());
-        	 }
-         }
-         System.out.println(ids + " dadadadSWDADWWQEWEWEWQDEQWDEADAD");
-         imageUrlService.deleteAllById(ids);
-        
-         
-         
-      
+   
         
     } catch (AmazonServiceException e) {
+    	//dar rollback nos delets no banco
        throw new AmazonServiceException(("Erro ao deletar"));
     }
+     
+
+
+
     }
 }

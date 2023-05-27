@@ -87,7 +87,7 @@ const LeadCardItem = ({id,name,lastName,email,phone, message, propertyId, onChan
 
       const handlePutId = ()=>{
         
-            setLoading(true)
+            setLoading(true)    
         
         setPutId(true)
         onChange(id);

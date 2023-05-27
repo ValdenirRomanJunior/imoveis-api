@@ -150,7 +150,8 @@ const EditComponent = ({property}: Prop) =>{
             district:property.address.district,
             street:property.address.street,
             number:property.address.number,
-            cep:property.address.cep
+            cep:property.address.cep,
+            areaTotal:property.areaTotal
 
 
 });
@@ -186,7 +187,8 @@ const cleanForm = () =>{
     district:"",
     street:"",
     number:"",
-    cep:""
+    cep:"",
+    areaTotal:""
         
     });
     setCleanImagesForm(true);
@@ -224,6 +226,15 @@ const cleanForm = () =>{
                     number(e);
                     setForm({ ...form,     
                         number:e.currentTarget.value
+                                   
+                        });
+       
+                }
+
+                if(e.currentTarget.name  === 'areaTotal'){                  
+                    number(e);
+                    setForm({ ...form,     
+                        areaTotal:e.currentTarget.value
                                    
                         });
        
@@ -334,7 +345,7 @@ const cleanForm = () =>{
                 if(!emptyValues){
                         
                   
-                const data = await editProperty(name, description,typeProperty, goal, numberRooms, bathRooms,area, iptu,vacancies,condominium,                                      
+                const data = await editProperty(name, description,typeProperty, goal, numberRooms, bathRooms,area, form['areaTotal'],iptu,vacancies,condominium,                                      
                 price, state, city, district, street, number, cep, images,`${params.propertyId}`)
               
                
@@ -452,9 +463,14 @@ const cleanForm = () =>{
                 { emptyValue && form['bathRooms'] === '' ? <span className='formField__error'>Selecione o número de Banheiros</span>: ''}
               
                 <label>Área(m2)*</label>
-                <Input id="area" name="area" value={form['area'] } onBlur={(e) => handleChange(e)} maxLength={6} onKeyUp={handleKeyUp}/>
+                <Input id="area" name="area" value={form['area'] } onChange={(e) => handleChange(e)} maxLength={6} onKeyUp={handleKeyUp}/>
                 {errors.map(x => { if(x.fieldName === 'area') return  <p className=' formField__error'>{x.message}</p>})}
                 { emptyValue && form['area'] === '' ?<span className='formField__error'>Preencha o total da Área interna</span>: ''}
+
+                <label>Área total(m2)*</label>
+                <Input id="areaTotal" name="areaTotal" value={form['areaTotal'] } onChange={(e) => handleChange(e)} maxLength={6} onKeyUp={handleKeyUp}/>
+                {errors.map(x => { if(x.fieldName === 'areaTotal') return  <p className=' formField__error'>{x.message}</p>})}
+                { emptyValue && form['areaTotal'] === '' ?<span className='formField__error'>Preencha o total da Área externa</span>: ''}
 
                 <label>Vagas</label>
                 <select id="vacancies" name="vacancies" value={form['vacancies']}  placeholder='selecione' onChange={(e) => handleChange(e)}>
@@ -469,18 +485,18 @@ const cleanForm = () =>{
                 { emptyValue && form['vacancies'] === '' ?<span className='formField__error'>Este campo é requerido</span>: ''}
 
                 <label>IPTU(R$)</label>
-                <Input id="iptu" name="iptu" value={form['iptu'] }  maxLength={14} onKeyUp={handleKeyUp} onBlur={(e) => handleChange(e)}/>
+                <Input id="iptu" name="iptu" value={form['iptu'] }  maxLength={14} onKeyUp={handleKeyUp} onChange={(e) => handleChange(e)}/>
                 {errors.map(x => { if(x.fieldName === 'iptu') return  <p className=' formField__error'>{x.message}</p>})}
                 { emptyValue && form['iptu'] === '' ?<span className='formField__error'>Este campo é requerido</span>: ''}
 
                 <label>Condomínio(R$)</label>
-                <Input  id="condominium" name="condominium" value={form['condominium'] }  maxLength={14} onKeyUp={handleKeyUp} onBlur={(e) => handleChange(e)}/>
+                <Input  id="condominium" name="condominium" value={form['condominium'] }  maxLength={14} onKeyUp={handleKeyUp} onChange={(e) => handleChange(e)}/>
                 {errors.map(x => { if(x.fieldName === 'condominium') return  <p className=' formField__error'>{x.message}</p>})}
                 { emptyValue && form['condominium'] === '' ?<span className='formField__error'>Este campo é requerido</span>: ''}
 
                
                 <label>Preço(R$)</label>
-                <Input type='text' id='price' name='price'value={form['price'] }  maxLength={14} onKeyUp={handleKeyUp} onBlur={(e) => handleChange(e)}/>    
+                <Input type='text' id='price' name='price'value={form['price'] }  maxLength={14} onKeyUp={handleKeyUp} onChange={(e) => handleChange(e)}/>    
                 {errors.map(x => { if(x.fieldName === 'price') return  <p className=' formField__error'>{x.message}</p>})}
                 { emptyValue && form['price'] === '' ?<span className='formField__error'>Este campo é requerido</span>: ''}
                

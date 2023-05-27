@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
+import java.net.URISyntaxException;
 import java.net.UnknownHostException;
 
 import javax.servlet.http.HttpServletRequest;
@@ -95,6 +96,13 @@ public class ControllerExceptionHandler {
 
     @ExceptionHandler(AmazonS3Exception.class)
     public ResponseEntity<StandardError> amazonS3(AmazonS3Exception e, HttpServletRequest request) {
+
+        StandardError err = new StandardError(System.currentTimeMillis(), HttpStatus.BAD_REQUEST.value(), "Integridade do upload S3Exc", e.getMessage(), request.getRequestURI());
+        return ResponseEntity.status( HttpStatus.BAD_REQUEST.value()).body(err);
+    }
+    
+    @ExceptionHandler(URISyntaxException.class)
+    public ResponseEntity<StandardError> uRISyntaxException(URISyntaxException e, HttpServletRequest request) {
 
         StandardError err = new StandardError(System.currentTimeMillis(), HttpStatus.BAD_REQUEST.value(), "Integridade do upload S3Exc", e.getMessage(), request.getRequestURI());
         return ResponseEntity.status( HttpStatus.BAD_REQUEST.value()).body(err);

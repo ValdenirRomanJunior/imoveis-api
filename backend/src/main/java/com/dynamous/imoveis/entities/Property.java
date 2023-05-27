@@ -36,6 +36,7 @@ public class Property implements Serializable {
     private String condominium;
     private String price;
     private Integer statusProperty;
+    private String areaTotal;
     
     
     //fetch = FetchType.EAGER,mappedBy = "property",cascade=CascadeType.REMOVE, orphanRemoval = true
@@ -57,7 +58,7 @@ public class Property implements Serializable {
 	}
    
     public Property(Long id, String name, String description, TypeProperty typeProperty, Goal goal, String numberRooms,
-    		String bathRooms,String area, String iptu,String vacancies,String condominium, String price, StatusProperty statusProperty) {
+    		String bathRooms,String area, String iptu,String vacancies,String condominium, String price, String areaTotal, StatusProperty statusProperty) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -70,6 +71,7 @@ public class Property implements Serializable {
         this.vacancies=vacancies;
         this.condominium=condominium;
         this.price=price;
+        this.areaTotal=areaTotal;
         this.statusProperty= statusProperty.getCod();
        
      
@@ -180,7 +182,15 @@ public class Property implements Serializable {
 		this.price = price;
 	}
 
+	
 
+	public String getAreaTotal() {
+		return areaTotal;
+	}
+
+	public void setAreaTotal(String areaTotal) {
+		this.areaTotal = areaTotal;
+	}
 
 	public Tenant getTenant() {
         return tenant;

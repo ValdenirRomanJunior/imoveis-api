@@ -68,7 +68,8 @@ public class PropertyUpdateDTO implements Serializable {
     @NotEmpty(message = "Preenchimento obrigatório")
     private String cep;
     
-   
+    private String areaTotal;
+    
     private List<ImageUrl> images= new ArrayList<>();
 
   
@@ -253,6 +254,14 @@ public class PropertyUpdateDTO implements Serializable {
 	public void setImages(List<ImageUrl> images) {
 		this.images = images;
 	}
+	public String getAreaTotal() {
+		return areaTotal;
+	}
+	public void setAreaTotal(String areaTotal) {
+		this.areaTotal = areaTotal;
+	}
+	
+	
 
 
 }

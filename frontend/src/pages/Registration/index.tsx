@@ -113,7 +113,8 @@ const Registration = () =>{
             district:"",
             street:"",
             number:"",
-            cep:""
+            cep:"",
+            areaTotal:""
 
 
         })
@@ -149,7 +150,8 @@ const Registration = () =>{
             district:"",
             street:"",
             number:"",
-            cep:""
+            cep:"",
+            areaTotal:""
                 
             });
             setCleanImagesForm(true);
@@ -189,6 +191,14 @@ const Registration = () =>{
                     number(e)
                 }
           
+                if(e.currentTarget.name  === 'areaTotal'){                  
+                    number(e);
+                    setForm({ ...form,     
+                        areaTotal:e.currentTarget.value
+                                   
+                        });
+       
+                }
                 if(e.currentTarget.name === 'cep'){
                     cep(e);
                 }
@@ -218,7 +228,7 @@ const Registration = () =>{
                     setLoadingTenant(true)
                   
                              
-                const data = await newProperty(form['name'],form['description'],form['typeProperty'],form['goal'] , form['numberRooms'],form['bathRooms'],form['area'], form['iptu'],form['vacancies'],form['condominium'],                                      
+                const data = await newProperty(form['name'],form['description'],form['typeProperty'],form['goal'] , form['numberRooms'],form['bathRooms'],form['area'],form['areaTotal'], form['iptu'],form['vacancies'],form['condominium'],                                      
                 form['price'],form['uf'],form['city'],form['street'],form['number'],form['district'],form['cep'], images)
                  
                 
@@ -347,6 +357,11 @@ const Registration = () =>{
                 <label>Área(m2)*</label>
                 <Input id="area" name="area" onBlur={(e) => handleChange(e)} maxLength={6} onKeyUp={handleKeyUp}/>
                 { emptyValue && form['area'] === '' ?<span className='formField__error_reg'>Preencha o total da Área interna</span>: ''}
+
+                <label>Área total(m2)*</label>
+                <Input id="areaTotal" name="areaTotal"  onBlur={(e) => handleChange(e)} maxLength={6} onKeyUp={handleKeyUp}/>
+                {errors.map(x => { if(x.fieldName === 'areaTotal') return  <p className=' formField__error'>{x.message}</p>})}
+                { emptyValue && form['areaTotal'] === '' ?<span className='formField__error'>Preencha o total da Área externa</span>: ''}
 
                 <label>Vagas</label>
                 <select id="vacancies" name="vacancies"  placeholder='selecione' onChange={(e) => handleChange(e)}>

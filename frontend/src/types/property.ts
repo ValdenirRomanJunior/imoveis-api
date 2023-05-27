@@ -15,6 +15,7 @@ export type Property = {
     vacancies:string,
     condominium:string,
     price:string,
+    areaTotal: string,
     statusProperty:string,
     images?:[{
         id:number,
@@ -81,6 +82,8 @@ export type PropertyNewDto ={
     district:string,
     street:string,
     number:string,
-    cep:string
+    cep:string,
+    areaTotal: string
+    
 
 }

@@ -68,9 +68,9 @@ export const propertiesPageable = (id:string,state:string, city:string,goal:stri
 
 
 export const newProperty = (name:string, description:string, typeProperty: number,goal: number,numberRooms:string,
-    bathRooms:string,area:string,iptu:string, vacancies:string, condominium:string, price:string, state:string, city:string,
+    bathRooms:string,area:string, areaTotal: string, iptu:string, vacancies:string, condominium:string, price:string, state:string, city:string,
       street: string, number: number,district: string, cep: string, images: ImageItem[]) => {
-    return api.post('/properties/save',{name, description, typeProperty, goal, numberRooms, bathRooms,area,iptu,vacancies,condominium,                                      
+    return api.post('/properties/save',{name, description, typeProperty, goal, numberRooms, bathRooms,area,areaTotal,iptu,vacancies,condominium,                                      
                                                 price,state,city, street,number,district, cep, images})
                                                  .then(response =>{
                                                   return response
@@ -81,10 +81,10 @@ export const newProperty = (name:string, description:string, typeProperty: numbe
 }
 
 export const editProperty = (name:string, description:string, typeProperty: number,goal: number,numberRooms:string,
-    bathRooms:string,area:string,iptu:string, vacancies:string, condominium:string, price:string, state:string, city:string,
+    bathRooms:string,area:string, areaTotal: string,iptu:string, vacancies:string, condominium:string, price:string, state:string, city:string,
      district: string, street: string, number: number, cep: string, images: ImageItem[], id:string) => {
         
-    return api.put(`/properties/update/${id}`,{name, description, typeProperty, goal, numberRooms, bathRooms,area,iptu,vacancies,condominium,                                      
+    return api.put(`/properties/update/${id}`,{name, description, typeProperty, goal, numberRooms, bathRooms,area, areaTotal,iptu,vacancies,condominium,                                      
                                                 price,state,city, district, street, number, cep, images})
                                                
                                                  .then(response =>{
