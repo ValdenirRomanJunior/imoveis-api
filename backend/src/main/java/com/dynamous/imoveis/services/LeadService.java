@@ -30,6 +30,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -93,13 +95,19 @@ public class LeadService {
     public Lead fromDTO(LeadNewDTO objDto){
     		UserSS user = UserService.authenticated();
     		Tenant tenant= tenantService.find(user.getId());
-    		Lead lead = new Lead(null, objDto.getName(), objDto.getEmail(),objDto.getPhone(),objDto.getMessage());
+    		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+    		
+    		String newDate= sdf.format(new Date());
+    		Lead lead = new Lead(null, objDto.getName(), objDto.getEmail(),objDto.getPhone(),objDto.getMessage(),newDate);
     		lead.setTenant(tenant);   		
             return lead; 		   
     }
 
-    public Lead fromDTOSite(LeadNewSiteDTO objDto){ 	
-		Lead lead = new Lead(null, objDto.getName(), objDto.getEmail(),objDto.getPhone(),objDto.getMessage());
+    public Lead fromDTOSite(LeadNewSiteDTO objDto){ 
+    	SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+		
+    	String newDate= sdf.format(new Date());
+		Lead lead = new Lead(null, objDto.getName(), objDto.getEmail(),objDto.getPhone(),objDto.getMessage(),newDate);
 		lead.setPropertyId(objDto.getPropertyId());
 		Tenant tenant= tenantService.findSite(objDto.getTenantId());
 		lead.setTenant(tenant);
@@ -108,8 +116,10 @@ public class LeadService {
 }
     
     public Lead fromDTOHomeSite(LeadNewHomeSiteDTO objDto){ 
-    	System.out.println(objDto.getUrl()+"sdsaASFDSSAFSFSFSFSFSFSFSFSFSFS ASFSF");
-		Lead lead = new Lead(null, objDto.getName(), objDto.getEmail(),objDto.getPhone(),objDto.getMessage());	
+    	SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+		
+		String newDate= sdf.format(new Date());
+		Lead lead = new Lead(null, objDto.getName(), objDto.getEmail(),objDto.getPhone(),objDto.getMessage(),newDate);	
 		Tenant tenant= tenantService.findByDomain(objDto.getUrl());
 		
 		lead.setTenant(tenant);
@@ -117,8 +127,11 @@ public class LeadService {
 		   
 }
     
-    public Lead fromDTO(LeadDTO objDto) { 		
-     		Lead lead = new Lead(objDto.getId(), objDto.getName(), objDto.getEmail(),objDto.getPhone(),objDto.getMessage());
+    public Lead fromDTO(LeadDTO objDto) { 
+    		
+	SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");	
+			
+     		Lead lead = new Lead(objDto.getId(), objDto.getName(), objDto.getEmail(),objDto.getPhone(),objDto.getMessage(), objDto.getInstant());
     		return lead;
     		
     	  	

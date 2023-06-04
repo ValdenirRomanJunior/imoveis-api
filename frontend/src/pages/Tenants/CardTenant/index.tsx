@@ -47,17 +47,22 @@ type Props = {
         <Card width='100%' height='100%' noShadow={true}>
             
               <CardContent>                   
-                        {imgs && imgs}
-                    <img src={defaultImage}/>  
+               
 
                      <div className='text-wrapper-card'>
                      <Link to={`/details/${tenant.id}`}> <p className='slug-card-tenant'>{capitalize(tenant.slug) } </p>
                      <p className='slug-card-tenant'>{capitalize( tenant.lastName)}</p>
                       </Link>  
 
-                     <p className='email'><BiMap className='localization-icon'/>{tenant.email}</p>
+                     <p className='email'>{tenant.email}</p>
                      <p className='status'>{tenant.status}</p>
                      <p className='status'>{tenant.verification}</p>
+                        <div className='dates-tenant-wrapper'>
+                     <div className='date-tenant-wrapper'><span>Entrada </span> <span className='date-tenant-value'>{tenant.start}</span></div>
+                     <div className='date-tenant-wrapper'><span>Renovação</span> <span className='date-tenant-value'>{tenant.renovation}</span></div>
+
+                     <div className='date-tenant-wrapper'><span>Vencimento </span> <span className='date-tenant-value'>{tenant.endDate}</span></div>
+                     </div>
                          <div className='links-card'>
                          <Link to={`/edittenant/${tenant.id}`}><p><AiOutlineEdit  className='icon-links' /> Editar</p></Link>                         
                          <a onClick={handleToDelete}><p><BsTrash className='icon-links'/>Excluir</p></a>  

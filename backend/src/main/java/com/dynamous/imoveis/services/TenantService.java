@@ -26,9 +26,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 
 @Service
@@ -70,7 +73,7 @@ public class TenantService {
         }catch (UnknownHostException e) {
 			throw new UnknownHostException("falha ao enviar email");
 		}
-        
+        	
         tenantRepository.save(obj);
         System.out.println(obj);
         
@@ -93,6 +96,8 @@ public class TenantService {
         newObj.setVerification(tenant.getVerification());
         newObj.setDomain(tenant.getDomain());
         newObj.setCreci(tenant.getCreci());
+        newObj.setRenovation(tenant.getRenovation());
+        newObj.setEndDate(tenant.getEndDate());
 
     }
 
@@ -116,11 +121,9 @@ public class TenantService {
 
     public Tenant fromDTO(TenantNewDTO objDto){
     		
-    		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
-    		
-    		String newDate= sdf.format(new Date());
-    		String endDate= generateEndDate(new Date(),objDto.getSignedDays());
-    		Tenant tenant = new Tenant(null, objDto.getSlug(), objDto.getEmail(),pe.encode(objDto.getPassword()), Status.ATIVO,objDto.getLastName(),Verification.NAO_VERIFICADO,objDto.getCreci(),newDate,endDate);
+    		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");   		
+    		String newDate= sdf.format(new Date()); 
+    		Tenant tenant = new Tenant(null, objDto.getSlug(), objDto.getEmail(),pe.encode(objDto.getPassword()), Status.ATIVO,objDto.getLastName(),Verification.NAO_VERIFICADO,objDto.getCreci(),newDate,null,null);
     		
             tenant.addPerfil(Perfil.TENANT);
             return tenant;
@@ -129,10 +132,23 @@ public class TenantService {
     }
     
     public Tenant fromUpdateDTO(TenantUpdateDTO objDto){
-    	//Date endDate= generateEndDate(new Date(),objDto.getSignedDays()); 
+   
     	SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy hh:mm");
+    	String renovation= sdf.format(new Date());
+    	
     	Tenant ten = find(objDto.getId());
-		Tenant tenant = new Tenant(objDto.getId(), objDto.getSlug(), objDto.getEmail(),pe.encode(objDto.getPassword()), Status.toEnum(objDto.getStatus()),objDto.getLastName(),Verification.toEnum(objDto.getVerification()),objDto.getCreci(),ten.getStart(),ten.getEndDate());
+    
+    	if(objDto.getSignedDays() != null) {
+    		System.out.println("CAIU AQUI GENERATED");
+    		String endDate= generateEndDate(new Date(),objDto.getSignedDays());
+    		Tenant tenant = new Tenant(objDto.getId(), objDto.getSlug(), objDto.getEmail(),pe.encode(objDto.getPassword()), Status.toEnum(objDto.getStatus()),objDto.getLastName(),Verification.toEnum(objDto.getVerification()),objDto.getCreci(),ten.getStart(),renovation,endDate);
+    	    tenant.addPerfil(Perfil.TENANT);
+            tenant.setDomain(objDto.getDomain());
+            return tenant;
+    	}
+    	
+    	
+		Tenant tenant = new Tenant(objDto.getId(), objDto.getSlug(), objDto.getEmail(),pe.encode(objDto.getPassword()), Status.toEnum(objDto.getStatus()),objDto.getLastName(),Verification.toEnum(objDto.getVerification()),objDto.getCreci(),ten.getStart(),ten.getRenovation(),ten.getEndDate());
         tenant.addPerfil(Perfil.TENANT);
         tenant.setDomain(objDto.getDomain());
         return tenant;
@@ -142,20 +158,35 @@ public class TenantService {
 
 
     public Tenant fromDTO(TenantDTO objDto) {
-    	Tenant ten = find(objDto.getId());
-    		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy hh:mm");
-    		Tenant tenant = new Tenant(objDto.getId(), objDto.getSlug(), objDto.getEmail(), pe.encode(objDto.getPassword()), Status.toEnum(objDto.getStatus().getCod()),objDto.getLastName(),Verification.toEnum(objDto.getVerification().getCod()),objDto.getCreci(),ten.getStart(),objDto.getEndDate());
+    
+    		Tenant tenant = new Tenant(objDto.getId(), objDto.getSlug(), objDto.getEmail(), pe.encode(objDto.getPassword()), Status.toEnum(objDto.getStatus().getCod()),objDto.getLastName(),Verification.toEnum(objDto.getVerification().getCod()),objDto.getCreci(),objDto.getStart(),objDto.getRenovation(),objDto.getEndDate());
             tenant.addPerfil(Perfil.TENANT);
             return tenant;
     		  	
     }
     
-    public static String generateEndDate(Date start, Integer signedDays) {
-    	Calendar cal = Calendar.getInstance();
-    	cal.setTime(start);
-    	cal.add(Calendar.DAY_OF_MONTH, signedDays);
-    	SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-    	return sdf.format(cal.getTime());
+    public static String generateEndDate(Date renovation, Integer signedDays) {
+    
+    	  Calendar cal = Calendar.getInstance();
+    	  cal.setTime(renovation);
+    	
+    	SimpleDateFormat sd = new SimpleDateFormat("dd/MM/yyyy");
+    	
+    	if(signedDays == 30) {
+    		cal.add(Calendar.DAY_OF_MONTH, 30);
+    	}
+    	if(signedDays == 90) {
+    		cal.add(Calendar.DAY_OF_MONTH, 90);
+    	}
+    	if(signedDays == 180) {
+    		cal.add(Calendar.DAY_OF_MONTH, 180);
+    	}
+    	if(signedDays == 365) {
+    		cal.add(Calendar.DAY_OF_MONTH, 365);
+    	}
+    	
+    	
+    	return sd.format(cal.getTime());
     	
     }
 

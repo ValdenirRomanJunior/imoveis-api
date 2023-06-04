@@ -88,6 +88,26 @@ padding: 5px 5px;
 
     }
 
+    .dates-tenant-wrapper{
+        margin-bottom: 10px;
+    }
+
+    .date-tenant-wrapper{
+        display: flex;
+      
+        align-items: center;
+
+        span{
+            font-family: "Outfit", sans-serif;
+            font-size: 11px;
+            color: rgb(153,153,153);
+        }
+        .date-tenant-value{
+            margin-left: 10px;
+            color:green;
+            font-size: 10px;
+        }
+    }
     @media screen and (min-width: 1000px){
         .text-wrapper-card{
             .links-card{

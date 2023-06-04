@@ -20,7 +20,7 @@ export const findLead = (id:string) => {
 }
         
 export const leadsPageable = (name: string,pageNumber: number) => {
-    return api.get(`/leads/page?name=${name}&size=12&page=${pageNumber}&sort=id`)
+    return api.get(`/leads/page?name=${name}&size=12&page=${pageNumber}&sort=instant`)
               
 }
 

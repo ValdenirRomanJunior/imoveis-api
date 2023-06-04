@@ -9,6 +9,8 @@ import org.hibernate.validator.constraints.Length;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+
 import java.io.Serializable;
 
 
@@ -42,6 +44,9 @@ public class TenantUpdateDTO implements Serializable {
     
     @Length( max=100, message = "O tamanho deve ser no máximo 100 caracteres")
     private String domain;
+    
+    @NotNull
+    private Integer signedDays;
 
     public TenantUpdateDTO(){
 
@@ -125,7 +130,13 @@ public class TenantUpdateDTO implements Serializable {
 		this.domain = domain;
 	}
 	
-	
+	public Integer getSignedDays() {
+		return signedDays;
+	}
+
+	public void setSignedDays(Integer signedDays) {
+		this.signedDays = signedDays;
+	}
 	
     
 }

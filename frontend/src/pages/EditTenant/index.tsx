@@ -72,7 +72,8 @@ const EditTenantComponent = ({tenant}: Prop) =>{
             status:tenant?.status,
             creci:tenant?.creci,
             domain:tenant?.domain,
-            statusRange:initialValueStatus as string
+            statusRange:initialValueStatus as string,
+            signedDays:"",
             
     
 });
@@ -142,7 +143,7 @@ const EditTenantComponent = ({tenant}: Prop) =>{
 
                 
                     
-                const data = await editTenant(slug, lastName, email,password, status,form['creci'],form['domain'],initialValuesVerification() as string,`${params.tenantId} `)
+                const data = await editTenant(slug, lastName, email,password, status,form['creci'],form['domain'],initialValuesVerification() as string,form['signedDays'],`${params.tenantId} `)
                         console.log(data)
                 if(data.status === 204){
                    console.log(data.status)                    
@@ -231,7 +232,17 @@ const EditTenantComponent = ({tenant}: Prop) =>{
             } 
             { form['statusRange'] ==='2' &&
                 <Input id="status" name="status" disabled value='DESATIVADO' onChange={(e) => handleChange(e)} maxLength={90} />
-        }        
+        }    
+             <label>Plano</label>
+                <select  name='signedDays' placeholder='signedDays' id='signedDays'   onChange={(e) => handleChange(e)} >
+                    <option value=''  >Selecione</option>
+                    <option key='1' value='30'>1 mês</option>
+                    <option  key='2' value='90'>3 meses</option>
+                    <option  key='3' value='180'>6 meses</option>
+                    <option  key='4' value='365'>1 ano</option>
+                </select>
+                {errors.map(x => { if(x.fieldName === 'signedDays') return  <p className=' formField__error'>{x.message}</p>})}
+                { emptyValue && form['signedDays'] === '' ?<span className='formField__error'>Este campo é requerido</span>: ''}    
                 <div className='buttom-register-wrapper'>
            
 

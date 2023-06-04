@@ -67,7 +67,14 @@ export const LeadWrapper = styled.div<{prop:boolean}>`
 
         }
        
+        .phone-date-wrapper-lead{
+            width:100%;
+            padding-right:25px;
 
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
         .phone-leads{
           
             font-size: .7rem;
@@ -84,10 +91,14 @@ export const LeadWrapper = styled.div<{prop:boolean}>`
                 margin-right:3px;
                 font-size:12px;
             }
-      
-  
+    
     }
-   
+    .instant-lead{
+            
+        font-size: .6rem;
+        margin-bottom:0;
+        color:gray;
+    }
        
     }
  

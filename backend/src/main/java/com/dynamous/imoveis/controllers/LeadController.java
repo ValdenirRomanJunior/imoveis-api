@@ -84,11 +84,12 @@ public class LeadController {
     		@RequestParam(value = "name",defaultValue = "") String name,
             @RequestParam(value = "page",defaultValue = "0") Integer page,
             @RequestParam(value = "linesPerPage",defaultValue = "12")  Integer linesPerPage,
-            @RequestParam(value = "orderBy",defaultValue = "id")String orderBy,
-            @RequestParam(value = "direction",defaultValue = "ASC")  String direction){
+            @RequestParam(value = "orderBy",defaultValue = "instant")String orderBy,
+            @RequestParam(value = "direction",defaultValue = "DESC")  String direction){
     	
     	String nameDecoded = decodeParam(name);
         Page<Lead> list=service.findPage(nameDecoded,page,linesPerPage,orderBy,direction);
+        
         Page<LeadDTO>listDTO=list.map(x -> new LeadDTO(x));
         return ResponseEntity.ok().body(listDTO);
     }

@@ -49,7 +49,10 @@ export type ImageProps = {
       
     }
 
-
+    const closeModalAndDelete = () => {
+        props.onChange(props.image.id)
+        setIsOpen(false)
+    }
 
 
     return(
@@ -82,7 +85,7 @@ export type ImageProps = {
          
          <div className="buttons-wrapper-lead">
               <button onClick={closeModal}  className='cancel-button-lead'>Cancelar</button>
-              <p onClick={()=>props.onChange(props.image.id)}  className='delete-button-lead'>Excluir</p>
+              <p onClick={closeModalAndDelete}  className='delete-button-lead'>Excluir</p>
               
               </div>
         
@@ -200,10 +203,9 @@ const GetImages = (props:ImageProps) =>{
             
             getAllImages();
 
-
-          //let newList=images.filter((l => l.url !== url));
-         // localStorage.setItem('images',JSON.stringify(newList))
-          //setImages(newList);          
+            let newList=selectedImages.filter((l => l.id !== Number(id)));
+            localStorage.setItem('images',JSON.stringify(newList))
+               
       }
 
    

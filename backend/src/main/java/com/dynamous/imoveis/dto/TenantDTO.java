@@ -25,6 +25,8 @@ public class TenantDTO implements Serializable {
     private String password;
     private Verification verification;
     private String creci;
+    private String start;
+    private String renovation;
     private String endDate;
    
 
@@ -41,9 +43,11 @@ public class TenantDTO implements Serializable {
         password=tenant.getPassword();
         verification= tenant.getVerification();
         creci=tenant.getCreci();
+        start=tenant.getStart();
         endDate=tenant.getEndDate();
-       
+        renovation=tenant.getRenovation();
         
+            
     }
 
     public Long getId() {
@@ -110,12 +114,29 @@ public class TenantDTO implements Serializable {
 		this.creci = creci;
 	}
 
+	
+	public String getStart() {
+		return start;
+	}
+
+	public void setStart(String start) {
+		this.start = start;
+	}
+
 	public String getEndDate() {
 		return endDate;
 	}
 
 	public void setEndDate(String endDate) {
 		this.endDate = endDate;
+	}
+
+	public String getRenovation() {
+		return renovation;
+	}
+
+	public void setRenovation(String renovation) {
+		this.renovation = renovation;
 	}
 	
 	

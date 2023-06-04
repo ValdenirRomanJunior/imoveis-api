@@ -9,6 +9,7 @@ import Modal from 'react-modal';
 import Input from '../../../../components/Input';
 import React from 'react';
 import Loading from '../../../../components/Loading';
+import './styleDeleteImageReg.css';
 
 
 export type ImageProps = {
@@ -33,16 +34,18 @@ export type ImageProps = {
       setIsOpen(true);
     }
   
-    function afterOpenModal() {
-      // references are now sync'd and can be accessed.
-   
-    }
   
     function closeModal() { 
      
       setIsOpen(false);
       
     }
+
+    const closeModalAndDelete = () => {
+      props.onChange(props.image.id)
+      setIsOpen(false)
+  }
+
     return(
        
             
@@ -64,7 +67,6 @@ export type ImageProps = {
                 />     
                    <Modal
         isOpen={modalIsOpen}
-        onAfterOpen={afterOpenModal}
         onRequestClose={closeModal}
       
         contentLabel="Example Modal"
@@ -76,7 +78,7 @@ export type ImageProps = {
          
          <div className="buttons-wrapper-lead">
               <button onClick={closeModal}  className='cancel-button-lead'>Cancelar</button>
-              <p onClick={()=>props.onChange(props.image.id)}  className='delete-button-lead'>Excluir</p>
+              <p onClick={closeModalAndDelete}  className='delete-button-lead'>Excluir</p>
               
               </div>
         
@@ -189,10 +191,10 @@ const GetImages = (props:ImageProps) =>{
         
           //chamar backend
           const data = await deleteImagesByTenant(id); 
-          console.log(data)
-        //let newList=images.filter((l => l.url !== url));
-       // localStorage.setItem('images',JSON.stringify(newList))
-        //setImages(newList);          
+          getAllImages();
+        let newList=selectedImages.filter((l => l.id !== Number(id)));
+        localStorage.setItem('images',JSON.stringify(newList))
+        //setSelectedImages(newList);          
     }
      
     

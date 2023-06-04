@@ -9,6 +9,7 @@ export type Lead ={
     phone:string;
     message?:string;
     propertyId?:number;
+    instant:string;
     
 }
 

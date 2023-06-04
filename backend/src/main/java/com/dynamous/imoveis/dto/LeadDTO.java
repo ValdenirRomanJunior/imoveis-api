@@ -10,6 +10,7 @@ import org.hibernate.validator.constraints.Length;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
 import java.io.Serializable;
+import java.util.Date;
 
 @TenantUpdate
 public class LeadDTO implements Serializable {
@@ -29,6 +30,8 @@ public class LeadDTO implements Serializable {
     private Long propertyId;
     
     private Long tenantId;
+    
+    private String instant;
 
     public LeadDTO(){
 
@@ -42,6 +45,7 @@ public class LeadDTO implements Serializable {
         message=lead.getMessage();
         propertyId=(lead.getPropertyId() == null) ? null : lead.getPropertyId();
         tenantId=lead.getTenant().getId();
+        instant=lead.getInstant();
     }
 
     public Long getId() {
@@ -83,6 +87,16 @@ public class LeadDTO implements Serializable {
 
 	public void setMessage(String message) {
 		this.message = message;
+	}
+	
+	
+
+	public String getInstant() {
+		return instant;
+	}
+
+	public void setInstant(String instant) {
+		this.instant = instant;
 	}
 
 	public Long getPropertyId() {

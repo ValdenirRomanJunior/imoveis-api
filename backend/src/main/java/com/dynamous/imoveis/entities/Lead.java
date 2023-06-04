@@ -29,6 +29,7 @@ public class Lead implements Serializable {
     private String phone;
     private String message;
     
+     private String instant;
     
     private Long propertyId;
     
@@ -42,13 +43,13 @@ public class Lead implements Serializable {
      
     }
 
-    public Lead(Long id, String name, String email, String phone, String message) {
+    public Lead(Long id, String name, String email, String phone, String message,String instant) {
         this.id = id;
         this.name=name;
         this.email = email;    
         this.phone=phone;
         this.message=message;
-
+        this.instant=instant;
     }
 
     public Long getId() {
@@ -90,6 +91,16 @@ public class Lead implements Serializable {
 
 	public void setMessage(String message) {
 		this.message = message;
+	}
+	
+	
+
+	public String getInstant() {
+		return instant;
+	}
+
+	public void setInstant(String instant) {
+		this.instant = instant;
 	}
 
 	public Long getPropertyId() {

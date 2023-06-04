@@ -20,6 +20,14 @@ bottom: 0;
 left:0;
    }
 
+   @media screen and (min-width: 1000px){
+    width: 100%;
+    margin-top:0px;
+    flex-direction: row;
+    flex-wrap: wrap;
+    
+   }
+
 
 `
 
@@ -67,6 +75,11 @@ input{
     background:#b1b1b1;
     border-radius:50%;
     border-none;
+}
+
+@media screen and (min-width: 1000px){
+    margin:15px;
+   
 }
 
 `

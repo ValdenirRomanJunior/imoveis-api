@@ -20,13 +20,22 @@ export const ImageWrapperManager = styled.div`
     left:0;
    }
 
+   @media screen and (min-width: 1000px){
+    margin-top:0px;
+    flex-direction: row;
+    flex-wrap: wrap;
+    
+   }
+
 
 `
 
 export const ImageWrapperGetImages= styled.div<{image: string}>`
+min-width: 200px;
 width: 200px;
 height: 200px;
 border-radius: 2px;
+border: 1px solid #d3d3d352;
 
 float: left;
 
@@ -69,5 +78,9 @@ input{
     border-none;
 }
 
+@media screen and (min-width: 1000px){
+    margin:15px;
+   
+}
 
 `

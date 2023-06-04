@@ -61,7 +61,7 @@ useEffect(() =>{
             email:"",
             password:"",
             creci:"",
-            signedDays:"",
+          
          
     
         })
@@ -77,7 +77,7 @@ useEffect(() =>{
                 email:"",
                 password:"",
                 creci:"",
-                signedDays:"",
+               
                 
             });
             
@@ -136,7 +136,7 @@ useEffect(() =>{
 
                    
                     
-                const data = await newTenant(slug, lastName,email,password,creci,signedDays)
+                const data = await newTenant(slug, lastName,email,password,creci)
                 console.log(data.response)
                     
                 if(data.status === 201){
@@ -214,16 +214,7 @@ useEffect(() =>{
                 {errors.map(x => { if(x.fieldName === 'creci') return  <p className=' formField__error'>{x.message}</p>})}
                 { emptyValue && form['creci'] === '' ?<span className='formField__error'>Este campo é requerido</span>: ''}
 
-                <label>Plano</label>
-                <select  name='signedDays' placeholder='signedDays' id='signedDays'   onChange={(e) => handleChange(e)} >
-                    <option value=''  >Selecione</option>
-                    <option key='1' value='30'>1 mês</option>
-                    <option  key='2' value='90'>3 meses</option>
-                    <option  key='3' value='180'>6 meses</option>
-                    <option  key='4' value='360'>1 ano</option>
-                </select>
-                {errors.map(x => { if(x.fieldName === 'signedDays') return  <p className=' formField__error'>{x.message}</p>})}
-                { emptyValue && form['signedDays'] === '' ?<span className='formField__error'>Este campo é requerido</span>: ''}
+           
       
                 <div className='buttom-register-wrapper'>
                 { otherError &&   

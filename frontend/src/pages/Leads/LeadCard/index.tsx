@@ -25,7 +25,7 @@ import { BiSearch } from "react-icons/bi";
 
 
 
-const LeadCardItem = ({id,name,lastName,email,phone, message, propertyId, onChange,close,error}: Lead)  => {
+const LeadCardItem = ({id,name,lastName,email,phone, message,instant, propertyId, onChange,close,error}: Lead)  => {
 
     const [property,setProperty]=useState<Property>();
     const [loading,setLoading]= useState(false);
@@ -126,7 +126,7 @@ const LeadCardItem = ({id,name,lastName,email,phone, message, propertyId, onChan
                 <div className="data-lead-left-wrapper">
                 <h4>{capitalize(name)}</h4>   
                 <span><AiOutlineMail className="email-icon"/>{email}</span>
-                <p className="phone-leads"><FaWhatsapp className="icon-phone-lead"/>{phone}</p>
+                <div className="phone-date-wrapper-lead"><p className="phone-leads"><FaWhatsapp className="icon-phone-lead"/>{phone}</p><p className="instant-lead">{instant}</p></div>
                 </div>
                             
                 <MdKeyboardArrowDown className="icon-arrow-lead" />     

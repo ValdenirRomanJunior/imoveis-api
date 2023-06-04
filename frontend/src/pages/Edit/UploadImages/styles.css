@@ -28,6 +28,7 @@
      font-family: "Nunito Sans", sans-serif;
      font-weight: 600;
      color:#545454;
+     font-size: 18px;
  
  }
  
@@ -130,3 +131,24 @@
      color:#bd2626f0;
  }
 
+@media screen and ( min-width: 1000px){
+    .ModalE{
+        position: absolute;
+         top:370px !important;
+         left: 50%;
+         transform: translate(-50%, -50%);
+         width: 80%;
+       
+         padding: 2rem 1rem;
+         background-color: #F8FCFF;
+         overflow: hidden;
+             
+     }
+    .ModalE .title-wrapper h2{
+        font-family: "Nunito Sans", sans-serif;
+        font-weight: 600;
+        color:#545454;
+        font-size: 22px;
+    
+    }
+}

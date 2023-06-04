@@ -37,6 +37,7 @@ public class Tenant implements Serializable {
     private String start;
     private String endDate;
     private String domain;
+    private String renovation;
     
 
     @ElementCollection(fetch = FetchType.EAGER)
@@ -47,7 +48,7 @@ public class Tenant implements Serializable {
         addPerfil(Perfil.TENANT);
     }
 
-    public Tenant(Long id, String slug, String email, String password, Status status, String lastName, Verification verification,String creci,String start, String endDate) {
+    public Tenant(Long id, String slug, String email, String password, Status status, String lastName, Verification verification,String creci,String start, String renovation,String endDate) {
         this.id = id;
         this.slug = slug;
         this.email = email;
@@ -57,7 +58,9 @@ public class Tenant implements Serializable {
         this.verification=(verification == null) ? null : verification.getCod();
         this.creci=creci;
         this.start=start;
+        this.renovation=renovation;
         this.endDate=endDate;
+       
         
         addPerfil(Perfil.TENANT);
 
@@ -147,6 +150,14 @@ public class Tenant implements Serializable {
 	}
 	
 	
+
+	public String getRenovation() {
+		return renovation;
+	}
+
+	public void setRenovation(String renovation) {
+		this.renovation = renovation;
+	}
 
 	public String getDomain() {
 		return domain;

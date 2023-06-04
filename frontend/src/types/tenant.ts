@@ -7,6 +7,9 @@ export type Tenant ={
     status:string;
     creci:string;
     domain:string;
+    start:string;
+    endDate:string;
+    renovation:string;
     verification:string;
     images:[{
         id:number;
