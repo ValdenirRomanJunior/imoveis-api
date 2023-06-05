@@ -9,7 +9,9 @@ import javax.mail.SendFailedException;
 import javax.mail.internet.MimeMessage;
 
 import org.springframework.mail.SimpleMailMessage;
+import org.springframework.stereotype.Service;
 
+@Service
 public interface EmailService {
 	
 	   void sendHtmlEmail(MimeMessage msg) throws SendFailedException;   
