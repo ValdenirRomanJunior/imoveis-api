@@ -41,8 +41,6 @@ public class LeadService {
     @Autowired
     private LeadRepository leadRepository;
 
-    @Autowired
-    private EmailService emailService;
     
     @Autowired
     private TenantService tenantService;
