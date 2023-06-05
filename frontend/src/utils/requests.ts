@@ -4,8 +4,8 @@
 
 
  const api = axios.create({
-    baseURL:BASE_URL
-  
+    baseURL:BASE_URL,
+
 
  })
     api.interceptors.request.use(config =>{
@@ -20,7 +20,12 @@
         
         config.headers = {
              'Authorization':`${tokenString}`,
-             'Content-Type': 'application/json'
+             'Content-Type': 'application/json',
+             'Access-Control-Allow-Headers': 'Content-Type',
+             "Access-Control-Allow-Origin": "http:localhost:3000",
+             "Access-Control-Allow-Methods": "OPTIONS,POST,GET"
+
+             
              
                        
         }

@@ -67,7 +67,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 			"/properties/getAllAddress/**"
 		
 		
-	
 
 	};
 	private static final String[] PUBLIC_MATCHERS_POST = {

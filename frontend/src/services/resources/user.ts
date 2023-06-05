@@ -44,7 +44,7 @@ export const signIn = async (data:SignInData) => {
     return await api.post('/login',data).then(
         
         response =>{
-                    
+             console.log(response)       
             const tokenString =JSON.stringify(response.headers.authorization);         
              localStorage.setItem('token', tokenString)      
              return response.status + response.headers.verification ;

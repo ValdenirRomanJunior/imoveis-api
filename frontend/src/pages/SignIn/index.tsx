@@ -111,7 +111,7 @@ refreshTokenUser()
 
                              
        const response =  await userSignIn(data);
-    
+       console.log(response)
        const initialsLogin= response.substring(0,3) as string;
        const initialsSecondPart= response.substring(3,13) as string;
        console.log(initialsSecondPart)

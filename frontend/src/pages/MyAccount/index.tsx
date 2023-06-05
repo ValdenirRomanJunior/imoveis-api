@@ -188,7 +188,7 @@ useEffect(() => {
        <div className='upload'>
         <div className='imgWrapper'>
 
-        {imageUser !== '' ? <img src={imageUser} alt='Foto Perfil'/>:<p className='initials'>{initials}</p>}
+        {imageUser !== ''  && user.email !== 'admin@outlook.com'? <img src={imageUser} alt='Foto Perfil'/>:<p className='initials'>{initials}</p>}
         </div>
         <div className='round'>
         <form id='form-image-profile' onSubmit={formSubmit}>

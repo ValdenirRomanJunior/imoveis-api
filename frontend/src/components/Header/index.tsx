@@ -95,7 +95,7 @@ const Header = () =>{
 
                 <UserInfo onClick={showLinksModal}>                           
                    <div className='user-image-wrapper'>
-                       {imageUser !== '' ? <img src={imageUser} alt='Foto Perfil'/>:<p className='initials'>{initials}</p>}
+                       {imageUser !== '' && user.email !== 'admin@outlook.com' ? <img src={imageUser} alt='Foto Perfil'/>:<p className='initials'>{initials}</p>}
                    </div>
                   
                     <BoxLinks  linksModal={linksModal} >

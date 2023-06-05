@@ -24,13 +24,12 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
-@SpringBootApplication(scanBasePackages = {"controllers","services"})
+@SpringBootApplication(scanBasePackages = {"com.dynamous.imoveis","com.dynamous.imoveis.config"})
 @EnableWebMvc
 public class ImoveisApplication implements CommandLineRunner {
 
 	
-	@Autowired
-	private TenantRepository repository;
+
 
 
 	public static void main(String[] args) {
