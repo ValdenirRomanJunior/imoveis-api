@@ -24,9 +24,6 @@ registry.addResourceHandler("/webjars/**", "/resources/**", "/static/**", "/imag
 		
  }
  
- @Bean
- public EmailService emailService () {
-     return emailService();
- }
+
 }
 

@@ -12,7 +12,7 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
-@Component
+
 public interface EmailService {
 	
 	   void sendHtmlEmail(MimeMessage msg) throws SendFailedException;   
