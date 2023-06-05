@@ -8,6 +8,8 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
+import com.dynamous.imoveis.services.EmailService;
+
 @Configuration
 @EnableWebMvc
 public class WebConfig extends WebMvcConfigurerAdapter {
@@ -22,6 +24,9 @@ registry.addResourceHandler("/webjars/**", "/resources/**", "/static/**", "/imag
 		
  }
  
-
+ @Bean
+ public EmailService emailService () {
+     return emailService();
+ }
 }
 

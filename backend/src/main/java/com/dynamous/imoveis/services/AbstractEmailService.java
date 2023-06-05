@@ -11,6 +11,7 @@ import org.springframework.mail.MailSendException;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.stereotype.Service;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
@@ -23,6 +24,7 @@ import javax.mail.internet.AddressException;
 import javax.mail.internet.MimeMessage;
 import javax.validation.NoProviderFoundException;
 
+@Service
 public abstract class AbstractEmailService implements EmailService {
 
     @Value("${default.sender}")
