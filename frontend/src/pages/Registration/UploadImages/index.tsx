@@ -151,14 +151,15 @@ useEffect(() => {
         if(itemImages === null){
             localStorage.removeItem('images')
         }
-        setImagesSelected([...itemImages]);
+        setImagesSelected([...imagesSelected,...itemImages]);
         props.handleResult(itemImages)
         localStorage.removeItem('images')
         setIsOpen(false)
         
         
     }
-    localStorage.setItem('images',JSON.stringify(imagesSelected))
+    localStorage.removeItem('images');
+    //localStorage.setItem('images',JSON.stringify(imagesSelected))
 
 
         
@@ -204,7 +205,8 @@ useEffect(() => {
                         throw new Error('Function not implemented.');
                     } } onChange={function (image: ImageItem): void {
                         throw new Error('Function not implemented.'); }}
-                        refreshImages={successMessage}/>
+                        refreshImages={successMessage}
+                        onChanges={removePhoto}/>   
                 
                 
             </Modal>

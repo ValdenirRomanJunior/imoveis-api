@@ -18,6 +18,7 @@ export type ImageProps = {
     onClick:Function;
     onChange:Function;
     refreshImages:boolean;
+    onChanges:Function;
   };
 
 
@@ -42,7 +43,7 @@ export type ImageProps = {
     }
 
     const closeModalAndDelete = () => {
-      props.onChange(props.image.id)
+      props.onChange(props.image.id,props.image.url)
       setIsOpen(false)
   }
 
@@ -126,11 +127,11 @@ const GetImages = (props:ImageProps) =>{
       
             if(currentImage.selected) {
                                 
-                let images= localStorage.getItem('images') || '[]';
-                let parseImages= JSON.parse(images) as ImageItem[];             
-                 parseImages.push(currentImage);
+                //let images= localStorage.getItem('images') || '[]';
+               // let parseImages= JSON.parse(images) as ImageItem[];             
+              //   parseImages.push(currentImage);
                  selectedImages.push(currentImage)                         
-                localStorage.setItem('images', JSON.stringify(parseImages));
+              //  localStorage.setItem('images', JSON.stringify(parseImages));
        
                                             
             } 
@@ -140,17 +141,17 @@ const GetImages = (props:ImageProps) =>{
                 let index = selectedImages.findIndex(val => val.url === currentImage.url);               
                 selectedImages.splice(index, 1);
 
-                let images= localStorage.getItem('images') || '[]';                
-                let parseImages= JSON.parse(images) as ImageItem[];
+                //let images= localStorage.getItem('images') || '[]';                
+               // let parseImages= JSON.parse(images) as ImageItem[];
                  
                 
-                let indexs = parseImages.findIndex(val => val.url === currentImage.url);
-                parseImages.splice(indexs, 1);
+              //  let indexs = parseImages.findIndex(val => val.url === currentImage.url);
+               // parseImages.splice(indexs, 1);
                 
-                localStorage.setItem('images', JSON.stringify(parseImages));
+               
                                     
             } 
-                    
+            localStorage.setItem('images', JSON.stringify(selectedImages));
                          if(selectedImages.length >0){
                               
                                 setDisable(false)
@@ -187,12 +188,13 @@ const GetImages = (props:ImageProps) =>{
              
   },[props.refreshImages])
        
-    const removePhoto = async(id:string) => {  
+    const removePhoto = async(id:string,url:string) => {  
         
           //chamar backend
           const data = await deleteImagesByTenant(id); 
           getAllImages();
         let newList=selectedImages.filter((l => l.id !== Number(id)));
+        props.onChanges(url)
         localStorage.setItem('images',JSON.stringify(newList))
         //setSelectedImages(newList);          
     }
@@ -213,6 +215,7 @@ const GetImages = (props:ImageProps) =>{
         onClick={props.onClick}
         onChange={removePhoto}
         refreshImages={props.refreshImages}
+        onChanges={props.onChanges}  
     
         />
         

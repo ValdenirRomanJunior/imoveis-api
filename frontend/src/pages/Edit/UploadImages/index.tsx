@@ -27,6 +27,7 @@ const UploadImages = (props:PropImages) =>{
     const [error,setError]= useState(false);
     const [errorMaxSize,setErrorMaxSize]= useState(false);
     const [successMessage,setSuccessMessage]= useState(false);
+    
 
     const [fileBase64,setFileBase64]= useState<string>("");
 
@@ -97,16 +98,18 @@ const UploadImages = (props:PropImages) =>{
          input => (input.classList.value = "")
         );
           setFileBase64('')
-      
+    
       }  
-
+ 
 
  const removePhoto =(url:string) => { 
   let  imgs=imagesSelecteds.filter((l => l.url !== url));
   localStorage.setItem('images',JSON.stringify(imgs))
   setimagesSelecteds(imgs)
-       
+         
 }
+
+
 
 
     const [modalIsOpen, setIsOpen] = useState(false);
@@ -116,44 +119,44 @@ const UploadImages = (props:PropImages) =>{
         return setIsOpen(true)
     }
     //fecha modal 
-    const handleCloseModal =()=>{
-           setIsOpen(false) 
-           setFileBase64('');                    
+    const handleCloseModal =()=>{ 
+          
+           setIsOpen(false)          
+           setFileBase64('');   
+                       
     }
 
    
-    useEffect(() => { 
-    
+    useEffect(() => {    
+       //verificar se url no bucket existe
           setimagesSelecteds(props.images)
         }, []);
 
 
  
-    const handleToRegistration =() =>{ 
+    const handleToRegistration =() =>{  
 
-        
-        <Link to={`/edit/${params.propertyId}`}></Link>      
-        //  navigate(`/edit/${params.propertyId}`)
-        // window.location.reload();
-        
-         let a=JSON.parse(localStorage.getItem('images') || '[]') as ImageItem[]; 
+        <Link to={`/edit/${params.propertyId}`}></Link>        
+         let a=JSON.parse(localStorage.getItem('images') || '[]') as ImageItem[];
+          
          if(a === null){
             localStorage.removeItem('images')
-        }    
+        }            
         setimagesSelecteds([...imagesSelecteds,...a]) 
-        localStorage.removeItem('images')
-        
+        localStorage.removeItem('images')       
         setIsOpen(false)
-      
-          
+             
     }
     localStorage.removeItem('images')
+ 
    useEffect(() => { 
      
     props.handleResult(imagesSelecteds);
+
       
     }, [imagesSelecteds, props]);
   
+ 
 
     return(
         <ImagesContainer>
@@ -199,7 +202,8 @@ const UploadImages = (props:PropImages) =>{
                         throw new Error('Function not implemented.');
                     }} onChange={function (image: ImageItem): void {
                         throw new Error('Function not implemented.'); }}
-                        refreshImages={successMessage}/>                                            
+                        refreshImages={successMessage}
+                         onChanges={removePhoto}/>                                            
                                
             </Modal>
             </div>

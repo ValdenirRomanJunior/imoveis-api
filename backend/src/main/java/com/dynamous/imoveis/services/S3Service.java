@@ -101,6 +101,7 @@ public class S3Service {
              
              imageRepository.save(imageComplete);
              boolean exist = s3client.doesObjectExist(bucketName, newFileName);
+           
              System.out.println(exist + "SE OBJETO EXISTE NO UPLOAD");
              return s3client.getUrl(bucketName,newFileName).toURI();
             

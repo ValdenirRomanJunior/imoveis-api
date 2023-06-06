@@ -26,8 +26,7 @@
              "Access-Control-Allow-Methods": "OPTIONS,POST,GET"
 
              
-             
-                       
+                             
         }
        
         return config; 
