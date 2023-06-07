@@ -126,15 +126,10 @@ public class PropertyService {
         newObj.setStatusProperty(property.getStatusProperty());
         newObj.setAreaTotal(property.getAreaTotal());
                	        			
-        			//for(ImageUrl img : property.getImages()) {      
-        				
-        				//img.setId(null);
-                		//img.setUrl(img.getUrl());
-                		//img.setIdTenant(newObj.getTenant().getId());       		
-                		//img.setProperty(property);
+        		
                 		newObj.getImages().addAll(property.getImages());
                                           		            		
-                	//}
+                
         			
         			
         				// VERIFICA SE TEM ESTADO E CIDADE JÁ CADASTRADA

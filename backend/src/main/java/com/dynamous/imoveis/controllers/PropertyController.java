@@ -126,7 +126,7 @@ public class PropertyController {
         //verificar se vem nullo nos parametros
         
     	
-    	 //Page<Property> list= service.search(id,state, city, goal, typeProperty, page, linesPerPage, orderBy, direction);
+    	
          Page<Property> list = propertyCustomRepo.findByPage(id,state, city, goal, typeProperty, page, linesPerPage, orderBy, direction);
        
        	for( Property item : list) {
