@@ -183,7 +183,7 @@ useEffect(() => {
                                          
             >
                 <div className='title-wrapper'>
-                <h2 className='title-fileManager'>Todas Imagens</h2>
+                <h2 className='title-fileManager'>Minhas Imagens</h2>
                 
                 <form id='form-image-profile' onSubmit={formSubmit}> +           
                <input className='input-add-image' name='file' type="file" accept="image/png,image/jpeg" onChange={(e) => convertFile(e.target.files)}/>
@@ -192,7 +192,7 @@ useEffect(() => {
                    
                 </div>
                 { successMessage===true && <div className='message-file-success'>Adicionada com sucesso!</div>}
-                 {fileBase64.length>0 && <div className='message-add-image'>Imagem selecionada :<button className='cancel-button-file' onClick={cancelSendImage}>Cancelar</button> {loading===false ? <button className='send-button-file' onClick={formSubmit}>Enviar</button>: <button className='send-button-file' ><LoadingFile/></button>}</div>}
+                 {fileBase64.length>0 && <div className='message-add-image'>1 Imagem selecionada :<button className='cancel-button-file' onClick={cancelSendImage}>Cancelar</button> {loading===false ? <button className='send-button-file' onClick={formSubmit}>Enviar</button>: <button className='send-button-file' ><LoadingFile/></button>}</div>}
                  { error===true && <div className='message-file-error'>Tente mais tarde</div>}
                  { errorMaxSize===true && <div className='message-file-error'>Tamanho Máximo é de 10M</div>}
                 <IoCloseOutline onClick={handleCloseModal} className='button-close-modal-registration' />        

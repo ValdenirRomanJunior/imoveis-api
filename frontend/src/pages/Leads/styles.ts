@@ -2,10 +2,11 @@ import styled from "styled-components";
 
 
 export const LeadsBackground = styled.div`
-width: 100vw;   
+width: 100%;   
 background-color: ${({theme}) => theme.colors.backgroundLight};
 
 @media screen and (min-width: 1000px){
+
     display: flex;
     flex-direction: column;
     justify-content: center;

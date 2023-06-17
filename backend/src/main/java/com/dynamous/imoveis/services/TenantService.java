@@ -1,5 +1,6 @@
 package com.dynamous.imoveis.services;
 
+import com.amazonaws.AmazonServiceException;
 import com.dynamous.imoveis.dto.TenantDTO;
 import com.dynamous.imoveis.dto.TenantNewDTO;
 import com.dynamous.imoveis.dto.TenantUpdateDTO;
@@ -8,7 +9,7 @@ import com.dynamous.imoveis.entities.Tenant;
 import com.dynamous.imoveis.enums.Perfil;
 import com.dynamous.imoveis.enums.Status;
 import com.dynamous.imoveis.enums.Verification;
-import com.dynamous.imoveis.repositories.PropertyRepository;
+import com.dynamous.imoveis.repositories.LeadRepository;
 import com.dynamous.imoveis.repositories.TenantRepository;
 import com.dynamous.imoveis.security.UserSS;
 import com.dynamous.imoveis.services.exceptions.AuthorizationException;
@@ -19,20 +20,17 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
+import java.net.URISyntaxException;
 import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.List;
-import java.util.Locale;
 import java.util.Optional;
+
 
 @Service
 public class TenantService {
@@ -45,6 +43,17 @@ public class TenantService {
 
     @Autowired
     private EmailService emailService;
+    
+    @Autowired
+    private S3Service s3Service;
+    
+    
+    @Autowired
+    private PropertyService propertyService;
+    
+    
+    @Autowired
+    private LeadRepository leadRepository;
     
    
     public Tenant find(Long id) {
@@ -74,9 +83,7 @@ public class TenantService {
 			throw new UnknownHostException("falha ao enviar email");
 		}
         	
-        tenantRepository.save(obj);
-        System.out.println(obj);
-        
+        tenantRepository.save(obj);   
         return obj;
     }
 
@@ -101,15 +108,35 @@ public class TenantService {
 
     }
 
-    public void delete(Long id) {
-        find(id);
-       try {
+   
+	public void delete(Long id){
+    	find(id);
+    	//leadService.deleteAllByTenant(id);
+    	Long countLeads=leadRepository.countLeadByTenantId(id);
+    	List<Property> properties= propertyService.findFourByTenant(id);
+    	
+    	
+    	//deletar todos os leads
+    	if((countLeads == 0) && (properties.size() ==0)) {
+    			 		 
+        try {   	    
+            s3Service.deleteAllFiles(id);
+            } catch (URISyntaxException | AmazonServiceException  e) {
+                throw new AmazonServiceException("Não é possivel deletar porque tem objetos anexados: ");
+                
+            }
+    	}
+    	                                  	             
+       try {    	    
             tenantRepository.deleteById(id);
+           
         } catch (DataIntegrityViolationException e) {
           throw new DataIntegrityException("Não é possivel deletar porque tem objetos anexados: ");
         }
+    	                  
     }
 
+    
     public List<Tenant> findAll() {
         return tenantRepository.findAll();
     }
@@ -135,20 +162,19 @@ public class TenantService {
    
     	SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy hh:mm");
     	String renovation= sdf.format(new Date());
-    	
-    	Tenant ten = find(objDto.getId());
     
+    	Tenant ten = find(objDto.getId());
+    	Tenant tenant=null;
     	if(objDto.getSignedDays() != null) {
-    		System.out.println("CAIU AQUI GENERATED");
+    			
     		String endDate= generateEndDate(new Date(),objDto.getSignedDays());
-    		Tenant tenant = new Tenant(objDto.getId(), objDto.getSlug(), objDto.getEmail(),pe.encode(objDto.getPassword()), Status.toEnum(objDto.getStatus()),objDto.getLastName(),Verification.toEnum(objDto.getVerification()),objDto.getCreci(),ten.getStart(),renovation,endDate);
+    		tenant = new Tenant(objDto.getId(), objDto.getSlug(), objDto.getEmail(),pe.encode(objDto.getPassword()), Status.toEnum(objDto.getStatus()),objDto.getLastName(),Verification.toEnum(objDto.getVerification()),objDto.getCreci(),ten.getStart(),renovation,endDate);
     	    tenant.addPerfil(Perfil.TENANT);
             tenant.setDomain(objDto.getDomain());
             return tenant;
     	}
-    	
-    	
-		Tenant tenant = new Tenant(objDto.getId(), objDto.getSlug(), objDto.getEmail(),pe.encode(objDto.getPassword()), Status.toEnum(objDto.getStatus()),objDto.getLastName(),Verification.toEnum(objDto.getVerification()),objDto.getCreci(),ten.getStart(),ten.getRenovation(),ten.getEndDate());
+    	 	
+		tenant = new Tenant(objDto.getId(), objDto.getSlug(), objDto.getEmail(),pe.encode(objDto.getPassword()), Status.toEnum(objDto.getStatus()),objDto.getLastName(),Verification.toEnum(objDto.getVerification()),objDto.getCreci(),ten.getStart(),ten.getRenovation(),ten.getEndDate());
         tenant.addPerfil(Perfil.TENANT);
         tenant.setDomain(objDto.getDomain());
         return tenant;
@@ -157,8 +183,7 @@ public class TenantService {
 }
 
 
-    public Tenant fromDTO(TenantDTO objDto) {
-    
+    public Tenant fromDTO(TenantDTO objDto) { 
     		Tenant tenant = new Tenant(objDto.getId(), objDto.getSlug(), objDto.getEmail(), pe.encode(objDto.getPassword()), Status.toEnum(objDto.getStatus().getCod()),objDto.getLastName(),Verification.toEnum(objDto.getVerification().getCod()),objDto.getCreci(),objDto.getStart(),objDto.getRenovation(),objDto.getEndDate());
             tenant.addPerfil(Perfil.TENANT);
             return tenant;
@@ -166,10 +191,10 @@ public class TenantService {
     }
     
     public static String generateEndDate(Date renovation, Integer signedDays) {
-    
+    		 
     	  Calendar cal = Calendar.getInstance();
-    	  cal.setTime(renovation);
-    	
+    	 cal.setTime(renovation);
+    	  	 
     	SimpleDateFormat sd = new SimpleDateFormat("dd/MM/yyyy");
     	
     	if(signedDays == 30) {

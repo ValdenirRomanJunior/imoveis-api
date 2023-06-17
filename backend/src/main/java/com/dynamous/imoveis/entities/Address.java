@@ -3,6 +3,10 @@ package com.dynamous.imoveis.entities;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
+
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
+
 import java.io.Serializable;
 import java.util.Objects;
 
@@ -24,6 +28,7 @@ public class Address implements Serializable {
     private Property property;
 
     @ManyToOne
+    @Fetch(FetchMode.SELECT)
     @JoinColumn(name = "city_id")
     private City city;
 

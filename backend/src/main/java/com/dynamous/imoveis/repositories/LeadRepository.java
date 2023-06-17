@@ -34,4 +34,7 @@ public interface LeadRepository extends JpaRepository <Lead,Long> {
 	 @Query("SELECT l FROM Lead l where LOWER(l.name) like %:name% AND l.tenant = :tenant")
 	    Page<Lead> findByNameAndTenantLeadsIn(@Param("name")String name, @Param("tenant") Tenant tenant, Pageable pageable);
 
+	 
+	void deleteAllByTenant(Tenant tenant);
+
 }

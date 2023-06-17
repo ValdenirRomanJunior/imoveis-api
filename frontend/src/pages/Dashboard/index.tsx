@@ -5,18 +5,21 @@ import Card from '../../components/Card';
 import Button from '../../components/Button';
 import rightSideImage from '../../assets/images/banner-right.png';
 import BarTop from '../../components/Bartop';
-import useAuth from '../../hooks/useAuth';
 import { useEffect, useState } from 'react';
 import LoadingLogin from '../../components/LoadingLogin';
 import {BsBuilding} from 'react-icons/bs'
 import { Link, useNavigate } from 'react-router-dom';
-import { getImageIfExist, refreshToken } from '../../services/resources/user';
+import { UserDto, getImageIfExist, refreshToken } from '../../services/resources/user';
 import { getPublishedPropertiesById, getTotalPropertiesById } from '../../services/resources/property';
 import { getTotalLeadsById } from '../../services/resources/lead';
 
 import PageNotFound from '../../components/PageNotFound';
 import PageNotFoundDashboard from '../../components/PageNotFoundDashboard';
 import { ErrorBoundary } from 'react-error-boundary';
+import { Sign } from 'crypto';
+import SignIn from '../SignIn';
+import useAuth from '../../hooks/useAuth';
+
 
  
 
@@ -25,7 +28,8 @@ const Dashboard = ()=>{
     const navigate = useNavigate();
 
 
-    const {user, getCurrentUser} = useAuth();
+   // const {user, getCurrentUser} = useAuth();
+
     const [imageUser,setImageUser]= useState<string>("");
     const [totalProperties,setTotalProperties]= useState();
     const [publishedProperties,setPublishedProperties]= useState();
@@ -34,9 +38,20 @@ const Dashboard = ()=>{
     const [errorMessage,setErrorMessage]= useState("");
     const [errorMessageTotalLeads,setErrorMessageTotalLeads]= useState("");
     
- 
+    const {user, getCurrentUser} = useAuth();
+    useEffect(() =>{
+        
+        getCurrentUser()
+      
+        if(user === null){
+            setErrors(true)
+        }
+       
+    },[])
 
+  
     const refreshTokenUser = async ()=>{
+   
         const  resp = await refreshToken();    
         if(resp === 204){  
          navigate('/dashboard')
@@ -50,36 +65,12 @@ const Dashboard = ()=>{
   refreshTokenUser()
 },[])
 
-    useEffect(() =>{
-        
-         getCurrentUser();
-        if(user === null){
-         
-            setErrors(true)
-        }
-    console.log(user)
-        
-
-    },[])
-
-    const [initials, setInitials]= useState(() => {
-        if(user){
-            return user.slug?.substring(0,1)+ user.lastName?.substring(0,1) as string;
-
-        }
-        return 'error' as string;
-
-    });
-
-    const getUserPerfil= () => {
-        const userPerfil= user.perfis[0]; 
-        return userPerfil;
-    }
+    const initials= user.slug.substring(0,1)+ user.lastName?.substring(0,1) as string;
    
+ 
 
-    
     const getUrl = async() =>{       
-        const data=  await getImageIfExist(user.id,getUserPerfil());
+        const data=  await getImageIfExist(user.id,user.perfis[0]);
             if(data){
                // const url=`${BASE_URL_FROM_BUCKET}cp${user.id}.jpg`;
                 setImageUser(data);
@@ -89,13 +80,15 @@ const Dashboard = ()=>{
       }  
     
       useEffect(() => {  
+        if(user.id !== '' && user.perfis[0] !== ''){
         getUrl()
-         
-        }, [user.id]);
+        } 
+        }, [user.id, user.perfis]);
 
 
 
         const getTotalProperties = async() =>{
+                    
             const data=  await getTotalPropertiesById(user.id);                
                 if(data.status === 200){
                    // const url=`${BASE_URL_FROM_BUCKET}cp${user.id}.jpg`;
@@ -103,13 +96,14 @@ const Dashboard = ()=>{
                 }
                 if(data.response.data.status === 403){
                   setErrorMessage(data.response.data.error)                 
-                 }     
+                 } 
+                    
           }  
 
         useEffect(() => {  
-            getCurrentUser();
+             if(user.id !== ''){
             getTotalProperties();
-             
+             }
             }, [user.id]);
 
 
@@ -127,8 +121,9 @@ const Dashboard = ()=>{
               }  
     
             useEffect(() => {  
+                if(user.id !== ''){
                 getTotalLeads();
-                 
+                }
                 }, [user.id]);
     
 
@@ -145,15 +140,12 @@ const Dashboard = ()=>{
                   }  
         
                 useEffect(() => {  
-                    
+                    if(user.id !== ''){
                     getPublishedProperties();
-                     
+                    } 
                     }, [user.id]);
  
-                const ErrorHandler = () => {
-                   
-                    return <PageNotFoundDashboard/>;
-                  }
+              
     
 
     
@@ -163,7 +155,7 @@ const Dashboard = ()=>{
           
         <div>
        
-        <ErrorBoundary FallbackComponent={ErrorHandler}>
+        <ErrorBoundary FallbackComponent={Dashboard}>
          {!errors ?    
         <DashboardBackground>
                  
@@ -171,7 +163,7 @@ const Dashboard = ()=>{
         <BarTop />
     
         
-        <p className='left-side-message-user'>Olá, <strong>Valdenir Roman Junior</strong> O que temos pra hoje?</p>
+        <p className='left-side-message-user'>Olá, <strong>{user.slug}</strong>, o que temos pra hoje?</p>
         <BodyContainer>
        
                   
@@ -180,7 +172,7 @@ const Dashboard = ()=>{
            <div className='top-right-side'>               
               
                   <div className='card-wrapper-top'>             
-                     <p>Ver imoveis cadastrados no seu site</p>
+                     <p>Ver todos os meus imóveis cadastrados</p>
                      <Link to='/properties'>  <Button style={{ background: "#009d43", borderRadius:"4px", marginBottom:"0"}} className="button-top">Ver agora meus imóveis</Button> </Link>
                  </div>
             </div>
@@ -220,9 +212,10 @@ const Dashboard = ()=>{
             <Card width='100%' height='100%' noShadow={true} border='1px solid #e6e9ed' borderRadius='2px' >
                 <UserInfo>
                     <div className='user-image-wrapper-dashboard'>
-                    {imageUser !== '' ? <img src={imageUser} alt='Foto Perfil'/>:<p className='initials'>{initials ? initials : ''}</p>}
+                    {imageUser !== '' ? <img src={imageUser} alt='Foto Perfil'/>:<p className='initials'>{initials ? initials: ''}</p>}
                     </div>
-                    <p className='name-perfil-dashboard'>Valdenir Roman Junior</p>
+                    <p className='name-perfil-dashboard'>{user.slug}</p>
+                    <p className='name-perfil-dashboard'>{user.lastName}</p>
                     <p className='message-welcome-perfil'><BsBuilding className='builder-icon'/> Seja bem vindo!</p>
                 </UserInfo>
                 
@@ -238,11 +231,11 @@ const Dashboard = ()=>{
         </BodyContainer>
      
         </DashboardBackground> 
-        : <PageNotFound/>}  
+        : <Dashboard/>}  
         </ErrorBoundary>
       
         </div>
-      : <PageNotFound/>}
+      : <PageNotFoundDashboard/>}
       </>
     )
 }

@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react';
 import { deleteImagesByTenant, getTenantImages } from '../../../../services/resources/fileManager';
 import {ImageWrapperManager, ImageWrapperGetImages} from './styles';
-import {ImageItem} from '../../../../types/Images'
+import {ImageItem, ImagePage, ImagePage2} from '../../../../types/Images'
 import { number } from '../../../Registration/masks';
 import Modal from 'react-modal';
 import Button from '../../../../components/Button';
@@ -10,6 +10,7 @@ import { IoCloseOutline } from 'react-icons/io5';
 import React from 'react';
 import { AiFillCloseCircle } from 'react-icons/ai';
 import '../GetImages/stylesDeleteImage.css'
+import PaginationImages from '../../../../components/PaginationImages';
 
 
 
@@ -17,7 +18,7 @@ import '../GetImages/stylesDeleteImage.css'
 
 export type ImageProps = {
     image: ImageItem;
-    onSelectedChanged: (image: ImageItem) => void;
+    onSelectedChanged: Function;
     onClick:Function;
     onChange:Function;
     refreshImages:boolean;
@@ -66,10 +67,13 @@ export type ImageProps = {
             checked={props.image.selected}
             onChange={(el) =>{
                 props.onSelectedChanged({
-                    id:props.image.id,
-                    url:props.image.url,
-                    idTenant:props.image.idTenant,
-                    selected: el.target.checked
+
+                  id: props.image.id ,
+                  url: props.image.url ,
+                  idTenant: props.image.idTenant ,
+                  selected: el.target.checked ,
+               
+                 
                 }); 
                 }}
                 /> 
@@ -108,23 +112,47 @@ const GetImages = (props:ImageProps) =>{
 
     const [images, setImages] = useState<ImageItem[]>([]);
     const [selectedImages] = useState<ImageItem[]>([]);
-   
+    const [pageNumber, setPageNumber] = useState(0);
 
     const [disable, setDisable] = useState<boolean>(true);
    
-   
+      
+    const [page, setPage] = useState<ImagePage>({
+
+      content: [],
+      last: true,
+      totalPages: 0,
+      totalElements: 0,
+      size: 12,
+      number: 0,
+      first: true,
+      numberOfElements: 0,
+      empty: true
+  } );
+
+  const [page2, setPage2] = useState<ImagePage2>({
+
+    content: [],
+    last: true,
+    totalPages: 0,
+    totalElements: 0,
+    size: 12,
+    number: 0,
+    first: true,
+    numberOfElements: 0,
+    empty: true
+} );
     
-    const onChange = (currentImage: ImageItem) => {
+    const onChange = (currentImage:ImageItem) => {
        
-       // let images= localStorage.getItem('images') || '[]';
-       
-        setImages((currentState) =>
-        currentState.map((i: ImageItem) =>
+       // let images= localStorage.getItem('images') || '[]';     
+        setPage((currentState) =>
+          currentState?.content?.map((i: ImageItem) =>
             
             i.url === currentImage.url
             ? {
                 ...i,        
-                selected:currentImage.selected        
+                selected:currentImage.selected  
               }       
             : {
                 ...i,                       
@@ -132,11 +160,11 @@ const GetImages = (props:ImageProps) =>{
         )
           );
                              
-            if(currentImage.selected) {
+            if(currentImage.selected ) {
                                 
                // let parseImages= JSON.parse(images) as ImageItem[];             
              //    parseImages.push(currentImage);
-                 selectedImages.push(currentImage)                         
+                 selectedImages.push(currentImage as any)                         
                // localStorage.setItem('images', JSON.stringify(selectedImages));
                                                            
             } 
@@ -170,15 +198,17 @@ const GetImages = (props:ImageProps) =>{
     
     //requisição para api para buscar imagens
     const getAllImages = async () => {
-        const {data}= await getTenantImages();
+        const {data}= await getTenantImages(pageNumber);       
         setImages(data.content);
+        setPage(data)
+        setPage2(data)
         
     }
                 
     useEffect(() =>{
         getAllImages();
                
-    },[])
+    },[pageNumber])
 
  
 
@@ -202,16 +232,20 @@ const GetImages = (props:ImageProps) =>{
         
       }
 
-   
+      const handlePageChange = (newPageNumber : number)=>{          
+        setPageNumber(newPageNumber);          
+      }
+
+
     return(
-        
+      <div> 
     <ImageWrapperManager> 
-                 
+           
     {images && images.map((image,index) => (
         <ImageComponent
             key={index}
             onSelectedChanged={onChange}
-            image={image}
+            image={image as ImageItem}
             onClick={props.onClick}
             onChange={removePhoto}
             refreshImages={props.refreshImages}
@@ -222,9 +256,13 @@ const GetImages = (props:ImageProps) =>{
         />
         
     ))}
-      
-    <Button onClick={()=> props.onClick()}  disabled={disable} className="button-file-Manager">Selecionar</Button>    
+  
+    <Button onClick={()=> props.onClick()}  disabled={disable} className="button-file-Manager">Selecionar</Button>   
+    
+  
     </ImageWrapperManager>
+    <PaginationImages page={page2} onChange={handlePageChange}/>
+    </div>  
    
  )
 }

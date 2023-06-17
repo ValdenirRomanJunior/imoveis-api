@@ -1,15 +1,10 @@
 package com.dynamous.imoveis.services;
 
 import com.dynamous.imoveis.entities.Image;
-import com.dynamous.imoveis.entities.Property;
-import com.dynamous.imoveis.enums.Perfil;
 import com.dynamous.imoveis.repositories.ImageRepository;
-import com.dynamous.imoveis.security.UserSS;
-import com.dynamous.imoveis.services.exceptions.AuthorizationException;
 import com.dynamous.imoveis.services.exceptions.DataIntegrityException;
 import com.dynamous.imoveis.services.exceptions.FileException;
 import com.dynamous.imoveis.services.exceptions.ObjectNotFoundException;
-
 import org.apache.commons.io.FilenameUtils;
 import org.hibernate.StaleStateException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +12,6 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -88,6 +82,22 @@ public class ImageService {
             imageRepository.deleteById(id);
         } catch (DataIntegrityViolationException | EmptyResultDataAccessException | StaleStateException e) {
             throw new DataIntegrityException("impossible delete with other objects: ");
+        }
+    }
+    
+	public java.util.List<Image> findAllByTenant(Long id) {
+		java.util.List<Image>  images= imageRepository.findAllByIdTenant(id);
+		
+		return images;
+	}
+	
+    public void deleteAll(java.util.List<Long> ids) {
+    	 
+        try {
+       
+            imageRepository.deleteAllByIdInBatch(ids);
+        } catch (DataIntegrityViolationException | EmptyResultDataAccessException | StaleStateException e) {
+            throw new DataIntegrityException("impossible delete with other objects: caiu no image service ");
         }
     }
 }

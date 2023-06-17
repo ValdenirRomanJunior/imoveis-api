@@ -61,7 +61,7 @@ public class PropertyNewDTO implements Serializable {
     private String district;
     @NotEmpty(message = "Preenchimento obrigatório")
     private String cep;
-    
+    @NotEmpty(message = "Preenchimento obrigatório")
     private String areaTotal;
     
  

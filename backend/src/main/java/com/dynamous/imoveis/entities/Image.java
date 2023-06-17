@@ -7,6 +7,9 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
+
 @Entity
 @Table(name="image")
 public class Image {
@@ -15,7 +18,9 @@ public class Image {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	private String url;
+
 	private Long idTenant;
+
 	
 	public Image() {
 		// TODO Auto-generated constructor stub
@@ -25,6 +30,7 @@ public class Image {
 		this.id=id;
 		this.url=url;
 		this.idTenant=idTenant;
+		
 	}
 
 	
@@ -77,7 +83,8 @@ public class Image {
 	public void setIdTenant(Long idTenant) {
 		this.idTenant = idTenant;
 	}
-	
+
+
 	
 	
 	

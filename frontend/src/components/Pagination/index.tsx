@@ -2,7 +2,6 @@
 import {IoIosArrowBack,IoIosArrowForward} from 'react-icons/io';
 import {PaginationContainer,PaginationBox} from './styles';
 import { PropertyPage } from "../../types/property";
-import { TenantPage } from '../../types/tenant';
 
 
 type Props ={

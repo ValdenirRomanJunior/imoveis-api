@@ -1,6 +1,6 @@
 .ModalR{
    position: absolute;
-    top:370px !important;
+    top:340px !important;
     left: 50%;
     transform: translate(-50%, -50%);
     width: 80%;
@@ -13,7 +13,7 @@
 
 
 .ModalR .title-wrapper{
-    margin-top: 45px;
+    margin-top: 25px;
     width:100%;
     padding:12px 10px;
     display: flex;
@@ -22,6 +22,11 @@
     border-bottom:1px solid #e7e7e7;
 
    
+}
+.ModalR .title-wrapper .title-fileManager{
+    font-family: "Nunito Sans", sans-serif;
+    font-weight: 500;
+
 }
 .ModalR .title-wrapper h2{
     font-family: "Nunito Sans", sans-serif;
@@ -255,17 +260,50 @@ justify-content: end;
 
 }
 
+.ModalR .title-wrapper{
+    margin-top: 15px;
+    width:100%;
+    padding:12px 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    border-bottom:1px solid #e7e7e7;
+
+   
+}
+.ModalR .message-add-image{
+    font-family: "Nunito Sans", sans-serif;
+    color: green;
+    margin-top:10px;
+    width: 42%;
+    padding:0 5px;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
 }
 
 @media screen and (min-width:1400px){
     .Modal-delete{
 
-
-
     width:30%;
     padding: 1.7rem 1rem;
    
     background-color: #F8FCFF;
+}
+
+.ModalR .message-add-image{
+    font-family: "Nunito Sans", sans-serif;
+    color: green;
+    margin-top:10px;
+    width: 32%;
+    padding:0 5px;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
 }

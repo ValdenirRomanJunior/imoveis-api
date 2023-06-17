@@ -22,6 +22,8 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.repository.EntityGraph;
+import org.springframework.data.jpa.repository.EntityGraph.EntityGraphType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.query.AbstractJpaQuery;
@@ -51,17 +53,17 @@ public interface PropertyRepository extends JpaRepository<Property,Long> {
     @Query("SELECT p FROM Property p WHERE p.tenant= :tenant and p.address.city.state.id= :state and p.address.city.id= :city and p.goal = :goal and p.typeProperty= :typeProperty ORDER BY p.name")
     Page<Property> findByPage(Tenant tenant,Long state, Long city, Integer goal, Integer typeProperty,  Pageable pageRequest);
     
-    @Query("SELECT p FROM Property p WHERE p.tenant= :tenant  and p.goal = :goal and p.typeProperty= :typeProperty ORDER BY p.name")
-    Page<Property> findByGoalAndTenant( Tenant tenant, Integer goal,Integer typeProperty, Pageable pageRequest);
+   // @Query("SELECT p FROM Property p WHERE p.tenant= :tenant  and p.goal = :goal and p.typeProperty= :typeProperty ORDER BY p.name")
+  //  Page<Property> findByGoalAndTenant( Tenant tenant, Integer goal,Integer typeProperty, Pageable pageRequest);
 
-    @Query("SELECT p FROM Property p WHERE p.address.city.id= :city and p.tenant= :tenant  ORDER BY p.name")
-    Page<Property> findByCityAndTenant( Long city, Tenant tenant,Pageable pageRequest);
+  //  @Query("SELECT p FROM Property p WHERE p.address.city.id= :city and p.tenant= :tenant  ORDER BY p.name")
+   // Page<Property> findByCityAndTenant( Long city, Tenant tenant,Pageable pageRequest);
     
-    @Query("SELECT p FROM Property p WHERE p.address.city.id= :city and p.tenant= :tenant  and p.goal = :goal ORDER BY p.name")
-    Page<Property> findByCityAndGoal( Long city, Integer goal,Tenant tenant,Pageable pageRequest);
+   // @Query("SELECT p FROM Property p WHERE p.address.city.id= :city and p.tenant= :tenant  and p.goal = :goal ORDER BY p.name")
+  //  Page<Property> findByCityAndGoal( Long city, Integer goal,Tenant tenant,Pageable pageRequest);
 
-    @Query("SELECT p FROM Property p WHERE  p.tenant= :tenant and p.typeProperty= :typeProperty ORDER BY p.name")
-    Page<Property> findByTypeAndTenant( Integer typeProperty,Tenant tenant,Pageable pageRequest);
+    //@Query("SELECT p FROM Property p WHERE  p.tenant= :tenant and p.typeProperty= :typeProperty ORDER BY p.name")
+  //  Page<Property> findByTypeAndTenant( Integer typeProperty,Tenant tenant,Pageable pageRequest);
     
     @Query("SELECT count(p) FROM Property p WHERE p.tenant.id= :id")
 	Long countByTenantId(Long id);
@@ -70,14 +72,24 @@ public interface PropertyRepository extends JpaRepository<Property,Long> {
 	Long publishedByTenantId(Long id);
     
     
-   
-    @Query("SELECT p FROM Property p left JOIN p.address.city c where c.name like %:name% AND (:goal IS NULL or p.goal = :goal) AND (:typeProperty IS NULL or p.typeProperty = :typeProperty) AND p.tenant = :tenant AND p.statusProperty = 1")
+    @EntityGraph(		    
+		    attributePaths = {
+		      "tenant",
+		      "tenant.perfis",
+		      "address",
+		      "address.city",
+		      "address.city.state",
+		      "images"
+		      
+		    },type = EntityGraph.EntityGraphType.LOAD)
+    @Query("SELECT p FROM Property p JOIN p.tenant JOIN p.address a LEFT JOIN a.city c LEFT JOIN c.state LEFT JOIN p.images where p.tenant = :tenant AND c.name like %:name% AND (:goal IS NULL or p.goal = :goal) AND (:typeProperty IS NULL or p.typeProperty = :typeProperty) AND p.statusProperty = 1")
     Page<Property> findByGoalAndTEnantPropertiesIn(@Param("name")String name,@Param("goal")Integer goal,@Param("typeProperty")Integer typeProperty, @Param("tenant") Tenant tenant, Pageable pageable);
     
    
 	List<Property> findFirst4ByTenant(Tenant tenant);
 	
-	
+
+	    Page<Property> findAll(Pageable pageable);
 
    
 

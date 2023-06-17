@@ -119,8 +119,8 @@ export const BarTopContainer = styled.div`
             padding: 0 90px;
     
             img{
-                width: 140px;
-                height: 30px;
+                width: 110px;
+                height: 25px;
                 object-fit: contain;
                              
             }

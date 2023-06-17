@@ -109,13 +109,6 @@ private class JWTAuthenticationFailureHandler implements AuthenticationFailureHa
                 + "\"path\": \"/login\"}";
     }
     
-    private String jsonEmailValidate() {
-        long date = new Date().getTime();
-        return "{\"timestamp\": " + date + ", "
-                + "\"status\": 401, "
-                + "\"error\": \"Não autorizado\", "
-                + "\"message\": \"Por favor verifique seu email\", "
-                + "\"path\": \"/login\"}";
-    }
+
 }
 }

@@ -124,10 +124,8 @@ public class LeadService {
         return lead;
 		   
 }
-    
-    public Lead fromDTO(LeadDTO objDto) { 
-    		
-	SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");	
+ 
+    public Lead fromDTO(LeadDTO objDto) {    		
 			
      		Lead lead = new Lead(objDto.getId(), objDto.getName(), objDto.getEmail(),objDto.getPhone(),objDto.getMessage(), objDto.getInstant());
     		return lead;
@@ -135,4 +133,13 @@ public class LeadService {
     	  	
     }
     
+    @Transactional
+    public void deleteAllByTenant(Long id) {
+    	Tenant tenant= tenantService.find(id);
+       try {
+            leadRepository.deleteAllByTenant(tenant);
+        } catch (DataIntegrityViolationException  | EmptyResultDataAccessException | StaleStateException e) {
+          throw new DataIntegrityException("Não é possivel deletar porque tem objetos anexados: ");
+        }
+    }
 }

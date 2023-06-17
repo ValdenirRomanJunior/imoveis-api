@@ -3,6 +3,10 @@ package com.dynamous.imoveis.entities;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
+
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,6 +23,7 @@ public class State implements Serializable {
 
     @JsonIgnore
     @OneToMany(mappedBy = "state",cascade = CascadeType.ALL)
+    @Fetch(FetchMode.SUBSELECT)
     private List<City> cities = new ArrayList<>();
 
 

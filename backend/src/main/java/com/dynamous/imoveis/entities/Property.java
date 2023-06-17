@@ -9,6 +9,7 @@ import org.springframework.data.domain.Page;
 import com.dynamous.imoveis.enums.Goal;
 import com.dynamous.imoveis.enums.StatusProperty;
 import com.dynamous.imoveis.enums.TypeProperty;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -18,9 +19,27 @@ import java.util.Objects;
 
 @Entity
 @Table(name = "property")
+@NamedEntityGraph(name = Property.WITH_ADDRESS_AND_CITY_GRAPH,
+attributeNodes = {
+        @NamedAttributeNode(
+                value = "address",
+                subgraph = "city-subgraph"
+        )
+},
+subgraphs = {
+        @NamedSubgraph(
+                name = "city-subgraph",
+                attributeNodes =
+                        {
+                                @NamedAttributeNode("city")
+                        }
+        )
+}
+)
 public class Property implements Serializable {
     private static final long serialVersionUID = 1L;
 
+    public static final String WITH_ADDRESS_AND_CITY_GRAPH = "graph.Property.address.city";
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -40,13 +59,13 @@ public class Property implements Serializable {
     
     
     //fetch = FetchType.EAGER,mappedBy = "property",cascade=CascadeType.REMOVE, orphanRemoval = true
-    @OneToMany(mappedBy = "property",fetch = FetchType.EAGER,cascade = CascadeType.DETACH,orphanRemoval = true)
+    @OneToMany(mappedBy = "property",fetch = FetchType.EAGER,cascade = CascadeType.REMOVE)
     private List<ImageUrl> images= new ArrayList<ImageUrl>();
 
 
 
     @ManyToOne
-    @JoinColumn(name="tenant_id")
+    @JoinColumn(name="tenant_id") 
     private Tenant tenant;
 
     @OneToOne(mappedBy = "property",cascade = CascadeType.ALL,orphanRemoval = true)

@@ -39,6 +39,24 @@ type IBGEUFResponse = {
 type IBGECYTYResponse = {
     id: number;
     nome: string;
+    microrregiao: {
+        id: number
+        nome: string;
+        mesorregiao: {
+            id: number;
+            nome: string;
+            UF: {
+                id: number;
+                sigla: string;
+                nome: string;
+                regiao: {
+                    id: number;
+                    sigla: string;
+                    nome: string;
+                }
+            }
+        }
+    }
 };
 
 type Prop = {
@@ -62,7 +80,7 @@ const EditComponent = ({property}: Prop) =>{
     const [loadingTenant, setLoadingTenant]=useState(false);
     const [cleanImagesForm,setCleanImagesForm] = useState(false);
     
-    const imagesFromUpdate=(property.images?.map(x => {return {id: x.id, url: x.url, idTenant: x.idTenant, selected: true}})) as ImageItem[];
+    const imagesFromUpdate=(property.images?.map(x => { return { id: x.id, url: x.url, idTenant: x.idTenant, selected: true }; })) as ImageItem[];
  
      
      //pega imagens do UploadImages
@@ -90,7 +108,7 @@ const EditComponent = ({property}: Prop) =>{
         .then(
             (response) => {
                 setCities(response.data)
-               
+        
             }
         )
     }, [state]);
@@ -199,7 +217,7 @@ const cleanForm = () =>{
 
             const handleChange = (e:any ) =>{
                              
-                const field= e.target.getAttribute('name');
+                let field= e.target.getAttribute('name');
                 const value= e.target.value
                 setForm({ ...form,
                     [field]:value,
@@ -209,14 +227,30 @@ const cleanForm = () =>{
                   
                 if(e.target.name === "uf"){
                     setState(e.target.value);
+                  
                 }
-               
-            
-                    
-     
+          
+        
             }
+       
 
-
+            const changeCity = () => {
+                if(form['uf']===''){
+                    setForm({ ...form,
+                        'city':'',
+                    });
+                 }
+                 //verificar se tem esta cidade neste estado
+                 
+             let trueCity=Object.values(cities).some(obj => obj.nome === form['city']);
+                 if(trueCity===false){
+                    setForm({ ...form,
+                        'city':'',
+                    });
+                 }
+                 console.log(trueCity)
+            }
+  
                
             const handleKeyUp = (e: React.FormEvent<HTMLInputElement>) =>{
 
@@ -340,7 +374,10 @@ const cleanForm = () =>{
 
                 let cep: any;            
                 for (var prop16 in form) {if(prop16 === 'cep'){ cep=form[prop16];}}
-                    
+                 
+                if(emptyValues){
+                    setLoadingTenant(false)
+                }
                 
                 if(!emptyValues){
                         
@@ -502,7 +539,7 @@ const cleanForm = () =>{
                
              
                  <label>Estado</label>
-                <select placeholder='selecione' name='uf'  id='uf' value={form['uf'] }  onChange={(e) => handleChange(e)} > 
+                <select placeholder='selecione' name='uf'  id='uf' value={form['uf'] } onBlur={changeCity} onChange={(e) => handleChange(e)} > 
                 <option value='' >Selecione</option>
                   
                  { ufs.map((uf) => (
@@ -520,7 +557,7 @@ const cleanForm = () =>{
                  ))}
                 </select>
                 {errors.map(x => { if(x.fieldName === 'city') return  <p className=' formField__error'>{x.message}</p>})}
-               
+                { emptyValue && form['city'] === '' ?<span className='formField__error'>Este campo é requerido</span>: ''}
 
                 <label>Bairro</label>
                 <Input  name='district'  id='district' value={form['district'] }  onChange={(e) => handleChange(e)}/>

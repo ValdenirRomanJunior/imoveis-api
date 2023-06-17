@@ -25,7 +25,9 @@ export const Wrapper = styled.main`
             font-weight:200;
         }
     }
-
+    .logo-login{
+        object-fit: contain;
+    }
     .message-backend{
         text-align: center;
         

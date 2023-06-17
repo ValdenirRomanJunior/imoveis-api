@@ -125,6 +125,10 @@ export const BodyEditContainer = styled.main`
             background: #e87f7f14;
 
         }
+
+        .button-send-email{
+          position: relative;
+        }
     }
     .formField__error{
         color:red;

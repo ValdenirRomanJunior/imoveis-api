@@ -2,6 +2,10 @@ package com.dynamous.imoveis.entities;
 
 
 import javax.persistence.*;
+
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
+
 import java.io.Serializable;
 import java.util.Objects;
 
@@ -17,6 +21,7 @@ public class City  implements Serializable {
 
     @ManyToOne
     @JoinColumn(name="state_id")
+    @Fetch(FetchMode.SELECT)
     private State state;
 
     public Long getId() {

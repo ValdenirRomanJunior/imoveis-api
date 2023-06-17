@@ -9,7 +9,7 @@ const BarTop = ()=>{
     <BarTopContainer>
           <img src={logoDynamous} alt='logo'/>
 
-<p> "Você está usando a <strong>Dynamob</strong>, a melhor plataforma para corretores"</p>
+<p> "Você está usando o <strong>app-dynamous</strong>, simplificando o dia do corretor"</p>
 
 <a  href='https://www.dynamous.com.br/' target="_blank"><Button>Website Dynamous</Button> </a>
  <div className='arrow-top'>

@@ -57,7 +57,7 @@ useEffect(() =>{
     console.log('param city'+city)
     
      if(id.length === 0 && state.length === 0 && city.length === 0 && goal.length === 0 && type.length === 0){
-      console.log('entrou tudo vazio')
+    
       setState('');
       setCity('');
       setGoal('');
@@ -77,7 +77,7 @@ useEffect(() =>{
 
       
   
-      console.log(cityAux)
+    
    const getBooleanCloseModal = (param:boolean)=> { 
  
     setParamToCloseModal(param);

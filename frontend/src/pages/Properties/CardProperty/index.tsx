@@ -17,6 +17,7 @@ import LoadingLogin from '../../../components/LoadingLogin';
 import {MdPublishedWithChanges} from 'react-icons/md';
 import PaginationSearch from '../../../components/PaginationSearch';
 import '../styleModal.css';
+import { UserDto } from '../../../services/resources/user';
 
 
 
@@ -163,7 +164,7 @@ const handleChange = async(e:any) =>{
                    
                     {images?.[0] ?  <Link to={`/details/${id}`}> <img src={images?.[0]?.url }/> </Link> : <Link to={`/details/${id}`}><img src={defaultImage}/> </Link>}            
                      <div className='text-wrapper-card'>
-                     <Link to={`/details/${id}`}> <p className='title-card-property'>{name}</p> </Link>  
+                     <Link to={`/details/${id}`} className='link-wrapper-name-cod'> <p className='title-card-property'>{name}</p><span>cod.{id}</span></Link>  
                      <p className='value'>R${price}</p>
                      <div className='localization-wrapper'>
                      <p className='localization'><BiMap className='localization-icon'/>
@@ -215,9 +216,8 @@ const CardProperty = ({id,state,city,goal,type,onChange,paramToGetAll}:Props)=>{
     const [booleanLoadingModal, setBooleanLoadingModal]= useState(false);
     const [errorBadRequest,setErrorBadRequest]=useState(false);
 
-    
   
-    
+ 
     const [page, setPage] = useState<PropertyPage>({
 
         content: [],
@@ -244,7 +244,7 @@ const CardProperty = ({id,state,city,goal,type,onChange,paramToGetAll}:Props)=>{
         empty: true
     });
 
-    useEffect(() => {
+   
         const getPropertiesS = async () => {
         if( paramToGetAll===true ){
             const data= await propertiesPageable('','','','','',pageNumberSearch); 
@@ -265,6 +265,7 @@ const CardProperty = ({id,state,city,goal,type,onChange,paramToGetAll}:Props)=>{
         }
 
     }
+    useEffect(() => {
     getPropertiesS()
     },[paramToGetAll, pageNumberSearch, onChange])
 

@@ -2,14 +2,14 @@ import styled from "styled-components";
 
 export const ImageWrapperManager = styled.div`
 width: 100%;
-height:400px;
+height:290px;
 overflow: scroll;
 
 display: flex;
 flex-direction: column;
 align-items: center;
 justify-content: start;
-margin-top:40px;
+margin-top:10px;
 
 
 .button-file-Manager {
@@ -25,6 +25,18 @@ left:0;
     margin-top:0px;
     flex-direction: row;
     flex-wrap: wrap;
+    
+    height:320px;
+    
+   }
+
+   @media screen and (min-width: 1300px){
+    width: 100%;
+    margin-top:0px;
+    flex-direction: row;
+    flex-wrap: wrap;
+    
+    height:350px;
     
    }
 

@@ -63,8 +63,12 @@ public class FileManagerService {
     
     
     public Page<Image> findPage(Integer page, Integer linesPerPage, String orderBy, String direction){
+    	 UserSS user = UserService.authenticated();
+         if (user == null) {
+         	throw new AuthorizationException("erro");
+         }
         PageRequest pageRequest = PageRequest.of(page,linesPerPage, Sort.Direction.valueOf(direction),orderBy);
-        return imageRepository.findAll(pageRequest);
+        return imageRepository.findPageByTenant(user.getId(),pageRequest);
     }
 
     

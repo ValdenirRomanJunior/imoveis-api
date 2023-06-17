@@ -31,7 +31,7 @@ interface UserDto{
 interface ContextData{
    user: UserDto;
    userSignIn: (userData: SignInData) => Promise<any>;
-   userSignUp: (userData: SignUpData) => Promise<UserDto>;
+  // userSignUp: (userData: SignUpData) => Promise<UserDto>;
    getCurrentUser: () => Promise<UserDto>;
    refreshTokenUser: () => Promise<any>;
  
@@ -74,16 +74,16 @@ export const AuthProvider:React.FC = ({children}) => {
                setUser(userData);
                localStorage.setItem('user',JSON.stringify(user));
             return data;
-          
+       
         }
-        getCurrentUser()      
-                      
+          
+      
     }
     
 
     const getCurrentUser = async () =>{
       // if user voltar nulo ou erro ir para login
-             
+      localStorage.removeItem('user')  
         const {data}= await me() ;
         setUser(data as UserDto)
            localStorage.setItem('user', JSON.stringify(data))
@@ -92,16 +92,8 @@ export const AuthProvider:React.FC = ({children}) => {
 
 
 
-
-    const userSignUp = async (userData: SignUpData)=>{
-        const {data} = await signUp(userData);
-        //localStorage.setItem('Token', data);
-        return  getCurrentUser();
-        
-    }
-    
     const refreshTokenUser = async ()=>{
-        
+     
         const data = await refreshToken();
       
         try {
@@ -112,17 +104,14 @@ export const AuthProvider:React.FC = ({children}) => {
             }
          
         } catch (tokenUser) {
-               let user= await getCurrentUser();
-               setUser(user)
-               localStorage.setItem('user',JSON.stringify(user));
-               return data;         
+             
         }  
-        getCurrentUser()                         
+                            
     }
         
 
     return(
-        <AuthContext.Provider value={{user, userSignIn,userSignUp, getCurrentUser,refreshTokenUser}}>
+        <AuthContext.Provider value={{user, userSignIn, getCurrentUser,refreshTokenUser}}>
             {children}
         </AuthContext.Provider>
     )

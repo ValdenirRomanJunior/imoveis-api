@@ -125,10 +125,38 @@
 			<plugin>
 	<groupId>org.apache.maven.plugins</groupId>
 	<artifactId>maven-resources-plugin</artifactId>
-	
 	  <version>3.1.0</version>
 	  
 </plugin>
+ <plugin>
+        <artifactId>maven-clean-plugin</artifactId>
+        
+        <configuration>
+            <filesets>
+                <fileset>
+                    <directory>target/</directory>
+                    <includes>
+                        <include>**/*</include>
+                    </includes>
+                    <excludes>
+                        <exclude>dependency/*.jar</exclude>
+                        <exclude>*.war</exclude>
+                    </excludes>
+                    <followSymlinks>false</followSymlinks>
+                </fileset>
+            </filesets>
+            <excludeDefaultDirectories>true</excludeDefaultDirectories>
+        </configuration>
+        <executions>
+            <execution>
+                <id>auto-clean</id>
+                <phase>install</phase>
+                <goals>
+                    <goal>clean</goal>
+                </goals>
+            </execution>
+        </executions>
+    </plugin>
 		</plugins>
 	</build>
 

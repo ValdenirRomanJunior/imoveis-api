@@ -12,6 +12,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.imageio.ImageIO;
@@ -31,7 +32,7 @@ public class ImageUrlService {
     private ImageUrlRepository imageUrlRepository;
 
 
-    
+    @Transactional(readOnly = true)
     public java.util.List<ImageUrl> findByIdTenantAndUrl(Long idTenant, String url) {
         java.util.List<ImageUrl> imageUrl = imageUrlRepository.findDistinctByIdTenantAndUrl(idTenant, url);
         

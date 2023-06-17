@@ -15,9 +15,12 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.repository.EntityGraph;
+import org.springframework.data.jpa.repository.EntityGraph.EntityGraphType;
 import org.springframework.data.repository.query.Param;
 import org.springframework.data.repository.support.PageableExecutionUtils;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.dynamous.imoveis.entities.Property;
 import com.dynamous.imoveis.entities.Tenant;
@@ -26,6 +29,7 @@ import com.dynamous.imoveis.services.UserService;
 import com.dynamous.imoveis.services.exceptions.AuthorizationException;
 
 @Repository
+@Transactional
 public class PropertyCustomRepository {
 	
 	private final EntityManager em;
@@ -38,7 +42,18 @@ public class PropertyCustomRepository {
 	}
 	
   
-	@SuppressWarnings("deprecation")
+	 @EntityGraph(
+			    
+			    attributePaths = {
+			      "tenant",
+			      "tenant.perfis",
+			      "address",
+			      "address.city",
+			      "address.city.state",
+			      "images"
+			      
+			    },type = EntityGraph.EntityGraphType.LOAD)
+			  
 	public Page<Property> findByPage(Long id,Long state, Long city, Integer goal, Integer typeProperty, Integer page, Integer linesPerPage, String orderBy, String direction){
     	
     	UserSS user = UserService.authenticated();
@@ -51,7 +66,7 @@ public class PropertyCustomRepository {
         Tenant tenant= tenantRepository.findById(user.getId()).get();
     	
         
-    	String query="select P from Property P ";
+    	String query="select P from Property P JOIN FETCH P.tenant JOIN FETCH P.address a LEFT JOIN FETCH a.city c LEFT JOIN FETCH c.state LEFT JOIN FETCH P.images ";
     	String condition = "where";
     	
     	if(tenant != null) {
@@ -136,31 +151,50 @@ public class PropertyCustomRepository {
 	
 	
 	
-	public List<Property> findSearchSite(Integer goal, Integer typeProperty,String name,@Param("properties") List<Property> properties){
+	public List<Property> findSearchSite(Long id,Long state, Long city,Integer goal, Integer typeProperty,@Param("properties") List<Property> properties){
     	
+		UserSS user = UserService.authenticated();
+        if(user == null){
+            throw new AuthorizationException("Acesso negado");
+        }
+        Tenant tenant= tenantRepository.findById(user.getId()).get();
    
      
     	String query="select P from Property P ";
     	String condition = "where";
     	
- 
+    	if(tenant != null) {
+    		query += condition + " P.tenant= :tenant WHERE P IN :properties";
+    		condition = " and ";
+    	}
+    	
+    	if(id != null) {
+    		query += condition + " P.id= :id WHERE P IN :properties";
+    		condition = " and ";
+    	}
+    	if(state != null) {
+    		query += condition + " P.address.city.state.id= :state WHERE P IN :properties";
+    		condition = " and ";
+    	}
+    	
+    	if(city != null) {
+    		query += condition + " P.address.city.id= :city WHERE P IN :properties";
+    		condition = " and ";
+    	}
     	
     	if(goal != null) {
-    		query += condition + " P.goal= :goal and P IN :properties";
+    		query += condition + " P.goal= :goal WHERE P IN :properties";
     		condition = " and ";
     		
     				
     	}
     	
     	if(typeProperty != null) {
-    		query += condition + " P.typeProperty= :typeProperty and P IN :properties"; 
-    		condition = " and ";
+    		query += condition + " P.typeProperty= :typeProperty WHERE P IN :properties"; 
+    		
     		
     	}
-    	if(name != null) {
-    		query += condition + " P.address.city.state.name = :name and P IN :properties" ;
-    		
-    	}
+    	
     	
 
     	var q = em.createQuery(query, Property.class);
@@ -175,15 +209,13 @@ public class PropertyCustomRepository {
     		q.setParameter("typeProperty", typeProperty);
     	}
     	
-    	if(name != null) {
-    		q.setParameter("name", name);
-    	}
+    
     	
     	 
     
     	List<Property> l=q.getResultList();
     	
-    	System.out.println(l+ "ijdajdjadadadjadjadadasdasdadadadadadadadadadadaddadaDDDDD");
+   
     	  	
     	 return l;
        	 

@@ -462,7 +462,7 @@ export const UserInfo = styled.div`
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 15px 0;
+    padding: 15px 7px;
     
     
     
@@ -492,13 +492,16 @@ export const UserInfo = styled.div`
     }
     .name-perfil-dashboard{
         font-family:'Nunito Sans', sans-serif;
-        font-size:18px;
+        font-size:17px;
+        margin-bottom:0;
+        text-align: center;
 
     }
     .message-welcome-perfil{
         color:#008ace;
         font-family:'Nunito Sans', sans-serif;
         font-size:14px;
+        margin-top:10px;
     }
 
     .builder-icon{

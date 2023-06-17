@@ -68,19 +68,28 @@ public class UserSS implements UserDetails {
 	}
 
 	public void setVerification(Verification verification) {
-		
+		System.out.println("VERIFICOU DENOVO");
 		//logica para buscar os useradmin com
 		
-		UserAdmin userAdmin = userAdminRepository.findByEmail(email);
+		//UserAdmin userAdmin = userAdminRepository.findByEmail(email);
+		//Tenant tenant = tenantRepository.findByEmail(email);
+	  	 UserAdmin userAdmin= null;
+    	 Tenant tenant= null;
+     		if(email.equals("admin@outlook.com")) {
+     			 userAdmin = userAdminRepository.findByEmail(email);
+     		}
+     		else {
+     			  tenant = tenantRepository.findByEmail(email);
+     		}
+		
 		if(userAdmin == null) {
-			throw new UsernameNotFoundException(email);
-			
+			throw new UsernameNotFoundException(email);			
 		}
 		
 		if(userAdmin !=null) {
 			this.verification = (verification == null) ? null : userAdmin.getVerification(); 
 		}
-	Tenant tenant = tenantRepository.findByEmail(email);
+		
 		if(tenant == null) {
 		throw new UsernameNotFoundException(email);
 	}

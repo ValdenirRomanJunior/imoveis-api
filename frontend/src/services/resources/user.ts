@@ -21,7 +21,7 @@ export interface SignUpData{
 export interface UserDto{
    token: string;
    id: string;
-   slug?: string;
+   slug: string;
    email: string;
    password: string;
    status?: string;

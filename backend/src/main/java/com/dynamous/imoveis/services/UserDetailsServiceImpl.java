@@ -31,8 +31,16 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     	
     	try {
     	
-    	        Tenant tenant = tenantRepository.findByEmail(email);
-    	        UserAdmin userAdmin = userAdminRepository.findByEmail(email);
+    	        //Tenant tenant = tenantRepository.findByEmail(email);
+    	       // UserAdmin userAdmin = userAdminRepository.findByEmail(email);
+    	     	 UserAdmin userAdmin= null;
+    	    	 Tenant tenant= null;
+    	     		if(email.equals("admin@outlook.com")) {
+    	     			 userAdmin = userAdminRepository.findByEmail(email);
+    	     		}
+    	     		else {
+    	     			  tenant = tenantRepository.findByEmail(email);
+    	     		}
     	        
     	        if (tenant == null && userAdmin == null) {
                     throw new UsernameNotFoundException(email);

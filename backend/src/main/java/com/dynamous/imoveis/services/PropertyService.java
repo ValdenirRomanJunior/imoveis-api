@@ -16,7 +16,6 @@ import com.dynamous.imoveis.enums.TypeProperty;
 import com.dynamous.imoveis.repositories.AddressRepository;
 import com.dynamous.imoveis.repositories.CityRepository;
 import com.dynamous.imoveis.repositories.ImageUrlRepository;
-import com.dynamous.imoveis.repositories.PropertyCustomRepository;
 import com.dynamous.imoveis.repositories.PropertyRepository;
 import com.dynamous.imoveis.repositories.StateRepository;
 import com.dynamous.imoveis.repositories.TenantRepository;
@@ -27,34 +26,23 @@ import com.dynamous.imoveis.services.exceptions.ObjectNotFoundException;
 
 import org.hibernate.StaleStateException;
 import org.springframework.beans.factory.annotation.Autowired;
-
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.data.domain.Example;
-import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.awt.image.BufferedImage;
-import java.net.URI;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+
 
 @Service
 public class PropertyService {
 
-	 @Autowired
-	 private  PropertyCustomRepository propertyCustomRepo;
 
 	@Autowired
     private PropertyRepository propertyRepository;
@@ -97,16 +85,11 @@ public class PropertyService {
 
     //ATUALIZA UM IMOVEL
     
-    public Property update(Property property) {
-    	
-    
-  
-        Property newObj = find(property.getId());
-        
+    public Property update(Property property) {  	
+        Property newObj = find(property.getId());       
         updateData(newObj, property);
         imageUrlRepository.saveAll(newObj.getImages());
-        addressRepository.save(newObj.getAddress()); // problema em salvar adress
-       
+        addressRepository.save(newObj.getAddress()); // problema em salvar adress     
         return propertyRepository.save(newObj);
     }
 
@@ -124,42 +107,14 @@ public class PropertyService {
         newObj.setCondominium(property.getCondominium());
         newObj.setPrice(property.getPrice());
         newObj.setStatusProperty(property.getStatusProperty());
-        newObj.setAreaTotal(property.getAreaTotal());
-               	        			
-        		
-                		newObj.getImages().addAll(property.getImages());
-                                          		            		
-                
+        newObj.setAreaTotal(property.getAreaTotal());               	        			     		
+        newObj.getImages().addAll(property.getImages());
+        newObj.setAddress(property.getAddress());                                 		            		
+        newObj.setTenant(newObj.getTenant());
+        stateRepository.save(property.getAddress().getCity().getState());
+		cityRepository.save(property.getAddress().getCity());
+		
         			
-        			
-        				// VERIFICA SE TEM ESTADO E CIDADE JÁ CADASTRADA
-        			 State state= stateRepository.findByName(property.getAddress().getCity().getState().getName());  	     
-            	     City city = cityRepository.findByName(property.getAddress().getCity().getName());
-        			 	
-        	        	if(state == null) {
-        	        		State stateAux = new State(null,property.getAddress().getCity().getState().getName());
-        	        		City cityAux= new City(null,property.getAddress().getCity().getName(), stateAux);
-        	        		stateRepository.save(stateAux);
-        	        		cityRepository.save(cityAux);
-        	        		Address address = new Address(property.getAddress().getId(), property.getAddress().getStreet(), property.getAddress().getNumber(), property.getAddress().getDistrict(), property.getAddress().getCep(), property, cityAux);     	        		 
-        	        		 
-        	        		 newObj.setAddress(address);
-        	        		       	
-        	        	}else if(state != null && city == null){
-        	        		City cityAux= new City(null,property.getAddress().getCity().getName(), newObj.getAddress().getCity().getState());
-        	        		cityRepository.save(cityAux);
-        	        		 Address address = new Address(property.getAddress().getId(),  property.getAddress().getStreet(), property.getAddress().getNumber(), property.getAddress().getDistrict(), property.getAddress().getCep(), property, cityAux);
-        	        		 newObj.setAddress(address);
-        	        	}else {
-        	        	  	city.setState(state);
-        	                Address address = new Address(property.getAddress().getId(), property.getAddress().getStreet(), property.getAddress().getNumber(), property.getAddress().getDistrict(), property.getAddress().getCep(), property, city);        	   
-        	                newObj.setAddress(address);
-        	        		
-        	        	}
-        				    		     	           	
-        	        	newObj.setTenant(newObj.getTenant());
-        	        	
-        
     }
     
     //ATUALIZA STATUS IMÓVEL
@@ -174,7 +129,7 @@ public class PropertyService {
     public void delete(Long id) {
         UserSS user = UserService.authenticated();
         Property property= find(id);
-       
+      //quando deleta propriedade deleta leads dele que propiedade vinculada
         if(user==null || !user.hasRole(Perfil.TENANT) && !property.getTenant().getId().equals(user.getId())){
             throw new AuthorizationException("Acesso negado");
         }
@@ -188,14 +143,6 @@ public class PropertyService {
 
    
 
-    //BUSCA TODOS OS IMOVEIS PAGINADOS
-    public Page<Property> findPage(Integer page, Integer linesPerPage, String orderBy, String direction){
-        PageRequest pageRequest = PageRequest.of(page, linesPerPage, Direction.valueOf(direction), orderBy);
-        return propertyRepository.findAll(pageRequest);
-    }
-
- 
-
     public Property fromDTO(PropertyNewDTO propertyNewDTO) {
     	UserSS user = UserService.authenticated();
   
@@ -206,7 +153,7 @@ public class PropertyService {
     	        
     	        
     	     State state= stateRepository.findByName(propertyNewDTO.getState());  	     
-    	     City city = cityRepository.findByName(propertyNewDTO.getCity());
+    	     City city = cityRepository.findByNameAndState(propertyNewDTO.getCity(),state);
         	if(state == null) {
         		State stateAux = new State(null,propertyNewDTO.getState());
         		City cityAux= new City(null,propertyNewDTO.getCity(), stateAux);
@@ -234,23 +181,21 @@ public class PropertyService {
         
         
         //salvo aqui  o objeto depois pego o id no banco da propriedade
-        if(propertyNewDTO.getImages() != null){
-        	for(ImageUrl img : propertyNewDTO.getImages()) {
+        List<ImageUrl> listImages=propertyNewDTO.getImages();
+        if(listImages != null){
+        	for(ImageUrl img : listImages) {
         		img.setId(null);
         		img.setUrl(img.getUrl());
         		img.setIdTenant(img.getIdTenant());       		
         		img.setProperty(property);
-        		 property.getImages().addAll(propertyNewDTO.getImages());
-        	}
-           
-        }
-   
+        		property.getImages().addAll(listImages);
+        	}           
+        }   
         return property;	
     }
     
 
        
-
 	public Property fromDTOUpdate(PropertyUpdateDTO propertyUpdateDTO) {
 		
     	UserSS user = UserService.authenticated();
@@ -264,11 +209,13 @@ public class PropertyService {
         		propertyUpdateDTO.getNumberRooms(), propertyUpdateDTO.getBathRooms(), propertyUpdateDTO.getArea(), propertyUpdateDTO.getIptu(),
         		propertyUpdateDTO.getVacancies(),propertyUpdateDTO.getCondominium(), propertyUpdateDTO.getPrice(), propertyUpdateDTO.getAreaTotal(),propAux.getStatusProperty());
         
-        State state= stateRepository.findByName(propertyUpdateDTO.getState());  	     
-        City city = cityRepository.findByName(propertyUpdateDTO.getCity());
-          
+        State state= stateRepository.findByName(propertyUpdateDTO.getState());
+        //verificar se tem uma cidade deste estado cadastrada, se tiver tra
+        
+        City city = cityRepository.findByNameAndState(propertyUpdateDTO.getCity(),state);
+      
 	 
-	if(state == null) {
+	 if(state == null) {
 		State stateAux = new State(null,propertyUpdateDTO.getState());
 		 City cityAux= new City(null,propertyUpdateDTO.getCity(), stateAux);		
 		 Address address = new Address(propertyUpdateDTO.getId(),propertyUpdateDTO.getStreet(),propertyUpdateDTO.getNumber(), propertyUpdateDTO.getDistrict(), propertyUpdateDTO.getCep(), property, cityAux);
@@ -288,7 +235,8 @@ public class PropertyService {
         property.setAddress(address);
 		
 	}
-	
+
+	 
 	Tenant tenant = tenantRepository.findById(user.getId()).get();
 	property.setTenant(tenant);
 
@@ -296,19 +244,20 @@ public class PropertyService {
 //salvo aqui  o objeto depois pego o id no banco da propriedade
 
 	try {
+		
   	  	imageUrlRepository.deleteByPropertyId(propertyUpdateDTO.getId()); // pode haver um erro  aqui nesta deleção
   	  	
        } catch (DataIntegrityViolationException  | EmptyResultDataAccessException | StaleStateException e ) {
       new DataIntegrityException("impossible delete with other objects: ");
         }
-	 
-	for(ImageUrl img : propertyUpdateDTO.getImages()) {
+	 List<ImageUrl> listImages=propertyUpdateDTO.getImages();
+	for(ImageUrl img : listImages) {
 		
 		img.setId(null);
 		img.setUrl(img.getUrl());
 		img.setIdTenant(img.getIdTenant());       		
 		img.setProperty(property);
-	    property.getImages().addAll(propertyUpdateDTO.getImages());
+	    property.getImages().addAll(listImages);
     	}
 	
 
@@ -325,6 +274,20 @@ public class PropertyService {
 		  	return propertyRepository.findByGoalAndTEnantPropertiesIn(name,goal, typeProperty, tenant, pageRequest);
 
 	}
+	 @Transactional
+	 public Page<Property> findByTenantBaseView(Integer goal,Integer typeProperty, String name, Integer page, Integer linesPerPage, String orderBy, String direction){
+		   UserSS user = UserService.authenticated();
+	        if (user == null) {
+	        	throw new AuthorizationException("erro");
+	        }
+	        Tenant tenant = tenantService.find(user.getId());
+		 PageRequest pageRequest = PageRequest.of(page, linesPerPage, Direction.valueOf(direction), orderBy);		  		  	
+		   // Page<City> address= cityRepository.findAll(pageRequest);
+		  //  Page<Property> pageR= propertyRepository.findAll(pageRequest);
+		    
+		  	return propertyRepository.findAll(pageRequest);
+
+	}
 
 	 @Transactional(readOnly = true)
 	public List<Address> findResultSearch() {
@@ -339,4 +302,9 @@ public class PropertyService {
 		return list;
 	}
 	
+	 public List<Property> findFourByTenant(Long id) {
+		 Tenant tenant = tenantService.find(id);
+		List<Property> list = propertyRepository.findFirst4ByTenant(tenant);
+		return list;
+	}
 }

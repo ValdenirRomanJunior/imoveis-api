@@ -1,43 +1,28 @@
 package com.dynamous.imoveis.controllers;
 
-import com.dynamous.imoveis.dto.PropertyDTO;
 import com.dynamous.imoveis.dto.PropertyNewDTO;
-import com.dynamous.imoveis.dto.PropertySimpleDTO;
 import com.dynamous.imoveis.dto.PropertyUpdateDTO;
-import com.dynamous.imoveis.dto.StateDTO;
-import com.dynamous.imoveis.dto.TenantDTO;
 import com.dynamous.imoveis.entities.Address;
-import com.dynamous.imoveis.entities.City;
 import com.dynamous.imoveis.entities.ImageUrl;
 import com.dynamous.imoveis.entities.Property;
-import com.dynamous.imoveis.entities.State;
-import com.dynamous.imoveis.entities.Tenant;
 import com.dynamous.imoveis.enums.StatusProperty;
-import com.dynamous.imoveis.repositories.AddressRepository;
 import com.dynamous.imoveis.repositories.CityRepository;
-import com.dynamous.imoveis.repositories.ImageUrlRepository;
 import com.dynamous.imoveis.repositories.PropertyCustomRepository;
 import com.dynamous.imoveis.repositories.PropertyRepository;
-import com.dynamous.imoveis.repositories.TenantRepository;
 import com.dynamous.imoveis.services.PropertyService;
 import com.dynamous.imoveis.services.TenantService;
-import com.dynamous.imoveis.services.exceptions.DataIntegrityException;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
-import org.springframework.data.repository.CrudRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-
 import javax.validation.Valid;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
+
 
 @RestController
 @RequestMapping(value = "/properties")
@@ -49,19 +34,15 @@ public class PropertyController {
     @Autowired
     private PropertyRepository propertyRepository;
     
-    @Autowired
-    private CityRepository cityReposisitory;
-    
+ 
     @Autowired
     private  PropertyCustomRepository propertyCustomRepo;
     
-    @Autowired
-    private TenantService tenantService;
 
     
     @GetMapping(value = "/find/{id}")
     public ResponseEntity<?> findById(@PathVariable Long id){ 
-    	System.out.println("adasdadadda cheguei aqui");
+    	
         Property property=service.find(id);
         return ResponseEntity.ok().body(property);
     }
@@ -98,21 +79,11 @@ public class PropertyController {
         return ResponseEntity.noContent().build();
     }
 
-    //liberar este endpoint para ser publico
-    @GetMapping(value = "/page")
-    public ResponseEntity <Page<Property>> findPage(
-            @RequestParam(value = "page",defaultValue = "0") Integer page,
-            @RequestParam(value = "linesPerPage",defaultValue = "24")  Integer linesPerPage,
-            @RequestParam(value = "orderBy",defaultValue = "name")String orderBy,
-            @RequestParam(value = "direction",defaultValue = "ASC")  String direction){
-        Page<Property> list=service.findPage(page,linesPerPage,orderBy,direction);
-        System.out.println(list);
-      //  Page<PropertyDTO>listDTO=list.map(x -> new PropertyDTO(x));
-        return ResponseEntity.ok().body(list);
-    }
+
 
     //liberar este endpoint para ser publico
     @GetMapping(value = "/search")
+    @Transactional
    public ResponseEntity <Page<Property>> findPageSearch(
 		    @RequestParam(value = "id",defaultValue = "",required = false) Long id,
 		    @RequestParam(value = "state",defaultValue = "",required = false) Long state,
@@ -121,19 +92,19 @@ public class PropertyController {
             @RequestParam(value = "typeProperty",defaultValue = "",required = false) Integer typeProperty,
             @RequestParam(value = "page",defaultValue = "0") Integer page,
             @RequestParam(value = "linesPerPage",defaultValue = "12")  Integer linesPerPage,
-            @RequestParam(value = "orderBy",defaultValue = "name")String orderBy,
-            @RequestParam(value = "direction",defaultValue = "ASC")  String direction){
+            @RequestParam(value = "orderBy",defaultValue = "id")String orderBy,
+            @RequestParam(value = "direction",defaultValue = "DESC")  String direction){
         //verificar se vem nullo nos parametros
         
     	
-    	
-         Page<Property> list = propertyCustomRepo.findByPage(id,state, city, goal, typeProperty, page, linesPerPage, orderBy, direction);
-       
-       	for( Property item : list) {
-       		 		
+    		//Page<Property> list= service.findByTenantBaseView(goal, typeProperty, name,  page, linesPerPage, orderBy, direction);
+    Page<Property> list = propertyCustomRepo.findByPage(id,state, city, goal, typeProperty, page, linesPerPage, orderBy, direction);
+         ImageUrl imgux=null;
+         List<ImageUrl> OneImg=null;
+       	for( Property item : list) {       		 		
        		if( item.getImages().size() >0 ) {  
-       		ImageUrl imgux = item.getImages().get(0);    		
-       		List<ImageUrl> OneImg = new ArrayList<ImageUrl>();
+       	    imgux = item.getImages().get(0);    		
+       		OneImg = new ArrayList<ImageUrl>();
        		item.setImages(OneImg);
        		item.getImages().add(imgux);
        		}
@@ -180,7 +151,7 @@ public class PropertyController {
     @PreAuthorize("hasAnyRole('TENANT')")
     @GetMapping(value = "/publishedProperties/{id}")
     public ResponseEntity<?> getPublishedProperties(@PathVariable Long id){ 
-    	System.out.println(id);
+    	
     	
        Long total= propertyRepository.publishedByTenantId(id);     
         return ResponseEntity.ok().body(total);
@@ -197,16 +168,16 @@ public class PropertyController {
             @RequestParam(value = "orderBy",defaultValue = "name")String orderBy,
             @RequestParam(value = "direction",defaultValue = "ASC")  String direction){
         //verificar se vem nullo nos parametros
-    		System.out.println(nameUrl + "ajdDIJASJDAJDAJDIAJDJ");
+    	
           
     	 //Page<Property> list= service.search(id,state, city, goal, typeProperty, page, linesPerPage, orderBy, direction);
          Page<Property> list = service.findByTenantMatchAnyParam(goal,typeProperty,name, nameUrl,page, linesPerPage, orderBy, direction);
-       
-       	for( Property item : list) {
-       		 		
+         ImageUrl imgux=null;
+         List<ImageUrl> OneImg=null;
+       	for( Property item : list) {    		 		
        		if( item.getImages().size() >0 ) {  
-       		ImageUrl imgux = item.getImages().get(0);    		
-       		List<ImageUrl> OneImg = new ArrayList<ImageUrl>();
+       		imgux = item.getImages().get(0);    		
+       		OneImg = new ArrayList<ImageUrl>();
        		item.setImages(OneImg);
        		item.getImages().add(imgux);
        		}

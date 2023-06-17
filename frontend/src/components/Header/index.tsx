@@ -63,7 +63,6 @@ const Header = () =>{
    
     const handleLogoff = () =>{
        localStorage.clear();
-       
 
         navigate('/')
     }
@@ -111,7 +110,7 @@ const Header = () =>{
                 <SideBarTop >
                     <NavIcon to="#" >
                         <IoIosArrowForward  className='icon-sidebar'/>
-                        <p className='text-sidebar-top'><a href=''><Link className='site-link' to={''}>{user.domain}</Link></a></p>
+                      {user.domain ?  <p className='text-sidebar-top'><a href=''><Link className='site-link' to={''}>{user.domain}</Link></a></p>: <p className='text-sidebar-top'><a href=''><Link className='site-link' to={''}>site ainda não publicado</Link></a></p>} 
                     </NavIcon>
                     
                 </SideBarTop>

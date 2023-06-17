@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react';
 import { deleteImagesByTenant, getTenantImages } from '../../../../services/resources/fileManager';
 import {ImageWrapperManager, ImageWrapperGetImages} from './styles';
-import {ImageItem} from '../../../../types/Images'
+import {ImageItem, ImagePage, ImagePage2} from '../../../../types/Images'
 import Button from '../../../../components/Button';
 import { AiFillCloseCircle } from 'react-icons/ai';
 import Modal from 'react-modal';
@@ -10,6 +10,7 @@ import Input from '../../../../components/Input';
 import React from 'react';
 import Loading from '../../../../components/Loading';
 import './styleDeleteImageReg.css';
+import PaginationImages from '../../../../components/PaginationImages';
 
 
 export type ImageProps = {
@@ -105,14 +106,37 @@ const GetImages = (props:ImageProps) =>{
 
     const [selectedImages] = useState<ImageItem[]>([]);
     const [disable, setDisable] = useState<boolean>(true);
+    const [pageNumber, setPageNumber] = useState(0);
 
+    const [page, setPage] = useState<ImagePage>({
 
+      content: [],
+      last: true,
+      totalPages: 0,
+      totalElements: 0,
+      size: 12,
+      number: 0,
+      first: true,
+      numberOfElements: 0,
+      empty: true
+  } );
 
-  
+  const [page2, setPage2] = useState<ImagePage2>({
+
+    content: [],
+    last: true,
+    totalPages: 0,
+    totalElements: 0,
+    size: 12,
+    number: 0,
+    first: true,
+    numberOfElements: 0,
+    empty: true
+} );
 
     const onChange = (currentImage: ImageItem) => {
-        setImages((currentState) =>
-        currentState.map((i: ImageItem) =>
+        setPage((currentState) =>
+        currentState?.content?.map((i: ImageItem) =>
             i.url === currentImage.url
             ? {
                 ...i,
@@ -130,7 +154,7 @@ const GetImages = (props:ImageProps) =>{
                 //let images= localStorage.getItem('images') || '[]';
                // let parseImages= JSON.parse(images) as ImageItem[];             
               //   parseImages.push(currentImage);
-                 selectedImages.push(currentImage)                         
+                 selectedImages.push(currentImage as any)                         
               //  localStorage.setItem('images', JSON.stringify(parseImages));
        
                                             
@@ -167,9 +191,11 @@ const GetImages = (props:ImageProps) =>{
  
     
     const getAllImages = async () => {
-        const {data}= await getTenantImages();
-        console.log(data)
+        const {data}= await getTenantImages(pageNumber);
         setImages(data.content);
+        setPage(data)
+
+        setPage2(data)
         
 
     }
@@ -178,7 +204,7 @@ const GetImages = (props:ImageProps) =>{
     useEffect(() => {
         getAllImages();
                
-    },[])
+    },[pageNumber])
 
     useEffect(() => {
       if(props.refreshImages===true){
@@ -200,12 +226,14 @@ const GetImages = (props:ImageProps) =>{
     }
      
     
-
+    const handlePageChange = (newPageNumber : number)=>{          
+      setPageNumber(newPageNumber);          
+    }
     return(
-        
+      <div>
     <ImageWrapperManager>  
          
-        
+   
        
     {images && images.map((image,index) => (
         <ImageComponent
@@ -220,10 +248,12 @@ const GetImages = (props:ImageProps) =>{
         />
         
     ))}
-   
+    
    <Button onClick={()=> props.onClick()}  disabled={disable} className="button-file-Manager">Selecionar</Button> 
-   
+ 
     </ImageWrapperManager>
+    <PaginationImages page={page2} onChange={handlePageChange}/>
+    </div>
    
  )
 }

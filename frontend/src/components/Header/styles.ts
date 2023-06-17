@@ -171,9 +171,10 @@ export const MenuLogoWrapper = styled.div`
     align-items:center;
 
     .logo{
-        width:35px;
-        height:35px;
+        width:28px;
+        height:28px;
         margin-left:8px;
+        object-fit: contain;
     }
 
     @media screen and (min-width: 1000px){
@@ -307,7 +308,7 @@ export const NavIcon = styled(Link)`
 
     @media screen and (min-width: 1000px){
          position: relative;
-         padding: 20px  13px;
+         padding: 18.1px 13px;
          display: block;
          white-space: nowrap;
          width:100%;
@@ -315,7 +316,6 @@ export const NavIcon = styled(Link)`
          overflow: hidden;
        
          
-        
             
       
        .icon-sidebar{

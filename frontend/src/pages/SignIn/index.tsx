@@ -304,7 +304,7 @@ refreshTokenUser()
     <Wrapper>
         <Background image={background} />
         <Card width="403px" paddingTop="30px">
-        <img src={logo} width={172} height={27}  alt="logo dynamous" />
+        <img src={logo} width={172} height={27}  alt="logo dynamous" className="logo-login"/>
         <InputContainer rotate={rotate}>
         
         {!verificationAccount && <p className="account-verification ">Por favor Verifique sua conta no seu email

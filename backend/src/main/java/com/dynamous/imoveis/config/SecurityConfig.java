@@ -1,12 +1,7 @@
 package com.dynamous.imoveis.config;
 
-import java.io.IOException;
+
 import java.util.Arrays;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import com.dynamous.imoveis.security.CustomAccessDeniedHandler;
 import com.dynamous.imoveis.security.JWTAuthenticationFilter;
 import com.dynamous.imoveis.security.JWTAuthorizationFilter;
@@ -19,14 +14,11 @@ import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -49,6 +41,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	private static final String[] PUBLIC_MATCHERS = {
 			"/h2-console/**",			
 			"/pictures/**",
+			"/pictures/images/**",
 			"/auth/forgot/**",			
 			"/verification/**",
 			"/leads/saveSite/**",
@@ -69,12 +62,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		
 
 	};
-	private static final String[] PUBLIC_MATCHERS_POST = {
-			
-			"/auth/forgot/**"
-
-	};
-
 
 
 	@Override
@@ -141,8 +128,5 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	    public AccessDeniedHandler accessDeniedHandler(){
 	        return new CustomAccessDeniedHandler();
 	    }
-	  //@Override
-	//public void configure(WebSecurity web) throws Exception {
-	//	  web.ignoring().antMatchers(HttpMethod.GET,"/resources/**","static/**","/**");
-	//}
+
 }

@@ -6,7 +6,7 @@ import { IoCloseOutline } from 'react-icons/io5';
 import GetImages from './GetImages';
 import {AiFillCloseCircle} from 'react-icons/ai'
 import '../UploadImages/styles.css'
-import {ImageItem} from '../../../types/Images'
+import {ImageItem, ImagePage} from '../../../types/Images'
 import { Link, useParams } from 'react-router-dom';
 import { uploadPropertyImage } from '../../../services/resources/property';
 import LoadingFile from '../../../components/LoadingFile';
@@ -179,7 +179,7 @@ const UploadImages = (props:PropImages) =>{
                                                  
             >
                 <div className='title-wrapper'>
-                <h2 className='title-fileManager'>Todas Imagens</h2>
+                <h2 className='title-fileManager'>Minhas Imagens</h2>
                 <form id='form-image-profile' > +           
                <input className='input-add-image'  name='file' type="file" accept="image/png,image/jpeg" onChange={(e) => convertFile(e.target.files)}/>
                  
@@ -187,7 +187,7 @@ const UploadImages = (props:PropImages) =>{
               
                 </div>
                 { successMessage===true && <div className='message-file-success'>Adicionada com sucesso!</div>}
-                 {fileBase64.length>0 && <div className='message-add-image'>Imagem selecionada :<button className='cancel-button-file' onClick={cancelSendImage}>Cancelar</button> {loading===false ? <button className='send-button-file' onClick={handleFile}>Enviar</button>: <button className='send-button-file' ><LoadingFile/></button>}</div>}
+                 {fileBase64.length>0 && <div className='message-add-image'>1 Imagem selecionada :<button className='cancel-button-file' onClick={cancelSendImage}>Cancelar</button> {loading===false ? <button className='send-button-file' onClick={handleFile}>Enviar</button>: <button className='send-button-file' ><LoadingFile/></button>}</div>}
                  { error===true && <div className='message-file-error'>Tente mais tarde</div>}
                  { errorMaxSize===true && <div className='message-file-error'>Tamanho Máximo é de 10M</div>}
               
@@ -197,7 +197,9 @@ const UploadImages = (props:PropImages) =>{
                         id: 0,
                         url: '',
                         idTenant: 0,
-                        selected: false
+                        selected: false,
+                        
+                       
                     }} onSelectedChanged={function (image: ImageItem): void {
                         throw new Error('Function not implemented.');
                     }} onChange={function (image: ImageItem): void {

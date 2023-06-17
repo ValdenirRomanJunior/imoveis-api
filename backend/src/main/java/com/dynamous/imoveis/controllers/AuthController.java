@@ -2,7 +2,6 @@ package com.dynamous.imoveis.controllers;
 
 import com.dynamous.imoveis.dto.EmailDTO;
 import com.dynamous.imoveis.entities.Tenant;
-import com.dynamous.imoveis.entities.TenantCustomer;
 import com.dynamous.imoveis.entities.UserAdmin;
 import com.dynamous.imoveis.enums.Perfil;
 import com.dynamous.imoveis.repositories.TenantRepository;
@@ -12,7 +11,6 @@ import com.dynamous.imoveis.security.UserSS;
 import com.dynamous.imoveis.services.AuthService;
 import com.dynamous.imoveis.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -49,7 +47,7 @@ public class AuthController {
         UserSS user= UserService.authenticated();
         
         if(user != null ) {
-        	System.out.println(user.getUsername());
+        
         	 String token = jwtUtil.GenerateToken(user.getUsername());
              response.addHeader("Authorization", "Bearer " + token);
              response.addHeader("access-control-expose-headers", "Authorization");
@@ -68,16 +66,21 @@ public class AuthController {
     
     @GetMapping(value="/getuser")
     public ResponseEntity<?> getUserData() throws UsernameNotFoundException{
+    
     	UserSS user= UserService.authenticated();
-    	System.out.println(user.getUsername());
+    	
     	String email=user.getUsername();
-    		
-    	// se user for tenant buscar email, if user for tenantcustomer buscar
-    	 
-          Tenant tenant = tenantRepository.findByEmail(email);
-          UserAdmin userAdmin = userAdminRepository.findByEmail(email);
-          
-          
+    	 UserAdmin userAdmin= null;
+    	 Tenant tenant= null;
+     		if(email.equals("admin@outlook.com")) {
+     			 userAdmin = userAdminRepository.findByEmail(email);
+     		}
+     		else {
+     			  tenant = tenantRepository.findByEmail(email);
+     		}
+        
+         
+               
           
           if (tenant == null && userAdmin == null) {
               throw new UsernameNotFoundException(email);

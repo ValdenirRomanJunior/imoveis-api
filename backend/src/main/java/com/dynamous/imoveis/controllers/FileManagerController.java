@@ -7,7 +7,6 @@ import com.dynamous.imoveis.services.FileManagerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -44,7 +43,7 @@ public class FileManagerController {
     @GetMapping(value ="/images")
     public ResponseEntity <Page<Image>> findPage(
             @RequestParam(value = "page",defaultValue = "0") Integer page,
-            @RequestParam(value = "linesPerPage",defaultValue = "24")  Integer linesPerPage,
+            @RequestParam(value = "linesPerPage",defaultValue = "12")  Integer linesPerPage,
             @RequestParam(value = "orderBy",defaultValue = "id")String orderBy,
             @RequestParam(value = "direction",defaultValue = "ASC")  String direction){
         Page<Image> list=service.findPage(page,linesPerPage,orderBy,direction);

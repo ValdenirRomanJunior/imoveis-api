@@ -1,6 +1,6 @@
 .ModalE{
     position: absolute;
-     top:370px !important;
+     top:340px !important;
      left: 50%;
      transform: translate(-50%, -50%);
      width: 90%;
@@ -13,7 +13,7 @@
  
  
  .ModalE .title-wrapper{
-     margin-top: 45px;
+     margin-top: 20px;
      width:100%;
      padding:12px 10px;
      display: flex;
@@ -24,6 +24,11 @@
  
     
  }
+ .ModalE .title-wrapper .title-fileManager{
+    font-family: "Nunito Sans", sans-serif;
+    font-weight: 500;
+
+}
  .ModalE .title-wrapper h2{
      font-family: "Nunito Sans", sans-serif;
      font-weight: 600;
@@ -139,7 +144,7 @@
          transform: translate(-50%, -50%);
          width: 80%;
        
-         padding: 2rem 1rem;
+         padding: 1rem 1rem;
          background-color: #F8FCFF;
          overflow: hidden;
              
@@ -150,5 +155,65 @@
         color:#545454;
         font-size: 22px;
     
+    }
+    .ModalE .title-wrapper{
+        margin-top: 15px;
+        width:100%;
+        padding:12px 10px;
+        display: flex;
+        align-items: center;
+        justify-content: space-around;
+        border-bottom:1px solid #e7e7e7;
+       
+    
+       
+    }
+
+    .ModalE .message-add-image{
+        font-family: "Nunito Sans", sans-serif;
+        color: green;
+        margin-top:20px;
+        width: 32%;
+        padding:0 5px;
+        
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .ModalE .message-add-image button{
+        border: none;
+        width:65px;
+        border-radius: 4px;
+        font-size: 13px;
+        width: 65px;
+        height: 30px;
+        
+    }
+    .ModalE .message-add-image .cancel-button-file{
+        background-color: #dbdbdb;
+        color:#5d5c5c;
+    
+    }
+    
+    .ModalE .message-add-image .send-button-file{
+        position: relative;
+        background: rgba(191,235,214,0.5);
+        color: green;
+    
+    }
+}
+
+@media screen and ( min-width: 1300px){
+    .ModalE .message-add-image{
+        font-family: "Nunito Sans", sans-serif;
+        color: green;
+        margin-top:20px;
+        width: 28%;
+        padding:0 5px;
+        
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
     }
 }

@@ -175,11 +175,24 @@ const Registration = () =>{
                 if(e.target.name === "uf"){
                     setState(e.target.value);
                 }
-
-                        
+                       
             }
 
-    
+            const changeCity = () => {
+                if(form['uf']===''){
+                    setForm({ ...form,
+                        'city':'',
+                    });
+                 }
+
+                 let trueCity=Object.values(cities).some(obj => obj.nome === form['city']);
+                 if(trueCity===false){
+                    setForm({ ...form,
+                        'city':'',
+                    });
+                 }
+
+            }
 
             const handleKeyUp = (e: React.FormEvent<HTMLInputElement>) =>{
 
@@ -306,7 +319,7 @@ const Registration = () =>{
                 {errors.map(x => { if(x.fieldName === 'description') return  <p className=' formField__error_reg'>{x.message}</p>})}
                 { emptyValue && form['description'] === '' ?<span className='formField__error_reg'>Este campo é requerido</span>: ''}
 
-                <label>Finalidade</label>
+                <label>Finalidade*</label>
                     <select  name='goal'  id='goal' value={form['goal']}  placeholder='selecione'  onChange={(e) => handleChange(e)} >
                     <option value='' >Selecione</option>
                     <option key='1' value='1'>Alugar</option>
@@ -361,9 +374,9 @@ const Registration = () =>{
                 <label>Área total(m2)*</label>
                 <Input id="areaTotal" name="areaTotal"  onBlur={(e) => handleChange(e)} maxLength={6} onKeyUp={handleKeyUp}/>
                 {errors.map(x => { if(x.fieldName === 'areaTotal') return  <p className=' formField__error'>{x.message}</p>})}
-                { emptyValue && form['areaTotal'] === '' ?<span className='formField__error'>Preencha o total da Área externa</span>: ''}
+                { emptyValue && form['areaTotal'] === '' ?<span className='formField__error_reg'>Preencha o total da Área externa</span>: ''}
 
-                <label>Vagas</label>
+                <label>Vagas*</label>
                 <select id="vacancies" name="vacancies"  placeholder='selecione' onChange={(e) => handleChange(e)}>
                 <option value=''  >Selecione</option>
                     <option key='0' value='0'>0</option>
@@ -375,25 +388,25 @@ const Registration = () =>{
                 {errors.map(x => { if(x.fieldName === 'vacancies') return  <p className=' formField__error_reg'>{x.message}</p>})}
                 { emptyValue && form['vacancies'] === '' ?<span className='formField__error_reg'>Este campo é requerido</span>: ''}
 
-                <label>IPTU(R$)</label>
+                <label>IPTU(R$)*</label>
                 <Input id="iptu" name="iptu" maxLength={14} onKeyUp={handleKeyUp} onBlur={(e) => handleChange(e)}/>
                 {errors.map(x => { if(x.fieldName === 'iptu') return  <p className='formField__error_reg'>{x.message}</p>})}
                 { emptyValue && form['iptu'] === '' ?<span className='formField__error_reg'>Este campo é requerido</span>: ''}
 
-                <label>Condomínio(R$)</label>
+                <label>Condomínio(R$)*</label>
                 <Input  id="condominium" name="condominium" maxLength={14} onKeyUp={handleKeyUp} onBlur={(e) => handleChange(e)}/>
                 {errors.map(x => { if(x.fieldName === 'condominium') return  <p className=' formField__error_reg'>{x.message}</p>})}
                 { emptyValue && form['condominium'] === '' ?<span className='formField__error_reg'>Este campo é requerido</span>: ''}
 
                
-                <label>Preço(R$)</label>
+                <label>Preço(R$)*</label>
                 <Input type='text' id='price' name='price' maxLength={14} onKeyUp={handleKeyUp} onBlur={(e) => handleChange(e)}/>  
                 {errors.map(x => { if(x.fieldName === 'price') return  <p className=' formField__error_reg'>{x.message}</p>})}  
                 { emptyValue && form['price'] === '' ?<span className='formField__error_reg'>Este campo é requerido</span>: ''}
                
              
-                 <label>Estado</label>
-                <select placeholder='selecione' name='uf'  id='uf'  onChange={(e) => handleChange(e)} > 
+                 <label>Estado*</label>
+                <select placeholder='selecione' name='uf'  id='uf' onBlur={changeCity}  onChange={(e) => handleChange(e)} > 
                 <option value='' >Selecione</option>
                   
                  { ufs.map((uf) => (
@@ -403,7 +416,7 @@ const Registration = () =>{
                 {errors.map(x => { if(x.fieldName === 'uf') return  <p className=' formField__error_reg'>{x.message}</p>})}
                 { emptyValue && form['uf'] === '' ?<span className='formField__error_reg'>Este campo é requerido</span>: ''}
 
-                <label>Cidade</label>
+                <label>Cidade*</label>
                 <select placeholder='selecione'  name='city'  id='city'  onChange={(e) => handleChange(e)}>
                     <option value='' >Selecione a Cidade</option>
                  { cities.map((city) => (
@@ -413,24 +426,24 @@ const Registration = () =>{
                 {errors.map(x => { if(x.fieldName === 'city') return  <p className='formField__error_reg'>{x.message}</p>})}
                 { emptyValue && form['city'] === '' ?<span className='formField__error_reg'>Este campo é requerido</span>: ''}
 
-                <label>Bairro</label>
+                <label>Bairro*</label>
                 <Input  name='district'  id='district'  onChange={(e) => handleChange(e)}/>
                 {errors.map(x => { if(x.fieldName === 'district') return  <p className=' formField__error_reg'>{x.message}</p>})}
                 { emptyValue && form['district'] === '' ?<span className='formField__error_reg'>Este campo é requerido</span>: ''}
 
-                <label>Rua</label>
+                <label>Rua*</label>
                 <Input   name='street'  id='street' onChange={(e) => handleChange(e)}/>
                 {errors.map(x => { if(x.fieldName === 'street') return  <p className=' formField__error_reg'>{x.message}</p>})}
                 { emptyValue && form['street'] === '' ?<span className='formField__error_reg'>Este campo é requerido</span>: ''}
                 
-                <label>Número</label>
+                <label>Número*</label>
                 <div className='number-wrapper'>
                 <Input type='text'  name='number' id='number' onKeyUp={handleKeyUp} onChange={(e) => handleChange(e)}/>
                 </div>
                 {errors.map(x => { if(x.fieldName === 'number') return  <p className=' formField__error_reg'>{x.message}</p>})}
                 { emptyValue && form['number'] === '' ?<span className='formField__error_reg'>Este campo é requerido</span>: ''}
 
-                <label>Cep</label>
+                <label>Cep*</label>
                 <Input  name='cep'  id='cep' onKeyUp={handleKeyUp} onChange={(e) => handleChange(e)}/> 
                 {errors.map(x => { if(x.fieldName === 'cep') return  <p className=' formField__error_reg'>{x.message}</p>})}
                 { emptyValue && form['cep'] === '' ?<span className='formField__error_reg'>Este campo é requerido</span>: ''}
