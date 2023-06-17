@@ -128,9 +128,7 @@
 	  <version>3.1.0</version>	  	  
 </plugin>
 <plugin>
-  <groupId>org.apache.maven.plugins</groupId>
-  <artifactId>maven-dependency-plugin</artifactId>
-  <version>2.4</version>
+  <artifactId>maven-dependency-plugin</artifactId> 
   <executions>
     <execution>
       <id>copy-dependencies</id>
@@ -154,7 +152,7 @@
         <excludeDefaultDirectories>true</excludeDefaultDirectories>
         <filesets>
              <fileset>
-            <directory>target/*.jar</directory>
+            <directory>target/dependency/*.jar</directory>
           </fileset>
         </filesets>
       </configuration>
