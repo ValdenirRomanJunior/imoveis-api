@@ -127,7 +127,28 @@
 	<artifactId>maven-resources-plugin</artifactId>
 	  <version>3.1.0</version>	  	  
 </plugin>
- 
+ <plugin>
+  <artifactId>maven-clean-plugin</artifactId>
+  
+  <executions>
+    <execution>
+      <id>clean-jar-artifacts</id>
+      <phase>install</phase>
+      <goals><goal>clean</goal></goals>
+      <configuration>
+        <excludeDefaultDirectories>true</excludeDefaultDirectories>
+        <filesets>
+         <fileset>
+  <directory>target</directory>
+  <excludes>
+    <exclude>*.war</exclude>
+  </excludes>
+</fileset>
+        </filesets>
+      </configuration>
+    </execution>
+  </executions>
+</plugin>
 		</plugins>
 	</build>
 
