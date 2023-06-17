@@ -11,7 +11,7 @@
 	<groupId>com.dynamous</groupId>
 	<artifactId>imoveis</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<packaging>war</packaging>
+	
 	<name>imoveis</name>
 	<description>Demo project for Spring Boot</description>
 	<properties>
@@ -41,7 +41,6 @@
 		</dependency>
 
 
-
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
@@ -50,7 +49,7 @@
 		<dependency>
 			<groupId>com.h2database</groupId>
 			<artifactId>h2</artifactId>
-			<scope>runtime</scope>
+			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.postgresql</groupId>
@@ -129,25 +128,21 @@
 	  <version>3.1.0</version>	  	  
 </plugin>
 <plugin>
-  <artifactId>maven-clean-plugin</artifactId>
-  <version>3.0.0</version>
+  <groupId>org.apache.maven.plugins</groupId>
+  <artifactId>maven-dependency-plugin</artifactId>
+ 
   <executions>
     <execution>
-      <id>clean-jar-artifacts</id>
-      <phase>install</phase>
-      <goals><goal>clean</goal></goals>
+      <id>copy-dependencies</id>
+      <phase>package</phase>
+      <goals><goal>copy-dependencies</goal></goals>
       <configuration>
-        <excludeDefaultDirectories>true</excludeDefaultDirectories>
-        <filesets>
-          <fileset>
-            <directory>target/dependency/*.jar</directory>
-          </fileset>
-
-        </filesets>
+        <includeScope>compile</includeScope>
       </configuration>
     </execution>
   </executions>
 </plugin>
+
 		</plugins>
 	</build>
 
