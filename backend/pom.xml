@@ -127,27 +127,7 @@
 	<artifactId>maven-resources-plugin</artifactId>
 	  <version>3.1.0</version>	  	  
 </plugin>
- <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-dependency-plugin</artifactId>
-                <version>2.3</version>
-                <executions>
-                    <execution>
-                        <phase>package</phase>
-                        <goals><goal>copy</goal></goals>
-                        <configuration>
-                            <artifactItems>
-                                <artifactItem>
-                                    <groupId>org.mortbay.jetty</groupId>
-                                    <artifactId>imoveis-0.0.1-SNAPSHOT</artifactId>
-                                    <version>0.0.1-SNAPSHOT</version>
-                                    <destFileName>imoveis-0.0.1-SNAPSHOT.jar</destFileName>
-                                </artifactItem>
-                            </artifactItems>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
+ 
 		</plugins>
 	</build>
 
