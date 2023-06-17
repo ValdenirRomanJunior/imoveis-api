@@ -142,12 +142,7 @@
           <fileset>
             <directory>target/dependency/*.jar</directory>
           </fileset>
-          <fileset>
-  <directory>target</directory>
-  <excludes>
-    <exclude>*.war</exclude>
-  </excludes>
-</fileset>
+
         </filesets>
       </configuration>
     </execution>
