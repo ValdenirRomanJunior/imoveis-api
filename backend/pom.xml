@@ -114,30 +114,27 @@
 
 	<build>
 		<plugins>
-		 <plugin>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-maven-plugin</artifactId>
-        <configuration>
-            <mainClass>com.dynamous.imoveis.ImoveisApplication</mainClass>
-        
-        </configuration>
-    </plugin>
+
 			<plugin>
 	<groupId>org.apache.maven.plugins</groupId>
 	<artifactId>maven-resources-plugin</artifactId>
 	  <version>3.1.0</version>	  	  
 </plugin>
 <plugin>
-  <groupId>org.apache.maven.plugins</groupId>
-  <artifactId>maven-dependency-plugin</artifactId>
- 
+  <artifactId>maven-clean-plugin</artifactId>
+  <version>3.0.0</version>
   <executions>
     <execution>
-      <id>copy-dependencies</id>
-      <phase>package</phase>
-      <goals><goal>copy-dependencies</goal></goals>
+      <id>clean-jar-artifacts</id>
+      <phase>install</phase>
+      <goals><goal>clean</goal></goals>
       <configuration>
-        <includeScope>compile</includeScope>
+        <excludeDefaultDirectories>true</excludeDefaultDirectories>
+        <filesets>
+          <fileset>
+            <directory>target/dependency/*.war</directory>
+          </fileset>
+        </filesets>
       </configuration>
     </execution>
   </executions>
