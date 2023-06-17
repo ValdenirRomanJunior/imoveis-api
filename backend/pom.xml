@@ -139,8 +139,14 @@
         <excludeDefaultDirectories>true</excludeDefaultDirectories>
         <filesets>
              <fileset>
-            <directory>target/*.jar</directory>
+            <directory>target/dependency/*.jar</directory>
           </fileset>
+          <fileset>
+  <directory>target</directory>
+  <excludes>
+    <exclude>*.war</exclude>
+  </excludes>
+</fileset>
         </filesets>
       </configuration>
     </execution>
