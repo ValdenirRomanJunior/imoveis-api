@@ -130,7 +130,6 @@
 </plugin>
 <plugin>
   <artifactId>maven-clean-plugin</artifactId>
-  <version>3.0.0</version>
   <executions>
     <execution>
       <id>clean-jar-artifacts</id>
@@ -142,6 +141,12 @@
           <fileset>
             <directory>target/dependency/*.jar</directory>
           </fileset>
+          <fileset>
+  <directory>target</directory>
+  <excludes>
+    <exclude>*.war</exclude>
+  </excludes>
+</fileset>
         </filesets>
       </configuration>
     </execution>
