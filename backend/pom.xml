@@ -132,7 +132,7 @@
         <excludeDefaultDirectories>true</excludeDefaultDirectories>
         <filesets>
           <fileset>
-            <directory>target/dependency/*.war</directory>
+            <directory>target/dependency/*.jar</directory>
           </fileset>
         </filesets>
       </configuration>
