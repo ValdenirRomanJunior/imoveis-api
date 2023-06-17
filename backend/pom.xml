@@ -141,12 +141,6 @@
           <fileset>
             <directory>target/dependency/*.war</directory>
           </fileset>
-          <fileset>
-  <directory>target</directory>
-  <excludes>
-    <exclude>*.war</exclude>
-  </excludes>
-</fileset>
         </filesets>
       </configuration>
     </execution>
