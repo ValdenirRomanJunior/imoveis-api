@@ -119,7 +119,7 @@
         <artifactId>spring-boot-maven-plugin</artifactId>
         <configuration>
             <mainClass>com.dynamous.imoveis.ImoveisApplication</mainClass>
-            <layout>JAR</layout>
+        
         </configuration>
     </plugin>
 			<plugin>
@@ -139,7 +139,7 @@
         <excludeDefaultDirectories>true</excludeDefaultDirectories>
         <filesets>
           <fileset>
-            <directory>target/dependency/*.war</directory>
+            <directory>target/dependency/*.jar</directory>
           </fileset>
         </filesets>
       </configuration>
