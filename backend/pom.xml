@@ -17,6 +17,7 @@
 	<properties>
 		<java.version>11</java.version>
 		<aws.java.sdk.version>2.16.1</aws.java.sdk.version>
+		<start-class>com.dynamous.imoveis.ImoveisApplication</start-class>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -49,7 +50,7 @@
 		<dependency>
 			<groupId>com.h2database</groupId>
 			<artifactId>h2</artifactId>
-			<scope>test</scope>
+			<scope>runtime</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.postgresql</groupId>
@@ -116,8 +117,19 @@
 			<plugin>
 	<groupId>org.apache.maven.plugins</groupId>
 	<artifactId>maven-resources-plugin</artifactId>
-	  <version>3.1.0</version>	  	  
+	  <version>3.1.0</version>	
+	      <configuration>
+                  <archive>
+                    <manifest>
+
+                    <!-- give full qualified name of your main class-->
+                      <mainClass>com.dynamous.imoveis.ImoveisApplication</mainClass>
+
+                    </manifest>
+                  </archive>
+                </configuration>  	  
 </plugin>
+
 
 		</plugins>
 	</build>
