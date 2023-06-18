@@ -118,19 +118,16 @@
 	<groupId>org.apache.maven.plugins</groupId>
 	<artifactId>maven-resources-plugin</artifactId>
 	  <version>3.1.0</version>	
-	      <configuration>
-                  <archive>
-                    <manifest>
-
-                    <!-- give full qualified name of your main class-->
-                      <mainClass>com.dynamous.imoveis.ImoveisApplication</mainClass>
-
-                    </manifest>
-                  </archive>
-                </configuration>  	  
-   </plugin>
-
-
+	     <configuration>
+             <archive>
+                 <manifest>
+                     <addClasspath>true</addClasspath>
+                     <mainClass>ImoveisApplication.main</mainClass>
+                 </manifest>
+             </archive>
+      </configuration>     	  
+        </plugin>
+ 
 		</plugins>
 	</build>
 
