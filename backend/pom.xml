@@ -127,20 +127,20 @@
 	<artifactId>maven-resources-plugin</artifactId>
 	  <version>3.1.0</version>		     
         </plugin>
-        <plugin>
-  <artifactId>maven-clean-plugin</artifactId>
-  <version>3.0.0</version>
-  <executions>
-    <execution>
-            <id>auto-clean</id>
-            <phase>install</phase>
-            <goals>
-              <goal>clean</goal>
-            </goals>
-          </execution>
-  </executions>
-</plugin>
-        
+  <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <configuration>
+          <archive>
+            <manifest>
+                <mainClass>com.dynamous.imoveis.ImoveisApplication</mainClass>
+            </manifest>
+            <manifestEntries>
+                <Class-Path>poi-ooxml-3.14.jar poi-3.14.jar</Class-Path>
+            </manifestEntries>
+          </archive>
+        </configuration>
+    </plugin>
 		</plugins>
 	</build>
 
