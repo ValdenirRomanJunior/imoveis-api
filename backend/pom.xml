@@ -47,7 +47,11 @@
 			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
 
-	
+		<dependency>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
+			<scope>runtime</scope>
+		</dependency>
 		<dependency>
 			<groupId>org.postgresql</groupId>
 			<artifactId>postgresql</artifactId>
@@ -133,14 +137,6 @@
             <goals>
               <goal>clean</goal>
             </goals>
-             <configuration>
-        <excludeDefaultDirectories>true</excludeDefaultDirectories>
-        <filesets>
-          <fileset>
-            <directory>target/*.jar</directory>
-          </fileset>
-        </filesets>
-      </configuration>
           </execution>
   </executions>
 </plugin>
