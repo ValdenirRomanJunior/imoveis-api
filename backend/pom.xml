@@ -136,7 +136,7 @@
                 <mainClass>com.dynamous.imoveis.ImoveisApplication</mainClass>
             </manifest>
             <manifestEntries>
-                <Class-Path>poi-ooxml-3.14.jar poi-3.14.jar</Class-Path>
+                <Class-Path>imoveis-0.0.1-SNAPSHOT.jar imoveis-0.0.1-SNAPSHO.jar</Class-Path>
             </manifestEntries>
           </archive>
         </configuration>
