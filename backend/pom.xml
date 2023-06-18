@@ -17,7 +17,7 @@
 	<properties>
 		<java.version>11</java.version>
 		<aws.java.sdk.version>2.16.1</aws.java.sdk.version>
-		<start-class>com.dynamous.imoveis.ImoveisApplication</start-class>
+	
 	</properties>
 	<dependencies>
 		<dependency>
