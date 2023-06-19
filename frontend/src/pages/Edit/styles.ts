@@ -128,6 +128,7 @@ export const BodyEditContainer = styled.main`
 
         .button-send-email{
           position: relative;
+          border-radius:5px;
         }
     }
     .formField__error{

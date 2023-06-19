@@ -371,23 +371,24 @@ export const LeadWrapper = styled.div<{prop:boolean}>`
                         
             }
           }
+          .icon-lead-trash{
+            width:100%;
+            display: flex;
+            justify-content:end;
     
-    
-          .icon-trash{
-            position: absolute;
-            bottom:5%;
-            right:0;
-            margin-right:4px;
-            font-size: 12px;
-            display:${({prop}) => prop === true ?  'block' : 'none'};
-            animation: open 500ms ease-in-out;     
-            transition: height 500ms ;
-            color:#9498a8;
-            background: transparent;
-            border: none;
-            
-        }
+            .icon-trash{
         
+                font-size: 12px;     
+                animation: open 500ms ease-in-out;     
+                transition: height 500ms ;
+                color:#9498a8;
+                background: transparent;
+                border: none;
+                
+            }
+          }
+    
+    
         .link-detail-property-lead{
             border-top: .5px solid #ebebeb;
         }

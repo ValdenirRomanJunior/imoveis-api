@@ -159,7 +159,7 @@ const Details = ()=>{
                                        
                         { property?.images && property.images.map((photo) =>           
                                <CardWrapper key={photo.id}>                          
-                               <img  src={photo.url}  alt="algo"/>                          
+                               <img  src={photo.url}  alt="propriedade"/>                          
                                </CardWrapper>)}
 
                              {property?.images?.length===0 as number  && <CardWrapper><img src={defaultImage} alt='Foto Padrão' className='default-image-detail'/></CardWrapper>} 
@@ -170,8 +170,10 @@ const Details = ()=>{
                
              </PhotosContainer>
          
-         
+         <div className='price-cod-wrapper-detail'>
          <h2  className='price'>R$ {property?.price}</h2>
+         <span className='cod-property-detail'>Cod.{property?.id}</span>
+         </div>
          <Localization>
          <div className='localization-detail-wrapper'>               
          <p  className='localization-district-detail-wrapper'><BiMap className='icon-localization-detail'/>{property?.address.district}</p>

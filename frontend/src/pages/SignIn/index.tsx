@@ -207,12 +207,14 @@ refreshTokenUser()
         const response =  await sendNewPasswordForEmail(emailDto);
        
        
-          if(response.status === 204){         
+          if(response.status === 204){  
+            setSuccessMessage(true)    
             setLoadingSendEmail(false)
+            
             setTimeout(()=> {
-              setLoadingSendEmail(false)
+             
               setSuccessMessage(false)
-            },1000)         
+            },1500)         
             cleanForm()
         }
         if(response.response.status === 404){         
@@ -337,13 +339,13 @@ refreshTokenUser()
         onRequestClose={closeModal}
         style={customStyles}
         contentLabel="Example Modal"
-        className='Modal'
+        className='ModalSend'
         
       >
         <IoCloseOutline onClick={closeModal}  className='button-close-modal' />
         <h1>Enviar nova senha por Email</h1>
          <form>
-            <Input placeholder="Exemplo: joãocorretor@gmail.com" name='emailNewPass' value={emailNewPassword} id='emailNewPass'  onKeyUp={handleKeyUp} onChange={e => setEmailNewPassword(e.target.value)}/>
+            <Input type="text" placeholder="Exemplo: joãocorretor@gmail.com" name='emailNewPass' value={emailNewPassword} id='emailNewPass'  onKeyUp={handleKeyUp} onChange={e => setEmailNewPassword(e.target.value)}/>
             <div className="button-send-email-wrapper">
             {
                 loadingSendEmail ? <Button  onClick={sendNewEmail} className="button-send-email-loading"><div className="loading-sendemail-wrapper"><Loading /></div></Button>:''}

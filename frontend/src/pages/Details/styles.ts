@@ -30,8 +30,17 @@ height: auto;
     color: #585858;
     text-align: left;
 }
+.price-cod-wrapper-detail{
+    width:100%;
+   display: flex;
+   justify-content: space-between;
+   align-items: center;
+}
+.cod-property-detail{
+    font-size:14px;
+    color: gray;
 
-
+}
 
 h4{
     width:100%;

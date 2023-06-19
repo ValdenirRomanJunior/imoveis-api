@@ -121,6 +121,7 @@ export const BodyRegistrationContainer = styled.main`
     }
     .button-send-email{
         position: relative;
+        border-radius:5px;
     }
     .formField__error_reg{
         color:red;

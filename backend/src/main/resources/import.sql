@@ -3,7 +3,7 @@ INSERT INTO TENANT ( slug, email, password, status,last_name,verification, domai
 INSERT INTO TENANT ( slug, email, password, status,last_name,verification, domain) VALUES ('corretor2','piagenerator@outlook.com','$2a$10$SlOVSeeJSFR07DXoDdvZ..chnzSwkJXW0IZlL6K1CwbAX9eKd5XYa',1,'jean',1,'localhost2');
 INSERT INTO TENANT ( slug, email, password, status,last_name,verification, domain) VALUES ('corretor3','piagenerator@uol.com','$2a$10$SlOVSeeJSFR07DXoDdvZ..chnzSwkJXW0IZlL6K1CwbAX9eKd5XYa',1,'jean',1,'localhost3');
 
-INSERT INTO user_admin ( slug, email, password, status,last_name) VALUES ('Admin','vromanjunior@outlook.com','$2a$10$SlOVSeeJSFR07DXoDdvZ..chnzSwkJXW0IZlL6K1CwbAX9eKd5XYa',1,'valdenir');
+INSERT INTO user_admin ( slug, email, password, status,last_name) VALUES ('Admin','admin@outlook.com','$2a$10$SlOVSeeJSFR07DXoDdvZ..chnzSwkJXW0IZlL6K1CwbAX9eKd5XYa',1,'valdenir');
 
 INSERT INTO perfis (tenant_id, perfis) VALUES (1,2);
 INSERT INTO perfis (tenant_id, perfis) VALUES (2,2);

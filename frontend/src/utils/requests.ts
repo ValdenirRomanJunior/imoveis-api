@@ -1,5 +1,5 @@
  import axios from 'axios';
-  const BASE_URL = process.env.REACT_APP_BACKEND_URL ?? " https://baseview-api.herokuapp.com";
+  const BASE_URL = process.env.REACT_APP_BACKEND_URL ?? "http://localhost:8080";
 
 
 
@@ -20,14 +20,12 @@
         
         config.headers = {
              'Authorization':`${tokenString}`,
-             'Content-Type': 'application/json',
+             'Content-Type': 'application/json',           
              'Access-Control-Allow-Headers': 'Content-Type',
              "Access-Control-Allow-Origin": "http:localhost:3000",
              "Access-Control-Allow-Methods": "OPTIONS,POST,GET"
 
-             
-             
-                 
+        
         }
        
         return config; 

@@ -48,9 +48,12 @@ export const editTenant = (slug:string, lastName:string, email: string,password:
 }
 
   export const sendNewPasswordForEmail=(email:string) => {
-    return api.post('/auth/forgot',email,
-   
-    ) 
+    return api.post('/auth/forgot',email,{
+      headers: {
+        'Content-Type': 'application/json'
+    }
+  }
+    )
               .then(response =>{
                 return response;
               }).catch((error) =>{

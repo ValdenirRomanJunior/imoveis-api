@@ -164,7 +164,8 @@ const handleChange = async(e:any) =>{
                    
                     {images?.[0] ?  <Link to={`/details/${id}`}> <img src={images?.[0]?.url }/> </Link> : <Link to={`/details/${id}`}><img src={defaultImage}/> </Link>}            
                      <div className='text-wrapper-card'>
-                     <Link to={`/details/${id}`} className='link-wrapper-name-cod'> <p className='title-card-property'>{name}</p><span>cod.{id}</span></Link>  
+                     <Link to={`/details/${id}`} className='link-wrapper-name-cod'> <p className='title-card-property'>{name}</p></Link>  
+                     <span className='cod-property-card'>cod.{id}</span>
                      <p className='value'>R${price}</p>
                      <div className='localization-wrapper'>
                      <p className='localization'><BiMap className='localization-icon'/>

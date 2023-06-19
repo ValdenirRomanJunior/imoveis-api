@@ -82,6 +82,7 @@ padding: 5px 5px;
             .icon-links{
                 margin-right:4px;
                 font-size: 15px;
+                cursor: pointer;
             }
 
         }

@@ -1,12 +1,16 @@
 
- .Modal{
-    padding:20px 10px;
+ .ModalSend{
+    padding:30px 20px 20px 20px;
     border-radius: 2px;
+    position: absolute;
+    top:0;
+    left:50%;
+    background:#fff;
    
     
  }
  
- .Modal .button-send-email-wrapper{
+ .ModalSend .button-send-email-wrapper{
         width:100%;
         margin-top: 20px;
         
@@ -14,7 +18,7 @@
         justify-content: center;
         align-items: center;
     }
-    .Modal .button-send-email{
+    .ModalSend .button-send-email{
         width: 100px !important;
         height: 35px;
         border-radius: 3px;
@@ -23,7 +27,7 @@
 
     }
 
-    .Modal .button-send-email-loading{
+    .ModalSend .button-send-email-loading{
         position:relative;
         width: 160px !important;
         height: 40px;
@@ -37,21 +41,21 @@
         
     }
 
-    .Modal .button-send-email-loading .loading-sendemail-wrapper{
+    .ModalSend .button-send-email-loading .loading-sendemail-wrapper{
         display: flex;
         align-items: center;
         justify-content: center;
     }
 
-    .Modal h1{
-        font-size:16px;
+    .ModalSend h1{
+        font-size:15px;
         text-align: center;
         color:rgb(89, 87, 87);
         margin-bottom: 20px;
         font-family: 'Nunito Sans', sans-serif;
         font-weight: 600;
     }
-    .Modal .button-close-modal{
+    .ModalSend .button-close-modal{
         position: absolute;
         right: 0;
         top:2%;
@@ -67,7 +71,7 @@
 
     }
 
-    .Modal .message{
+    .ModalSend .message{
         width:100%;
         position:relative;
         margin-top:10px;
@@ -76,7 +80,7 @@
         justify-content: center;
     }
 
-    .Modal .message .success {
+    .ModalSend .message .success {
         font-size: 14px;
         color:green;
         position: absolute;
@@ -104,7 +108,7 @@
         }
     }
 
-    .Modal .formField__error{
+    .ModalSend .formField__error{
         font-family: 'Nunito Sans', sans-serif;
         font-size: 14px;
         color:rgb(180, 0, 0);

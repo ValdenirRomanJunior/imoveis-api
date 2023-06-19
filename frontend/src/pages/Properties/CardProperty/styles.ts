@@ -48,8 +48,16 @@ font-family: "Poppins", sans-serif;
         padding: 5px 5px;
         max-width:100%;
         overflow: hidden;
+        position: relative;
 
-        
+     .cod-property-card{
+        position: absolute;
+        top:-4%;
+        right:5%;
+        font-size:13px;
+        color: gray;
+     }
+
         .title-card-property{
             color: rgb(74, 74, 74)  !important;
             margin-bottom: 3px;
