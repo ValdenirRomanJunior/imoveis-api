@@ -27,14 +27,10 @@ import java.util.stream.Collectors;
 @RequestMapping(value = "/tenants")
 public class TenantController {
 	
-	  @Autowired
-	    private EmailService emailService;
 
     @Autowired
     private TenantService service;
 
-    @Autowired
-    private TenantRepository tenantRepository;
    
    // @PreAuthorize("hasAnyRole('ADMIN')")
     @GetMapping(value = "/find/{id}")

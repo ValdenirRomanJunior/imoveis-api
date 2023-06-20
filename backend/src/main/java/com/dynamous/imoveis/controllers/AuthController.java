@@ -39,6 +39,8 @@ public class AuthController {
     
     @Autowired
     private AuthService authService;
+    
+
 
     @PostMapping(value = "/refresh_token")
     public ResponseEntity<Void> refreshToken(HttpServletResponse response) throws UsernameNotFoundException{
@@ -92,7 +94,7 @@ public class AuthController {
         	  return  ResponseEntity.ok().body(userAdmin);
 
           }
-    	
-    	
+    	  	
     }
+
 }

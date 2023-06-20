@@ -60,7 +60,7 @@ public class LeadService {
     public Lead insert(Lead obj) {
         obj.setId(null);       
         leadRepository.save(obj);
-        //emailService.sendRegistrationHtmlEmail(obj);
+      
         return obj;
     }
 

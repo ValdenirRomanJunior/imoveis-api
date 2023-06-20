@@ -117,7 +117,7 @@ public class PropertyController {
     @PreAuthorize("hasAnyRole('TENANT')")
     @GetMapping(value = "/totalProperties/{id}")
     public ResponseEntity<?> getTotalProperties(@PathVariable Long id){ 
-    	System.out.println(id);
+    
     	
        Long total= propertyRepository.countByTenantId(id);     
         return ResponseEntity.ok().body(total);
@@ -126,10 +126,11 @@ public class PropertyController {
     @GetMapping(value = "/findLeadProperty/{id}")
     public ResponseEntity<?> findByIdLeadProperty(@PathVariable Long id){    
         Property property=service.find(id);
-        
+        ImageUrl imgux=null;
+        List<ImageUrl> OneImg=null;
     	if( property.getImages().size() >0 ) {  
-       		ImageUrl imgux = property.getImages().get(0);    		
-       		List<ImageUrl> OneImg = new ArrayList<ImageUrl>();
+       		imgux = property.getImages().get(0);    		
+       		OneImg = new ArrayList<ImageUrl>();
        		property.setImages(OneImg);
        		property.getImages().add(imgux);
        		}
@@ -151,8 +152,7 @@ public class PropertyController {
     @PreAuthorize("hasAnyRole('TENANT')")
     @GetMapping(value = "/publishedProperties/{id}")
     public ResponseEntity<?> getPublishedProperties(@PathVariable Long id){ 
-    	
-    	
+    	 	
        Long total= propertyRepository.publishedByTenantId(id);     
         return ResponseEntity.ok().body(total);
     }

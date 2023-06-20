@@ -182,6 +182,7 @@ public class PropertyService {
         
         //salvo aqui  o objeto depois pego o id no banco da propriedade
         List<ImageUrl> listImages=propertyNewDTO.getImages();
+        
         if(listImages != null){
         	for(ImageUrl img : listImages) {
         		img.setId(null);
@@ -280,11 +281,8 @@ public class PropertyService {
 	        if (user == null) {
 	        	throw new AuthorizationException("erro");
 	        }
-	        Tenant tenant = tenantService.find(user.getId());
-		 PageRequest pageRequest = PageRequest.of(page, linesPerPage, Direction.valueOf(direction), orderBy);		  		  	
-		   // Page<City> address= cityRepository.findAll(pageRequest);
-		  //  Page<Property> pageR= propertyRepository.findAll(pageRequest);
-		    
+	     
+		 PageRequest pageRequest = PageRequest.of(page, linesPerPage, Direction.valueOf(direction), orderBy);		  		  		    
 		  	return propertyRepository.findAll(pageRequest);
 
 	}
