@@ -45,7 +45,7 @@ public class TenantUpdateDTO implements Serializable {
     @Length( max=100, message = "O tamanho deve ser no máximo 100 caracteres")
     private String domain;
     
-    @NotNull
+    
     private Integer signedDays;
 
     public TenantUpdateDTO(){

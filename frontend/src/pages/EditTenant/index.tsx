@@ -242,7 +242,7 @@ const EditTenantComponent = ({tenant}: Prop) =>{
                     <option  key='4' value='365'>1 ano</option>
                 </select>
                 {errors.map(x => { if(x.fieldName === 'signedDays') return  <p className=' formField__error'>{x.message}</p>})}
-                { emptyValue && form['signedDays'] === '' ?<span className='formField__error'>Este campo é requerido</span>: ''}    
+                    
                 <div className='buttom-register-wrapper'>
            
 
