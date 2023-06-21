@@ -220,7 +220,7 @@ const EditTenantComponent = ({tenant}: Prop) =>{
                 {errors.map(x => { if(x.fieldName === 'password') return  <p className='formField__error'>{x.message}</p>})}
 
                 <label>Domínio</label>            
-                <Input id="domain" name="domain" value={form['domain'] } onChange={(e) => handleChange(e)} onKeyUp={handleKeyUp} maxLength={20} />
+                <Input id="domain" name="domain" value={form['domain'] } onChange={(e) => handleChange(e)} onKeyUp={handleKeyUp} maxLength={70} />
                 {errors.map(x => { if(x.fieldName === 'domain') return  <p className='formField__error'>{x.message}</p>})}
               
                 <label>Status</label>

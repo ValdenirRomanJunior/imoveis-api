@@ -192,7 +192,8 @@ public class PropertyService {
         		property.getImages().addAll(listImages);
         	}           
         }   
-        return property;	
+        return property;
+        
     }
     
 

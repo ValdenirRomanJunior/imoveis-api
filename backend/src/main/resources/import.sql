@@ -31,10 +31,10 @@ INSERT INTO address(street, number, district, cep, property_id, city_id) VALUES 
 
 
 
-INSERT INTO urls(id, id_tenant, url,property_id) VALUES (1,1,'https://dynamous.s3.sa-east-1.amazonaws.com/tp1.jpg',1);
-INSERT INTO urls(id, id_tenant, url,property_id) VALUES (2,1,'https://dynamous.s3.sa-east-1.amazonaws.com/tp1.jpg',2);
-INSERT INTO urls(id, id_tenant, url,property_id) VALUES (3,1,'https://dynamous.s3.sa-east-1.amazonaws.com/tp1.jpg',3);
-INSERT INTO urls(id, id_tenant, url,property_id) VALUES (4,1,'https://dynamous.s3.sa-east-1.amazonaws.com/tp1.jpg',4);
+INSERT INTO urls(id, id_tenant, url,property_id) VALUES (1,1,'https://dynamous.s3.sa-east-1.amazonaws.com/bailey-anselme-Bkp3gLygyeA-unsplash.jpg',1);
+INSERT INTO urls(id, id_tenant, url,property_id) VALUES (2,1,'https://dynamous.s3.sa-east-1.amazonaws.com/bailey-anselme-Bkp3gLygyeA-unsplash.jpg',2);
+INSERT INTO urls(id, id_tenant, url,property_id) VALUES (3,1,'https://dynamous.s3.sa-east-1.amazonaws.com/bailey-anselme-Bkp3gLygyeA-unsplash.jpg',3);
+INSERT INTO urls(id, id_tenant, url,property_id) VALUES (4,1,'https://dynamous.s3.sa-east-1.amazonaws.com/bailey-anselme-Bkp3gLygyeA-unsplash.jpg',4);
 
 INSERT INTO lead(name,email,phone,message,property_id,tenant_id) VALUES ('Jean','vromanjunior@outlook.com','85982251426','ola gostarias de saber mais sobre a casa',1,1);
 INSERT INTO lead(name,email,phone,message,property_id,tenant_id) VALUES ('Rafael','vromanjunior@outlook.com','85982251426','ola gostarias de saber mais sobre a casa',2,1);
