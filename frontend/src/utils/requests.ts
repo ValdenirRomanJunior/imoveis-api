@@ -22,7 +22,7 @@
              'Authorization':`${tokenString}`,
              'Content-Type': 'application/json',           
              'Access-Control-Allow-Headers': 'Content-Type',
-             //"Access-Control-Allow-Origin": "http:localhost:3000",
+             "Access-Control-Allow-Origin": "https://steady-cheesecake-480a84.netlify.app/",
              "Access-Control-Allow-Methods": "OPTIONS,POST,GET"
 
         
