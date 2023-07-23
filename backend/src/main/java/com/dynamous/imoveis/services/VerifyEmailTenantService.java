@@ -34,7 +34,7 @@ public class VerifyEmailTenantService {
 				 throw new com.dynamous.imoveis.services.exceptions.IllegalArgumentException("Cadastro já verificado");
 			 }
 			 tenant.setVerification(Verification.VERIFICADO);	 
-			 tenantService.update(tenant);
+			 tenantService.updateNoLogin(tenant);
 			 
 			 emailService.sendRegistrationHtmlEmail(tenant);
 			 

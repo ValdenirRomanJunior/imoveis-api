@@ -37,7 +37,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Autowired
 	private JWTUtil jwtUtil;
-
+//dd
 	private static final String[] PUBLIC_MATCHERS = {
 			"/h2-console/**",			
 			"/pictures/**",
@@ -58,7 +58,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 			"/properties/search/**",
 			"/properties/searchTest/**",
 			"/properties/getAllAddress/**"
-		
 		
 
 	};

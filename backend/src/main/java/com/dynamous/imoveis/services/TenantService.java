@@ -93,6 +93,8 @@ public class TenantService {
         updateData(newObj,tenant);
         return tenantRepository.save(newObj);
     }
+    
+    
 
     private void updateData(Tenant newObj, Tenant tenant) {
         newObj.setSlug(tenant.getSlug());
@@ -108,7 +110,11 @@ public class TenantService {
 
     }
 
-   
+    public Tenant updateNoLogin(Tenant tenant) {
+        Tenant newObj= findSite(tenant.getId());
+        updateData(newObj,tenant);
+        return tenantRepository.save(newObj);
+    }
 	public void delete(Long id){
     	find(id);
     	//leadService.deleteAllByTenant(id);
