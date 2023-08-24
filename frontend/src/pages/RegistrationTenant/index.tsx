@@ -200,7 +200,7 @@ useEffect(() =>{
                 { emptyValue && form['lastName'] === '' ?<span className='formField__error'>Este campo é requerido</span>: ''}
 
                 <label>Email</label>
-                <Input id="email" name="email" onChange={(e) => handleChange(e)} onKeyUp={handleKeyUp} maxLength={30}/>
+                <Input id="email" name="email" onChange={(e) => handleChange(e)} onKeyUp={handleKeyUp} maxLength={45}/>
                 {errors.map(x => { if(x.fieldName === 'email') return  <p className=' formField__error'>{x.message}</p>})}
                 { emptyValue && form['email'] === '' ?<span className='formField__error'>Este campo é requerido</span>: ''}
 

@@ -18,7 +18,7 @@ public class TenantNewDTO implements Serializable {
     private String slug;
 
     @NotEmpty(message = "Preenchimento obrigatório")
-    @Length(min=2, max=30, message = "O tamanho deve ser entre 2 e 30 caracteres")
+    @Length(min=2, max=45, message = "O tamanho deve ser entre 2 e 45 caracteres")
     @Email(message = "E-mail inválido")
     private String email;
     
