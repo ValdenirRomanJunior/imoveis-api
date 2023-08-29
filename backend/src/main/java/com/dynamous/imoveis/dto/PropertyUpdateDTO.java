@@ -28,7 +28,7 @@ public class PropertyUpdateDTO implements Serializable {
     @Length(min=1, max=80, message = "O tamanho deve ser entre 1 e 80 caracteres")
     private String name;
     @NotEmpty(message = "Preenchimento obrigatório")
-    @Length(min=1, max=200, message = "O tamanho deve ser entre 1 e 200 caracteres")
+    @Length(min=1, max=250, message = "O tamanho deve ser entre 1 e 250 caracteres")
     private String description;
     
     @NotNull 
