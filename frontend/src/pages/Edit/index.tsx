@@ -339,6 +339,8 @@ const cleanForm = () =>{
                 let numberRooms: any;            
                 for (var prop4 in form) {if(prop4 === 'numberRooms'){ numberRooms=form[prop4];}}
 
+            
+
                 let bathRooms: any;            
                 for (var prop5 in form) {if(prop5 === 'bathRooms'){ bathRooms=form[prop5];}}
 
@@ -500,12 +502,12 @@ const cleanForm = () =>{
                 { emptyValue && form['bathRooms'] === '' ? <span className='formField__error'>Selecione o número de Banheiros</span>: ''}
               
                 <label>Área(m2)*</label>
-                <Input id="area" name="area" value={form['area'] } onChange={(e) => handleChange(e)} maxLength={6} onKeyUp={handleKeyUp}/>
+                <Input id="area" name="area"  placeholder='Digite apenas números' value={form['area'] } onChange={(e) => handleChange(e)} maxLength={6} onKeyUp={handleKeyUp}/>
                 {errors.map(x => { if(x.fieldName === 'area') return  <p className=' formField__error'>{x.message}</p>})}
                 { emptyValue && form['area'] === '' ?<span className='formField__error'>Preencha o total da Área interna</span>: ''}
 
                 <label>Área total(m2)*</label>
-                <Input id="areaTotal" name="areaTotal" value={form['areaTotal'] } onChange={(e) => handleChange(e)} maxLength={6} onKeyUp={handleKeyUp}/>
+                <Input id="areaTotal"  placeholder='Digite apenas números' name="areaTotal" value={form['areaTotal'] } onChange={(e) => handleChange(e)} maxLength={6} onKeyUp={handleKeyUp}/>
                 {errors.map(x => { if(x.fieldName === 'areaTotal') return  <p className=' formField__error'>{x.message}</p>})}
                 { emptyValue && form['areaTotal'] === '' ?<span className='formField__error'>Preencha o total da Área externa</span>: ''}
 

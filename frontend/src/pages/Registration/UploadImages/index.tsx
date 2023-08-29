@@ -125,9 +125,7 @@ useEffect(() => {
         setImagesSelected([]);
      }
     
-    console.log(imagesSelected)
-   
-       
+     
 }, [props.cleanImages]);
 
  
@@ -142,7 +140,7 @@ useEffect(() => {
             setFileBase64('');
                     
     }
-
+  
     const handleToRegistration =() =>{
        
         navigate("/registration")
@@ -151,8 +149,10 @@ useEffect(() => {
         if(itemImages === null){
             localStorage.removeItem('images')
         }
+        
         setImagesSelected([...imagesSelected,...itemImages]);
-        props.handleResult(itemImages)
+       
+        props.handleResult([...imagesSelected,...itemImages])
         localStorage.removeItem('images')
         setIsOpen(false)
         
@@ -161,7 +161,7 @@ useEffect(() => {
     localStorage.removeItem('images');
     //localStorage.setItem('images',JSON.stringify(imagesSelected))
 
-
+  
         
     return(
         <ImagesContainer>

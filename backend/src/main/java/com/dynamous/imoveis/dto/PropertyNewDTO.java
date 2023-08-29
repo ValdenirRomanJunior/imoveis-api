@@ -32,6 +32,7 @@ public class PropertyNewDTO implements Serializable {
     private Integer goal;
     @NotEmpty(message = "Preenchimento obrigatório")
     private String numberRooms;
+  
     @NotEmpty(message = "Preenchimento obrigatório")
     private String bathRooms;
     @NotEmpty(message = "Preenchimento obrigatório")
@@ -226,6 +227,7 @@ public class PropertyNewDTO implements Serializable {
 	public void setAreaTotal(String areaTotal) {
 		this.areaTotal = areaTotal;
 	}
+
 
 	
 

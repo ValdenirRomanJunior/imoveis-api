@@ -66,7 +66,7 @@ public class PropertyCustomRepository {
         Tenant tenant= tenantRepository.findById(user.getId()).get();
     	
         
-    	String query="select P from Property P JOIN FETCH P.tenant JOIN FETCH P.address a LEFT JOIN FETCH a.city c LEFT JOIN FETCH c.state LEFT JOIN FETCH P.images ";
+    	String query="select P from Property P JOIN FETCH P.tenant JOIN FETCH P.address a LEFT JOIN FETCH a.city c LEFT JOIN FETCH c.state ";
     	String condition = "where";
     	
     	if(tenant != null) {

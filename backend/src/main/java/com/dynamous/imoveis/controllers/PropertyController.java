@@ -99,6 +99,7 @@ public class PropertyController {
     	
     		//Page<Property> list= service.findByTenantBaseView(goal, typeProperty, name,  page, linesPerPage, orderBy, direction);
     Page<Property> list = propertyCustomRepo.findByPage(id,state, city, goal, typeProperty, page, linesPerPage, orderBy, direction);
+    System.out.println(list.getTotalElements() + " "+ "TOTAL DE IMAGENS");
          ImageUrl imgux=null;
          List<ImageUrl> OneImg=null;
        	for( Property item : list) {       		 		

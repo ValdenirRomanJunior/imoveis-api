@@ -179,10 +179,10 @@ public class PropertyService {
         Tenant tenant = tenantRepository.findById(user.getId()).get();
         property.setTenant(tenant);
         
-        
+      
         //salvo aqui  o objeto depois pego o id no banco da propriedade
         List<ImageUrl> listImages=propertyNewDTO.getImages();
-        
+        System.out.println(listImages.size()+ "IMPRIMOU TAM IMAGES");
         if(listImages != null){
         	for(ImageUrl img : listImages) {
         		img.setId(null);

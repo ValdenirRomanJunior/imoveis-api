@@ -58,6 +58,7 @@ public class Property implements Serializable {
     private String areaTotal;
     
     
+    
     //fetch = FetchType.EAGER,mappedBy = "property",cascade=CascadeType.REMOVE, orphanRemoval = tru
     @OneToMany(mappedBy = "property",fetch = FetchType.EAGER,cascade = CascadeType.REMOVE)
     private List<ImageUrl> images= new ArrayList<ImageUrl>();

@@ -228,7 +228,7 @@ const Registration = () =>{
                     
             }
            
-
+          
             const handleSubmit = async (e:any) => {
               e.preventDefault();
             
@@ -355,6 +355,7 @@ const Registration = () =>{
                 { emptyValue && form['numberRooms'] === '' ?<span className='formField__error_reg'>Selecione o número de Quartos</span>: ''}
                 
 
+
                 <label>Banheiros*</label>
                 <select  id="bathRooms" name="bathRooms"  placeholder='selecione' onChange={(e) => handleChange(e)}>
                     <option value=''  >Selecione</option>
@@ -368,11 +369,11 @@ const Registration = () =>{
                 { emptyValue && form['bathRooms'] === '' ? <span className='formField__error_reg'>Selecione o número de Banheiros</span>: ''}
                
                 <label>Área(m2)*</label>
-                <Input id="area" name="area" onBlur={(e) => handleChange(e)} maxLength={6} onKeyUp={handleKeyUp}/>
+                <Input id="area" name="area" placeholder='Digite apenas números' onBlur={(e) => handleChange(e)} maxLength={6} onKeyUp={handleKeyUp}/>
                 { emptyValue && form['area'] === '' ?<span className='formField__error_reg'>Preencha o total da Área interna</span>: ''}
 
                 <label>Área total(m2)*</label>
-                <Input id="areaTotal" name="areaTotal"  onBlur={(e) => handleChange(e)} maxLength={6} onKeyUp={handleKeyUp}/>
+                <Input id="areaTotal" name="areaTotal"  placeholder='Digite apenas números' onBlur={(e) => handleChange(e)} maxLength={6} onKeyUp={handleKeyUp}/>
                 {errors.map(x => { if(x.fieldName === 'areaTotal') return  <p className=' formField__error'>{x.message}</p>})}
                 { emptyValue && form['areaTotal'] === '' ?<span className='formField__error_reg'>Preencha o total da Área externa</span>: ''}
 
