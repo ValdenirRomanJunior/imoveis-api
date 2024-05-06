@@ -189,7 +189,8 @@ public class PropertyController {
     
     
     @GetMapping(value = "/getAllAddress")
-   public ResponseEntity <List<Address>>getResultSearch() {         	        	
+   public ResponseEntity <List<Address>>getResultSearch() {    
+    	//pegar somente endereços deste tenant
     	List<Address> list = service.findResultSearch();            
         return ResponseEntity.ok().body(list);
     }

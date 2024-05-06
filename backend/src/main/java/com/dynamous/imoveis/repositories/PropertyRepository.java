@@ -49,8 +49,8 @@ public interface PropertyRepository extends JpaRepository<Property,Long> {
     @Query("SELECT p FROM Property p JOIN p.tenant JOIN p.address a LEFT JOIN a.city c LEFT JOIN c.state LEFT JOIN p.images where p.tenant = :tenant AND c.name like %:name% AND (:goal IS NULL or p.goal = :goal) AND (:typeProperty IS NULL or p.typeProperty = :typeProperty) AND p.statusProperty = 1")
     Page<Property> findByGoalAndTEnantPropertiesIn(@Param("name")String name,@Param("goal")Integer goal,@Param("typeProperty")Integer typeProperty, @Param("tenant") Tenant tenant, Pageable pageable);
     
-   
-	List<Property> findFirst4ByTenant(Tenant tenant);
+   //erro aqui,esta indo as nao publicadas para a home
+	List<Property> findFirst4ByTenantAndStatusPropertyLessThanEqual(Tenant tenant, Integer number);
 	
 
 	    Page<Property> findAll(Pageable pageable);

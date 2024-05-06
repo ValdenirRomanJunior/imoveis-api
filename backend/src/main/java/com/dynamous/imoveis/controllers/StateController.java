@@ -28,6 +28,7 @@ public class StateController {
 	
 	@GetMapping
 	public ResponseEntity <List<StateDTO>> findAll(){
+		//bsucar somente estados do tenant
 		List<State> list = stateService.findAll();
 		List<StateDTO> listDto=list.stream().map(x -> new StateDTO(x)).collect(Collectors.toList());
 		return ResponseEntity.ok().body(listDto);

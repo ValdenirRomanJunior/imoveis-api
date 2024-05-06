@@ -5,6 +5,7 @@ import { IoCloseOutline } from "react-icons/io5";
 import { BiSearch } from "react-icons/bi";
 import { getAllCities, getAllStates } from "../../services/resources/property";
 import { number } from "../../pages/Registration/masks";
+import {IoIosCloseCircleOutline} from 'react-icons/io'
 
 
 type Props = {
@@ -35,6 +36,7 @@ const Search = ({onChange,param}:Props)=>{
     const[states,setStates]= useState<StateProp[]>([]);
     const[cities,setCities]= useState<CityProp[]>([]);
     const[disabled,setDisabled]=useState(false);
+    const[hiddenButton,setHiddenButton]=useState(false);
    
  
     
@@ -130,7 +132,22 @@ const handleCloseModal =() =>{
 
 }
 
+const handleToDeleteUF = () => {
+    const x = document.getElementById("state") as any;
+    x?.remove();
+}
 
+const hiddenButtonDelete = () => {
+
+    if( state !== '' || null){
+        setHiddenButton(true);
+    }
+    else{
+        setHiddenButton(false);
+    }
+   
+       
+}
 
     return(
     <SearchContainer>
@@ -146,22 +163,30 @@ const handleCloseModal =() =>{
             <p>Busca</p>
             <IoCloseOutline onClick={handleCloseModal} className='button-close-modal-mobile' /> 
        </BarTopSearch>
-            <SearchContent>
+            <SearchContent iconDelete={hiddenButton} onChange={hiddenButtonDelete}>
+                <div className="selectWrapper">
             <select placeholder='selecione' name='state'  id='state' disabled={disabled}  onChange={(e)=>setState(e.target.value)}> 
                 <option value='' >Estado</option>
                        
-                { states.map((uf) => (       
-                    <option  key={uf.id} value={uf.id}>{uf.name}</option>            
+                { states.map((uf) => ( 
+                   
+                  <option  key={uf.id} value={uf.id}>{uf.name} </option> 
+                                            
                  ))}  
-                           
-                </select>
-                
-                <select placeholder='selecione' name='city'  id='city'disabled={disabled} onChange={(e)=>setCity(e.target.value)}> 
+                       
+                </select>  
+                <IoIosCloseCircleOutline onClick={handleToDeleteUF} className="deleteUF"/>    
+                </div> 
+                    
+           
+
+                <select placeholder='selecione'  name='city'  id='city'disabled={disabled} onChange={(e)=>setCity(e.target.value)}> 
                 <option value='' >Cidade</option>                
                 { cities.map((ct) => (       
-                    <option  key={ct.id} value={ct.id}>{ct.name}</option>            
+                   <option  key={ct.id} value={ct.id}>{ct.name}</option>
                  ))}               
                 </select>
+               
 
             <div className="type-goal-wrapper">
                 <select placeholder='tipo' name='type'  id='type' disabled={disabled} value={type} className="select-half" onChange={(e)=>setType(e.target.value)}> 

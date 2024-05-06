@@ -128,6 +128,7 @@ public class PropertyService {
     //DELETA UM IMÓVEL
     public void delete(Long id) {
         UserSS user = UserService.authenticated();
+        //buscar com sql se tem mais de 1 imovel com este nome de cidade cadastrada. 
         Property property= find(id);
       //quando deleta propriedade deleta leads dele que propiedade vinculada
         if(user==null || !user.hasRole(Perfil.TENANT) && !property.getTenant().getId().equals(user.getId())){
@@ -136,9 +137,15 @@ public class PropertyService {
 
         try {
             propertyRepository.deleteById(id);
+            
+            //se tem mais existe algum imovel cadastrado com esta cidade e estado, caso não tem excluir esta cidade
         } catch (DataIntegrityViolationException  | EmptyResultDataAccessException | StaleStateException e) {
             throw new DataIntegrityException("impossible delete with other objects: ");
-        }
+        } 
+      
+        	//addressRepository.deleteById(property.getAddress().getId());
+    
+      
     }
 
    
@@ -290,6 +297,7 @@ public class PropertyService {
 
 	 @Transactional(readOnly = true)
 	public List<Address> findResultSearch() {
+		 //buscar somente endereços deste tenant
 			List<Address>resultList= addressRepository.findAll();
 			return resultList;
 	}
@@ -297,13 +305,13 @@ public class PropertyService {
 	 @Transactional(readOnly = true)
 	public List<Property> findFourByTenant(String domain) {
 		 Tenant tenant = tenantService.findByDomain(domain);
-		List<Property> list = propertyRepository.findFirst4ByTenant(tenant);
+		List<Property> list = propertyRepository.findFirst4ByTenantAndStatusPropertyLessThanEqual(tenant,1);
 		return list;
 	}
 	
 	 public List<Property> findFourByTenant(Long id) {
 		 Tenant tenant = tenantService.find(id);
-		List<Property> list = propertyRepository.findFirst4ByTenant(tenant);
+		List<Property> list = propertyRepository.findFirst4ByTenantAndStatusPropertyLessThanEqual(tenant,1);
 		return list;
 	}
 }

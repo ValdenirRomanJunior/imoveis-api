@@ -51,11 +51,15 @@ export const BarTopSearch = styled.div`
     
 `
 
-export const SearchContent= styled.div`
+export const SearchContent= styled.div<{iconDelete:boolean}>`
     width:100%;
     height:100vh;
     background:#fff;
     padding:1rem;
+
+    .selectWrapper{
+        position: relative;
+    }
 
     select{
         width:100%;
@@ -65,10 +69,14 @@ export const SearchContent= styled.div`
         color:gray;
         padding: 7px 30px 7px 12px;
         font-size:15px;
+        position: reltive;
+      
+
     }
   
 
     option{
+        
        border-radius:0;
       
         color:gray;
@@ -89,7 +97,14 @@ export const SearchContent= styled.div`
         width: 45% !important;
     }
 
-  
+  .deleteUF{
+    position: absolute;
+    top:15%;
+    right:10%;
+    color:red;
+    font-size:22px;
+    visibility: ${({iconDelete}) => iconDelete === false ? 'visible': 'hidden'}; 
+  }
 
 `
 
