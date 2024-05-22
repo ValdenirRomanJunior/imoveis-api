@@ -36,9 +36,15 @@ export function  phone(e: React.FormEvent<HTMLInputElement>) {
   
     e.currentTarget.value = value;
     return e;
-    
-    
-    
-   
+     
 }
 
+export function  lowercase(e: React.FormEvent<HTMLInputElement>) {
+
+    let value= e.currentTarget.value;
+     value.toLowerCase();
+  
+    e.currentTarget.value = value;
+    return e;
+     
+}

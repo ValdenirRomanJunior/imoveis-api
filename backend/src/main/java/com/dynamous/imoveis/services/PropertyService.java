@@ -34,6 +34,7 @@ import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -274,12 +275,13 @@ public class PropertyService {
 	
 }
 	
-	
+	//busca paginada por tenant 20/05/2024
 	 @Transactional(readOnly = true)
 	 public Page<Property> findByTenantMatchAnyParam(Integer goal,Integer typeProperty, String name, String domain, Integer page, Integer linesPerPage, String orderBy, String direction){
 		  PageRequest pageRequest = PageRequest.of(page, linesPerPage, Direction.valueOf(direction), orderBy);		  
 		  	
 		  	Tenant tenant = tenantService.findByDomain(domain);
+		  
 		  	return propertyRepository.findByGoalAndTEnantPropertiesIn(name,goal, typeProperty, tenant, pageRequest);
 
 	}
@@ -314,4 +316,15 @@ public class PropertyService {
 		List<Property> list = propertyRepository.findFirst4ByTenantAndStatusPropertyLessThanEqual(tenant,1);
 		return list;
 	}
+	 //busca endereços por tenant(20/05/2024) do site
+	public List<Address> findAddressByTenant(String domain) {
+		 Tenant tenant = tenantService.findByDomain(domain);
+		 List<Property> list = propertyRepository.findAllByTenant(tenant);
+		 List<Address>listAddress= new ArrayList<Address>();
+			for(Property property : list) {
+				listAddress.add(property.getAddress());		
+		
+	}
+			return listAddress;
+}
 }

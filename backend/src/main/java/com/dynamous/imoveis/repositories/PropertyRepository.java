@@ -35,7 +35,8 @@ public interface PropertyRepository extends JpaRepository<Property,Long> {
     @Query("SELECT count(p) FROM Property p WHERE p.tenant.id= :id and p.statusProperty =1")
 	Long publishedByTenantId(Long id);
     
-    
+   
+    //busca paginada por tenant 20/05/2024
     @EntityGraph(		    
 		    attributePaths = {
 		      "tenant",
@@ -46,14 +47,19 @@ public interface PropertyRepository extends JpaRepository<Property,Long> {
 		      "images"
 		      
 		    },type = EntityGraph.EntityGraphType.LOAD)
-    @Query("SELECT p FROM Property p JOIN p.tenant JOIN p.address a LEFT JOIN a.city c LEFT JOIN c.state LEFT JOIN p.images where p.tenant = :tenant AND c.name like %:name% AND (:goal IS NULL or p.goal = :goal) AND (:typeProperty IS NULL or p.typeProperty = :typeProperty) AND p.statusProperty = 1")
+           //SELECT p FROM Property p JOIN p.tenant JOIN p.address a LEFT JOIN a.city c LEFT JOIN c.state LEFT JOIN p.images where p.tenant = :tenant AND c.name like %:name% AND (:goal IS NULL or p.goal = :goal) AND (:typeProperty IS NULL or p.typeProperty = :typeProperty) AND p.statusProperty = 1"
+    @Query("SELECT p FROM Property p JOIN p.tenant JOIN p.address a LEFT JOIN a.city c LEFT JOIN c.state LEFT JOIN p.images where p.tenant = :tenant AND lower(c.name) like lower(concat('%',:name,'%')) OR lower(a.district) like lower(concat('%',:name,'%')) AND (:goal IS NULL or p.goal = :goal) AND (:typeProperty IS NULL or p.typeProperty = :typeProperty) AND p.statusProperty =1 ")
     Page<Property> findByGoalAndTEnantPropertiesIn(@Param("name")String name,@Param("goal")Integer goal,@Param("typeProperty")Integer typeProperty, @Param("tenant") Tenant tenant, Pageable pageable);
+   
+    
     
    //erro aqui,esta indo as nao publicadas para a home
 	List<Property> findFirst4ByTenantAndStatusPropertyLessThanEqual(Tenant tenant, Integer number);
 	
 
 	    Page<Property> findAll(Pageable pageable);
+	    //busca imoveis por tenat
+		List<Property> findAllByTenant(Tenant tenant);
 
    
 

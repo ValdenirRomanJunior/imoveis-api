@@ -13,6 +13,7 @@ import com.dynamous.imoveis.services.PropertyService;
 import com.dynamous.imoveis.services.TenantService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,6 +23,7 @@ import javax.validation.Valid;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 @RestController
@@ -157,7 +159,7 @@ public class PropertyController {
        Long total= propertyRepository.publishedByTenantId(id);     
         return ResponseEntity.ok().body(total);
     }
-    
+    //busca paginada site tenant
     @GetMapping(value = "/searchTest")
    public ResponseEntity <Page<Property>> findByTenantWithParams(
 		   @RequestParam(value = "name",defaultValue = "",required = false) String name,   
@@ -175,16 +177,20 @@ public class PropertyController {
          Page<Property> list = service.findByTenantMatchAnyParam(goal,typeProperty,name, nameUrl,page, linesPerPage, orderBy, direction);
          ImageUrl imgux=null;
          List<ImageUrl> OneImg=null;
-       	for( Property item : list) {    		 		
+         
+       	for( Property item : list) {
+       		
        		if( item.getImages().size() >0 ) {  
        		imgux = item.getImages().get(0);    		
        		OneImg = new ArrayList<ImageUrl>();
        		item.setImages(OneImg);
        		item.getImages().add(imgux);
+       		
        		}
-       	}
-       	     
-        return ResponseEntity.ok().body(list);
+       	} 
+       	Page<Property> pageWithFilteredData = new PageImpl<Property>(list.stream().filter(p -> !p.getStatusProperty().getDescription().contains("NÃO"))
+       		    .collect(Collectors.toList()), list.getPageable(), list.getTotalElements());
+        return ResponseEntity.ok().body(pageWithFilteredData);
     }
     
     
@@ -194,10 +200,19 @@ public class PropertyController {
     	List<Address> list = service.findResultSearch();            
         return ResponseEntity.ok().body(list);
     }
+    //busca endereços por tenant
     
+    @GetMapping(value= "/findAddress/{nameUrl}")
+	public ResponseEntity <List<Address>> findAddressByTenant(@PathVariable String nameUrl){
+    	List<Address> list = service.findAddressByTenant(nameUrl);	
+    	
+		return ResponseEntity.ok().body(list);
+		
+	}
     @GetMapping(value= "/findAll/{nameUrl}")
 	public ResponseEntity <List<Property>> findAll(@PathVariable String nameUrl){
-    	List<Property> list = service.findFourByTenant(nameUrl);	
+    	List<Property> list = service.findFourByTenant(nameUrl);
+    	
 		return ResponseEntity.ok().body(list);
 		
 	}

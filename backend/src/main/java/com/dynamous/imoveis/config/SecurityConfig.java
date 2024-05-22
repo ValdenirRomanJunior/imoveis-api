@@ -57,7 +57,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 			"/properties/find/**",
 			"/properties/search/**",
 			"/properties/searchTest/**",
-			"/properties/getAllAddress/**"
+			"/properties/getAllAddress/**",
+			"/properties/findAddress/**",
+			"/properties/findAddress/{nameUrl}/**"
 		
 
 	};
