@@ -5,7 +5,7 @@ import { ImagePage, ImagePage2 } from '../../types/Images';
 
 
 type Props ={
-    page: ImagePage2;
+    page: ImagePage;
     onChange: Function;
 }
 function PaginationImages ({page, onChange} : Props){
@@ -13,10 +13,10 @@ function PaginationImages ({page, onChange} : Props){
         <PaginationContainer>
     <PaginationBox>
         <button className="pagination-button" 
-        disabled={page.first } onClick={()=> onChange(page.number-1)}>
+        disabled={page.first} onClick={()=> onChange(page.number-1)}>
             <IoIosArrowBack />
         </button>
-        <p>{`${page.number+1} de ${page?.totalPages}`}</p>
+        <p>{`${page.number+1} de ${page.totalPages}`}</p>
         <button className="pagination-button" 
         disabled={page.last } onClick={()=> onChange(page.number+1 )} >
             <IoIosArrowForward />

@@ -17,17 +17,20 @@ INSERT INTO property (name, description, type_property, goal,number_rooms, bath_
 INSERT INTO property (name, description, type_property, goal,number_rooms, bath_rooms,area, iptu, vacancies, condominium, price, area_total, status_property, tenant_id) VALUES ('casa1','casa linda', 1,1, '1','1', '234', '3323', '0','3323','123','23345',1,1);
 
 INSERT INTO property (name, description, type_property, goal,number_rooms, bath_rooms,area, iptu, vacancies, condominium, price, area_total, status_property, tenant_id) VALUES ('casa1','casa linda', 1,1, '1','1', '234', '3323', '1','3323','123','23345',1,1);
-INSERT INTO property (name, description, type_property, goal,number_rooms, bath_rooms,area, iptu, vacancies, condominium, price, area_total, status_property, tenant_id) VALUES ('casa1','casa linda', 1,2,'1','1', '234', '3323', '4 ou mais','3323','123','23345',1,1);
+INSERT INTO property (name, description, type_property, goal,number_rooms, bath_rooms,area, iptu, vacancies, condominium, price, area_total, status_property, tenant_id) VALUES ('casa1','casa linda', 1,2,'1','1', '234', '3323', '4 ou mais','3323','123','23345',1,2);
+
+INSERT INTO property (name, description, type_property, goal,number_rooms, bath_rooms,area, iptu, vacancies, condominium, price, area_total, status_property, tenant_id) VALUES ('casa1','casa linda', 1,1, '1','1', '234', '3323', '1','3323','123','23345',1,2);
 
 INSERT INTO state(name) VALUES ('PR');
 INSERT INTO city(name,state_id) VALUES ('Toledo',1);
 INSERT INTO city(name,state_id) VALUES ('Cascavel',1);
 INSERT INTO address(street, number, district, cep, property_id, city_id) VALUES ('Av. Sul', '11','cumbuco', '61619015',1,1);
-INSERT INTO address(street, number, district, cep, property_id, city_id) VALUES ('Av. Sul', '10','cumbuco', '61619015',2,1);
-INSERT INTO address(street, number, district, cep, property_id, city_id) VALUES ('Av. Sul', '10','cumbuco', '61619015',3,2);
-INSERT INTO address(street, number, district, cep, property_id, city_id) VALUES ('Av. tabuba', '10','cumbuco', '61619015',4,2);
+INSERT INTO address(street, number, district, cep, property_id, city_id) VALUES ('Av. Sul', '10','icarai', '61619015',2,1);
+INSERT INTO address(street, number, district, cep, property_id, city_id) VALUES ('Av. Sul', '10','tabuba', '61619015',3,2);
+INSERT INTO address(street, number, district, cep, property_id, city_id) VALUES ('Av. tabuba', '10','pancera', '61619015',4,2);
 
 
+INSERT INTO address(street, number, district, cep, property_id, city_id) VALUES ('Av. tabuba', '10','coopagro', '61619015',5,1);
 
 
 /*INSERT INTO urls(id, id_tenant, url,property_id) VALUES (1,1,'https://dynamous.s3.sa-east-1.amazonaws.com/bailey-anselme-Bkp3gLygyeA-unsplash.jpg',1);*/

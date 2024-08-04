@@ -1,9 +1,10 @@
 export type ImageItem ={
-    
+ 
+
     id:number;
     url: string;
     idTenant: number;
-    selected:boolean ;
+    selected:boolean;
     
 }
 
@@ -12,8 +13,7 @@ export type Images ={
 }
 
 export type ImagePage = {
-
-
+   
     content: ImageItem[] | any;
     last: boolean;
     totalPages: number;

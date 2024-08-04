@@ -3,7 +3,7 @@ import {MdPhotoCamera} from 'react-icons/md';
 import {  useEffect, useState } from 'react';
 import Modal from 'react-modal';
 import { IoCloseOutline } from 'react-icons/io5';
-import GetImages from './GetImages';
+import GetImages from './GetImages/index';
 import {AiFillCloseCircle} from 'react-icons/ai'
 import '../UploadImages/styles.css'
 import {ImageItem, ImagePage} from '../../../types/Images'
@@ -60,8 +60,7 @@ const UploadImages = (props:PropImages) =>{
          
       }
 
-      if(data.response.data.status === 411){ 
-           
+      if(data.response.data.status === 411){        
         setLoading(false)
         setErrorMaxSize(true);
         cancelSendImage();
@@ -74,9 +73,6 @@ const UploadImages = (props:PropImages) =>{
 }
                 
 }
-
-
-
 
   function convertFile(files: FileList|null){
         
@@ -119,14 +115,11 @@ const UploadImages = (props:PropImages) =>{
         return setIsOpen(true)
     }
     //fecha modal 
-    const handleCloseModal =()=>{ 
-          
+    const handleCloseModal =()=>{        
            setIsOpen(false)          
-           setFileBase64('');   
-                       
+           setFileBase64('');                      
     }
 
-   
     useEffect(() => {    
        //verificar se url no bucket existe
           setimagesSelecteds(props.images)
@@ -150,14 +143,10 @@ const UploadImages = (props:PropImages) =>{
     localStorage.removeItem('images')
  
    useEffect(() => { 
-     
     props.handleResult(imagesSelecteds);
-
-      
     }, [imagesSelecteds, props]);
   
  
-
     return(
         <ImagesContainer>
             <h3 className='title-photos'>Fotos</h3>
@@ -170,13 +159,11 @@ const UploadImages = (props:PropImages) =>{
                 <span>PNG e JPG somente</span>
             </UploadImage>
 
-            <Modal
-             
+            <Modal           
                 isOpen={modalIsOpen}
                 onRequestClose={handleToRegistration}   
                 className='ModalE'
-              
-                                                 
+                                                            
             >
                 <div className='title-wrapper'>
                 <h2 className='title-fileManager'>Minhas Imagens</h2>
@@ -198,14 +185,17 @@ const UploadImages = (props:PropImages) =>{
                         url: '',
                         idTenant: 0,
                         selected: false,
-                        
-                       
-                    }} onSelectedChanged={function (image: ImageItem): void {
+                    }} //onSelectedChanged={function (image: ImageItem): void {
+
+
+
+
+                    // throw new Error('Function not implemented.');} }
+                    onChange={function (image: ImageItem): void {
                         throw new Error('Function not implemented.');
-                    }} onChange={function (image: ImageItem): void {
-                        throw new Error('Function not implemented.'); }}
-                        refreshImages={successMessage}
-                         onChanges={removePhoto}/>                                            
+                    } }
+                    refreshImages={successMessage}
+                    onChanges={removePhoto} handleChange={Function} checked={false} />                                            
                                
             </Modal>
             </div>

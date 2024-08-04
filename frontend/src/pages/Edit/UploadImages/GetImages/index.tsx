@@ -11,23 +11,24 @@ import React from 'react';
 import { AiFillCloseCircle } from 'react-icons/ai';
 import '../GetImages/stylesDeleteImage.css'
 import PaginationImages from '../../../../components/PaginationImages';
-
-
-
+import { MdOutlineHomeRepairService } from 'react-icons/md';
+import { isUndefined } from 'util';
 
 
 export type ImageProps = {
     image: ImageItem;
-    onSelectedChanged: Function;
+    //onSelectedChanged: Function;
     onClick:Function;
     onChange:Function;
     refreshImages:boolean;
     onChanges:Function;
- 
+    handleChange:Function;
+    checked:boolean;
+    
   };
 
  
- const ImageComponent = (props:ImageProps)=>{
+ const ImageComponent = (props:ImageProps,index:number)=>{
 
     const [loading,setLoading]=useState(false);
     const [loadingSendEmail,setLoadingSendEmail]=useState(false);
@@ -42,16 +43,13 @@ export type ImageProps = {
     }
   
  
-  
-    function closeModal() { 
-     
+    function closeModal() {   
       setIsOpen(false);
       
     }
 
     const closeModalAndDelete = () => {
-        props.onChange(props.image.id,props.image.url)
-        
+        props.onChange(props.image.id,props.image.url)      
         setIsOpen(false)
     }
 
@@ -62,20 +60,26 @@ export type ImageProps = {
           <img src={props.image.url} alt='img'/>
           <AiFillCloseCircle className='button-close-bucket-images' onClick={openModal}/>      
             <input 
-            type='checkbox'  
-            value={props.image.url}
-            checked={props.image.selected}
+            type='checkbox' 
+            value={props.image.url}     
+            checked={props.checked}
             onChange={(el) =>{
-                props.onSelectedChanged({
+              props.handleChange({
 
-                  id: props.image.id ,
-                  url: props.image.url ,
-                  idTenant: props.image.idTenant ,
-                  selected: el.target.checked ,
+                id: props.image.id ,
+                url: props.image.url,
+                idTenant: props.image.idTenant ,
+                selected:props.image.selected,
+                checked: el.target.checked ,
+                
+             
                
-                 
-                }); 
-                }}
+              }); 
+            
+              }}
+           
+             
+         
                 /> 
                 <Modal
         isOpen={modalIsOpen}       
@@ -111,11 +115,13 @@ export type ImageProps = {
 const GetImages = (props:ImageProps) =>{
 
     const [images, setImages] = useState<ImageItem[]>([]);
-    const [selectedImages] = useState<ImageItem[]>([]);
+    const [selectedImages,setSelectedsImages] = useState<ImageItem[]>([]);
+    const [selectedIndex,setSelectedsIndex] = useState<number[]>([]);
     const [pageNumber, setPageNumber] = useState(0);
 
     const [disable, setDisable] = useState<boolean>(true);
-   
+    const [checked, setChecked] = useState<boolean>(false);
+    const [itemChecked, setItemCheked] = useState<number>();
       
     const [page, setPage] = useState<ImagePage>({
 
@@ -128,80 +134,67 @@ const GetImages = (props:ImageProps) =>{
       first: true,
       numberOfElements: 0,
       empty: true
-  } );
+  } ); 
 
-  const [page2, setPage2] = useState<ImagePage2>({
+ 
+    const handleChange= (currentImage:ImageItem, index:number) => {
+   
+      setChecked(!checked)
 
-    content: [],
-    last: true,
-    totalPages: 0,
-    totalElements: 0,
-    size: 12,
-    number: 0,
-    first: true,
-    numberOfElements: 0,
-    empty: true
-} );
+      if(isNaN(currentImage.id && currentImage.idTenant)){
+
     
-    const onChange = (currentImage:ImageItem) => {
-       
-       // let images= localStorage.getItem('images') || '[]';     
-        setPage((currentState) =>
-          currentState?.content?.map((i: ImageItem) =>
-            
-            i.url === currentImage.url
-            ? {
-                ...i,        
-                selected:currentImage.selected  
-              }       
-            : {
-                ...i,                       
-            }
-        )
-          );
-                             
-            if(currentImage.selected ) {
-                                
-               // let parseImages= JSON.parse(images) as ImageItem[];             
-             //    parseImages.push(currentImage);
-                 selectedImages.push(currentImage as any)                         
-               // localStorage.setItem('images', JSON.stringify(selectedImages));
-                                                           
-            } 
-            
-               if(!currentImage.selected){
-                let index = selectedImages.findIndex(val => val.id === currentImage.id);
-                
-                selectedImages.splice(index, 1);     
-                //let images= localStorage.getItem('images') || '[]';
-                
-              //  let parseImages= JSON.parse(images) as ImageItem[];
+      setPage((currentState) =>
+        currentState?.content?.map((i: ImageItem) =>
+          
+          i.url === currentImage.url
+          ? {
+              ...i,        
+              selected:currentImage.selected  
+            }       
+          : {
+              ...i,                       
+          }
+      )
+        );
+      }               
+   
+        if(selectedIndex.includes(index)){     
+       setSelectedsIndex(selectedIndex.filter((i)=> i!==index));
                  
-                
-               // let indexs = parseImages.findIndex(val => val.id === currentImage.id);
-               // parseImages.splice(indexs, 1);
-                
-              
-                                    
-            } 
-            localStorage.setItem('images', JSON.stringify(selectedImages));
-                         if(selectedImages.length >0){
-                              
-                                setDisable(false)
+      } else {
+        setSelectedsIndex([...selectedIndex, index]);    
+      }
 
-                            }else{
-                                setDisable(true)
-                            }      
-                   
+      let resultado = selectedImages.some(item=> item.id === index)
+      console.log(resultado)
+        if(!resultado){
+          selectedImages.push(currentImage)   
+        }
+     
+       if (resultado) {    
+       let index = selectedImages.findIndex(val => val.id === currentImage.id);      
+            selectedImages.splice(index, 1);   
+      }
+
+
+        localStorage.setItem('images', JSON.stringify(selectedImages));
+      
+        if(selectedImages.length >0){                            
+          setDisable(false)          
+            }else{
+           setDisable(true)
+          }      
+                                 
     };
         
-    
+  
     //requisição para api para buscar imagens
     const getAllImages = async () => {
         const {data}= await getTenantImages(pageNumber);       
         setImages(data.content);
         setPage(data)
-        setPage2(data)
+       
         
     }
                 
@@ -232,7 +225,8 @@ const GetImages = (props:ImageProps) =>{
         
       }
 
-      const handlePageChange = (newPageNumber : number)=>{          
+      const handlePageChange = (newPageNumber : number)=>{      
+         
         setPageNumber(newPageNumber);          
       }
 
@@ -242,26 +236,27 @@ const GetImages = (props:ImageProps) =>{
     <ImageWrapperManager> 
            
     {images && images.map((image,index) => (
+      <div key={index}>
         <ImageComponent
-            key={index}
-            onSelectedChanged={onChange}
-            image={image as ImageItem}
-            onClick={props.onClick}
-            onChange={removePhoto}
-            refreshImages={props.refreshImages}
-            onChanges={props.onChanges}     
-        
+        key={index}
+        image={image as ImageItem}
+        onClick={props.onClick}
+        onChange={removePhoto}
+        refreshImages={props.refreshImages}
+        onChanges={props.onChanges}
+        handleChange={() => handleChange(image, image.id)} 
+        checked={selectedIndex.includes(image.id)}        
            
            
         />
-        
+        </div>
     ))}
   
     <Button onClick={()=> props.onClick()}  disabled={disable} className="button-file-Manager">Selecionar</Button>   
     
   
     </ImageWrapperManager>
-    <PaginationImages page={page2} onChange={handlePageChange}/>
+    <PaginationImages page={page as ImagePage} onChange={handlePageChange}/>
     </div>  
    
  )

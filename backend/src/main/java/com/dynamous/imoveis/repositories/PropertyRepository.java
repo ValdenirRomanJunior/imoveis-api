@@ -46,9 +46,11 @@ public interface PropertyRepository extends JpaRepository<Property,Long> {
 		      "address.city.state",
 		      "images"
 		      
+		      
 		    },type = EntityGraph.EntityGraphType.LOAD)
-           //SELECT p FROM Property p JOIN p.tenant JOIN p.address a LEFT JOIN a.city c LEFT JOIN c.state LEFT JOIN p.images where p.tenant = :tenant AND c.name like %:name% AND (:goal IS NULL or p.goal = :goal) AND (:typeProperty IS NULL or p.typeProperty = :typeProperty) AND p.statusProperty = 1"
-    @Query("SELECT p FROM Property p JOIN p.tenant JOIN p.address a LEFT JOIN a.city c LEFT JOIN c.state LEFT JOIN p.images where p.tenant = :tenant AND lower(c.name) like lower(concat('%',:name,'%')) OR lower(a.district) like lower(concat('%',:name,'%')) AND (:goal IS NULL or p.goal = :goal) AND (:typeProperty IS NULL or p.typeProperty = :typeProperty) AND p.statusProperty =1 ")
+          //"SELECT p FROM Property p LEFT JOIN p.tenant t JOIN p.address a JOIN a.city c JOIN c.state s WHERE t= :tenant AND lower(c.name) like lower(concat('%',:name,'%')) OR lower(a.district) like lower(concat('%',:name,'%')) AND (:goal IS NULL or p.goal = :goal) AND (:typeProperty IS NULL or p.typeProperty = :typeProperty) AND p.statusProperty =1 "
+    @Query("SELECT p FROM Property p JOIN p.tenant JOIN p.address a LEFT JOIN a.city c LEFT JOIN c.state LEFT JOIN p.images where p.tenant = :tenant AND (lower(c.name) like lower(concat('%',:name,'%')) OR lower(a.district) like lower(concat('%',:name,'%'))) AND (:goal IS NULL or p.goal = :goal) AND (:typeProperty IS NULL or p.typeProperty = :typeProperty) AND p.statusProperty = 1"
+)
     Page<Property> findByGoalAndTEnantPropertiesIn(@Param("name")String name,@Param("goal")Integer goal,@Param("typeProperty")Integer typeProperty, @Param("tenant") Tenant tenant, Pageable pageable);
    
     

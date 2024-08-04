@@ -80,7 +80,7 @@ const EditComponent = ({property}: Prop) =>{
     const [loadingTenant, setLoadingTenant]=useState(false);
     const [cleanImagesForm,setCleanImagesForm] = useState(false);
     
-    const imagesFromUpdate=(property.images?.map(x => { return { id: x.id, url: x.url, idTenant: x.idTenant, selected: true }; })) as ImageItem[];
+    const imagesFromUpdate=(property.images?.map(x => { return { id: x.id, url: x.url, idTenant: x.idTenant, selected: true }; })) ;
  
      
      //pega imagens do UploadImages
@@ -583,7 +583,7 @@ const cleanForm = () =>{
                 {errors.map(x => { if(x.fieldName === 'cep') return  <p className=' formField__error'>{x.message}</p>})}
                 { emptyValue && form['cep'] === '' ?<span className='formField__error'>Este campo é requerido</span>: ''}
                      
-                <UploadImages images={imagesFromUpdate}  handleResult={getImagesUrls}/>
+                <UploadImages images={imagesFromUpdate as ImageItem[]}  handleResult={getImagesUrls}/>
                
                
                 <div className='buttom-register-wrapper'>

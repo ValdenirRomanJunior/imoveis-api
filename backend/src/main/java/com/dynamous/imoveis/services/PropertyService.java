@@ -281,7 +281,7 @@ public class PropertyService {
 		  PageRequest pageRequest = PageRequest.of(page, linesPerPage, Direction.valueOf(direction), orderBy);		  
 		  	
 		  	Tenant tenant = tenantService.findByDomain(domain);
-		  
+		  	
 		  	return propertyRepository.findByGoalAndTEnantPropertiesIn(name,goal, typeProperty, tenant, pageRequest);
 
 	}
