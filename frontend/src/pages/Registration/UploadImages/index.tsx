@@ -201,12 +201,11 @@ useEffect(() => {
                         url: '',
                         idTenant: 0,
                         selected: false
-                    }} onSelectedChanged={function (image: ImageItem): void {
+                    }} onChange={function (image: ImageItem): void {
                         throw new Error('Function not implemented.');
-                    } } onChange={function (image: ImageItem): void {
-                        throw new Error('Function not implemented.'); }}
-                        refreshImages={successMessage}
-                        onChanges={removePhoto}/>   
+                    } }
+                    refreshImages={successMessage}
+                    onChanges={removePhoto} handleChange={Function} checked={false}/>   
                 
                 
             </Modal>
