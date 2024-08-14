@@ -23,6 +23,10 @@ type Error = {
     fieldName:string;
     message:string;
 }
+type Bairro = {
+    id:number;
+    name:string;
+}
 
 type IBGEUFResponse = {
     id:number;
@@ -34,6 +38,18 @@ type IBGECYTYResponse = {
     id: number;
     nome: string;
 };
+type BRASILABERTOResponse = {
+    
+        meta: {
+          currentPage: number,
+          itemsPerPage: number,
+          totalOfItems: number,
+          totalOfPages: number
+        },
+        result:  Bairro[];
+      }
+
+
 
 
 const Registration = () =>{
@@ -43,8 +59,8 @@ const Registration = () =>{
     
     const navigate = useNavigate();
     const [ufs, setUfs]= useState<IBGEUFResponse[]>([]);
-    const [cities, setCities]= useState<IBGECYTYResponse[]>([]);
-    const [state, setState]=useState(); 
+    const [cities, setCities]= useState<IBGECYTYResponse[]>([]); 
+    const [state, setState]=useState();
     const [images, setImages] = useState<ImageItem[]>([]);
     const [successMessage, setSuccessMessage] = useState(false);
     const [loadingTenant, setLoadingTenant]=useState(false);
@@ -93,6 +109,8 @@ const Registration = () =>{
             }
         )
     }, [state]);
+
+
     
 
         const [form, setForm] = useState<any>({
@@ -175,6 +193,7 @@ const Registration = () =>{
                 if(e.target.name === "uf"){
                     setState(e.target.value);
                 }
+              
                        
             }
 
@@ -194,6 +213,9 @@ const Registration = () =>{
 
             }
 
+       
+
+               
             const handleKeyUp = (e: React.FormEvent<HTMLInputElement>) =>{
 
                 
@@ -418,10 +440,10 @@ const Registration = () =>{
                 { emptyValue && form['uf'] === '' ?<span className='formField__error_reg'>Este campo é requerido</span>: ''}
 
                 <label>Cidade*</label>
-                <select placeholder='selecione'  name='city'  id='city'  onChange={(e) => handleChange(e)}>
+                <select placeholder='selecione'  name='city'  id='city'   onChange={(e) => handleChange(e)}>
                     <option value='' >Selecione a Cidade</option>
                  { cities.map((city) => (
-                    <option key={city.id} value={city.nome}>{city.nome}</option>
+                    <option key={city.id} value={city.id}>{city.nome}</option>
                  ))}
                 </select>
                 {errors.map(x => { if(x.fieldName === 'city') return  <p className='formField__error_reg'>{x.message}</p>})}
@@ -431,7 +453,7 @@ const Registration = () =>{
                 <Input  name='district'  id='district'  onChange={(e) => handleChange(e)}/>
                 {errors.map(x => { if(x.fieldName === 'district') return  <p className=' formField__error_reg'>{x.message}</p>})}
                 { emptyValue && form['district'] === '' ?<span className='formField__error_reg'>Este campo é requerido</span>: ''}
-
+                         
                 <label>Rua*</label>
                 <Input   name='street'  id='street' onChange={(e) => handleChange(e)}/>
                 {errors.map(x => { if(x.fieldName === 'street') return  <p className=' formField__error_reg'>{x.message}</p>})}
