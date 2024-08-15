@@ -59,7 +59,7 @@ export type ImageProps = {
             <input 
             type='checkbox'  
             value={props.image.url}
-            checked={props.image.selected}
+            checked={props.checked}
             onChange={(el) =>{
               props.handleChange({
 
