@@ -34,10 +34,15 @@ padding: 1.5rem 1rem;
     color: #5d5d5d;
     font-weight: 400 !important;
     font-family:"Poppins",sans-serif;
-    font-size:20px;
+    font-size:17px;
     color:#5d5d5d;
+    margin-bottom:0;
+    margin-left:7px;
    }
-   
+   .icon-title-lead{
+    color: #6475fd;
+    font-size:19px;
+   }
 
     .button-add-lead{
         padding:6px 8px;

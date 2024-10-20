@@ -11,6 +11,7 @@ import {IoIosArrowForward} from 'react-icons/io';
 import {MdLogout} from 'react-icons/md'
 import { getImageIfExist, refreshToken, UserDto } from '../../services/resources/user';
 import {IoSettingsOutline} from 'react-icons/io5';
+import { BiFilterAlt } from 'react-icons/bi';
 
 
 const Header = () =>{
@@ -39,14 +40,14 @@ const Header = () =>{
     const getUrl = async() =>{
      
          
-        const data=  await getImageIfExist(user.id,userPerfil);
+      //  const data=  await getImageIfExist(user.id,userPerfil);
         
-            if(data){
+         ///   if(data){
                // const url=`${BASE_URL_FROM_BUCKET}cp${user.id}.jpg`;
-                setImageUser(data);
+           //     setImageUser(data);
                
-                return data;
-            }
+          //      return data;
+           // }
          
 
     }
@@ -128,7 +129,22 @@ const Header = () =>{
 
             <NavIcon to="/leads"   >
             <AiOutlineUser className='icon-sidebar'/>
-            <p className='description-icon'>Contatos</p>
+            <p className='description-icon'>Leads</p>
+            </NavIcon>
+
+            <NavIcon to="/oportunidades"   >
+            <BiFilterAlt className='icon-sidebar'/>
+            <p className='description-icon'>Oportunidades</p>
+            </NavIcon>
+
+            <NavIcon to="/leads"   >
+            <AiOutlineUser className='icon-sidebar'/>
+            <p className='description-icon'>Portais</p>
+            </NavIcon>
+            
+            <NavIcon to="/leads"   >
+            <AiOutlineUser className='icon-sidebar'/>
+            <p className='description-icon'>Site</p>
             </NavIcon>
             </>
     }

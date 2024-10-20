@@ -140,13 +140,12 @@ const EditTenantComponent = ({tenant}: Prop) =>{
 
                 if(!emptySlug && !emptyLastName && !emptyEmail && !emptyStatus && !emptyStatusRange){
                     setLoadingTenant(true)
-
-                
+ 
                     
                 const data = await editTenant(slug, lastName, email,password, status,form['creci'],form['domain'],initialValuesVerification() as string,form['signedDays'],`${params.tenantId} `)
                         console.log(data)
                 if(data.status === 204){
-                   console.log(data.status)                    
+                                 
                     setSuccessMessage(true)
                     setTimeout(()=> {
                         setSuccessMessage(false);

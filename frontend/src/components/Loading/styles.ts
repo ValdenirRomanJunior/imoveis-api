@@ -11,9 +11,10 @@ display: flex;
 
 
 p{
-   margin-left:16px;
+   margin-left:12px;
    color:#fff;
    margin-bottom:0;
+   font-size:12px;
 }
 
 `

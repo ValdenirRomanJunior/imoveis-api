@@ -18,21 +18,17 @@ import LoadingLogin from "../../../components/LoadingLogin";
 import PageNotFound from "../../../components/PageNotFound";
 import PaginationLead from "../../../components/PaginationLead";
 import { BiSearch } from "react-icons/bi";
+import { BiFilterAlt } from "react-icons/bi";
 
 
 
-
-
-
-
-const LeadCardItem = ({id,name,lastName,email,phone, message,instant, propertyId, onChange,close,error}: Lead)  => {
+const LeadCardItem = ({id,name,lastName,email,phone, message,instant, propertyId,opportunityId, onChange,close,error}: Lead)  => {
 
     const [property,setProperty]=useState<Property>();
     const [loading,setLoading]= useState(false);
     const [errors,setErrors]=useState();
   
 
-   
   
     const getProperty = async() => {  
         if(propertyId != null){
@@ -58,9 +54,6 @@ const LeadCardItem = ({id,name,lastName,email,phone, message,instant, propertyId
      []);
 
 
-
-
-
     const [hiddenMessage, setHiddenMessage]= useState(false);
   
 
@@ -81,106 +74,34 @@ const LeadCardItem = ({id,name,lastName,email,phone, message,instant, propertyId
         return string.toLowerCase().replace(/(^|\s)\S/g, l => l.toUpperCase())
       }
 
-      const [modalIsOpen, setIsOpen] = useState(false);
-      const [putId,setPutId]= useState(false);
-      
 
-      const handlePutId = ()=>{
-        
-            setLoading(true)    
-        
-        setPutId(true)
-        onChange(id);
-
-        setIsOpen(false)
-        setTimeout(() => {
-            setLoading(false)
-        }, 1000);
-       
-      }
-
-
-      const handleOpenModal =() => {
-          setIsOpen(true)
-      }
-      
-     
-      const handleCloseModal =() =>{    
-           closeMessage();
-           setIsOpen(false);  
-        
-    
-      }
-
-  
-     
     return(
+        
        
-       // {errors && <div><PageNotFound/></div> }
-     <LeadWrapper prop={hiddenMessage}>
-                {loading &&<LoadingLogin/>}
+    // {errors && <div><PageNotFound/></div> }
+    <Link to={`/leadDetail/${id}`} >
+        <LeadWrapper prop={hiddenMessage}>    
+                {loading &&<LoadingLogin/>}            
                 <div className="content-first" onClick={openMessage}>
                 
-                <div><BsPersonFill className="icon-lead"/></div>
-
                 <div className="data-lead-left-wrapper">
                 <h4>{capitalize(name)}</h4>   
                 <span><AiOutlineMail className="email-icon"/>{email}</span>
                 <div className="phone-date-wrapper-lead"><p className="phone-leads"><FaWhatsapp className="icon-phone-lead"/>{phone}</p><p className="instant-lead">{instant}</p></div>
                 </div>
-                            
-                <MdKeyboardArrowDown className="icon-arrow-lead" />     
-                </div>
-
-                {(!errors && propertyId) ?
-                <Link to={`/details/${propertyId}`} className='link-detail-property-lead'>
-                <PropertyItemLeadContainer prop={hiddenMessage}>
-                 { property?.images && property.images.map((image) => {
-                    return(
-                        <div className="image-property-lead-wrapper">                      
-                            <img src={image.url}  alt='Foto do Imóvel'/>                      
-                        </div>
-                               )                  
-                            })                         
-                        }
-                        
-                          <div className="data-property-lead-wrapper">
-                                <span>{property?.name}</span>
-                                <span>{property?.address.street}  {property?.address.number} {property?.address.district} {property?.address.city.name}</span>                              
-                            </div>
+                <div className="lead-oportunity-wrapper">
+                { opportunityId !== null &&
+                <Link to={`/oportunidades/oportunidade/${opportunityId}`} className="link-opportunidade-leads"><BiFilterAlt className="icon-funil"/></Link>}
+                  {opportunityId  ===null &&  <div className='span-status' style={{background:"#e5fce5"}}> resolvido</div>
+                    }
+                    {opportunityId  !==null &&  <div className='span-status' style={{background:"#ffe6b857"}}> em aberto</div>}
+                </div>                        
+                </div>                  
+            <div>                             
+         </div> 
                            
-                            </PropertyItemLeadContainer></Link> : ''} 
-                            {(!errors && !propertyId || property?.id) ?
-                    <div className="message-lead" >           
-                    <FiCornerDownRight className="icon-arrow-down-message"/>               
-                    {message && message}            
-                     </div>
-                    :''}
-                 <div>
-                 
-            <Modal 
-                isOpen={modalIsOpen}
-                onRequestClose={handleCloseModal} 
-                onAfterClose={handleCloseModal}  
-                className='Mod'                           
-              > 
-                
-              <h1>Por favor confirme</h1>
-              <p>Tem certeza que deseja excluir este lead?</p>
-              <IoCloseOutline onClick={handleCloseModal} className='button-close-modal' /> 
-              <div className="buttons-wrapper-lead">
-              <button onClick={handleCloseModal}  className='cancel-button-lead'>Cancelar</button>
-              <button onClick={handlePutId}  className='delete-button-lead'>Excluir</button>
-              
-              </div>
-              </Modal>
-                
-                </div> 
-                <div className="icon-lead-trash">
-                <button onClick={handleOpenModal} className='icon-trash'><BsTrash /> </button>
-                </div>      
        </LeadWrapper>
-       
+       </Link>  
        
    
 
@@ -218,12 +139,9 @@ const LeadCard = (props:{param:string})=>{
         localStorage.removeItem('images')
           
     }
-    useEffect(() =>{
-        
-        getLeads();
-       
+    useEffect(() =>{       
+        getLeads();     
     },[pageNumber,name])
-
 
 
     useEffect(() =>{
@@ -264,6 +182,13 @@ const LeadCard = (props:{param:string})=>{
              <input type="search"  placeholder="Busca por nome" onChange={(e)=>setName(e.target.value)} maxLength={35}/>
           
              </LeadSearchWrapper>
+
+             <div className="lead-header-title">               
+                    <span>Dados</span>
+                    <span className="span-oportunidade">Oportunidade</span>
+                    <span className="span-status">Status</span>                    
+             </div>
+
              { page.content.length && page.content.length ?
                <>
             {page.content.map(lead => <LeadCardItem {...lead} onChange={handleToDelete} close={closeModalLead} error={error}/>)}

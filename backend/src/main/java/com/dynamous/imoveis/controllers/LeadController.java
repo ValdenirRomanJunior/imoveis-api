@@ -4,7 +4,10 @@ import com.dynamous.imoveis.dto.LeadDTO;
 import com.dynamous.imoveis.dto.LeadNewDTO;
 import com.dynamous.imoveis.dto.LeadNewHomeSiteDTO;
 import com.dynamous.imoveis.dto.LeadNewSiteDTO;
+import com.dynamous.imoveis.dto.LeadUpdateDTO;
+import com.dynamous.imoveis.dto.PropertyUpdateDTO;
 import com.dynamous.imoveis.entities.Lead;
+import com.dynamous.imoveis.entities.Property;
 import com.dynamous.imoveis.repositories.LeadRepository;
 import com.dynamous.imoveis.services.LeadService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,47 +38,25 @@ public class LeadController {
     @GetMapping(value = "/find/{id}")
     public ResponseEntity<?> findById(@PathVariable Long id){
         Lead lead=service.find(id);
-        return ResponseEntity.ok().body(lead);
+        LeadDTO leadDTO= service.fromDTOInverse(lead);
+        return ResponseEntity.ok().body(leadDTO);
     }
 
-    
-    @PostMapping(value="/save")
-    public ResponseEntity<Void> save(@Valid @RequestBody LeadNewDTO objDto){
-    	
-        Lead obj = service.fromDTO(objDto);
-       
-        service.insert(obj);       
-        URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").
-                  buildAndExpand(obj.getId()).toUri();
-        return ResponseEntity.created(uri).build();
-    }
-    
-    @PostMapping(value="/saveSite")
-    public ResponseEntity<Void> saveSite(@Valid @RequestBody LeadNewSiteDTO objDto){
-    	
-        Lead obj = service.fromDTOSite(objDto);  
-        service.insert(obj);       
-        URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").
-                  buildAndExpand(obj.getId()).toUri();
-        return ResponseEntity.created(uri).build();
-    }
-    
-    @PostMapping(value="/saveLeadHome")
-    public ResponseEntity<Void> saveHomeSite(@Valid @RequestBody LeadNewHomeSiteDTO objDto){
-    	
-        Lead obj = service.fromDTOHomeSite(objDto);  
-        service.insert(obj);       
-        URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").
-                  buildAndExpand(obj.getId()).toUri();
-        return ResponseEntity.created(uri).build();
-    }
-   
-
+      
     @PreAuthorize("hasAnyRole('TENANT')")
     @DeleteMapping(value = "/delete/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id){
         service.delete(id);
         return ResponseEntity.noContent().build();
+    }
+    
+    @PreAuthorize("hasAnyRole('TENANT')")
+    @PutMapping(value = "/update/{id}")
+    public ResponseEntity<Void> update(@Valid @RequestBody LeadUpdateDTO leadUpdateDTO, @PathVariable Long id){
+    	leadUpdateDTO.setId(id);	    		     				
+        service.update(leadUpdateDTO);
+        return ResponseEntity.noContent().build();
+
     }
 
     @PreAuthorize("hasAnyRole('TENANT')")

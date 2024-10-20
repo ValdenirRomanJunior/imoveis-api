@@ -28,8 +28,7 @@ public class LeadNewHomeSiteDTO implements Serializable {
     
     @Length(max=80, message = "O tamanho deve ser de no máximo 80 caracteres")
     private String message;
-    
-    
+       
     private String url;
 
     public LeadNewHomeSiteDTO(){

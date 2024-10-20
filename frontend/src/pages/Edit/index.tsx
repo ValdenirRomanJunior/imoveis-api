@@ -248,13 +248,11 @@ const cleanForm = () =>{
                         'city':'',
                     });
                  }
-                 console.log(trueCity)
+               
             }
   
                
             const handleKeyUp = (e: React.FormEvent<HTMLInputElement>) =>{
-
-               
 
                 if(e.currentTarget.name  === 'number'){                  
                     number(e);

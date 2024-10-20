@@ -32,6 +32,8 @@ public class LeadDTO implements Serializable {
     private Long tenantId;
     
     private String instant;
+    
+    private Long opportunityId;
 
     public LeadDTO(){
 
@@ -46,6 +48,7 @@ public class LeadDTO implements Serializable {
         propertyId=(lead.getPropertyId() == null) ? null : lead.getPropertyId();
         tenantId=lead.getTenant().getId();
         instant=lead.getInstant();
+        opportunityId=(lead.getOpportunity()== null) ? null : lead.getOpportunity().getId();
     }
 
     public Long getId() {
@@ -113,6 +116,14 @@ public class LeadDTO implements Serializable {
 
 	public void setTenantId(Long tenantId) {
 		this.tenantId = tenantId;
+	}
+
+	public Long getOpportunityId() {
+		return opportunityId;
+	}
+
+	public void setOpportunityId(Long opportunityId) {
+		this.opportunityId = opportunityId;
 	}
 
 	

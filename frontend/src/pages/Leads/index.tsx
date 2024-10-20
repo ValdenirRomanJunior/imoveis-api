@@ -18,6 +18,7 @@ import LoadingLogin from "../../components/LoadingLogin";
 import PageNotFound from "../../components/PageNotFound";
 import { ErrorBoundary } from "react-error-boundary";
 import useAuth from "../../hooks/useAuth";
+import { BiBorderRadius } from "react-icons/bi";
 
 type Error = {
     fieldName:string;
@@ -36,9 +37,9 @@ const Leads = () => {
     const refreshTokenUser = async ()=>{
         const  resp = await refreshToken();    
         if(resp === 204){  
-          navigate('/leads')
+         // navigate('/leads')
         }else{
-            navigate('/')
+          //  navigate('/')
         }
     }
 
@@ -78,9 +79,7 @@ const Leads = () => {
         const value= e.target.value
         setForm({ ...form,
             [field]:value,
-        }); 
-
-      
+        });     
     }
 
     
@@ -90,7 +89,6 @@ const Leads = () => {
           
         }
       
-
        setErrors([])
     }
 
@@ -134,9 +132,7 @@ const Leads = () => {
                     setOtherError(false)
                 },2000)
             }
-
-        }      
-                                             
+        }                                                 
     }
 
 
@@ -188,8 +184,8 @@ const Leads = () => {
             <BarTop />
             <LeadsContainer>
 
-            <div className="title-leads"><h2>Contatos</h2>
-            <button className="button-add-lead" onClick={handleOpenModal}><BsPersonPlus className="icon-add-lead"/></button> 
+            <div className="title-leads"><BiBorderRadius className="icon-title-lead"/><h2>Leads</h2>
+            <button className="button-add-lead" style={{display:"none"}} onClick={handleOpenModal}><BsPersonPlus className="icon-add-lead"/></button> 
             </div>
             
                  
@@ -220,7 +216,6 @@ const Leads = () => {
                     { emptyValue && form['phone'] === '' ? <span className='formField__error'>Este campo é requerido</span>: ''}
                     { form['phone'].length >1 && form['phone'].length <14 &&  <span className='formField__error'>Formato de telefone errado</span>}
                     
-
                     {
                         loadingAddLead && <Button className="button-send-email" type='submit'><Loading/></Button>
                     }

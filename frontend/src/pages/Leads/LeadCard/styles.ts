@@ -7,9 +7,6 @@ export const LeadWrapper = styled.div<{prop:boolean}>`
     flex-direction:column;
     justify-content: space-between;
   
-
-    
-    
     
     background-color: ${({theme}) => theme.colors.background};
     margin-top: 20px;
@@ -26,26 +23,27 @@ export const LeadWrapper = styled.div<{prop:boolean}>`
             
     }
 
-    .icon-lead{
-        font-size: 22px;
-        color: #cacad3;
-    }
 
     .data-lead-left-wrapper{
-        width:100%;
-     
+        width: 50%;
+        position: relative;
         display: flex;
         align-items: start;
         flex-direction: column;
         margin-left:8px;
         justify-content: space-between;
       
-      
+     
 
         h4{    
             font-size: .7rem;
             margin-bottom:0;
             line-break: anywhere;
+            width:100%
+            overflow: hidden;
+            text-overflow: ellipsis;
+             white-space: nowrap;
+
            
                      
         }
@@ -57,23 +55,30 @@ export const LeadWrapper = styled.div<{prop:boolean}>`
         span{
             color: gray;
             font-size: .7rem;
-            display: flex;
-            align-items: center;
+            
+
+            line-break: anywhere;
+            width:100%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+             white-space: nowrap;
             
         }
         .email-icon{
             margin-right:3px;
             font-size:12px;
+            
 
         }
        
         .phone-date-wrapper-lead{
             width:100%;
-            padding-right:25px;
+          
 
             display: flex;
-            align-items: center;
-            justify-content: space-between;
+            flex-direction: column;
+            align-items: left;
+            
         }
         .phone-leads{
           
@@ -94,115 +99,38 @@ export const LeadWrapper = styled.div<{prop:boolean}>`
     
     }
     .instant-lead{
-            
-        font-size: .6rem;
+       
+        font-size: .5rem;
         margin-bottom:0;
         color:gray;
+        width:90px;
     }
        
     }
  
-
-    
-    .icon-arrow-lead{
-        color:#5a73e3;
-    }
-
-     
-    a{
-        display:${({prop}) => prop === true ?  'block' : 'none'} !important;
-        width:100%;
-        
-        animation: openProperty 500ms ease-in-out;     
-        transition: height 500ms ;
-        overflow:hidden;
-        height:70px;
-
-      }
-
-
-      @keyframes openProperty {
-        0% {
-           
-            height:0;
-            
-                    
-        }
-        
-        100% {
-            height:70px;
-            
-           
-                    
-        }
-      }
-
-    .message-lead{
-
-            width: 100%;
-            position:relative;
-            display:${({prop}) => prop === true ?  'block' : 'none'};
-            margin-bottom:40px;
-            animation: open 500ms ease-in-out;     
-            transition: height 500ms ;
-            border-top: .5px solid #ebebeb;
-            padding-top:10px;
-            font-size:12px;
-            font-family: 'Nunito Sans', sans-serif;         
-            margin-top:10px;
-            height:auto;
-            overflow:hidden;
-            color:gray;
-
-            .icon-arrow-down-message{
-                font-size:20px;
-                color:#c9c9c9;
-                margin-right:10px;
-      
-            }
-
-               
-    }
-
-    @keyframes open {
-        0% {
-           
-            height:0;
-            
-                    
-        }
-        
-        100% {
-            height:auto;
-            
-           
-                    
-        }
-      }
-
-      .icon-lead-trash{
-        width:100%;
-        display: flex;
-        justify-content:end;
-
-        .icon-trash{
-    
-            font-size: 12px;     
-            animation: open 500ms ease-in-out;     
-            transition: height 500ms ;
-            color:#9498a8;
-            background: transparent;
-            border: none;
-            
-        }
-      }
- 
-    
     .link-detail-property-lead{
         border-top: .5px solid #ebebeb;
     }
 
+    .lead-oportunity-wrapper{
+        width:50%;
+        min-width:50%;
+        display: flex;
 
+        justify-content:start;
+        padding: 0 10px;
+    }
+         .lead-oportunity-wrapper .span-status{
+        font-size: 10px;
+        position: absolute;
+        right:10%;
+    }
+      
+    .lead-oportunity-wrapper .icon-funil{
+        z-index: 1;
+        margin-left:20px;
+        
+    }
 
     @media screen and (min-width:390px){
         width: 100%;   
@@ -229,10 +157,6 @@ export const LeadWrapper = styled.div<{prop:boolean}>`
                 
         }
     
-        .icon-lead{
-            font-size: 22px;
-            color: #cacad3;
-        }
     
         .data-lead-left-wrapper{
             width:100%;
@@ -290,103 +214,8 @@ export const LeadWrapper = styled.div<{prop:boolean}>`
           
       
         }
-       
-           
+                
         }
-     
-    
-        
-        .icon-arrow-lead{
-            color:#5a73e3;
-        }
-    
-         
-        a{
-            display:${({prop}) => prop === true ?  'block' : 'none'} !important;
-            width:100%;
-            
-            animation: openProperty 500ms ease-in-out;     
-            transition: height 500ms ;
-            overflow:hidden;
-            height:70px;
-    
-          }
-    
-    
-          @keyframes openProperty {
-            0% {
-               
-                height:0;
-                
-                        
-            }
-            
-            100% {
-                height:70px;
-                
-               
-                        
-            }
-          }
-    
-        .message-lead{
-    
-                width: 100%;
-                position:relative;
-                display:${({prop}) => prop === true ?  'block' : 'none'};
-                margin-bottom:40px;
-                animation: open 500ms ease-in-out;     
-                transition: height 500ms ;
-                border-top: .5px solid #ebebeb;
-                padding-top:10px;
-                font-size:12px;
-                font-family: 'Nunito Sans', sans-serif;         
-                margin-top:10px;
-                height:auto;
-                overflow:hidden;
-                color:gray;
-    
-                .icon-arrow-down-message{
-                    font-size:20px;
-                    color:#c9c9c9;
-                    margin-right:10px;
-          
-                }
-    
-                   
-        }
-    
-        @keyframes open {
-            0% {
-               
-                height:0;
-                
-                        
-            }
-            
-            100% {
-                height:auto;
-                
-               
-                        
-            }
-          }
-          .icon-lead-trash{
-            width:100%;
-            display: flex;
-            justify-content:end;
-    
-            .icon-trash{
-        
-                font-size: 12px;     
-                animation: open 500ms ease-in-out;     
-                transition: height 500ms ;
-                color:#9498a8;
-                background: transparent;
-                border: none;
-                
-            }
-          }
     
     
         .link-detail-property-lead{
@@ -401,6 +230,25 @@ export const LeadWrapper = styled.div<{prop:boolean}>`
 export const LeadItemContainer = styled.div`
     width: 100%;
     height: auto;
+
+    .lead-header-title{
+        background:#fff;
+        padding: 5px 12px;
+        margin-top:10px;
+
+        display: flex;
+        justify-content: space-between;
+
+    }
+    .lead-header-title span{
+       font-size:12px; 
+    }
+    .lead-header-title .span-oportunidade{
+      margin-left:95px;  
+    }
+       .lead-header-title .span-status{
+      margin-right:15px;  
+    }
 `
 
 export const PropertyItemLeadContainer = styled.div<{prop:boolean}>`

@@ -7,11 +7,21 @@ export type Lead ={
     lastName: string;
     email:string;
     phone:string;
-    message?:string;
-    propertyId?:number;
+    message:string;
+    propertyId:number;
     instant:string;
-    
+    opportunityId:number;
+    column:Columntype;  
 }
+
+export const columns={
+    captura:true,
+    emAndamento:true  
+}
+
+
+type Column= typeof columns
+export type Columntype = keyof Column
 
 export type LeadPage = {
     

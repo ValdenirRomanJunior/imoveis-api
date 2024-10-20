@@ -33,6 +33,10 @@ const LazyRegistrationTenant = React.lazy(() => import('../pages/RegistrationTen
 const LazyTenants = React.lazy(() => import('../pages/Tenants'));
 const LazyEditTenant = React.lazy(() => import('../pages/EditTenant'));
 const LazyConfirmationPage = React.lazy(() => import('../pages/ConfirmationPage'));
+const LazyLeadDetail = React.lazy(() => import('../pages/LeadDetail'));
+const LazyOportunidades = React.lazy(() => import('../pages/Oportunidades'));
+const LazyOportunidade = React.lazy(() => import('../pages/Oportunidade'));
+const LazySteps = React.lazy(() => import('../pages/Steps'));
 
 
 
@@ -59,12 +63,14 @@ export const Router = () => {
                 <Route path="/tenants"  element={<React.Suspense fallback={<LoadingLogin/>}><LazyTenants/></React.Suspense>} />
                 <Route path="/edittenant/:tenantId" element={<React.Suspense fallback={<LoadingLogin/>}><LazyEditTenant/></React.Suspense>} />
                 <Route path="/verification/:tenantEmail" element={<React.Suspense fallback={<LoadingLogin/>}><LazyConfirmationPage/></React.Suspense>} />
-
-                    
+                <Route path="/leadDetail/:leadId"  element={<React.Suspense fallback={<LoadingLogin/>}><LazyLeadDetail/></React.Suspense>} />
+                <Route path="/oportunidades"  element={<React.Suspense fallback={<LoadingLogin/>}><LazyOportunidades/></React.Suspense>} />
+                <Route path="/oportunidades/oportunidade/:opportunityId"  element={<React.Suspense fallback={<LoadingLogin/>}><LazyOportunidade/></React.Suspense>} />
+                <Route path="/steps"  element={<React.Suspense fallback={<LoadingLogin/>}><LazySteps/></React.Suspense>} />
+              
             </Routes>
         </BrowserRouter>
-       
-       
+              
     )
 }
 

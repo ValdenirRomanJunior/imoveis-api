@@ -8,11 +8,12 @@ position: relative;
 margin-top: 50px;
 
 .icon-message{
-    font-size: 40px;
+    font-size: 35px;
     position: absolute;
     top:0;
     left: 50%;
     transform: translate(-50%, -50%);
+    color:gray;
 }
 p{
     margin-top: 20px;

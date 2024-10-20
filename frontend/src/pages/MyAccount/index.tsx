@@ -192,8 +192,10 @@ useEffect(() => {
         </div>
         <div className='round'>
         <form id='form-image-profile' onSubmit={formSubmit}>
-            
-            <input className='input-image-profile' type="file" accept="image/png,image/jpeg"  onChange={(e) => convertFile(e.target.files)}/>
+        {
+             //<input className='input-image-profile' type="file" accept="image/png,image/jpeg"  onChange={(e) => convertFile(e.target.files)}/>///  
+        }    
+      
             <MdPhotoCamera style={{color:'#fff'}}/>
       
         </form>  

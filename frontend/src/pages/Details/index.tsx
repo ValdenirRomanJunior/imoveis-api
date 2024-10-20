@@ -30,8 +30,6 @@ const Details = ()=>{
     const [errors,setErrors]=useState();
 
 
-
-
     const refreshTokenUser = async ()=>{
         const  resp = await refreshToken();    
         if(resp === 204){  
@@ -100,11 +98,9 @@ const Details = ()=>{
     ]
 
 
-
-
     const copyPropertyUrl = () => {
-        var url_atual = window.location.href;
-       
+      
+        var url_atual = window.location.href;   
         navigator.clipboard.writeText(url_atual);
         setCopyUrl(true)
         setTimeout(() => {
@@ -162,7 +158,9 @@ const Details = ()=>{
                                <img  src={photo.url}  alt="propriedade"/>                          
                                </CardWrapper>)}
 
-                             {property?.images?.length===0 as number  && <CardWrapper><img src={defaultImage} alt='Foto Padrão' className='default-image-detail'/></CardWrapper>} 
+                             {property?.images?.length===0 as number  && 
+                             <CardWrapper><img src={defaultImage} alt='Foto Padrão' className='default-image-detail'/>
+                             </CardWrapper>} 
                        
                         </Carousel>
                     </div>

@@ -4,9 +4,11 @@ import com.dynamous.imoveis.dto.LeadDTO;
 import com.dynamous.imoveis.dto.LeadNewDTO;
 import com.dynamous.imoveis.dto.LeadNewHomeSiteDTO;
 import com.dynamous.imoveis.dto.LeadNewSiteDTO;
+import com.dynamous.imoveis.dto.LeadUpdateDTO;
 import com.dynamous.imoveis.dto.TenantDTO;
 import com.dynamous.imoveis.dto.TenantNewDTO;
 import com.dynamous.imoveis.entities.Lead;
+import com.dynamous.imoveis.entities.Opportunity;
 import com.dynamous.imoveis.entities.Property;
 import com.dynamous.imoveis.entities.Tenant;
 import com.dynamous.imoveis.enums.Perfil;
@@ -45,6 +47,9 @@ public class LeadService {
     @Autowired
     private TenantService tenantService;
     
+    @Autowired
+    private OpportunityService opportunityService;
+    
    
     public Lead find(Long id) {
        // UserSS user = UserService.authenticated();
@@ -56,6 +61,7 @@ public class LeadService {
         return lead.orElseThrow(() -> new ObjectNotFoundException(
                 "Página não encontrada! Id:" + ", Type" + Lead.class.getName()));
     }
+    
     @Transactional
     public Lead insert(Lead obj) {
         obj.setId(null);       
@@ -76,6 +82,26 @@ public class LeadService {
 
     public List<Lead> findAll() {
         return leadRepository.findAll();
+    }
+    
+    public Lead update(LeadUpdateDTO lead) {
+        Lead newObj= find(lead.getId());
+        updateData(newObj,lead);
+        return leadRepository.save(newObj);
+    }
+    
+    private void updateData(Lead newObj, LeadUpdateDTO lead) {
+        newObj.setName(lead.getName());
+        newObj.setEmail(lead.getEmail());
+        newObj.setPhone(lead.getPhone());
+        newObj.setMessage(newObj.getMessage());
+        newObj.setInstant(newObj.getInstant());
+        Tenant tenant= tenantService.find(newObj.getTenant().getId());
+        newObj.setTenant(tenant);
+        newObj.setPropertyId(newObj.getPropertyId());
+        Opportunity opportunity= opportunityService.find(newObj.getOpportunity().getId());
+        newObj.setOpportunity(opportunity);
+
     }
 
     public Page<Lead> findPage(String name,Integer page, Integer linesPerPage, String orderBy, String direction){
@@ -113,6 +139,8 @@ public class LeadService {
 		   
 }
     
+
+    
     public Lead fromDTOHomeSite(LeadNewHomeSiteDTO objDto){ 
     	SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
 		
@@ -142,4 +170,8 @@ public class LeadService {
           throw new DataIntegrityException("Não é possivel deletar porque tem objetos anexados: ");
         }
     }
+	public LeadDTO fromDTOInverse(Lead lead) {
+		LeadDTO leadDTO = new LeadDTO(lead);
+		return leadDTO;
+	}
 }

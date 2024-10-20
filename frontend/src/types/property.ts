@@ -30,6 +30,7 @@ export type Property = {
         email: string,
         password: string,
         status: string,
+        domain:string;
         perfis: []      
     },
         address:{

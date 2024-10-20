@@ -36,7 +36,7 @@ export const newTenant = (slug:string, lastName:string, email: string, password:
 }
 
 export const editTenant = (slug:string, lastName:string, email: string,password:string, status: string,creci:string, domain:string,verification:string,signedDays:string, id:string) => {
-  console.log(status)
+
     return api.put(`/tenants/update/${id}`,{slug, email,status,lastName, password,creci,domain,verification,signedDays})
                                              
                                                  .then(response =>{

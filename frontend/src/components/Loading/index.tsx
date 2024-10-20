@@ -5,8 +5,8 @@ const Loading = () =>{
  
     return(
         <BodyLoading >        
-         <TailSpin height='27' width='27' ariaLabel='Loading' color='#fff' radius="1"  visible={true}/>
-        <p>Aguarde</p> 
+         <TailSpin height='20' width='20' ariaLabel='Loading' color='#fff' radius="1"  visible={true}/>
+        
         </BodyLoading>
        
 

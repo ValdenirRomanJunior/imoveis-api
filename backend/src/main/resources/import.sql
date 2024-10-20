@@ -33,15 +33,26 @@ INSERT INTO address(street, number, district, cep, property_id, city_id) VALUES 
 INSERT INTO address(street, number, district, cep, property_id, city_id) VALUES ('Av. tabuba', '10','coopagro', '61619015',5,1);
 
 
-/*INSERT INTO urls(id, id_tenant, url,property_id) VALUES (1,1,'https://dynamous.s3.sa-east-1.amazonaws.com/bailey-anselme-Bkp3gLygyeA-unsplash.jpg',1);*/
+
+INSERT INTO lead(name,email,phone,message,instant,property_id,tenant_id) VALUES ('Jean da silva de oliveira santos','vromanjunior@outlook.com','85982251426','ola gostarias de saber mais sobre a casa','08/05/2024 01:59',1,1);
+INSERT INTO lead(name,email,phone,message,instant,property_id,tenant_id) VALUES ('Rafael','vromanjunior@outlook.com','85982251426','ola gostarias de saber mais sobre a casa','08/05/2024 01:59',2,1);
+INSERT INTO lead(name,email,phone,message,instant,property_id,tenant_id) VALUES ('Junior','vromanjunior@outlook.com','85982251426','ola gostarias de saber mais sobre a casa','08/05/2024 01:59',3,2);
+
+
+INSERT INTO step(name,tenant_id) VALUES ('captura',1);
+INSERT INTO step(name,tenant_id) VALUES ('Em Atendimento',1);
+
+INSERT INTO opportunity(instant,property_id,step_id,lead_id,tenant_id) VALUES ('08/05/2024 01:59',1,2,1,1);
+INSERT INTO opportunity(instant,property_id,step_id,lead_id,tenant_id) VALUES ('08/05/2024 01:58',1,2,2,1);
+
+
+/*INSERT INTO urls(id, id_tenant, url,property_id) VALUES (1,1,'https://dynamous.s3.sa-east-1.amazonaws.com/bailey-anselme-Bkp3gLygyeA-unsplash.jpg',1);
 /*INSERT INTO urls(id, id_tenant, url,property_id) VALUES (2,1,'https://dynamous.s3.sa-east-1.amazonaws.com/bailey-anselme-Bkp3gLygyeA-unsplash.jpg',2);
 /*INSERT INTO urls(id, id_tenant, url,property_id) VALUES (3,1,'https://dynamous.s3.sa-east-1.amazonaws.com/bailey-anselme-Bkp3gLygyeA-unsplash.jpg',3);
-/*INSERT INTO urls(id, id_tenant, url,property_id) VALUES (4,1,'https://dynamous.s3.sa-east-1.amazonaws.com/bailey-anselme-Bkp3gLygyeA-unsplash.jpg',4);
+/*INSERT INTO urls(id, id_tenant, url,property_id) VALUES (4,1,'https://dynamous.s3.sa-east-1.amazonaws.com/bailey-anselme-Bkp3gLygyeA-unsplash.jpg',4);*/
 
 
-INSERT INTO lead(name,email,phone,message,property_id,tenant_id) VALUES ('Jean','vromanjunior@outlook.com','85982251426','ola gostarias de saber mais sobre a casa',1,1);
-INSERT INTO lead(name,email,phone,message,property_id,tenant_id) VALUES ('Rafael','vromanjunior@outlook.com','85982251426','ola gostarias de saber mais sobre a casa',2,1);
-INSERT INTO lead(name,email,phone,message,property_id,tenant_id) VALUES ('Junior','vromanjunior@outlook.com','85982251426','ola gostarias de saber mais sobre a casa',3,2);
+
 
 
 
