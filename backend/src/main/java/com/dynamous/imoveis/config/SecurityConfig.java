@@ -46,7 +46,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 			"/verification/**",
 			"/leads/saveSite/**",
 			"/leads/saveLeadHome/**",
-			"/properties/findAll/**"
+			"/properties/findAll/**",
+			"/opportunities/steps/**",
+			"/integracoes/toxml/**"
+			
 			
 							
 	};

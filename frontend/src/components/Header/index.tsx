@@ -1,6 +1,6 @@
 import {HeaderContainer,HeaderWrapper,UserInfo,Hambuguer,MenuLogoWrapper,NavIcon,SideBarContainer, SidebarFooter,SideBarTop,BoxLinks} from './styles';
 import useAuth from '../../hooks/useAuth';
-import logo from '../../assets/images/logo-pontos.png';
+import logo from '../../assets/images/logo-sem fundo.png';
 import {Link, useNavigate} from 'react-router-dom';
 import { VscComment } from "react-icons/vsc";
 import { useEffect, useState } from 'react';
@@ -137,15 +137,12 @@ const Header = () =>{
             <p className='description-icon'>Oportunidades</p>
             </NavIcon>
 
-            <NavIcon to="/leads"   >
+            <NavIcon to="/portais"   >
             <AiOutlineUser className='icon-sidebar'/>
             <p className='description-icon'>Portais</p>
             </NavIcon>
             
-            <NavIcon to="/leads"   >
-            <AiOutlineUser className='icon-sidebar'/>
-            <p className='description-icon'>Site</p>
-            </NavIcon>
+         
             </>
     }
             {user.perfis[0] === 'ADMIN' &&

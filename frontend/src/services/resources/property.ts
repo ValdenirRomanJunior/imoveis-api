@@ -167,3 +167,34 @@ export const getAllCities = (id:string) => {
                  
               });
 }
+
+export const getTAllAddressRequest = (nameUrl:string) => {
+
+  return api.get(`/properties/findAddress/${nameUrl}`)
+        .then(response =>{
+          return response;
+        }).catch(error => {
+          return error;
+        })
+            
+}
+
+export const searchProperties = ( name:string,goal:string, typeProperty:string , url:string,pageNumber: number) => {
+  return api.get(`/properties/searchTest?name=${name}&goal=${goal}&typeProperty=${typeProperty}&nameUrl=${url}&size=12&page=${pageNumber}&sort=name`)
+        .then(response =>{
+          return response;
+        }).catch(error => {
+          return error;
+        })
+            
+}
+export const propertiesToPortal = () => {
+
+  return api.get(`/properties/findAll`)
+        .then(response =>{
+          return response;
+        }).catch(error => {
+          return error;
+        })
+            
+}

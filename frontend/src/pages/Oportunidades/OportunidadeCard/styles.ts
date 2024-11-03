@@ -1,22 +1,29 @@
 import styled, { css } from "styled-components";
 
 
-export const LeadWrapper = styled.div<{prop:boolean}>`
-    width: 100%;   
-    display: flex; 
+
+
+export const OportunidadeContainer = styled.div`
+  
+.leadWrapper{
+    width: 100%;
+    
     flex-direction:column;
     justify-content: space-between;
+    height: 85px;
   
     background-color: ${({theme}) => theme.colors.background};
     margin-top: 10px;
     border-bottom: 1px solid rgb(222,222,222);
     padding:0 5px;
     font-family:'Nunito Sans', sans-serif;
+    position: relative;
+    
 
     ::after{
      content: "";
      width:5px;
-     height:82px;
+     height:75px;
      background: #3d76e04d;
 
      position: absolute;
@@ -24,7 +31,61 @@ export const LeadWrapper = styled.div<{prop:boolean}>`
      left:0;
     } 
 
+    .link-item-lead{
+     width:80%;
+    
+    }
+     
+    
+    .list-steps-change{
+      background: #fff;
+      position: absolute;
+      top:-80%;
+      right:0;
+      padding-left:0;
+      border-radius:3px;
+      padding: 8px 6px;
+      border:1px solid rgb(222,222,222);
+        z-index: 1;
+     display: block;
+      width: 170px;
+      max-height: 375px;
+     overflow-y: scroll;
+     scroll-behavior: smooth;
+     touch-action: auto;
 
+    }
+     .icon-opportunity-op{
+        cursor: pointer;
+     }
+     .list-steps-change h5{
+           font-family: "Open Sans", sans-serif;
+           font-size:15px;
+           background:blue;
+           background:#e1e1e187;
+            padding: 7px 5px;
+            text-align: center;
+     }
+  .list-steps-change li{
+        width:100%;
+        border:1px solid rgb(222,222,222);
+        padding: 5px 5px;
+           border-radius:3px;
+           background: #ffd6ad3b;
+            margin-top: 7px;
+        font-family: "Open Sans", sans-serif;
+        color:gray;
+         cursor:pointer;
+       
+       
+     }
+        .icon-step-move{
+        position: absolute;
+        top:0;
+        right:0;
+        font-size: 24px;
+        cursor:pointer;
+        }
     .content-first{
         max-width:100%;
         display: flex;
@@ -36,7 +97,7 @@ export const LeadWrapper = styled.div<{prop:boolean}>`
 
 
     .data-lead-left-wrapper{
-        width: 50%;
+        width: 100%;
         position: relative;
         display: flex;
         align-items: start;
@@ -50,29 +111,28 @@ export const LeadWrapper = styled.div<{prop:boolean}>`
             font-size: .7rem;
             margin-bottom:0;
             line-break: anywhere;
-            width:100%
+            width:100%;
             overflow: hidden;
             text-overflow: ellipsis;
-             white-space: nowrap;
-
-           
-                     
+            white-space: nowrap;
+            overflow:hidden;               
         }
 
         h4:first-letter{
         text-transform: capitalize;
 
         }
+
         span{
             color: gray;
             font-size: .7rem;
             
-
-            line-break: anywhere;
+           line-break: anywhere;
             width:100%;
             overflow: hidden;
             text-overflow: ellipsis;
              white-space: nowrap;
+            overflow:hidden;
             
         }
         .email-icon{
@@ -106,9 +166,9 @@ export const LeadWrapper = styled.div<{prop:boolean}>`
                 color:#595959cc;
                 margin-right:3px;
                 font-size:12px;
-            }
-    
+            }    
     }
+
     .instant-lead{
        
         font-size: .5rem;
@@ -127,7 +187,7 @@ export const LeadWrapper = styled.div<{prop:boolean}>`
 
      
     a{
-        display:${({prop}) => prop === true ?  'block' : 'none'} !important;
+       
         width:100%;
         
         animation: openProperty 500ms ease-in-out;     
@@ -158,7 +218,7 @@ export const LeadWrapper = styled.div<{prop:boolean}>`
 
             width: 100%;
             position:relative;
-            display:${({prop}) => prop === true ?  'block' : 'none'};
+         
             margin-bottom:40px;
             animation: open 500ms ease-in-out;     
             transition: height 500ms ;
@@ -213,14 +273,20 @@ export const LeadWrapper = styled.div<{prop:boolean}>`
             
         }
       }
- 
+    
+      .icon-opportunity-op{
+      position: absolute;
+      bottom:30%;
+      right:7%;
+      z-index:0 !important;
+      }
     
     .link-detail-property-lead{
         border-top: .5px solid #ebebeb;
     }
 
     .lead-oportunity-wrapper{
-        width:50%;
+      
         display: flex;
         justify-content:space-around;
         padding: 0 10px;
@@ -236,7 +302,16 @@ export const LeadWrapper = styled.div<{prop:boolean}>`
         justify-content: space-between;
         position:relative;
     
-        
+            ::after{
+            content: "";
+            width:5px;
+            height:82px;
+            background: #3d76e04d;
+
+            position: absolute;
+            top:0;
+            left:0;
+         } 
         
         
         background-color: ${({theme}) => theme.colors.background};
@@ -254,7 +329,6 @@ export const LeadWrapper = styled.div<{prop:boolean}>`
                 
         }
     
-    
         .data-lead-left-wrapper{
             width:100%;
          
@@ -264,14 +338,17 @@ export const LeadWrapper = styled.div<{prop:boolean}>`
             margin-left:8px;
             justify-content: space-between;
           
-          
-    
+        
             h4{    
                 font-size: .8rem;
-                margin-bottom:0;
+                 margin-bottom:0;
                 line-break: anywhere;
-               
-                         
+                line-break: anywhere;
+                width:100%;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+                overflow:hidden;                                    
             }
     
             h4:first-letter{
@@ -281,8 +358,13 @@ export const LeadWrapper = styled.div<{prop:boolean}>`
             span{
                 color: gray;
                 font-size: .8rem;
-                display: flex;
-                align-items: center;
+              
+                line-break: anywhere;
+                width:100%;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+           
                 
             }
             .email-icon{
@@ -307,12 +389,10 @@ export const LeadWrapper = styled.div<{prop:boolean}>`
                     color:#595959cc;
                     margin-right:3px;
                     font-size:12px;
-                }
-          
+                }    
       
         }
-       
-           
+              
         }
      
     
@@ -323,7 +403,7 @@ export const LeadWrapper = styled.div<{prop:boolean}>`
     
          
         a{
-            display:${({prop}) => prop === true ?  'block' : 'none'} !important;
+         
             width:100%;
             
             animation: openProperty 500ms ease-in-out;     
@@ -338,15 +418,13 @@ export const LeadWrapper = styled.div<{prop:boolean}>`
             0% {
                
                 height:0;
-                
-                        
+                                     
             }
             
             100% {
                 height:70px;
                 
-               
-                        
+                                     
             }
           }
     
@@ -354,7 +432,7 @@ export const LeadWrapper = styled.div<{prop:boolean}>`
     
                 width: 100%;
                 position:relative;
-                display:${({prop}) => prop === true ?  'block' : 'none'};
+             
                 margin-bottom:40px;
                 animation: open 500ms ease-in-out;     
                 transition: height 500ms ;
@@ -372,24 +450,20 @@ export const LeadWrapper = styled.div<{prop:boolean}>`
                     color:#c9c9c9;
                     margin-right:10px;
           
-                }
-    
-                   
+                }               
         }
     
         @keyframes open {
             0% {
                
                 height:0;
-                
-                        
+                                   
             }
             
             100% {
                 height:auto;
                 
-               
-                        
+                                 
             }
           }
           .icon-lead-trash{
@@ -413,14 +487,12 @@ export const LeadWrapper = styled.div<{prop:boolean}>`
             border-top: .5px solid #ebebeb;
         }
     }
-  @media screen and (min-width:1000px){
-    margin-top:10px;
+     @media screen and (min-width:1000px){
+     margin-top:10px;
+
+}
 }
 
-`
-
-export const OportunidadeContainer = styled.div`
-    width: 100%;
     height: auto;
 
     .lead-header-title{
@@ -441,45 +513,80 @@ export const OportunidadeContainer = styled.div`
        .lead-header-title .span-status{
       margin-right:15px;  
     }
- @media screen and (min-width:1000px){
-        flex-direction: row;
 
-
+   .sc-ikJyIC.grQsfG.rec.rec-pagination{
+    display:none;
 }
+    .column{
+         width:100%;
+         
+              border: 1px dashed #dadada;
+              padding:5px 7px;
+              margin-top: 20px;
+             -webkit-box-shadow: 0px 1px 21px -5px rgba(204,222,255,1);
+             -moz-box-shadow: 0px 1px 21px -5px rgba(204,222,255,1);
+              box-shadow: 0px 1px 21px -5px rgba(204,222,255,1);
+              border-radius:7px;
+              min-height: 370px;
+            
+    }
+      .title-column{
+         font-family: 'Nunito Sans', sans-serif;     
+         font-weight:600;
+         text-align: center;
+         font-size:12px;
+         background:#0848e917;
+         padding: 7px  0;
+         color:#6e6e6e; 
+         border-top-right-radius: 7px;
+
+        }
+     
+ 
+     .sc-cxpSdN.fIwXVr.rec.rec-arrow.rec.rec-arrow-right{
+     width:40px;
+     height:40px;
+     min-width:40px;
+     line-height: 40px;
     
+     }
+       .sc-cxpSdN.fIwXVr.rec.rec-arrow.rec.rec-arrow-left{
+     width:40px;
+     height:40px;
+     min-width:40px;
+     line-height: 40px;
+     transition:none;
+    
+     }
+    .ehWCnd {
+     width:40px;
+     height:40px;
+     min-width:40px;
+     line-height: 40px;
+     }
+      
+  
+   
+        
+
+
+  
+
 `
 export const ColumnsContainer = styled.div`
-    width:100%;
-    flex-direction: row;
-     margin-top:20px;
-     @media screen and (min-width:1000px){
-     display: flex;
+   
 
-        .column{
-        width:250px;
-        margin-left:10px;
-  
-        >h5{
-         font-family: 'Nunito Sans', sans-serif;     
-         font-weight:600;
-        font-size:17px;
-        }
-    }
+ 
+
+   
       
+     @media screen and (min-width:1000px){
+    
+}
  @media screen and (min-width:1300px){
-     display: flex;
+   
 
-        .column{
-        width:250px;
-        margin-left:10px;
-  
-        >h5{
-        text-align: center;
-         font-family: 'Nunito Sans', sans-serif;     
-         font-weight:600;
-        font-size:14px;
-        }
-    }
+
 
 }
 

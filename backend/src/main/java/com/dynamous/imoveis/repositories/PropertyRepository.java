@@ -12,6 +12,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
+import java.util.Optional;
 
 
 @Repository
@@ -62,6 +63,8 @@ public interface PropertyRepository extends JpaRepository<Property,Long> {
 	    Page<Property> findAll(Pageable pageable);
 	    //busca imoveis por tenat
 		List<Property> findAllByTenant(Tenant tenant);
+
+		Optional<Property> findByIdAndTenant(Long id, Tenant tenant);
 
    
 

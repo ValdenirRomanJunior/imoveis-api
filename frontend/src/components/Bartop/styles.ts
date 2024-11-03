@@ -4,8 +4,8 @@ import imageTopBanner from '../../assets/images/banner-top.png';
 export const BarTopContainer = styled.div`
         width:100%;
         height:55px;
-      
-        background-image: url(${imageTopBanner});
+       
+        background: #f6f8fa;
         background-position: center;
         background-repeat: no-repeat;
         background-size: cover;
@@ -13,7 +13,7 @@ export const BarTopContainer = styled.div`
         justify-content: space-around;
         align-items: center;
              
-        margin-top:65px;
+        display:none;
         border-bottom: 1px solid #e6e9ed;
 
         img{
@@ -24,8 +24,7 @@ export const BarTopContainer = styled.div`
                            
         }
 
-        p{
-            
+        p{           
            font-size: 11px;
            margin-bottom: 0;
            position: absolute;
@@ -105,19 +104,19 @@ export const BarTopContainer = styled.div`
             width:100%;
             height:60px;
             
-            background-image: url(${imageTopBanner});
+            background:#f6f8fa;
             background-position: center;
             background-repeat: no-repeat;
             background-size: cover;
                  
-            margin-top: 65px;
+      
             border-bottom: 1px solid #e6e9ed;
 
             display: flex;
             justify-content: space-between;
             align-items: center;
             padding: 0 90px;
-    
+        display: none;
             img{
                 width: 110px;
                 height: 25px;
@@ -161,5 +160,5 @@ export const BarTopContainer = styled.div`
             }
 
         }
-        
+    
 `

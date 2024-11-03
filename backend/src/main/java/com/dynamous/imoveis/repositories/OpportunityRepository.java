@@ -4,9 +4,13 @@ package com.dynamous.imoveis.repositories;
 import com.dynamous.imoveis.entities.Lead;
 import com.dynamous.imoveis.entities.Opportunity;
 import com.dynamous.imoveis.entities.Property;
+import com.dynamous.imoveis.entities.Step;
 import com.dynamous.imoveis.entities.Tenant;
 import com.dynamous.imoveis.enums.Status;
 import com.dynamous.imoveis.enums.Verification;
+
+import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
@@ -33,5 +37,10 @@ public interface OpportunityRepository extends JpaRepository <Opportunity,Long> 
 
 	 
 	void deleteAllByTenant(Tenant tenant);
+
+	List<Opportunity> findAllByTenant(Tenant tenant);
+
+	Optional<Opportunity> findByIdAndTenant(Long id, Tenant tenant);
+	
 
 }

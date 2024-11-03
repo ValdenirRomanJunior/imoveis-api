@@ -39,20 +39,7 @@ const LeadDetail = () => {
     const navigate = useNavigate();
 
 
-    const refreshTokenUser = async ()=>{
-        const  resp = await refreshToken();    
-        if(resp === 204){  
-          navigate(`/leadDetail/${params.leadId}`)
-        }else{
-       navigate('/')
-        }
-    }
-
-    useEffect( () =>  {
-        refreshTokenUser()
-      },[params.leadId])
-
-
+   
 
       const ErrorHandler = () => {
         return <PageNotFound/>;
@@ -70,12 +57,15 @@ const LeadDetail = () => {
         if(params != null){
                
         const data = await findLead(String(params.leadId));   
-             
+         
         if(data.status === 200){
-            setLead(data.data as Lead) 
+            setLead(data.data as Lead)
+            console.log(data.status)
+         
            
-          } else if(data.response.status === 404){        
-            setErrorsLead(data.response.data.error);        
+          } else if(data.response.status === 404){ 
+                   
+            setErrorGetLead(data.response.status);        
           }                       
     }
     }          
@@ -85,7 +75,18 @@ const LeadDetail = () => {
     },
      []);
 
+     const refreshTokenUser = async ()=>{
+      const  resp = await refreshToken();    
+      if(resp === 204){  
+        navigate(`/leadDetail/${params.leadId}`)
+      }else{
+     navigate('/')
+      }
+  }
 
+  useEffect( () =>  {
+      refreshTokenUser()
+    },[params.leadId])
     const getProperty = async() => {  
         if(lead?.propertyId != null){
                
@@ -110,6 +111,7 @@ const LeadDetail = () => {
      []);
 
      const [errorsLead, setErrorsLead] = useState<Error[]>([])
+     const [errorGetLead, setErrorGetLead] = useState()
      const [changeButtonName,setChangeButtonName]= useState(false);
 
      const changeEditButton= () => {
@@ -265,8 +267,9 @@ const LeadDetail = () => {
         setCloseModalLead(false);
 
         const data =  await deleteLead(String(idTrash));
-        
-        if(data.response.status === 204){
+    
+        if(data.status === 204){
+
           setIsOpenTrashOpp(false);
           navigate(`/leads`)
             
@@ -283,7 +286,7 @@ const LeadDetail = () => {
       
     return(
       <>
-        {user?.perfis?.[0] === 'TENANT'  ? 
+        {user?.perfis?.[0] === 'TENANT' && !errorGetLead? 
         <div>
      
         <LeadDetailBackground>
@@ -296,7 +299,7 @@ const LeadDetail = () => {
                     { lead?.opportunityId !== null &&
                    <Link to={`/oportunidades/oportunidade/${lead?.opportunityId}`} className='link-opportunity'><span> <BiFilterAlt />Ver oportunidade</span></Link> 
                   }
-                    <p className='excluir-lead' onClick={()=>handleOpenModalTrash(lead?.id as number)}>Excluir</p>
+                    <p className='excluir-lead' style={{cursor:"pointer"}} onClick={()=>handleOpenModalTrash(lead?.id as number)}>Excluir</p>
             
                     <Modal 
                         isOpen={modalIsOpenTrashOpp}
@@ -307,7 +310,7 @@ const LeadDetail = () => {
                         
                       <h1>Por favor confirme</h1>
                       <p>Tem certeza que deseja excluir este lead?</p>
-                      <IoCloseOutline onClick={handleCloseModalTrash} className='button-close-modal-opp' /> 
+                      <IoCloseOutline style={{cursor:"pointer"}} onClick={handleCloseModalTrash} className='button-close-modal-opp'/> 
                       <div className="buttons-wrapper-lead">
                       <button onClick={handleCloseModalTrash}  className='cancel-button-lead'>Cancelar</button>                 
                       <button onClick={(handleToDelete)} className='delete-button-lead' >Excluir</button>
@@ -324,10 +327,10 @@ const LeadDetail = () => {
 
                     <label>Nome</label>
                     {!changeButtonName ?                
-                   <div className='data-detail-lead-wrapper'><p className='lead-name-detail'>{lead?.name}</p><span onClick={changeEditButton} className='edit-label' >editar</span></div>: 
+                   <div className='data-detail-lead-wrapper'><p className='lead-name-detail'>{lead?.name}</p><span onClick={changeEditButton} className='edit-label' style={{cursor:'pointer'}}>editar</span></div>: 
                       <div className='input-wrapper-data'><input placeholder="Rogerio" className="input-class" id="name" name="name" value={form['name']} onChange={(e) => handleChange(e)} maxLength={41} onKeyUp={handleKeyUp}></input> 
                        {!loadingEditName &&
-                       <div className='button-wrapper-send-data'><button className='button-send-data' type='submit'>Salvar</button> <span  className='button-cancel-data' onClick={handleCancelEdit}>cancelar</span></div>}
+                       <div className='button-wrapper-send-data'><button className='button-send-data' type='submit' style={{cursor:'pointer'}} >Salvar</button> <span  className='button-cancel-data' onClick={handleCancelEdit} style={{cursor:'pointer'}}>cancelar</span></div>}
                          {loadingEditName &&
                        <div className='button-wrapper-send-data'> <button className="button-send-data" type='submit'><Loading/></button></div>} </div>}
                        {errorsLead.map(x => { if(x.fieldName === 'name') return  <p className='formField__error'>{x.message}</p>})}
@@ -335,10 +338,10 @@ const LeadDetail = () => {
     
                     <label>Email</label>
                     {!changeEditButtonEmail?
-                    <div className='data-detail-lead-wrapper'><p className='lead-email'><AiOutlineMail/>{lead?.email}</p><span  onClick={handlechangeEditButtonEmail} className='edit-label-email'>editar</span></div>:
+                    <div className='data-detail-lead-wrapper'><p className='lead-email'><AiOutlineMail/>{lead?.email}</p><span  onClick={handlechangeEditButtonEmail} className='edit-label-email' style={{cursor:'pointer'}}>editar</span></div>:
                     <div className='input-wrapper-data'><input placeholder="ex: joao@gmail.com" className="input-class" id="email" name="email" value={form['email'] } onChange={(e) => handleChange(e)}  maxLength={40} onKeyUp={handleKeyUp}></input>
                     {!loadingEditName &&
-                       <div className='button-wrapper-send-data'><button className="button-send-data" type='submit'>Salvar</button> <span  className='button-cancel-data' onClick={handleCancelEdit}>cancelar</span></div>}
+                       <div className='button-wrapper-send-data'><button className="button-send-data" type='submit' style={{cursor:'pointer'}}>Salvar</button> <span  className='button-cancel-data' onClick={handleCancelEdit} style={{cursor:'pointer'}}>cancelar</span></div>}
                          {loadingEditName &&
                        <div className='input-wrapper-data'><button className="button-send-data" type='submit'><Loading/></button></div>} </div>}
                      {errorsLead.map(x => { if(x.fieldName === 'email') return  <p className='formField__error'>{x.message}</p>})}
@@ -347,10 +350,10 @@ const LeadDetail = () => {
 
                     <label>Telefone</label>
                     {!changeEditButtonPhone ?
-                    <div className='data-detail-lead-wrapper'>  <p className='lead-phone'><FaWhatsapp/>{lead?.phone}</p><span onClick={handlechangeEditButtonPhone} className='edit-label-phone'>editar</span></div>:
+                    <div className='data-detail-lead-wrapper'>  <p className='lead-phone'><FaWhatsapp/>{lead?.phone}</p><span onClick={handlechangeEditButtonPhone} className='edit-label-phone' style={{cursor:'pointer'}}>editar</span></div>:
                    <div  className='input-wrapper-data'> <input placeholder="(85) 982251423" className="input-class" id="phone" name="phone" onChange={(e) => handleChange(e)} onKeyUp={handleKeyUp}></input>
                      {!loadingEditName &&
-                         <div className='button-wrapper-send-data'><button className="button-send-data" type='submit'>Salvar</button> <span  className='button-cancel-data' onClick={handleCancelEdit}>cancelar</span></div>}
+                         <div className='button-wrapper-send-data'><button className="button-send-data" type='submit' style={{cursor:'pointer'}}>Salvar</button> <span  className='button-cancel-data' onClick={handleCancelEdit} style={{cursor:'pointer'}}>cancelar</span></div>}
                          {loadingEditName &&
                        <div className='input-wrapper-data'><button className="button-send-data" type='submit'><Loading/></button> </div>} </div>}
                     {errorsLead.map(x => { if(x.fieldName === 'phone') return  <p className=' formField__error'>{x.message}</p>})}

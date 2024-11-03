@@ -9,12 +9,11 @@ export const SearchContainer = styled.div`
 
 @media screen and (min-width:1000px){
  
-    
+  
     display: flex;
     align-items: center;
 
-
-    
+  
 `
 
 

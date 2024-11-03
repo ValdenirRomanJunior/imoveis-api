@@ -19,6 +19,9 @@ import { ErrorBoundary } from 'react-error-boundary';
 import { Sign } from 'crypto';
 import SignIn from '../SignIn';
 import useAuth from '../../hooks/useAuth';
+import { IoEyeOutline } from 'react-icons/io5';
+import { RiDoorLockLine } from 'react-icons/ri';
+import Funil from '../../components/Funnel';
 
 
  
@@ -173,7 +176,7 @@ const Dashboard = ()=>{
               
                   <div className='card-wrapper-top'>             
                      <p>Ver todos os meus imóveis cadastrados</p>
-                     <Link to='/properties'>  <Button style={{ background: "#009d43", borderRadius:"4px", marginBottom:"0"}} className="button-top">Ver agora meus imóveis</Button> </Link>
+                     <Link to='/properties'> <button  className="button-top"><IoEyeOutline /> Ver Oportunidades</button> </Link>
                  </div>
             </div>
 
@@ -182,24 +185,24 @@ const Dashboard = ()=>{
             <p className='cards-left-side-title'>O que já temos com sua conta</p>  
                 <div className='cards-wrapper'>          
              <div className='card-wrapper-left'>
-                   <Card  width='100%' height='100%' noShadow={true}  borderRadius='2px'   background={false}>
-                     <p>Imóveis Cadastrados</p>
+                   <div className='card-lef-inside'>
+                     <div><p>Imóveis Cadastrados</p></div>
 
                      <span className='number-card-dashboard'>{totalProperties && totalProperties}</span>
-                   </Card>
+                   </div>
                    </div>
                             <div className='card-wrapper-left'>
-                            <Card width='100%' height='100%'  noShadow={true}  borderRadius='2px'  background={false} >
-                                <p>Leads</p>
+                            <div className='card-lef-inside'>
+                                <div><p>Leads</p></div>
                                 <span className='number-card-dashboard'>{totalLeads && totalLeads}</span>
-                            </Card>
+                            </div>
                             </div>
                           
                             <div className='card-wrapper-left'>
-                    <Card width='100%' height='100%' noShadow={true}  borderRadius='2px'    background={false}>
-                        <p>Imóveis Publicados</p>
+                    <div className='card-lef-inside'>
+                        <div><p>Imóveis Publicados</p></div>
                         <span className='number-card-dashboard'>{publishedProperties && publishedProperties}</span>
-                    </Card>
+                    </div>
                     </div>
                    
                    
@@ -208,7 +211,12 @@ const Dashboard = ()=>{
             </div>
 
 
+
             <div className='right-side'>
+            <div  className='card-right-bottom'>    
+                <h2 ><RiDoorLockLine className='icon-portais'/>Oportunidades</h2>
+                <Funil/>              
+            </div>
             <Card width='100%' height='100%' noShadow={true} border='1px solid #e6e9ed' borderRadius='2px' >
                 <UserInfo>
                     <div className='user-image-wrapper-dashboard'>
@@ -221,13 +229,10 @@ const Dashboard = ()=>{
                 
             </Card>
 
-            <Card width='100%' height='auto' noShadow={true} margin='25px 0' border='1px solid #e6e9ed' paddingTop='0' borderRadius='2px'>    
-               <img className='img-right' src={rightSideImage} />
-                                          
-            </Card>
-
-            </div>
+      
          
+            </div>
+            
         </BodyContainer>
      
         </DashboardBackground> 

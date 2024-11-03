@@ -37,6 +37,9 @@ const LazyLeadDetail = React.lazy(() => import('../pages/LeadDetail'));
 const LazyOportunidades = React.lazy(() => import('../pages/Oportunidades'));
 const LazyOportunidade = React.lazy(() => import('../pages/Oportunidade'));
 const LazySteps = React.lazy(() => import('../pages/Steps'));
+const LazyPortals = React.lazy(() => import('../pages/Portals'));
+const LazyPortal = React.lazy(() => import('../pages/Portal'));
+const LazyPortalConfig = React.lazy(() => import('../pages/PortalConfig'));
 
 
 
@@ -67,6 +70,9 @@ export const Router = () => {
                 <Route path="/oportunidades"  element={<React.Suspense fallback={<LoadingLogin/>}><LazyOportunidades/></React.Suspense>} />
                 <Route path="/oportunidades/oportunidade/:opportunityId"  element={<React.Suspense fallback={<LoadingLogin/>}><LazyOportunidade/></React.Suspense>} />
                 <Route path="/steps"  element={<React.Suspense fallback={<LoadingLogin/>}><LazySteps/></React.Suspense>} />
+                <Route path="/portais"  element={<React.Suspense fallback={<LoadingLogin/>}><LazyPortals/></React.Suspense>} />
+                <Route path="/portal"  element={<React.Suspense fallback={<LoadingLogin/>}><LazyPortal/></React.Suspense>} />
+                <Route path="/portalConfig"  element={<React.Suspense fallback={<LoadingLogin/>}><LazyPortalConfig/></React.Suspense>} />
               
             </Routes>
         </BrowserRouter>

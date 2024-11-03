@@ -51,11 +51,12 @@ align-items: center;
 justify-content: end;
 
 }
-
+.message-digit-space-register{
+  
+    color:#001fa0d9;   
+}
 @media screen and (min-width:450px){
 .Mod{
-
-
 
     width:70%;
     padding: 1.7rem 1rem;

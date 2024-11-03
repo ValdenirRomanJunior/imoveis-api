@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -13,12 +14,17 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
 
 import org.hibernate.validator.constraints.Length;
 
+import com.dynamous.imoveis.services.validation.StepInsert;
+import com.dynamous.imoveis.services.validation.StepUpdate;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+
+
 
 @Entity
 public class Step implements Serializable {
@@ -31,6 +37,7 @@ public class Step implements Serializable {
 	    
 	    @NotEmpty(message = "Preenchimento obrigatório")
 	    @Length(min=1, max=15, message = "O tamanho deve ter entre 1 e 15 caracteres")
+	    @Column(unique = true)
 	    private String name;
 	    
 	    @ManyToOne

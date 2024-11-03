@@ -10,7 +10,7 @@ import {IoCloseOutline} from 'react-icons/io5'
 import "../Leads/ModalStyle.css";
 import { BsPersonPlus, BsTrash } from "react-icons/bs";
 import { currency, number, phone } from "../Registration/masks";
-import { deleteStep, newStep, stepsOpportunity } from "../../services/resources/lead";
+import { deleteStep, editStep, newStep, stepsOpportunity } from "../../services/resources/lead";
 import { Link, useNavigate } from "react-router-dom";
 import Loading from "../../components/Loading";
 import { refreshToken } from "../../services/resources/user";
@@ -88,16 +88,28 @@ const Steps = () => {
     }
 
     
-
-    const handleKeyUp = (e: React.FormEvent<HTMLInputElement>) =>{          
+    const handleKeyUp = (e: React.FormEvent<HTMLInputElement>) =>{ 
+        let value= e.currentTarget.value;
+        value= value.replace(/\s+/g, '');
+        e.currentTarget.value = value;
         setErrors([])
+            return e;         
+      
        
     }
 
-    
-    
-   
+    const handleKeyUpEdit = (f: React.FormEvent<HTMLInputElement>) =>{  
 
+        let value= f.currentTarget.value;
+        value= value.replace(/\s+/g, '');
+        f.currentTarget.value = value;
+ 
+            return f;
+       
+       
+    }
+
+     
     const handleSubmit = async (e:any) =>{   
         e.preventDefault();
 
@@ -111,8 +123,7 @@ const Steps = () => {
       
             const data = await newStep(form['name'])
           
-           
-       
+               
           if(data.status === 201){
             cleanForm()         
             setSuccessMessage(true)
@@ -194,6 +205,7 @@ const Steps = () => {
     const[idTrash,setIdTrash]= useState<number>();
     const handleOpenModalTrash =(id:number) => {
         setIdTrash(id)
+       
         setIsOpenTrash(true)
     }
     
@@ -201,12 +213,9 @@ const Steps = () => {
     const handleCloseModalTrash =() =>{        
          setIsOpenTrash(false);  
       
-    
     } 
 
  
-
-
     const handleDeleteStep = async () => { 
         console.log(idTrash)
     setIsOpenTrash(false);
@@ -220,7 +229,113 @@ const Steps = () => {
       getSteps()
    },500)
   }
+
+
+
+//ABAIXO SÃO DA EDIÇÃO
+
+const handleChangeEdit = (e:any) => {
+    const field= e.target.getAttribute('name');
+    const value= e.target.value
     
+    setFormEdit({ ...formEdit,
+        [field]:value,
+    }); 
+   
+}
+  const [nameStepEdit,setNameStepEdit]=useState<string>();
+
+  const handleCancelEdit= ()=>{
+    setChangeButtonName(false);
+    setEmptyValueEdit(false)
+    if(nameStepEdit){        
+      setFormEdit({ ...formEdit,  
+        name:nameStepEdit,         
+      }); 
+    }
+   }
+
+  
+   const [formEdit, setFormEdit] = useState({
+    name:nameStepEdit,
+    
+    });
+
+    useEffect(() => {
+      if(nameStepEdit){
+ 
+      setFormEdit({ ...formEdit,  
+        name:nameStepEdit,          
+      }); 
+    }
+
+  },
+   [nameStepEdit]);
+  
+   const [emptyValueEdit,setEmptyValueEdit]= useState(false);
+  const handleSubmitEdit = async (e:any) =>{     
+    e.preventDefault()        
+    let emptyValues=Object.values(formEdit).some(obj => obj === '');
+  
+    setEmptyValueEdit(emptyValues);
+
+    console.log(emptyValues)
+    if(formEdit['name'] !== ""){
+    setLoadingEditName(true)
+        console.log(idEdit)
+
+        const data = await editStep(formEdit['name'] as string, idEdit as number) 
+      if(data.status === 204){
+        setTimeout(()=> {
+          setLoadingEditName(false)    
+          setChangeButtonName(false)  
+          setSuccessMessage(true)
+          getSteps()
+          
+      },500)          
+                     
+        setParam("getLeads")
+        setParam('');  
+      }
+        if(data.response.data.errors){   
+                  
+            seterrorEdit(data.response.data.errors);
+            setSuccessMessage(false)
+            setLoadingEditName(false)
+            setParam('')
+                                                                           
+        } 
+        else if(data.response.status === 404 || data.response.status === 403){                     
+            setOtherError(true)
+            setSuccessMessage(false)
+            setLoadingEditName(false)
+            setParam('')              
+            setTimeout(()=>{
+                setOtherError(false)
+        },1000)
+     } 
+     else if(data.response.status === 400){                     
+        setOtherError(true)
+        setSuccessMessage(false)
+        setLoadingEditName(false)
+        setParam('')              
+        setTimeout(()=>{
+            setOtherError(false)
+    },1000)
+ }           
+}                                                 
+}
+  const [loadingEditName, setLoadingEditName]=useState(false);
+  const [changeButtonName,setChangeButtonName]= useState(false);
+  const [errorEdit,seterrorEdit]= useState<Error[]>([]);
+  const [idEdit,setIdEdit]=useState<number>();
+
+  const changeEditButton= (id:number,name:string) => {
+   setChangeButtonName(changeButtonName => !changeButtonName);
+   setNameStepEdit(name)
+   setIdEdit(id as number)
+    
+  }
     return(
         <>
         {user?.perfis?.[0] === 'TENANT'? 
@@ -239,8 +354,26 @@ const Steps = () => {
                 <ul>
                     {stepsOp && stepsOp.map(steps => (
                           <>
-                        <li><span>{steps.name}</span><p onClick={()=>handleOpenModalTrash(steps.id)} ><BsTrash className='icon-trash'/>Excluir</p></li>
-                      
+                        <form  onSubmit={(e)=> {handleSubmitEdit(e)}}>
+                        {!changeButtonName ?    
+                        <li><span>{steps.name}</span><div className="edit-delete-wrapper"><p style={{cursor:"pointer"}} onClick={()=>handleOpenModalTrash(steps.id)} ><BsTrash className='icon-trash'/>Excluir</p> <span onClick={()=>changeEditButton(steps.id,steps.name)} className='edit-label' >editar</span></div></li>:
+                        
+                        
+                       <div className='input-wrapper-data'>
+                        {!loadingEditName && steps.id ===idEdit &&
+                         <p className="message-digit-space">digite o nome da estapa sem espaços</p>}
+                         {!loadingEditName && steps.id ===idEdit &&
+                        
+                       <input placeholder="Digite o nome etapa sem espaços" className="input-class" id="name" name="name" value={formEdit['name']} key={steps.id} onChange={(e) => handleChangeEdit(e)} maxLength={41} onKeyUp={handleKeyUpEdit}></input> }
+                        
+                       {!loadingEditName && steps.id ===idEdit &&
+                       <div className='button-wrapper-send-data'><button className='button-send-data' type='submit'>Salvar</button> <span style={{cursor:"pointer"}} className='button-cancel-data' onClick={handleCancelEdit}>cancelar</span></div>}
+                         {loadingEditName && steps.id ===idEdit &&
+                       <div className='button-wrapper-send-data'> <button className="button-send-data" type='submit'><Loading/></button></div>} </div>}  
+                                             
+                         </form>
+                       {errorEdit.map(x => { if(x.fieldName === 'name') return  <p className='formField__error'>{x.message}</p>})}
+                        {emptyValueEdit && "Este campo é requerido"}
                         <Modal 
                         isOpen={modalIsOpenTrash}
                         onRequestClose={handleCloseModalTrash} 
@@ -250,10 +383,9 @@ const Steps = () => {
                         
                       <h1>Por favor confirme</h1>
                       <p>Tem certeza que deseja excluir esta etapa?</p>
-                      <IoCloseOutline onClick={handleCloseModalTrash} className='button-close-modal' /> 
+                      <IoCloseOutline style={{cursor:"pointer"}} onClick={handleCloseModalTrash} className='button-close-modal' /> 
                       <div className="buttons-wrapper-lead">
-                      <button onClick={handleCloseModalTrash}  className='cancel-button-lead'>Cancelar</button>
-                    
+                      <button onClick={handleCloseModalTrash}  className='cancel-button-lead'>Cancelar</button>                   
                       <button onClick={handleDeleteStep}className='delete-button-lead' >Excluir</button>
                       
                       </div>
@@ -265,8 +397,9 @@ const Steps = () => {
             </div>
 
             
-   
-                 
+
+
+                
               <Modal 
                 isOpen={modalIsOpen}
                 onRequestClose={handleCloseModal}    
@@ -278,11 +411,11 @@ const Steps = () => {
 
                 <form  onSubmit={(e)=> {handleSubmit(e)}}>
 
-                    <label>Nome</label>   
+                  
+                    <p className="message-digit-space-register">digite o nome da estapa sem espaços</p>  
                     <Input placeholder="Nome da etapa" className="input-class" id="name" name="name" onChange={(e) => handleChange(e)} maxLength={15} onKeyUp={handleKeyUp}/>
                     {errors.map(x => { if(x.fieldName === 'name') return  <p className=' formField__error'>{x.message}</p>})}
                     {form['name'] === '' ? <span className='formField__error'>Este campo é requerido</span>: ''}
-
                                     
                     {
                         loadingAddLead && <Button className="button-send-email" type='submit'><Loading/></Button>

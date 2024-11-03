@@ -11,6 +11,7 @@ import com.dynamous.imoveis.security.UserSS;
 import com.dynamous.imoveis.services.AuthService;
 import com.dynamous.imoveis.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,7 +24,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 @RestController
-@RequestMapping(value = "/auth")
+@RequestMapping(value = "/auth", produces = {MediaType.APPLICATION_JSON_VALUE})
 public class AuthController {
 	
 	@Autowired
@@ -42,7 +43,7 @@ public class AuthController {
     
 
 
-    @PostMapping(value = "/refresh_token")
+    @PostMapping(value = "/refresh_token", produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<Void> refreshToken(HttpServletResponse response) throws UsernameNotFoundException{
     	
     	//se user for 1= null busca ele
@@ -59,14 +60,14 @@ public class AuthController {
        
     }
     
-    @PostMapping(value = "/forgot")
+    @PostMapping(value = "/forgot", produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<Void> forgot(@Valid @RequestBody EmailDTO emaildDto){  	
     	authService.sendNewPassword(emaildDto);
         return ResponseEntity.noContent().build();
     }
     
     
-    @GetMapping(value="/getuser")
+    @GetMapping(value="/getuser", produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<?> getUserData() throws UsernameNotFoundException{
     
     	UserSS user= UserService.authenticated();
@@ -82,8 +83,7 @@ public class AuthController {
      		}
         
          
-               
-          
+                       
           if (tenant == null && userAdmin == null) {
               throw new UsernameNotFoundException(email);
               

@@ -37,9 +37,9 @@ const Leads = () => {
     const refreshTokenUser = async ()=>{
         const  resp = await refreshToken();    
         if(resp === 204){  
-         // navigate('/leads')
+         navigate('/leads')
         }else{
-          //  navigate('/')
+          navigate('/')
         }
     }
 
@@ -94,7 +94,7 @@ const Leads = () => {
 
     
             
-    const handleSubmit = async (e:any) =>{   
+  /*  const handleSubmit = async (e:any) =>{   
         e.preventDefault()
         
         let emptyValues=Object.values(form).some(obj => obj === '');
@@ -135,7 +135,7 @@ const Leads = () => {
         }                                                 
     }
 
-
+*/
     const [modalIsOpen, setIsOpen] = useState(false);
 
     const handleOpenModal =() => {
@@ -198,7 +198,7 @@ const Leads = () => {
                 <h2>Adicionar Contato</h2>
                 <IoCloseOutline onClick={handleCloseModal} className='button-close-modal' />
 
-                <form  onSubmit={(e)=> {handleSubmit(e)}}>
+                <form >
 
                     <label>Nome</label>   
                     <Input placeholder="Rogerio" className="input-class" id="name" name="name" onChange={(e) => handleChange(e)} maxLength={41} onKeyUp={handleKeyUp}/>

@@ -22,6 +22,8 @@ public interface StepRepository extends JpaRepository<Step,Long> {
 		Long countStepByTenantId(Long id);
 	 	
 	 	Step findFirstByTenant(Tenant tenant);
+
+		Step findByName(String name);
 	    
   
   

@@ -22,8 +22,8 @@ export const leadsPageable = (name: string,pageNumber: number) => {
 }
 
 
-export const newLead = (name:string, email: string, phone:string) => {
-    return api.post('/opportunities/save',{name, email,phone})
+export const newLead = (name:string, email: string, phone:string,propertyId:number) => {
+    return api.post('/opportunities/save',{name, email,phone,propertyId})
                                                  .then(response =>{
                                                   return response
                                                     
@@ -35,6 +35,16 @@ export const newLead = (name:string, email: string, phone:string) => {
 
 export const editLead = (name:string, email:string, phone:String,id:number) => {
   return api.put(`/leads/update/${id}`,{name,email,phone})
+                                           
+                                               .then(response =>{
+                                                  return response;
+                                               }).catch((error) =>{
+                                                  return error
+                                                 
+                                              });
+}
+export const editLeadStep = (id:number,stepId: number) => {
+  return api.put(`/leads/updateStepLead/${id}/${stepId}`,{id,stepId})
                                            
                                                .then(response =>{
                                                   return response;
@@ -81,8 +91,9 @@ export const editLead = (name:string, email:string, phone:String,id:number) => {
   }
 
 
-  export const opportunitiesPageable = (pageNumber: number) => {
-    return api.get(`/opportunities/page?size=12&page=${pageNumber}&sort=instant`)
+  export const opportunitiesPageable = () => {
+    return api.get(`/opportunities/page`)
+                                  
               
 }
 export const stepsOpportunity = () => {
@@ -91,7 +102,7 @@ export const stepsOpportunity = () => {
 }
 export const newStep = (name:string) => {
 
-  return api.post('/opportunities/saveStep',{name})
+  return api.post('/steps/saveStep',{name})
 
                                                .then(response =>{
                                                 if(response != null){
@@ -143,4 +154,14 @@ export const deleteOpportunity = (id:number) => {
                   return error
                  
               });
+}
+export const editStep = (name:string,id: number) => {
+  return api.put(`/steps/updateStep/${id}`,{name})
+                                           
+                                               .then(response =>{
+                                                  return response;
+                                               }).catch((error) =>{
+                                                  return error
+                                                 
+                                              });
 }

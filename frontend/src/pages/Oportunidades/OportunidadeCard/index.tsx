@@ -1,5 +1,5 @@
 
-import {OportunidadeContainer, LeadWrapper,ItemsContainer,MessageNoLeads, LeadSearchWrapper,ColumnsContainer} from "./styles";
+import {OportunidadeContainer,ItemsContainer,MessageNoLeads, LeadSearchWrapper,ColumnsContainer} from "./styles";
 import {BsPersonFill, BsTrash} from 'react-icons/bs';
 import {MdKeyboardArrowDown} from 'react-icons/md';
 import { useEffect, useState } from "react";
@@ -9,25 +9,44 @@ import { Link } from "react-router-dom";
 import {FaWhatsapp} from 'react-icons/fa'
 import {FiCornerDownRight} from 'react-icons/fi'
 import { columns, Columntype, Lead, LeadPage } from "../../../types/lead";
-import { deleteLead, leadsPageable, opportunitiesPageable, stepsOpportunity } from "../../../services/resources/lead";
+import { deleteLead, editLead, editLeadStep, leadsPageable, opportunitiesPageable, stepsOpportunity } from "../../../services/resources/lead";
 import {AiOutlineMail} from 'react-icons/ai';
-import Modal from 'react-modal';
-import { IoCloseOutline } from "react-icons/io5";
+
+import Carousel from 'react-elastic-carousel';
 import "./ModalStyleLeadCard.css";
 import LoadingLogin from "../../../components/LoadingLogin";
-import PageNotFound from "../../../components/PageNotFound";
-import PaginationLead from "../../../components/PaginationLead";
-import { BiSearch } from "react-icons/bi";
 import { BiFilterAlt } from "react-icons/bi";
 import React from "react";
-import Card from "../../../components/Card";
 import { Opportunity, OpportunityPage, Step } from "../../../types/opportunity";
-import PaginationOpportunity from "../../../components/PaginationOpportunity";
-
-
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
+import { VscArrowSwap } from "react-icons/vsc";
+import { IoClose } from "react-icons/io5";
 
 
 const OportunidadeCard = (props:{param:string})=>{
+  const [stepsOp, setSteps] = useState<Step[]>();
+  const [itemsToShow,setItemsToShow]= useState<any>();
+  
+  useEffect(() => {
+    if(stepsOp?.length){
+      const items= stepsOp?.length;
+        setItemsToShow(items)
+    }
+
+},
+ [stepsOp?.length]);
+
+ 
+ const breakPoints = [
+  { width: 1, itemsToShow: 1 },
+  { width: 450, itemsToShow: 2},
+  { width: 650, itemsToShow: 3 },
+  { width: 750, itemsToShow: 4 },
+  { width: 850, itemsToShow: 5 },
+  { width: 950, itemsToShow: 4 },
+  { width: 1250, itemsToShow: 5 },
+]
 
     const [property,setProperty]=useState<Property>();
     const [loading,setLoading]= useState(false);
@@ -110,8 +129,8 @@ const OportunidadeCard = (props:{param:string})=>{
     const[name,setName]= useState('');
     const [error,setError]=useState('');
 
-    const [page, setPage] = useState<OpportunityPage>();
-    const [stepsOp, setSteps] = useState<Step[]>();
+    const [page, setPage] = useState<Opportunity[]>();
+  
 
     const columnMap= stepsOp as Array<Step>;
   
@@ -127,18 +146,25 @@ const OportunidadeCard = (props:{param:string})=>{
        
     },[pageNumber])
 
-     const getOpportunities = async () => {     
-        const {data}= await opportunitiesPageable(pageNumber);
-        setPage(data as OpportunityPage) ;
-        localStorage.removeItem('images')
-          
+    const [newPage,setNewPage]=useState<OpportunityPage>()
+    const [pageN,setPageN]=useState(0);
+    const [sizePage,setSizePage]= useState(6);
+
+     const getOpportunities = async () => {      
+        const data= await opportunitiesPageable();    
+        setPage(data.data)
+        
+           localStorage.removeItem('images')
+        
+
     }
+
     useEffect(() =>{      
         getOpportunities();
        
     },[pageNumber,name])
 
-
+   
     useEffect(() =>{
         if(props.param !==''){
             getOpportunities();
@@ -155,100 +181,135 @@ const OportunidadeCard = (props:{param:string})=>{
     const draggedItem= React.useRef<any>(null)
 
     const handleColumnDrop=(step: Step)=>{
-        console.log(step.name)
+  
         //aqui editar card quando mudar
        //const handleColumnDrop=(column: Columntype)=>{
     if(page){
-    const index= page.content.findIndex((card=>  card.id===draggedItem.current))
-    
-   
-   const aux= [...page.content]  as Array<Opportunity>;
-    aux[index].step.name=step.name;
-    setPage({
-        content:[...aux]  ,
-        last: true,
-        totalPages: 0,
-        totalElements: 0,
-        size: 12,
-        number: 0,
-        first: true,
-        numberOfElements: 0,
-        empty: true
-
-    })
-
+    const index= page.findIndex((card=>  card.id===draggedItem.current))
+     
+    const aux= [...page]  as Array<Opportunity>;
+    aux[index].stepName=step.name;
+    setPage(aux)
+    handleSubmit(aux[index].idLead,step.id)
+    setStepsVisible(false)
    }
 }
-   useEffect(() =>{      
-    
+   useEffect(() =>{          
    
 },[page])   
+   
+    const [stepsVisible,setStepsVisible]= useState(false);
+    const [selectedIdStep,setSelectedIdStep]= useState<number>();
+    const openChangeSteps=(column:number) =>{
+      
+            //mover oportuidade, salvar e salvar lead
+        setSelectedIdStep(column as number)
+        setStepsVisible(stepsVisible=>!stepsVisible)
+    }
+    const handleCloseStepMove=() =>{
+    setStepsVisible(stepsVisible=>!stepsVisible)
+}
 
+    
+ 
+    const handleSubmit = async (id:number,stepId:number) =>{    
+        console.log(id,stepId) 
+        setStepsVisible(stepsVisible=>!stepsVisible)
+        console.log("chguei aqui")
+            const data = await editLeadStep( id as number, stepId as number) 
+          if(data.status === 204){
+            getOpportunities();
+            setTimeout(()=> {
+     
+          },2000)          
+                               
+        }         
+                                                        
+    }
     return(
          
         <OportunidadeContainer>
-    
-             <ColumnsContainer>
-      {
-        columnMap && columnMap.map(column=>(
-        <div className="column">
-            <h5>{column.name.toUpperCase()}</h5>
-            <div
+       
+                 <Carousel
+                         isRTL={false}                      
+                         breakPoints={breakPoints}
+                         enableMouseSwipe={true}
+                        showEmptySlots
+                        pagination={false} 
+                        showArrows={false}
+                        enableSwipe={true}
+                        preventDefaultTouchmoveEvent
+                                              
+                         >                
+                   
+                 {  columnMap && columnMap.map(column=>(
+         
+           
+            <div className="column" 
                 onDragOver={(e) => e.preventDefault()}
                 onDrop={(e) => 
-                   handleColumnDrop(column)}
-
+                   handleColumnDrop(column)}                                  
             >
-
-             { page?.content.length && page?.content.length ?
+            <h5 className="title-column">{column.name.toUpperCase()}</h5>
+        
+             { page?.length && page.length ?
                <>
-            {page.content.filter((card) => card.stepName === column.name).map(lead => (
-                 <Link to={`/leadDetail/${lead.id}`}
-                 key={lead.id} className="list-item" 
-                 draggable
-                 onDragStart={(e) =>(draggedItem.current= lead.id)}
-                 onDragOver={(e) => e.preventDefault()}>
+            {page.filter((card) => card.stepName === column.name).map(lead => (
+
+                <div key={lead.id} className="leadWrapper" 
+                draggable
+                onDragStart={(e) =>(draggedItem.current= lead.id)}
+                onDragOver={(e) => e.preventDefault()}> 
             
-                 
-                    <LeadWrapper prop={hiddenMessage} >
-                    
+                 <Link to={`/leadDetail/${lead.idLead}`} className="link-item-lead" >
+          
+                                                      
                             {loading &&<LoadingLogin/>}
                           
-                            <div className="content-first" onClick={openMessage}>              
+                            <div className="content-first" onClick={openMessage}>             
                             <div className="data-lead-left-wrapper">
                             <h4>{capitalize(lead.nameLead)}</h4>   
                             <span><AiOutlineMail className="email-icon"/>{lead.emailLead}</span>
                             <div className="phone-date-wrapper-lead"><p className="phone-leads"><FaWhatsapp className="icon-phone-lead"/>{lead.phoneLead}</p><p className="instant-lead">{lead.instant}</p></div>
                             </div>
-                            <div className="lead-oportunity-wrapper">
-                            <BiFilterAlt />
-                            <span>resolvido</span>
-                            </div>
-                                      
-                            </div>
-                          
-                            
-                             <div>
-                             
-                       
-                            
-                            </div> 
-                  
-                   </LeadWrapper>
-                   </Link>  
+                                          
+                                                                                                       
+                     </div>
+                     </Link>    
+                     <VscArrowSwap onClick={()=>openChangeSteps(lead.id)} key={lead.id} style={{zIndex:1}} className="icon-opportunity-op" /> 
+                     {stepsVisible && selectedIdStep === lead.id &&
+                                <ul className="list-steps-change">
+                                    <h5>mover para:</h5>
+                                    {
+                                    columnMap && columnMap.map(step=>(                                                                    
+                                      <li onClick={()=>handleSubmit(lead.id,step.id)}>{step.name}</li>
+                                     
+                                    ))}
+                                    <IoClose onClick={handleCloseStepMove} className="icon-step-move"/>
+
+                                </ul>
+                                
+                            }                                                                              
+                   </div>
+                
                             
             ))}
-            <PaginationOpportunity page={page} onChange={handlePageChange}/> 
+             <p className="item-opacity" style={{width:"100%", height:"70px",opacity:"0"}}>primeiro item escondido</p>
             </>
             : <MessageNoLeads><h4 className="message-no-leads">Você não possui leads no momento...</h4></MessageNoLeads>}
-
-            </div>
-             </div>
-        ))
+      
+            </div>         
+           
+             
+              
+        ))       
       }
-            
-            </ColumnsContainer>
-            </OportunidadeContainer>
+      
+ 
+   
+       </Carousel>
+           
+  </OportunidadeContainer>
     
       
     )

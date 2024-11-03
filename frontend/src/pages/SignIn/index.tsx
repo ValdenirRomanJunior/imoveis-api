@@ -5,7 +5,7 @@ import { IoCloseOutline } from 'react-icons/io5';
 import {Wrapper,Background,InputContainer,ButtonContainer} from './styles';
 import Card  from "../../components/Card";
 import background from '../../assets/images/bg-login.png';
-import logo from '../../assets/images/logo-site.png';
+import logo from '../../assets/images/logo-sem fundo-inteiro.png'
 import Input from "../../components/Input";
 import Button from "../../components/Button";
 import { Link, useNavigate } from "react-router-dom";

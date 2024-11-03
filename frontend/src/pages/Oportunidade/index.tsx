@@ -27,6 +27,7 @@ import { MdOutlineCopyAll } from 'react-icons/md';
 import { IoCloseOutline } from 'react-icons/io5';
 import Modal from 'react-modal';
 import "./styleModaldelOpp.css";
+import LoadingLogin from '../../components/LoadingLogin';
 
 
 const Oportunidade = () => {
@@ -36,12 +37,22 @@ const Oportunidade = () => {
     const [lead, setLead]= useState<Lead>();
     const [loading,setLoading]= useState(false);
     const [errors,setErrors]=useState();
+    const [errorsProperty,setErrorsproperty]=useState();
     const params = useParams();
     const navigate = useNavigate();
     
  
     const [stepsOp, setSteps] = useState<Step[]>();
 
+    const {user, getCurrentUser} = useAuth();  
+    useEffect(() =>{
+          
+      getCurrentUser();
+    
+  
+  },[])
+
+ 
     const getSteps = async () => {     
         const {data}= await stepsOpportunity();
         setSteps(data as Step[]) ;
@@ -54,6 +65,27 @@ const Oportunidade = () => {
     },[])
 
 
+    const getOpportunity = async() => {  
+        if(params != null){              
+        const data = await findOpportunity(String(params.opportunityId));   
+      
+        if(data.status === 200){  
+          setOpportunity(data.data as Opportunity) 
+          setLoading(true);
+          setTimeout(()=> {
+            setLoading(false)        
+            },500)
+    
+          } else if(data.response.status === 404){        
+            setErrors(data.response.data.error);        
+          }                          
+    }
+    }          
+    useEffect(() => {
+        getOpportunity();
+    },
+     []);
+
     const refreshTokenUser = async ()=>{
         const  resp = await refreshToken();    
         if(resp === 204){  
@@ -64,21 +96,7 @@ const Oportunidade = () => {
     }
    
 
-    const getOpportunity = async() => {  
-        if(params != null){              
-        const data = await findOpportunity(String(params.opportunityId));   
-      
-        if(data.status === 200){  
-          setOpportunity(data.data as Opportunity)           
-          } else if(data.response.status === 404){        
-            setErrors(data.response.data.error);        
-          }                          
-    }
- }          
-    useEffect(() => {
-        getOpportunity();
-    },
-     []);
+
     useEffect( () =>  {
         refreshTokenUser()
       },[params.leadId])
@@ -108,7 +126,7 @@ const Oportunidade = () => {
             setProperty(data.data as Property) 
           } else if(data.response.status === 404){ 
          
-            setErrors(data.response.data.error);  
+            setErrorsproperty(data.response.data.error);  
           }                   
         }
     }      
@@ -138,13 +156,7 @@ const Oportunidade = () => {
         return <PageNotFound/>;
       }
       
-      const {user, getCurrentUser} = useAuth();  
-      useEffect(() =>{
-            
-        getCurrentUser();
-      
-    
-    },[])
+  
 
     const [modalIsOpenTrashOpp, setIsOpenTrashOpp] = useState(false);
     const[idTrash,setIdTrash]= useState<number>();
@@ -171,26 +183,29 @@ const Oportunidade = () => {
        
         navigate('/oportunidades')
     }
-    if(data.status !== 204){
-      
+    if(data.status !== 204){    
     }
       getSteps()
    },500)
   }
 }
+
+
     return(
+
         <>
-        {user?.perfis?.[0] === 'TENANT'  ? 
+        {user?.perfis?.[0] === 'TENANT' && !errors? 
+        
         <div>
-            { !errors ?
+              {loading && <LoadingLogin/>}
                 <>   
         <ErrorBoundary FallbackComponent={ErrorHandler}>
-
+      
         <OportunidadeBackground>
             <Header />
             <BarTop />
             <div className='deleteOpportunityWrapper'>
-            <span className='deleteOpportunity' onClick={()=>handleOpenModalTrash(Opportunity?.id as number)} >Excluir</span>
+            <span className='deleteOpportunity' onClick={()=>handleOpenModalTrash(Opportunity?.id as number)} >Finalizar</span>
             <Modal 
                         isOpen={modalIsOpenTrashOpp}
                         onRequestClose={handleCloseModalTrash} 
@@ -239,7 +254,7 @@ const Oportunidade = () => {
              
                <PropertyItemOportunityContainer>         
                <h2 className='subtitle-opportunity'><FaHome className='icon-property-opportunity'/>Imóvel interessado</h2>   
-               {(!errors && Opportunity?.propertyId) ?
+               {(!errorsProperty && Opportunity?.propertyId) ?
                 <Link to={`/details/${Opportunity.propertyId}`} className='link-detail-property-lead-opp'>
                 
                 <div className='property-wrapper-opportunity'>
@@ -270,7 +285,7 @@ const Oportunidade = () => {
                </MessagePropertyContainer>    
                <UserInfoContainer copy={copyUrl}>
                 <div className='subtitle-info-lead-wrapper'>
-                 <h2><FaRegUser />Cliente</h2> <Link to={`/leadDetail/${Opportunity?.idLead}`}><p>Mais detalhes</p></Link>
+                 <h2><FaRegUser />Cliente</h2> <Link to={`/leadDetail/${Opportunity?.idLead}`}><p className='more-details'>Mais detalhes</p></Link>
                  </div>
                  <div className='info-item-wrapper'>
                  <h3>Nome</h3>
@@ -307,7 +322,7 @@ const Oportunidade = () => {
         </OportunidadeBackground>
         </ErrorBoundary>
         </>
-        : <div><PageNotFound/></div>}
+     
         </div>
         : <PageNotFound/>}
         </>

@@ -12,21 +12,22 @@ padding-bottom: 40px;
 
 .deleteOpportunityWrapper{
   width:100%;
-  margin-top:5px;
+  margin-top:10px;
 }
 
 .deleteOpportunity{
   font-family: "Open Sans", sans-serif;
   width:50px;
-
+  background:#49599f;
   margin-left:10px;
   margin-top:5px;
   cursor: pointer;
     border:1px solid #49599f;
     border-radius:5px;
     font-size:13px;
-    padding:3px 7px;
+    padding:5px 9px;
     font-weight: 600;
+    color:#fff;
 }
 
 
@@ -456,6 +457,9 @@ export const UserInfoContainer = styled.div<{copy:boolean}>`
     padding:10px;
     margin-top:20px;
 
+    .more-details{
+    color: #49599f;
+  }
 .subtitle-info-lead-wrapper{
      display: flex;
      justify-content: space-between;
@@ -599,7 +603,9 @@ export const UserInfoContainer = styled.div<{copy:boolean}>`
                     
     }
   }
-
+.more-details{
+    color: #49599f !important;
+  }
      @media screen and (min-width: 825px){
 
     width:29%;

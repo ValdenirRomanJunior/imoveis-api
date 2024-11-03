@@ -4,18 +4,16 @@ import styled from "styled-components";
 
 export const HeaderContainer = styled.header`
     width:100%;
-    height:60px;
+    height:45px;
 
-    background-color: ${({theme}) => theme.colors.background};
+    background-color: #f6f8fa;
 
     display: flex;
     align-items: center;
     justify-content: center;
     border-bottom:1px solid #e6e9ed;
     
-    position: fixed;
-    top:0;
-    left:0;
+    
     z-index:5000;
     
    
@@ -80,8 +78,6 @@ export const UserInfo = styled.div`
     justify-content: center;
     position: relative;
    
-    
-  
     
     .user-image-wrapper{
         width:30px;
@@ -283,7 +279,7 @@ export const SideBarTop = styled.div`
     `
 
 export const NavIcon = styled(Link)`
-    font-size:1.4rem;
+    font-size:1.2rem;
     display: flex;
     padding:8px 0;
     padding: 15px;
@@ -296,7 +292,7 @@ export const NavIcon = styled(Link)`
     p{
         margin-bottom:0;
         color:#000;
-        font-size:15px;
+        font-size:14px;
         margin-left:10px;
         position:relative;
 

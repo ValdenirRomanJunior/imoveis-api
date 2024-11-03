@@ -73,6 +73,20 @@ public class PropertyService {
                 "Object Not Found! Id:" + ", Type" + Property.class.getName()));
 
     }
+    public Property findByTenant(Long id) {
+    	
+   	 UserSS user = UserService.authenticated();
+     Tenant tenant = tenantService.find(user.getId());
+     
+      if(user==null || !user.hasRole(Perfil.TENANT)){
+          throw new AuthorizationException("Acesso negado");
+      }
+   
+        Optional<Property> property = propertyRepository.findByIdAndTenant(id,tenant);
+        return property.orElseThrow(() -> new ObjectNotFoundException(
+                "Object Not Found! Id:" + ", Type" + Property.class.getName()));
+
+    }
 
     //CRIA UM IMOVEL
     @Transactional
@@ -327,4 +341,7 @@ public class PropertyService {
 	}
 			return listAddress;
 }
+	public List<Property> findAll() {	
+		return propertyRepository.findAll();
+	}
 }

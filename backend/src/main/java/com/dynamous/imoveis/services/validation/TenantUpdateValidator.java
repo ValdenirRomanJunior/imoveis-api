@@ -4,6 +4,7 @@ import com.dynamous.imoveis.controllers.exceptions.FieldMessage;
 import com.dynamous.imoveis.dto.TenantDTO;
 import com.dynamous.imoveis.dto.TenantUpdateDTO;
 import com.dynamous.imoveis.entities.Tenant;
+import com.dynamous.imoveis.repositories.StepRepository;
 import com.dynamous.imoveis.repositories.TenantRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.servlet.HandlerMapping;

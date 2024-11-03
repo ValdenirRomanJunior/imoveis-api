@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import Input from "../../components/Input";
 import Button from "../../components/Button";
 import {IoCloseOutline} from 'react-icons/io5'
-import "../Leads/ModalStyle.css";
+import "./ModalStyle.css";
 import { BsFillGearFill, BsPersonPlus } from "react-icons/bs";
 import { currency, number, phone } from "../Registration/masks";
 import { newLead, newStep } from "../../services/resources/lead";
@@ -20,7 +20,10 @@ import useAuth from "../../hooks/useAuth";
 import { BiBorderRadius } from "react-icons/bi";
 import { OportunidadesBackground, OportunidadesContainer } from "./styles";
 import OportunidadeCard from "./OportunidadeCard";
-
+import { findPropertyLead } from "../../services/resources/property";
+import { Property } from "../../types/property";
+import defaultImage from '../../assets/images/no-pictures.png';
+import { IoIosCloseCircle } from "react-icons/io";
 type Error = {
     fieldName:string;
     message:string;
@@ -43,12 +46,14 @@ const Oportunidades = () => {
 
   useEffect( () =>  {
   refreshTokenUser()
+  setNameProperty('')
 },[])
 
     const [form,setForm]=useState<any>({
         name:'',
         email:'',
         phone:'',
+        idProperty:''
         
     });
 
@@ -63,17 +68,18 @@ const Oportunidades = () => {
         name:'',
         email:'',
         phone:'',
+        idProperty:''
         
-    });
+    }); 
+    setNameProperty('');
 
- 
-    
    }
 
     const [emptyValue,setEmptyValue]= useState(false);
     const [successMessage, setSuccessMessage] = useState(false); 
     const [param, setParam]= useState("");
     const [loadingAddLead, setLoadingAddLead]=useState(false);
+    const [otherErrorRegister, setOtherErrorRegister]=useState(false);
 
 
     const handleChange = (e:any) => {
@@ -81,14 +87,17 @@ const Oportunidades = () => {
         const value= e.target.value
         setForm({ ...form,
             [field]:value,
-        }); 
-      
+        });
+         
     }
  
     
     const handleKeyUp = (e: React.FormEvent<HTMLInputElement>) =>{      
         if(e.currentTarget.name === 'phone'){  
             phone(e)         
+        }  
+        if(e.currentTarget.name === 'idProperty'){  
+            number(e)         
         }    
        setErrors([])
     }
@@ -96,12 +105,16 @@ const Oportunidades = () => {
             
     const handleSubmit = async (e:any) =>{   
         e.preventDefault()    
-        let emptyValues=Object.values(form).some(obj => obj === '');
+        let emptyValues= form['name']==='' || form['email']==='' || form['phone'] === '';  
+        
         setEmptyValue(emptyValues);
+        
         if(!emptyValues){
+            
         setLoadingAddLead(true)
     
-            const data = await newLead(form['name'],form['email'],form['phone'])
+            const data = await newLead(form['name'],form['email'],form['phone'], form['idProperty'])
+          
           if(data.status === 201){
             cleanForm()         
             setSuccessMessage(true)
@@ -127,27 +140,36 @@ const Oportunidades = () => {
                     setOtherError(false)
                 },2000)
             }
-
-        }      
-                                             
+            else if(data.response.status === 400){              
+                setOtherErrorRegister(true)
+                setSuccessMessage(false)
+                setLoadingAddLead(false)
+                setParam('')
+               
+                setTimeout(()=>{
+                    setOtherErrorRegister(false)
+                },2000)
+            }
+        }                                                  
     }
-
-
-
 
     const [modalIsOpen, setIsOpen] = useState(false);
 
 
     const handleOpenModal =() => {
+          
         setIsOpen(true)
     }
 
     const handleCloseModal =() =>{
+        
+        cleanForm()
         setParam('')
         setIsOpen(false) 
         setEmptyValue(false)
         setErrors([]);
         setSuccessMessage(false) 
+        openButton()
     }
     
     
@@ -161,7 +183,63 @@ const Oportunidades = () => {
         getCurrentUser();
     
     },[])
+
+    const [errorsproperty,setErrorsproperty]= useState<string>();
+    const [property,setProperty]= useState<Property>();
+    const [nameProperty,setNameProperty]= useState<string>();
+    const [loadingButton,setLoadingButton]=useState(false)
+
+    const getProperty = async() => { 
+       
+            setLoadingButton(true) 
+        if(form['idProperty']){     
+        const data = await findPropertyLead(String(form['idProperty']));          
+        if(data.status === 200){  
+            
+        setTimeout(()=>{
+            setLoadingButton(false)         
+        },300)
+        setProperty(data.data as Property) 
+        setTimeout(()=>{
+         setNameProperty(property?.name as string)          
+        },200)
+        
+
+      } else if(data.response.status === 404){ 
+     console.log(data.response.data.error)
+        setLoadingButton(false)
+        setErrorsproperty(data.response.data.error); 
+        setTimeout(()=>{
+            setErrorsproperty('')         
+           },4000)
+
+      }                   
+    }
+}      
+
+useEffect(() => {
+    getProperty();
+
+},[])
+
+
+       const cleanProperty = ()=> {
+        setErrorsproperty(" ");
+        setForm({ ...form,
+            name:form['name'],
+            email:form['email'],
+            phone:form['phone'],
+            idProperty:''
+            
+        }); 
+        setNameProperty('');
+      
+       }
+       const [buttonVisible,setButtonVisible]= useState(false);
+      const openButton= () => {
     
+            setButtonVisible(buttonVisible=>!buttonVisible)
+      }
     return(
         <>
         {user?.perfis?.[0] === 'TENANT'  ? 
@@ -191,7 +269,7 @@ const Oportunidades = () => {
                 <h2>Adicionar Contato</h2>
                 <IoCloseOutline onClick={handleCloseModal} className='button-close-modal' />
 
-                <form  onSubmit={(e)=> {handleSubmit(e)}}>
+          
 
                     <label>Nome</label>   
                     <Input placeholder="Rogerio" className="input-class" id="name" name="name" onChange={(e) => handleChange(e)} maxLength={41} onKeyUp={handleKeyUp}/>
@@ -209,28 +287,71 @@ const Oportunidades = () => {
                     { emptyValue && form['phone'] === '' ? <span className='formField__error'>Este campo é requerido</span>: ''}
                     { form['phone'].length >1 && form['phone'].length <14 &&  <span className='formField__error'>Formato de telefone errado</span>}
                     
+                    
+                    <label className="label-message-property" onClick={openButton}>Relacionar imóvel (Não obrigatório)</label>
 
-                    {
-                        loadingAddLead && <Button className="button-send-email" type='submit'><Loading/></Button>
-                    }
-                    {
-                        !loadingAddLead &&
-                    <Button className="button-send-email" type='submit'>Adicionar</Button>
-                    }
+                    { buttonVisible && 
 
-                </form>
+                    <div className="input-property-wrapper-cod">             
+                     
+                     {nameProperty ==='' ?
+                    <><button className="button-cod" onClick={getProperty}>Buscar</button><input placeholder="Digite o código" id="idProperty" name="idProperty" onChange={(e) => handleChange(e)} onKeyUp={handleKeyUp}></input></>
+                   :
+                    <>
+                    {loadingButton? <span className="loading-search-property"><Loading/></span>: 
+                 
+                    <div className="property-wrapper-op">
+                    <IoIosCloseCircle className="icon-property-search-opp"  onClick={cleanProperty}/>
+                    {property?.images && property?.images[0]?.url? <img src={property.images?.[0]?.url} className="img-property-search-opportunity"/>: <img src={defaultImage} className="img-property-search-opportunity"/>}
+                     <span className="property-name-op">{property?.name}</span>
+                    </div> } 
+                    </>
+                     }   
+                    </div>
+                    }
+                    {errorsproperty && <p className=' formField__error'>{errorsproperty}</p>}
+                  
+                
+                    {
+                        loadingAddLead && <Button  className="button-send-email"><Loading/></Button>
+                    }
+                    
+                    {  !loadingAddLead && (!form['name'] || !form['email'] || !form['phone'])    && !buttonVisible&&
+                    <Button disabled  className="button-send-email" onClick={(e)=> handleSubmit(e)} >Adicionar</Button> }
+
+                       {  !loadingAddLead && (form['name'] && form['email'] && form['phone']) && !buttonVisible &&
+                    <Button   className="button-send-email" onClick={(e)=> handleSubmit(e)} >Adicionar</Button> }
+
+
+                
+                    { !loadingAddLead  && (form['name'] && form['email'] && form['phone'] && form['idProperty'] && nameProperty) && buttonVisible &&
+                    <Button   className="button-send-email" onClick={(e)=> handleSubmit(e)} >Adicionar</Button> 
+                     
+                       }
+                             { !loadingAddLead  && (form['name'] && form['email'] && form['phone'] && form['idProperty'] && !nameProperty) && buttonVisible &&
+                    <Button   disabled className="button-send-email" onClick={(e)=> handleSubmit(e)} >Adicionar</Button> 
+                     
+                       }
+                   
+                        { !loadingAddLead  && (!form['name'] || !form['email'] || !form['phone'] || !form['idProperty']) && buttonVisible &&
+                    <Button  disabled className="button-send-email" onClick={(e)=> handleSubmit(e)} >Adicionar</Button> 
+                     
+                       }
+                     
+                   
+
+             
                 { otherError &&   
-                <div className='other-error'>Erro Inesperado</div>
+                <div style={{color:"red"}} className='other-error'>Erro Inesperado</div>
+                 }
+                    { otherErrorRegister &&   
+                <div style={{color:"red"}} className='other-error'>Precisa ter pelo menos 1 etapa</div>
                  }
                 <div className="message">
                     {successMessage   ? <span className='success'>Lead salvo com sucesso!</span>: ''}
                     </div>
                   
-            </Modal>
-
-
-
-                            
+            </Modal>                      
             <OportunidadeCard  param={param as string}/>
             
             </OportunidadesContainer>

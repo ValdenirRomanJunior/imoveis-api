@@ -14,6 +14,7 @@ import com.dynamous.imoveis.services.TenantService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,7 +28,7 @@ import java.util.stream.Collectors;
 
 
 @RestController
-@RequestMapping(value = "/properties")
+@RequestMapping(value = "/properties", produces = {MediaType.APPLICATION_JSON_VALUE})
 public class PropertyController {
 
     @Autowired
@@ -36,13 +37,13 @@ public class PropertyController {
     @Autowired
     private PropertyRepository propertyRepository;
     
- 
     @Autowired
     private  PropertyCustomRepository propertyCustomRepo;
     
+    
 
     
-    @GetMapping(value = "/find/{id}")
+    @GetMapping(value = "/find/{id}", produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<?> findById(@PathVariable Long id){ 
     	
         Property property=service.find(id);
@@ -50,7 +51,7 @@ public class PropertyController {
     }
 
     @PreAuthorize("hasAnyRole('TENANT')")
-    @PostMapping(value="/save")
+    @PostMapping(value="/save", produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<Void> save(@Valid @RequestBody PropertyNewDTO propertyNewDTO){
    	  
         Property property = service.fromDTO(propertyNewDTO);
@@ -62,7 +63,7 @@ public class PropertyController {
     }
 
     @PreAuthorize("hasAnyRole('TENANT')")
-    @PutMapping(value = "/update/{id}")
+    @PutMapping(value = "/update/{id}", produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<Void> update(@Valid @RequestBody PropertyUpdateDTO propertyUpdateDTO, @PathVariable Long id){
     	propertyUpdateDTO.setId(id);
   
@@ -75,7 +76,7 @@ public class PropertyController {
     }
 
     @PreAuthorize("hasAnyRole('TENANT')")
-    @DeleteMapping(value = "/delete/{id}")
+    @DeleteMapping(value = "/delete/{id}", produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<Void> delete(@PathVariable Long id){
         service.delete(id);
         return ResponseEntity.noContent().build();
@@ -84,7 +85,7 @@ public class PropertyController {
 
 
     //liberar este endpoint para ser publico
-    @GetMapping(value = "/search")
+    @GetMapping(value = "/search", produces = {MediaType.APPLICATION_JSON_VALUE})
     @Transactional
    public ResponseEntity <Page<Property>> findPageSearch(
 		    @RequestParam(value = "id",defaultValue = "",required = false) Long id,
@@ -118,7 +119,7 @@ public class PropertyController {
     }
     
     @PreAuthorize("hasAnyRole('TENANT')")
-    @GetMapping(value = "/totalProperties/{id}")
+    @GetMapping(value = "/totalProperties/{id}", produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<?> getTotalProperties(@PathVariable Long id){ 
     
     	
@@ -126,9 +127,9 @@ public class PropertyController {
         return ResponseEntity.ok().body(total);
     }
     
-    @GetMapping(value = "/findLeadProperty/{id}")
+    @GetMapping(value = "/findLeadProperty/{id}", produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<?> findByIdLeadProperty(@PathVariable Long id){    
-        Property property=service.find(id);
+        Property property=service.findByTenant(id);
         ImageUrl imgux=null;
         List<ImageUrl> OneImg=null;
     	if( property.getImages().size() >0 ) {  
@@ -141,7 +142,7 @@ public class PropertyController {
     }
     
     @PreAuthorize("hasAnyRole('TENANT')")
-    @PutMapping(value = "/updateStatus/{id}/{statusP}")
+    @PutMapping(value = "/updateStatus/{id}/{statusP}", produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<Void> updateStatus(@PathVariable Long id, @PathVariable Integer statusP ){
     	
     	Property property= service.find(id);
@@ -153,14 +154,14 @@ public class PropertyController {
     }
     
     @PreAuthorize("hasAnyRole('TENANT')")
-    @GetMapping(value = "/publishedProperties/{id}")
+    @GetMapping(value = "/publishedProperties/{id}", produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<?> getPublishedProperties(@PathVariable Long id){ 
     	 	
        Long total= propertyRepository.publishedByTenantId(id);     
         return ResponseEntity.ok().body(total);
     }
     //busca paginada site tenant
-    @GetMapping(value = "/searchTest")
+    @GetMapping(value = "/searchTest", produces = {MediaType.APPLICATION_JSON_VALUE})
    public ResponseEntity <Page<Property>> findByTenantWithParams(
 		   @RequestParam(value = "name",defaultValue = "",required = false) String name,   
 		   @RequestParam(value = "goal",defaultValue = "",required = false) Integer goal,
@@ -194,7 +195,7 @@ public class PropertyController {
     }
     
     
-    @GetMapping(value = "/getAllAddress")
+    @GetMapping(value = "/getAllAddress", produces = {MediaType.APPLICATION_JSON_VALUE})
    public ResponseEntity <List<Address>>getResultSearch() {    
     	//pegar somente endereços deste tenant
     	List<Address> list = service.findResultSearch();            
@@ -202,19 +203,26 @@ public class PropertyController {
     }
     //busca endereços por tenant
     
-    @GetMapping(value= "/findAddress/{nameUrl}")
+    @GetMapping(value= "/findAddress/{nameUrl}", produces = {MediaType.APPLICATION_JSON_VALUE})
 	public ResponseEntity <List<Address>> findAddressByTenant(@PathVariable String nameUrl){
     	List<Address> list = service.findAddressByTenant(nameUrl);	
     	
 		return ResponseEntity.ok().body(list);
 		
 	}
-    @GetMapping(value= "/findAll/{nameUrl}")
+    @GetMapping(value= "/findAll/{nameUrl}", produces = {MediaType.APPLICATION_JSON_VALUE})
 	public ResponseEntity <List<Property>> findAll(@PathVariable String nameUrl){
     	List<Property> list = service.findFourByTenant(nameUrl);
     	
 		return ResponseEntity.ok().body(list);
 		
 	}
+    @GetMapping(value= "/findAll", produces = {MediaType.APPLICATION_JSON_VALUE})
+  	public ResponseEntity <List<Property>> findAllPropertiesAsList(){
+      	List<Property> list = service.findAll();
+      	
+  		return ResponseEntity.ok().body(list);
+  		
+  	}
 
 }

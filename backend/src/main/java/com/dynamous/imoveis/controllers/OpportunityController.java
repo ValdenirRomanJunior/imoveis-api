@@ -20,6 +20,7 @@ import com.dynamous.imoveis.services.StepService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -31,11 +32,12 @@ import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URLDecoder;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 
 @RestController
-@RequestMapping(value = "/opportunities")
+@RequestMapping(value = "/opportunities", produces = {MediaType.APPLICATION_JSON_VALUE})
 public class OpportunityController {
 
     @Autowired
@@ -48,7 +50,7 @@ public class OpportunityController {
     private OpportunityRepository opportunityRepository;
    
     @PreAuthorize("hasAnyRole('TENANT')")
-    @GetMapping(value = "/find/{id}")
+    @GetMapping(value = "/find/{id}", produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<?> findById(@PathVariable Long id){
         Opportunity opportunity=service.find(id);
         OpportunityDTO opportunityDTO= service.fromDTOFind(opportunity);
@@ -56,7 +58,7 @@ public class OpportunityController {
     }
  
     @PreAuthorize("hasAnyRole('TENANT')")
-    @PostMapping(value="/save")
+    @PostMapping(value="/save", produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<Void> saveCRM(@Valid @RequestBody OpportunityNewDTOCRM objDto){	
     	Opportunity obj = service.fromDTOCRM(objDto);  
     	  
@@ -66,7 +68,7 @@ public class OpportunityController {
         return ResponseEntity.created(uri).build();
     }
     
-    @PostMapping(value="/saveLeadHome")
+    @PostMapping(value="/saveLeadHome", produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<Void> saveHomeSite(@Valid @RequestBody OpportunityNewHomeSiteDTO objDto){   	
     	Opportunity obj = service.fromDTOHomeSite(objDto);  
         service.insert(obj);       
@@ -75,7 +77,7 @@ public class OpportunityController {
         return ResponseEntity.created(uri).build();
     }
     
-    @PostMapping(value="/saveDetailSite")
+    @PostMapping(value="/saveDetailSite", produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<Void> saveDetailSite(@Valid @RequestBody OpportunityNewSiteDetailDTO objDto){   	
         Opportunity obj = service.fromDTODetailSite(objDto);
         service.insert(obj);       
@@ -85,28 +87,24 @@ public class OpportunityController {
     }
       
     @PreAuthorize("hasAnyRole('TENANT')")
-    @DeleteMapping(value = "/delete/{id}")
+    @DeleteMapping(value = "/delete/{id}", produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<Void> delete(@PathVariable Long id){
         service.delete(id);
         return ResponseEntity.noContent().build();
     }
 
     @PreAuthorize("hasAnyRole('TENANT')")
-    @GetMapping(value = "/page")
-    public ResponseEntity <Page<OpportunityDTO>> findPage(
-            @RequestParam(value = "page",defaultValue = "0") Integer page,
-            @RequestParam(value = "linesPerPage",defaultValue = "12")  Integer linesPerPage,
-            @RequestParam(value = "orderBy",defaultValue = "instant")String orderBy,
-            @RequestParam(value = "direction",defaultValue = "DESC")  String direction){
+    @GetMapping(value = "/page", produces = {MediaType.APPLICATION_JSON_VALUE})
+    public ResponseEntity <List<OpportunityDTO>> findPage(){
     	
-        Page<Opportunity> list=service.findPage(page,linesPerPage,orderBy,direction);
+        List<Opportunity> list=service.findAll();
         
-      Page<OpportunityDTO>listDTO=list.map(x -> new OpportunityDTO(x));
+      List<OpportunityDTO>listDTO=list.stream().map(x-> new OpportunityDTO(x)).collect(Collectors.toList());      
         return ResponseEntity.ok().body(listDTO);
     }
     
     @PreAuthorize("hasAnyRole('TENANT')")
-    @GetMapping(value = "/totalOpportunities/{id}")
+    @GetMapping(value = "/totalOpportunities/{id}", produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<?> getTotalLeads(@PathVariable Long id){    	  	
        Long total= opportunityRepository.countOpportunityByTenantId(id);      
         return ResponseEntity.ok().body(total);
@@ -122,7 +120,7 @@ public class OpportunityController {
     }
     
     //pega as estapas com as oportunidades
-    @GetMapping(value="/steps")
+    @GetMapping(value="/steps", produces = {MediaType.APPLICATION_JSON_VALUE,MediaType.APPLICATION_XML_VALUE})
 	public ResponseEntity <List<Step>> findAllStepsWithOpportunities(){
 
 		List<Step> list = stepService.findAll();
@@ -130,17 +128,9 @@ public class OpportunityController {
 	
 	}
 		
-	   @PostMapping(value="/saveStep")
-	    public ResponseEntity<Void> saveStep(@Valid @RequestBody Step obj){
 		   
-	    stepService.insert(obj);       
-	        URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").
-	                  buildAndExpand(obj.getId()).toUri();
-	        return ResponseEntity.created(uri).build();
-	    }
-	   
 	    @PreAuthorize("hasAnyRole('TENANT')")
-	    @DeleteMapping(value = "/deleteStep/{id}")
+	    @DeleteMapping(value = "/deleteStep/{id}", produces = {MediaType.APPLICATION_JSON_VALUE})
 	    public ResponseEntity<Void> deleteStep(@PathVariable Long id){
 	        stepService.delete(id);
 	        return ResponseEntity.noContent().build();

@@ -96,6 +96,10 @@ padding: 1.5rem 1rem;
      
 }
 
+.input-property-wrapper-cod input{
+ height: 90px;
+  
+}
 
 @media screen and (min-width: 1000px){
     width:88%;

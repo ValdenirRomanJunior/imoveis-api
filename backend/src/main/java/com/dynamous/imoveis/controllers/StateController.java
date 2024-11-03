@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,7 +19,7 @@ import com.dynamous.imoveis.services.CityService;
 import com.dynamous.imoveis.services.StateService;
 
 @RestController
-@RequestMapping(value="/states")
+@RequestMapping(value="/states", produces = {MediaType.APPLICATION_JSON_VALUE})
 public class StateController {
 	
 	@Autowired
@@ -27,7 +28,7 @@ public class StateController {
 	@Autowired
 	private CityService cityService;
 	
-	@GetMapping
+	@GetMapping(produces = {MediaType.APPLICATION_JSON_VALUE})
 	public ResponseEntity <List<StateDTO>> findAll(){
 		//bsucar somente estados do tenant
 		List<State> list = stateService.findAll();
@@ -36,7 +37,7 @@ public class StateController {
 		
 	}
 	
-	@GetMapping(value = "/{stateId}/cities")
+	@GetMapping(value = "/{stateId}/cities", produces = {MediaType.APPLICATION_JSON_VALUE})
 	public ResponseEntity <List<CityDTO>> findCitiesByState(@PathVariable Long stateId){
 		List<City> list= cityService.findByState(stateId);
 		List<CityDTO> listDTO= list.stream().map(x -> new CityDTO(x)).collect(Collectors.toList());

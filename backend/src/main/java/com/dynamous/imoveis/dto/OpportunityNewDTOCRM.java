@@ -36,7 +36,7 @@ public class OpportunityNewDTOCRM implements Serializable {
     
     private Long leadId;
     
-    private String stepName= "captura" ;
+    private String stepName;
 
     public OpportunityNewDTOCRM(){
 
@@ -105,6 +105,5 @@ public class OpportunityNewDTOCRM implements Serializable {
 		this.leadId = leadId;
 	}
 
-	
-    
+	  
 }

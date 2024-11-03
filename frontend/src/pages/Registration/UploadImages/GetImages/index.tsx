@@ -190,8 +190,6 @@ const handleChange= (currentImage:ImageItem, index:number) => {
         const {data}= await getTenantImages(pageNumber);
         setImages(data.content);
         setPage(data)
-
-  
         
 
     }

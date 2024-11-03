@@ -3,16 +3,19 @@ import {IoIosArrowBack,IoIosArrowForward} from 'react-icons/io';
 import {PaginationContainer,PaginationBox} from './styles';
 import { LeadPage } from '../../types/lead';
 import { OpportunityPage } from '../../types/opportunity';
+import { useEffect } from 'react';
 
 
 type Props ={
     page: OpportunityPage;
     onChange: Function;
+   
 }
 function PaginationLead ({page, onChange} : Props){
+
     return(
-        <PaginationContainer>
-    <PaginationBox>
+        <PaginationContainer style={{display:"none"}}>
+       <PaginationBox>
         <button className="pagination-button" 
         disabled={page.first} onClick={()=> onChange(page.number-1 )}>
             <IoIosArrowBack />

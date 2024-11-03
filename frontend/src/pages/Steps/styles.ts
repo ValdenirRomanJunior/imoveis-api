@@ -69,11 +69,12 @@ padding-left: 1rem;
         .steps-wrapper{
             width:100%;
 
-            >ul{
+            ul{
             width:100%;
             margin-top:30px;
             padding-left:0;
-            >li{
+
+            li{
             margin-top:15px;
             background: #fff;
             border:1px solid #e6e9ed;
@@ -84,10 +85,11 @@ padding-left: 1rem;
        
                display: flex;               
                align-items:center;
+              
         
             }
             
-            >li::before{         
+            li::before{         
                 content:" ";
                 width:3px;
                 height:100%;
@@ -96,26 +98,88 @@ padding-left: 1rem;
                 left:0;
                 top:0;
             }
+                .edit-delete-wrapper{
+                width:40%;
+                 display: flex;               
+               align-items:center;
+                }
             span{
                 width:60%;
                 font-size:14px;
                 text-transform: uppercase;
             }
                 p{
-                width:40%;
-                    margin-bottom:0;
-                    margin-left:30%;
+                    cursor:pointer;
+                    margin-bottom:0;                   
                     color:#001fa0d9;
                      font-size: 12px;
+
+                     display: flex;
+                     align-items: center;
+                     margin-right:25px;
                              
                 }
              .icon-trash{
               margin-right:4px;
                 font-size: 12px;
+                 cursor:pointer;
             }
             }
         
             }
+            .edit-label{
+             cursor:pointer;
+             font-size:15px !important; 
+             text-transform: none !important;
+             color: #001fa0d9;
+            }
+
+            .input-wrapper-data{
+                display: flex;
+            }
+                .input-class{
+                    padding:10px 10px;
+                }
+.button-wrapper-send-data{
+    display: flex;
+    align-items: center;
+   
+
+}
+
+    .button-send-data{  
+        background:#49599f;
+        color:#fff;
+        border:none;
+        border-radius: 4px;
+        padding: 2px 9px;
+        font-size: 13px;
+        margin-left: 10px;
+        position: relative;
+        width:70px;
+        height:22px;
+
+            display: flex;
+    align-items: center;
+}
+      .button-cancel-data{
+       
+        color:#49599f;
+        border:none;
+        border-radius: 4px;
+        
+        font-size: 13px;
+        margin-left: 10px;
+        position: relative;
+      
+        height:22px;
+}
+
+.message-digit-space{
+position:absolute;
+    top:-38%;
+    left:0;
+}
 
  @media screen and (min-width:1000px){
     width: 80%;   

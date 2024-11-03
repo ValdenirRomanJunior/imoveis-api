@@ -56,16 +56,21 @@ public class OpportunityService {
     private TenantService tenantService;
     
     @Autowired
+    private PropertyService propertyService;
+    
+    @Autowired
     private LeadService leadService;
     
   
     public Opportunity find(Long id) {
-       // UserSS user = UserService.authenticated();
-       
-        if(id==null){
-            throw new AuthorizationException("Acesso negado");
-        }
-        Optional<Opportunity> opportunity = opportunityRepository.findById(id);
+    	 UserSS user = UserService.authenticated();
+         
+         if(user == null && id==null){
+             throw new AuthorizationException("Acesso negado");
+         }
+         
+         Tenant tenant= tenantService.find(user.getId());
+        Optional<Opportunity> opportunity = opportunityRepository.findByIdAndTenant(id,tenant);
 
         return opportunity.orElseThrow(() -> new ObjectNotFoundException(
                 "Página não encontrada! Id:" + ", Type" + Opportunity.class.getName()));
@@ -76,7 +81,7 @@ public class OpportunityService {
     	obj.setId(null);
    
     
-    //obj.setStep(obj.getStep().);
+    	//obj.setStep(obj.getStep().);
         opportunityRepository.save(obj);      
         return obj;
     }
@@ -93,7 +98,14 @@ public class OpportunityService {
     }
 
     public List<Opportunity> findAll() {
-        return opportunityRepository.findAll();
+    	 UserSS user = UserService.authenticated();
+         Tenant tenant = tenantService.find(user.getId());
+         
+          if(user==null || !user.hasRole(Perfil.TENANT)){
+              throw new AuthorizationException("Acesso negado");
+          }
+        return opportunityRepository.findAllByTenant(tenant);
+        
     }
 
     public Page<Opportunity> findPage(Integer page, Integer linesPerPage, String orderBy, String direction){
@@ -109,30 +121,42 @@ public class OpportunityService {
     }
 
     //oportunidade que vem crm, quando cria a oportunidade ou pelo lead com ou sem vinculo com imovel
-    public Opportunity fromDTOCRM(OpportunityNewDTOCRM objDto){    			
+    public Opportunity fromDTOCRM(OpportunityNewDTOCRM objDto){  
+    
     		UserSS user = UserService.authenticated();  		
     	     
-    		
     		 if(user==null || !user.hasRole(Perfil.TENANT)){
     	            throw new AuthorizationException("Acesso negado");
     	        }
     			SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");  		
         		String newDate= sdf.format(new Date());
         		
+        		 Tenant tenant=tenantService.find(user.getId());
+        		 Opportunity opportunity = new Opportunity(null,newDate);
+         		opportunity.setTenant(tenant);
+         		        		 
+        		 Step firtsStep= stepRepository.findFirstByTenant(tenant);
+         		if(firtsStep != null ) {
+         			opportunity.setStep(firtsStep);
+         		}
+         		if(firtsStep == null ) {
+         			 throw new DataIntegrityException("Precisa ter pelo menos 1 etapa cadastrada ");
+         		}
+        		 
     	        Lead lead= new Lead(null,objDto.getName(),objDto.getEmail(),objDto.getPhone(),objDto.getMessage(),newDate);
-    	        lead.setPropertyId(null);
-    	        Tenant tenant=tenantService.find(user.getId());
+    	       	     	        	 
+    	         lead.setPropertyId(objDto.getPropertyId());
+    	    	 opportunity.setPropertyId(objDto.getPropertyId());   	    	  	   	    
+    	    	 
+    	       	     
     	        lead.setTenant(tenant);
     	        leadService.insert(lead);
-    	             
-    		Opportunity opportunity = new Opportunity(null,newDate);
-    		opportunity.setTenant(tenant);
-    		opportunity.setLead(lead);
-    		Step firtsStep= stepRepository.findFirstByTenant(tenant);
-    		opportunity.setStep(firtsStep);
-    		lead.setOpportunity(opportunity);
+    	              		
+    	        opportunity.setLead(lead);
+    			
+    	        lead.setOpportunity(opportunity);
     		
-            return opportunity; 		   
+    	        return opportunity; 		   
     }
 
     //oportunidade que vem da home do site do cliente

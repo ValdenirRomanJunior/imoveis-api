@@ -1,5 +1,7 @@
 package com.dynamous.imoveis.services;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -10,8 +12,17 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.dynamous.imoveis.dto.LeadUpdateDTO;
+import com.dynamous.imoveis.dto.StepNewDTO;
+import com.dynamous.imoveis.dto.StepUpdateDTO;
+import com.dynamous.imoveis.dto.TenantNewDTO;
+import com.dynamous.imoveis.entities.Lead;
+import com.dynamous.imoveis.entities.Opportunity;
 import com.dynamous.imoveis.entities.Step;
 import com.dynamous.imoveis.entities.Tenant;
+import com.dynamous.imoveis.enums.Perfil;
+import com.dynamous.imoveis.enums.Status;
+import com.dynamous.imoveis.enums.Verification;
 import com.dynamous.imoveis.repositories.StepRepository;
 import com.dynamous.imoveis.security.UserSS;
 import com.dynamous.imoveis.services.exceptions.AuthorizationException;
@@ -74,6 +85,35 @@ public class StepService {
         } catch (DataIntegrityViolationException  | EmptyResultDataAccessException | StaleStateException e) {
           throw new DataIntegrityException("Não é possivel deletar porque tem objetos anexados: ");
         }
+    }
+    
+    public Step fromNewStepDTO(StepNewDTO objDto){
+    	 UserSS user = UserService.authenticated();
+   	  if(user.getId() ==null){
+             throw new AuthorizationException("Acesso negado");
+         }
+   	  	Tenant tenant = tenantService.find(user.getId());
+		Step step = new Step(null,objDto.getName());
+		step.setTenant(tenant);
+       
+        return step;
+		
+	   
+}
+    public Step update(StepUpdateDTO step) {
+        Step newObj= find(step.getId());
+        updateData(newObj, step);
+        return repo.save(newObj);
+    }
+    
+    private void updateData(Step newObj, StepUpdateDTO step) {
+    
+        newObj.setName(step.getName());
+        Tenant tenant= tenantService.find(newObj.getTenant().getId());
+        newObj.setTenant(tenant);
+    
+    
+
     }
 
 }

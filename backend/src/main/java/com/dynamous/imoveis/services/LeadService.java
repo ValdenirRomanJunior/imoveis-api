@@ -14,6 +14,7 @@ import com.dynamous.imoveis.entities.Tenant;
 import com.dynamous.imoveis.enums.Perfil;
 import com.dynamous.imoveis.enums.Status;
 import com.dynamous.imoveis.repositories.LeadRepository;
+import com.dynamous.imoveis.repositories.OpportunityRepository;
 import com.dynamous.imoveis.repositories.PropertyRepository;
 import com.dynamous.imoveis.repositories.TenantRepository;
 import com.dynamous.imoveis.security.UserSS;
@@ -50,14 +51,21 @@ public class LeadService {
     @Autowired
     private OpportunityService opportunityService;
     
+    @Autowired
+    private TenantRepository tenRepository;
+    
+    @Autowired
+    private OpportunityRepository opRepository;
+    
    
     public Lead find(Long id) {
-       // UserSS user = UserService.authenticated();
+      UserSS user = UserService.authenticated();
        
-        if(id==null){
+        if(user == null && id==null){
             throw new AuthorizationException("Acesso negado");
         }
-        Optional<Lead> lead = leadRepository.findById(id);
+        Tenant tenant= tenantService.find(user.getId());
+        Optional<Lead> lead = leadRepository.findByIdAndTenant(id, tenant);
         return lead.orElseThrow(() -> new ObjectNotFoundException(
                 "Página não encontrada! Id:" + ", Type" + Lead.class.getName()));
     }
@@ -83,11 +91,15 @@ public class LeadService {
     public List<Lead> findAll() {
         return leadRepository.findAll();
     }
-    
     public Lead update(LeadUpdateDTO lead) {
         Lead newObj= find(lead.getId());
         updateData(newObj,lead);
         return leadRepository.save(newObj);
+    }
+    
+    public Lead updateLeadStep(Lead lead) {   
+       return leadRepository.save(lead);
+       
     }
     
     private void updateData(Lead newObj, LeadUpdateDTO lead) {
@@ -101,6 +113,7 @@ public class LeadService {
         newObj.setPropertyId(newObj.getPropertyId());
         Opportunity opportunity= opportunityService.find(newObj.getOpportunity().getId());
         newObj.setOpportunity(opportunity);
+    
 
     }
 

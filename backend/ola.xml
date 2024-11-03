@@ -1,0 +1,10 @@
+<com.dynamous.imoveis.entities.Step>
+  <id>1</id>
+  <name>Jean</name>
+  <tenant>
+    <perfis>
+      <int>2</int>
+    </perfis>
+  </tenant>
+  <opportunities/>
+</com.dynamous.imoveis.entities.Step>
