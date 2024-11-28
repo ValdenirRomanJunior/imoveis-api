@@ -177,6 +177,9 @@ public class PropertyService {
        addressRepository.save(property.getAddress()); 
        return propertyRepository.save(property);
    }
+    
+    
+    
 
     //DELETA UM IMÓVEL
     public void delete(Long id) throws URISyntaxException {
@@ -188,6 +191,9 @@ public class PropertyService {
         if(user==null || !user.hasRole(Perfil.TENANT) && !property.getAccount().getId().equals(user.getId())){
             throw new AuthorizationException("Acesso negado");
         }	
+        Tenant tenant = tenantRepository.findById(user.getId()).get();
+        Account account= accountService.find(tenant.getAccount().getId());
+
 
         try {
         	 s3Service.deleteAllFiles(id);

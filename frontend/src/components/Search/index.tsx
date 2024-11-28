@@ -310,7 +310,8 @@ const [selectedItemIndex,setSelectedItemIndex]=useState(null);
                 <select placeholder='goal' name='goal'  id='goal' disabled={disabled} value={goal} className="select-half" onChange={(e)=>setGoal(e.target.value)}> 
                 <option value='' >Finalidade</option>                
                     <option key='1' value='1'>Aluguel</option>
-                    <option key='2' value='2'>Venda</option>             
+                    <option key='2' value='2'>Venda</option> 
+                    <option key='3' value='3'>Vender/Alugar</option>            
                 </select>
                 </div>
                 <SearchButtonContainer onClick={handleCloseModal}>

@@ -278,7 +278,8 @@ const SearchDesktop = ({onChange,param}:Props)=>{
                 <select placeholder='goal' name='goal' disabled={disabled} id='goal' value={goal} className="select-half" onChange={(e)=>setGoal(e.target.value)}> 
                 <option value='' >Finalidade</option>                
                     <option key='1' value='1'>Aluguel</option>
-                    <option key='2' value='2'>Venda</option>             
+                    <option key='2' value='2'>Venda</option>  
+                    <option key='3' value='3'>Vender/Alugar</option>             
                 </select>
                 <SearchButtonContainer>
                   
