@@ -188,7 +188,7 @@ const OportunidadeCard = (props:{param:string})=>{
   
  useEffect(() => {
         
-       const evtSource = new EventSource(`https://steady-cheesecake-480a84.netlify.app/opportunities/SSe`)   
+       const evtSource = new EventSource(`https://standi-v1-2024-f863ecac91d0.herokuapp.com/opportunities/SSe`)   
        if(typeof(EventSource) !== 'undefined'){
         console.log('error')
       } 
