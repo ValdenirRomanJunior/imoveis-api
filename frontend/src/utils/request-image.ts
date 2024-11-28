@@ -7,7 +7,7 @@ const apiImage= axios.create({
     headers:{
      
         'Access-Control-Allow-Headers': 'Content-Type',
-        "Access-Control-Allow-Origin": "https://master--steady-cheesecake-480a84.netlify.app",
+        "Access-Control-Allow-Origin": "https://standi-v1-2024-f863ecac91d0.herokuapp.com",
         "Access-Control-Allow-Methods": "OPTIONS,POST,GET" 
         
         
