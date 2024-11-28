@@ -224,6 +224,7 @@ public class PropertyService {
     	     City city = cityRepository.findByNameAndState(propertyNewDTO.getCity(),state);
         	if(state == null) {
         		State stateAux = new State(null,propertyNewDTO.getState());
+        		stateAux.setAccount(account);
         		City cityAux= new City(null,propertyNewDTO.getCity(), stateAux);
         		stateAux.setAccount(account);
         		stateRepository.save(stateAux);
@@ -313,6 +314,7 @@ public class PropertyService {
 	 
 	 if(state == null) {
 		State stateAux = new State(null,propertyUpdateDTO.getState());
+		stateAux.setAccount(account);
 		 City cityAux= new City(null,propertyUpdateDTO.getCity(), stateAux);		
 		 Address address = new Address(propertyUpdateDTO.getId(),propertyUpdateDTO.getStreet(),propertyUpdateDTO.getNumber(), propertyUpdateDTO.getDistrict(), propertyUpdateDTO.getCep(), property, cityAux);
 		 address.setAccount(account);
