@@ -4,6 +4,7 @@ export const ImageWrapperManager = styled.div`
     width: 100%;
     height:290px;
     overflow: scroll;
+    
    
     display: flex;
     flex-direction: column;

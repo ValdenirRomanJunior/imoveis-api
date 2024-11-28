@@ -140,8 +140,8 @@ const Oportunidade = () => {
      const [copyUrl,setCopyUrl]=useState(false);
 
     const copyLink= ()=> {
-       
-            var url_atual = `https://${property?.tenant.domain}/detail/${property?.id}`;
+            
+            var url_atual = `https://${user.domain}/detail/${property?.id}`;
            
             navigator.clipboard.writeText(url_atual);
             setCopyUrl(true)
@@ -149,7 +149,6 @@ const Oportunidade = () => {
                 setCopyUrl(false)
             },3000)
   
-        
     }
    
     const ErrorHandler = () => {
@@ -189,12 +188,12 @@ const Oportunidade = () => {
    },500)
   }
 }
-
+let perfilTenant=Object.values(user.perfis).some(obj => obj === 'TENANT');
 
     return(
 
         <>
-        {user?.perfis?.[0] === 'TENANT' && !errors? 
+        {perfilTenant && !errors? 
         
         <div>
               {loading && <LoadingLogin/>}
@@ -304,14 +303,15 @@ const Oportunidade = () => {
                  <span>{Opportunity?.instant}</span>
                  </div>
                  <div className='whats-checkbox-wrapper'> 
-                    {Opportunity?.phoneLead &&
-                    
-                          
-                 <a href={`https://wa.me/55${Opportunity.phoneLead}?text=https://lindomarnogueiracorretor.com.br/detail/${property?.id}`} target='blank'><span className='info-item-wrapper-whats'><FaWhatsapp className='icon-item-info-oportunity' />Conversar</span></a>} 
-                  
-                 
+                 {Opportunity?.phoneLead && !property?.id &&                                          
+                 <a href={`https://wa.me/55${Opportunity.phoneLead}`} target='blank'><span className='info-item-wrapper-whats'><FaWhatsapp className='icon-item-info-oportunity' />Conversar</span></a>
+                   }
+                    {Opportunity?.phoneLead && property?.id &&                                          
+                 <a href={`https://wa.me/55${Opportunity.phoneLead}?text=https://${user.domain}/detail/${property?.id}`} target='blank'><span className='info-item-wrapper-whats'><FaWhatsapp className='icon-item-info-oportunity' />Conversar</span></a>
+                   }
+                 {property?.id &&
                   <div  onClick={copyLink} className='button-wrapper'>Copiar imóvel <MdOutlineCopyAll className='icon-copy'/> </div>
-                             
+                }        
                  
                  </div>
                  

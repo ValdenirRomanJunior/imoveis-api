@@ -4,7 +4,8 @@ public enum Perfil {
 
     ADMIN(1,"ROLE_ADMIN"),
     TENANT(2,"ROLE_TENANT"),
-    TENANT_CUSTOMER(3,"ROLE_CUSTOMER_TENANT");
+    TENANT_CUSTOMER(3,"ROLE_CUSTOMER_TENANT"),
+    ACCOUNT(4,"ROLE_ACCOUNT");
 
     private int cod;
     private String description;

@@ -111,7 +111,7 @@ refreshTokenUser()
 
                              
        const response =  await userSignIn(data);
-       console.log(response)
+    
        const initialsLogin= response.substring(0,3) as string;
        const initialsSecondPart= response.substring(3,13) as string;
        console.log(initialsSecondPart)
@@ -365,7 +365,7 @@ refreshTokenUser()
       </Modal>
 
 
-      <p onClick={openModal} className="send-new-password">Esqueci a senha</p>
+      <p onClick={(e)=>e.preventDefault()} className="send-new-password">Esqueci a senha</p>
             
           
         </ButtonContainer>

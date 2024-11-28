@@ -21,7 +21,7 @@ import imageDefault from '../../assets/images/no-pictures.png';
 import { Property } from '../../types/property';
 import { propertiesToPortal } from '../../services/resources/property';
 import { MdAttachMoney, MdOutlineBedroomChild, MdOutlineSell } from 'react-icons/md';
-import { TbBath } from "react-icons/tb";
+
 import { IoCarSportOutline, IoHomeOutline } from 'react-icons/io5';
 import { IoIosArrowRoundForward } from "react-icons/io";
 
@@ -220,7 +220,7 @@ useEffect(() =>{
                         <div className='property-data-right-wrapper'>
                             <div className='data-property-info-right'>
                              <div className='data-item-wrapper'><MdOutlineBedroomChild className='icon-data-property'/><span className='property-data-info-right-item'> 1</span></div> 
-                             <div className='data-item-wrapper'><TbBath className='icon-data-property' /><span className='property-data-info-right-item'> 2</span></div> 
+                             <div className='data-item-wrapper'><BiCaretUpCircle className='icon-data-property' /><span className='property-data-info-right-item'> 2</span></div> 
                              <div className='data-item-wrapper'><IoCarSportOutline className='icon-data-property'/> <span className='property-data-info-right-item'>3</span></div> 
                             </div>
 

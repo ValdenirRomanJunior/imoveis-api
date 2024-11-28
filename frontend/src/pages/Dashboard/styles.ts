@@ -45,7 +45,6 @@ export const BodyContainer = styled.main`
         width: 95%;
 
         
-
         .card-wrapper-top{
             padding:25px 20px;
             border: 1px solid #e6e9ed;
@@ -74,6 +73,7 @@ export const BodyContainer = styled.main`
             width:100%;
             text-align: left;
             padding: 0 15px;
+            font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans",Helvetica,Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji";
 
         }
 
@@ -83,8 +83,7 @@ export const BodyContainer = styled.main`
             padding: 10px 10px;
             display: flex;
             flex-direction: column;
-            align-items: center;
-          
+            align-items: center;         
             width:100%;
             
             .cards-wrapper{
@@ -96,7 +95,6 @@ export const BodyContainer = styled.main`
                     height: 150px;
                     padding: 15px 10px;
                    
-
                     p{
                         color: #767676; 
                         font-weight: 500;
@@ -122,15 +120,57 @@ export const BodyContainer = styled.main`
             
             }
 
-            
-    .number-card-dashboard{
-        font-size:40px;
-    }
-            
+            .title-card-left-wrapper{
+                display: flex;
+                align-items: center;
+                justify-content: left;
+                width: 170px;
+           
+            }
+
+            .icon-card-left-wrapper{
+              box-shadow:0px 3px 6px 0px #25292e1f;
+                 border-radius:50%;
+                 width: 32px !important;
+                 height: 32px !important;
+                 min-width: 32px !important;
+                 margin-right:5px;
+
+                 display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+             .icon-card-left{               
+                color:#0969da;
+                background:#0969da38;
+                border-radius:50%;
+                font-size:13px;
+              
+              }
+                .first-card{
+                    color: #da6109;
+                    background: #da610938;
+                }
+                    .second-card{
+                  color: #09da72;
+                background: #09da7238;
+                    }
+                .title-card-left-wrapper p {
+                margin-bottom:0;
+                  margin-left:10px;
+                  font-size:13px;
+                }
+            .second-title{
+          
+            }
+
+            .number-card-dashboard{
+                font-size:40px;
         }
+            
+      }
       
     }
-
 
     .right-side{
        
@@ -158,11 +198,15 @@ export const BodyContainer = styled.main`
 
      width:100%;
      position:relative;
-   margin:25px 0; 
+    margin:0 0; 
    border:1px solid #e6e9ed;
    paddingTop:0; 
    border-radius:2px;
     border: 1px solid #e6e9ed;
+
+    display: flex;
+    align-items: center;
+    flex-direction: column;
 }
     .card-right-bottom h2{
     display: flex;
@@ -174,6 +218,7 @@ export const BodyContainer = styled.main`
      border-bottom:1px solid #d1d9e0;
      background:#f6f8fa;
      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans",Helvetica,Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji";
+     width:100%;
     }
      .icon-portais{
     margin-right:5px;
@@ -182,7 +227,18 @@ export const BodyContainer = styled.main`
     height:auto;
     background:#fff;
     }
-
+    .title-perfil-card{
+        display: flex;
+    align-items: center;
+     font-size:16px;
+     font-weight:400;
+     color:#1f2328;
+     padding:7px 9px;
+     border-bottom:1px solid #d1d9e0;
+     background:#f6f8fa;
+     font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans",Helvetica,Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji";
+     width:100%;
+    }
 
     @media screen and (min-width:1000px){
         
@@ -251,10 +307,16 @@ export const BodyContainer = styled.main`
                     height: 130px;
                    
 
-                    p{
-                        font-size:13px;
-                        margin-bottom:0;
-                    }
+                     .title-card-left-wrapper p {
+                          margin-bottom:0;
+                          font-size:14px;
+                }
+                .title-card-left-wrapper{
+                display: flex;
+                align-items: center;
+                justify-content: left;
+                width: 75%;
+            }
                     .number-card-dashboard{
                         font-size:25px;
                     } 

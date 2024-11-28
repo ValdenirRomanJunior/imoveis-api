@@ -75,9 +75,7 @@ export const AuthProvider:React.FC = ({children}) => {
                localStorage.setItem('user',JSON.stringify(user));
             return data;
        
-        }
-          
-      
+        }          
     }
     
 

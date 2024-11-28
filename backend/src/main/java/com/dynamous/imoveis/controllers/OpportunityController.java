@@ -24,6 +24,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.validation.Valid;
@@ -31,6 +32,7 @@ import javax.validation.Valid;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URLDecoder;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -46,6 +48,7 @@ public class OpportunityController {
     @Autowired
     private StepService stepService;
 
+
     @Autowired
     private OpportunityRepository opportunityRepository;
    
@@ -60,7 +63,7 @@ public class OpportunityController {
     @PreAuthorize("hasAnyRole('TENANT')")
     @PostMapping(value="/save", produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<Void> saveCRM(@Valid @RequestBody OpportunityNewDTOCRM objDto){	
-    	Opportunity obj = service.fromDTOCRM(objDto);  
+    	Opportunity obj = service.fromDTOCRM(objDto);  	
     	  
         service.insert(obj);       
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").
@@ -71,7 +74,8 @@ public class OpportunityController {
     @PostMapping(value="/saveLeadHome", produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<Void> saveHomeSite(@Valid @RequestBody OpportunityNewHomeSiteDTO objDto){   	
     	Opportunity obj = service.fromDTOHomeSite(objDto);  
-        service.insert(obj);       
+        service.insert(obj);  
+     
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").
                   buildAndExpand(obj.getId()).toUri();
         return ResponseEntity.created(uri).build();
@@ -106,7 +110,7 @@ public class OpportunityController {
     @PreAuthorize("hasAnyRole('TENANT')")
     @GetMapping(value = "/totalOpportunities/{id}", produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<?> getTotalLeads(@PathVariable Long id){    	  	
-       Long total= opportunityRepository.countOpportunityByTenantId(id);      
+       Long total= opportunityRepository.countOpportunityByAccountId(id);      
         return ResponseEntity.ok().body(total);
     }
     
@@ -122,8 +126,25 @@ public class OpportunityController {
     //pega as estapas com as oportunidades
     @GetMapping(value="/steps", produces = {MediaType.APPLICATION_JSON_VALUE,MediaType.APPLICATION_XML_VALUE})
 	public ResponseEntity <List<Step>> findAllStepsWithOpportunities(){
-
 		List<Step> list = stepService.findAll();
+		return ResponseEntity.ok().body(list);
+	
+	}
+    
+    @GetMapping(value="/stepsName", produces = {MediaType.APPLICATION_JSON_VALUE})
+	public ResponseEntity <List<String>> findStepsName(){
+		List<Step> list = stepService.findAll();
+		List<String>listName= new ArrayList<String>();
+		for(Step l:list) {
+			listName.add(l.getName());
+		}
+		return ResponseEntity.ok().body(listName);
+	
+	}
+    @GetMapping(value="/countOpportByStep", produces = {MediaType.APPLICATION_JSON_VALUE})
+	public ResponseEntity <List<CountOpportunity>> findCountOppByStepName(){
+		List<CountOpportunity> list = service.countByStepName();
+	
 		return ResponseEntity.ok().body(list);
 	
 	}
@@ -135,5 +156,15 @@ public class OpportunityController {
 	        stepService.delete(id);
 	        return ResponseEntity.noContent().build();
 	    }
-	
+	   
+	   
+	    @GetMapping(value="/SSe", produces = {MediaType.TEXT_EVENT_STREAM_VALUE})
+		public SseEmitter subscribe(){
+	    
+			SseEmitter emitter = new  SseEmitter(Long.MAX_VALUE);
+			service.adEmitter(emitter);
+			return emitter;
+		
+		}
+			
 }

@@ -1,7 +1,12 @@
 package com.dynamous.imoveis.services;
 
+import com.dynamous.imoveis.entities.Account;
 import com.dynamous.imoveis.entities.Image;
+import com.dynamous.imoveis.entities.Property;
+import com.dynamous.imoveis.entities.Tenant;
 import com.dynamous.imoveis.repositories.ImageRepository;
+import com.dynamous.imoveis.security.UserSS;
+import com.dynamous.imoveis.services.exceptions.AuthorizationException;
 import com.dynamous.imoveis.services.exceptions.DataIntegrityException;
 import com.dynamous.imoveis.services.exceptions.FileException;
 import com.dynamous.imoveis.services.exceptions.ObjectNotFoundException;
@@ -19,6 +24,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -26,20 +32,27 @@ public class ImageService {
 	
     @Autowired
     private ImageRepository imageRepository;
+    
+	@Autowired
+	private TenantService tenantService;
+	
+	@Autowired
+	private AccountService accountService;
 
     //VERIFICA SE É PNG OU JPG
     public BufferedImage getJpgImageFromFile(MultipartFile uploadfile){
     	
     	
         String ext = FilenameUtils.getExtension(uploadfile.getOriginalFilename());
-       
+        System.out.println("CAIU AQUI"+ ext);
         if(!"png".equals(ext) && !"jpeg".equals(ext)){
             throw new FileException("Somente imagens PNG e JPG são permitidos");
         }
-
+        		
         try {
             BufferedImage img = ImageIO.read(uploadfile.getInputStream());
-            if("image/png".equals(ext)){
+           
+            if("png".equals(ext)){
                 img = pgnToJpg(img);
             }
             return img;
@@ -50,6 +63,7 @@ public class ImageService {
     }
     //CONVERTE PARA GRAVAR NO BUCKET EM JPG
     public BufferedImage pgnToJpg(BufferedImage img) {
+    	
         BufferedImage jpgImage = new BufferedImage(img.getWidth(), img.getHeight(),BufferedImage.TYPE_INT_RGB);
         jpgImage.createGraphics().drawImage(img,0,0, Color.WHITE,null);
         return jpgImage;
@@ -65,7 +79,8 @@ public class ImageService {
         catch (IOException e){
             throw new FileException("erro ao ler arquivo");
         }
-    }
+    }		
+    		
     
     
     
@@ -85,8 +100,10 @@ public class ImageService {
         }
     }
     
-	public java.util.List<Image> findAllByTenant(Long id) {
-		java.util.List<Image>  images= imageRepository.findAllByIdTenant(id);
+	public java.util.List<Image> findAllByTenant(Long id) {	 
+	        Tenant tenant= tenantService.find(id);
+	    	Account account= accountService.find(tenant.getAccount().getId());
+		java.util.List<Image>  images= imageRepository.findAllByIdAccount(account.getId());
 		
 		return images;
 	}
@@ -100,4 +117,10 @@ public class ImageService {
             throw new DataIntegrityException("impossible delete with other objects: caiu no image service ");
         }
     }
+	public List<Image> findAllByProperty(Property property) {
+		// TODO Auto-generated method stub
+		return imageRepository.findAllByProperty(property);
+	}
+	
+	 
 }

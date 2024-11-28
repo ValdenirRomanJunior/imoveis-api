@@ -4,9 +4,15 @@ import styled from "styled-components";
 export const CardWrapper = styled.div`
 width: 90%;
 
+
 border-bottom: 1px solid rgb(222, 222, 222);
 margin-top: 10px;
 padding: 10px 0;
+
+.status-wrapper{
+display: flex;
+align-items: center;
+}
 
 @media screen and (min-width: 700px){
     width:70%;
@@ -17,13 +23,14 @@ padding: 10px 0;
 }
 `
 
-export const CardContent = styled.div`
+export const CardContent = styled.div<{copyId:boolean}>`
 width: 100%;
 height:100%;
 padding: 0 10px 0 10px;
 display: flex;
 justify-content: space-around;
 align-items: center;
+position: relative;
 
 font-family: "Poppins", sans-serif;
 
@@ -56,7 +63,74 @@ font-family: "Poppins", sans-serif;
         right:5%;
         font-size:13px;
         color: gray;
+        width:50px;
+        height:50px;
      }
+
+     .cod-property-card::before{
+    position: absolute;
+    top:5%;
+    left:-80%;
+    transform: translate(-50%,-50%);
+    content: "copiado";
+
+    background-color: gray;
+    display: flex;
+    color:#fff;
+    font-size:11px;
+    padding:5px 15px;
+    -webkit-box-shadow: 0px 0px 13px -5px rgba(214,214,214,1);
+    -moz-box-shadow: 0px 0px 13px -5px rgba(214,214,214,1);
+    box-shadow: 0px 0px 13px -5px rgba(214,214,214,1);
+    text-align: center;
+    display:${({copyId}) => copyId === true ?  'block' : 'none'};
+    font-weight: bold;
+    transition: transform .3s;
+    animation: copyId 4s ease-in-out;
+    transform: translateY(0) scale(0);
+    opacity:0;
+    font-weight:400;
+   
+
+
+  }
+
+  @keyframes copyId {
+    
+    0%{
+        transition: .1s;
+        transform: translateY(0) scale(1.2);
+        opacity:0.3;
+       
+       
+    } 
+    25%{
+       
+        transform: translateY(10px) scale(1.2);
+        opacity:1;   
+        
+              
+    }
+
+    50%{
+       
+        transform: translateY(10px) scale(1.2);
+        opacity:.9; 
+                
+    }
+    75%{
+       
+        transform: translateY(10px) scale(1.2);
+        opacity:.3;
+                    
+    }
+    100%{
+       
+        transform: translateY(10px) scale(1.2);
+        opacity:0;
+                    
+    }
+  }
 
         .title-card-property{
             color: rgb(74, 74, 74)  !important;
@@ -150,10 +224,6 @@ font-family: "Poppins", sans-serif;
 
         }
     }
-
-   
-
-
    
 `
 
@@ -220,16 +290,39 @@ export const CardContainer = styled.main`
 
     p{
         text-align:left;      
-        font-size:12px;
+        font-size:10px;
         margin-left:3px;
         text-transform: uppercase;
         margin-bottom: 0;
       
     }
+    `
 
     
-
-    `
+    export const StatusFeatured = styled.div<{
+        statusFeatured:string}>`
+    
+        width:100%;
+        color: ${({statusFeatured}) => statusFeatured ==='1' ? '#001fa0d9;' : 'red'};
+        display: flex;
+        align-items: center;
+        justify-content: start;
+        text-align:left;
+        padding-left: 10px;
+       
+      
+        p{
+            text-align:left;      
+            font-size:10px;
+            margin-left:3px;
+            text-transform: uppercase;
+            margin-bottom: 0;
+          
+        }
+    
+        
+    
+        `
 
     export const InputRangeProperty =styled.div`
     width:25px;
@@ -244,7 +337,5 @@ export const CardContainer = styled.main`
 
     }
 
- 
- 
 
 `

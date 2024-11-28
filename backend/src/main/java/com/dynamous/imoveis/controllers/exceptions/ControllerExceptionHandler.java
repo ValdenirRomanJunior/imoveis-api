@@ -12,11 +12,13 @@ import com.dynamous.imoveis.services.exceptions.ObjectNotFoundException;
 import com.dynamous.imoveis.services.exceptions.UserNameNotFoundException;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
 import java.net.URISyntaxException;
@@ -31,28 +33,28 @@ public class ControllerExceptionHandler {
     public ResponseEntity<StandardError> objectNotFound(ObjectNotFoundException e, HttpServletRequest request) {
 
         StandardError err = new StandardError(System.currentTimeMillis(), HttpStatus.NOT_FOUND.value(), "Não encontrado", e.getMessage(), request.getRequestURI());
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(err);
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).contentType(MediaType.APPLICATION_JSON).body(err);
     }
     
     @ExceptionHandler(UserNameNotFoundException.class)
     public ResponseEntity<StandardError> userNameNotFoundException(UserNameNotFoundException e, HttpServletRequest request) {
 
         StandardError err = new StandardError(System.currentTimeMillis(), HttpStatus.NOT_FOUND.value(), "Usuario não encontrado", e.getMessage(), request.getRequestURI());
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(err);
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).contentType(MediaType.APPLICATION_JSON).body(err);
     }
 
     @ExceptionHandler(DataIntegrityException.class)
     public ResponseEntity<StandardError> dataIntegrity(DataIntegrityException e, HttpServletRequest request) {
 
         StandardError err = new StandardError(System.currentTimeMillis(), HttpStatus.BAD_REQUEST.value(), "Integridade de dados", e.getMessage(), request.getRequestURI());
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(err);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).contentType(MediaType.APPLICATION_JSON).body(err);
     }
     
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<StandardError> illegalArgumentException(IllegalArgumentException e, HttpServletRequest request) {
 
         StandardError err = new StandardError(System.currentTimeMillis(), HttpStatus.NOT_FOUND.value(), "Argumento Invalido", e.getMessage(), request.getRequestURI());
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(err);
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).contentType(MediaType.APPLICATION_JSON).body(err);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -62,21 +64,21 @@ public class ControllerExceptionHandler {
         for (FieldError x : e.getBindingResult().getFieldErrors()) {
             err.addError(x.getField(), x.getDefaultMessage());
         }
-        return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(err);
+        return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).contentType(MediaType.APPLICATION_JSON).body(err);
     }
 
     @ExceptionHandler(FileException.class)
     public ResponseEntity<StandardError> file(FileException e, HttpServletRequest request) {
 
         StandardError err = new StandardError(System.currentTimeMillis(), HttpStatus.BAD_REQUEST.value(), "Integridade do upload FileExc", e.getMessage(), request.getRequestURI());
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(err);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).contentType(MediaType.APPLICATION_JSON).body(err);
     }
     
     @ExceptionHandler(MaxUploadSizeExceededException.class)
     public ResponseEntity<StandardError> fileMaxUpload(MaxUploadSizeExceededException e, HttpServletRequest request) {
 
         StandardError err = new StandardError(System.currentTimeMillis(), HttpStatus.LENGTH_REQUIRED.value(), "Tamanho Máximo permitido é de 10 Megabytes", e.getMessage(), request.getRequestURI());
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(err);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).contentType(MediaType.APPLICATION_JSON).body(err);
     }
     
     @ExceptionHandler(AmazonServiceException.class)
@@ -84,40 +86,40 @@ public class ControllerExceptionHandler {
 
         HttpStatus code = HttpStatus.valueOf(e.getErrorCode());
         StandardError err = new StandardError(System.currentTimeMillis(),code.value(), "Integridade do upload serviceExc", e.getMessage(), request.getRequestURI());
-        return ResponseEntity.status(code).body(err);
+        return ResponseEntity.status(code).contentType(MediaType.APPLICATION_JSON).body(err);
     }
 
     @ExceptionHandler(AmazonClientException.class)
     public ResponseEntity<StandardError> amazonClient(AmazonClientException e, HttpServletRequest request) {
 
         StandardError err = new StandardError(System.currentTimeMillis(), HttpStatus.BAD_REQUEST.value(), "Integridade do upload ClientExc", e.getMessage(), request.getRequestURI());
-        return ResponseEntity.status( HttpStatus.BAD_REQUEST.value()).body(err);
+        return ResponseEntity.status( HttpStatus.BAD_REQUEST.value()).contentType(MediaType.APPLICATION_JSON).body(err);
     }
 
     @ExceptionHandler(AmazonS3Exception.class)
     public ResponseEntity<StandardError> amazonS3(AmazonS3Exception e, HttpServletRequest request) {
 
         StandardError err = new StandardError(System.currentTimeMillis(), HttpStatus.BAD_REQUEST.value(), "Integridade do upload S3Exc", e.getMessage(), request.getRequestURI());
-        return ResponseEntity.status( HttpStatus.BAD_REQUEST.value()).body(err);
+        return ResponseEntity.status( HttpStatus.BAD_REQUEST.value()).contentType(MediaType.APPLICATION_JSON).body(err);
     }
     
     @ExceptionHandler(URISyntaxException.class)
     public ResponseEntity<StandardError> uRISyntaxException(URISyntaxException e, HttpServletRequest request) {
 
         StandardError err = new StandardError(System.currentTimeMillis(), HttpStatus.BAD_REQUEST.value(), "Integridade do upload S3Exc", e.getMessage(), request.getRequestURI());
-        return ResponseEntity.status( HttpStatus.BAD_REQUEST.value()).body(err);
+        return ResponseEntity.status( HttpStatus.BAD_REQUEST.value()).contentType(MediaType.APPLICATION_JSON).body(err);
     }
 
     @ExceptionHandler(AuthorizationException.class)
     public ResponseEntity<StandardError> authorization(AuthorizationException e, HttpServletRequest request) {
 
         StandardError err = new StandardError(System.currentTimeMillis(), HttpStatus.FORBIDDEN.value(), "Não autorizado", e.getMessage(), request.getRequestURI());
-        return ResponseEntity.status( HttpStatus.FORBIDDEN.value()).body(err);
+        return ResponseEntity.status( HttpStatus.FORBIDDEN.value()).contentType(MediaType.APPLICATION_JSON).body(err);
     }
     @ExceptionHandler(UnknownHostException.class)
     public ResponseEntity<StandardError> unknownHostException(UnknownHostException e, HttpServletRequest request) {
 
         StandardError err = new StandardError(System.currentTimeMillis(), HttpStatus.BAD_REQUEST.value(), "Falha na conexão", e.getMessage(), request.getRequestURI());
-        return ResponseEntity.status( HttpStatus.BAD_REQUEST.value()).body(err);
+        return ResponseEntity.status( HttpStatus.BAD_REQUEST.value()).contentType(MediaType.APPLICATION_JSON).body(err);
     }
 }

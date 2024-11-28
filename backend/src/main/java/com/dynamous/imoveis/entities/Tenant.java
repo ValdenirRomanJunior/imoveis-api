@@ -6,14 +6,17 @@ import com.dynamous.imoveis.enums.Verification;
 import com.dynamous.imoveis.services.validation.TenantInsert;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+
 import org.hibernate.validator.constraints.Length;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
 import java.io.Serializable;
-import java.util.*;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.stream.Collectors;
+
 
 
 @Entity
@@ -25,6 +28,7 @@ public class Tenant implements Serializable {
     private Long id;
     
     private String slug;
+    private String proprietario;
 
     @Column(unique = true)
     private String email;
@@ -38,17 +42,29 @@ public class Tenant implements Serializable {
     private String endDate;
     private String domain;
     private String renovation;
+    private String officeName;
+    private String phone;
+    private String country;
+    private String state;
+    private String city;
+    private String neighborhood;
+    private String street;
+    private String number;
+    private String cep;	
     
-
+    @ManyToOne
+    @JoinColumn(name = "account_id")
+    private Account account;
+    
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name="PERFIS")
     private Set<Integer> perfis = new HashSet<>();
-
+  
     public Tenant() {
         addPerfil(Perfil.TENANT);
     }
 
-    public Tenant(Long id, String slug, String email, String password, Status status, String lastName, Verification verification,String creci,String start, String renovation,String endDate) {
+    public Tenant(Long id, String slug, String email, String password, Status status, String lastName, Verification verification,String creci,String start, String renovation,String endDate,String domain,String proprietario) {
         this.id = id;
         this.slug = slug;
         this.email = email;
@@ -60,6 +76,8 @@ public class Tenant implements Serializable {
         this.start=start;
         this.renovation=renovation;
         this.endDate=endDate;
+        this.domain=domain;
+        this.proprietario=proprietario;
        
         
         addPerfil(Perfil.TENANT);
@@ -115,8 +133,6 @@ public class Tenant implements Serializable {
     }
     
     
-
-
     public String getLastName() {
 		return lastName;
 	}
@@ -175,20 +191,183 @@ public class Tenant implements Serializable {
         perfis.add(perfil.getCod());
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Tenant tenant = (Tenant) o;
-        return Objects.equals(id, tenant.id);
-    }
+    
+    public Account getAccount() {
+		return account;
+	}
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(id);
-    }
+	public void setAccount(Account account) {
+		this.account = account;
+	}
 
-    @Override
+
+
+    public String getProprietario() {
+		return proprietario;
+	}
+
+	public void setProprietario(String proprietario) {
+		this.proprietario = proprietario;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((account == null) ? 0 : account.hashCode());
+		result = prime * result + ((cep == null) ? 0 : cep.hashCode());
+		result = prime * result + ((city == null) ? 0 : city.hashCode());
+		result = prime * result + ((country == null) ? 0 : country.hashCode());
+		result = prime * result + ((creci == null) ? 0 : creci.hashCode());
+		result = prime * result + ((domain == null) ? 0 : domain.hashCode());
+		result = prime * result + ((email == null) ? 0 : email.hashCode());
+		result = prime * result + ((endDate == null) ? 0 : endDate.hashCode());
+		result = prime * result + ((id == null) ? 0 : id.hashCode());
+		result = prime * result + ((lastName == null) ? 0 : lastName.hashCode());
+		result = prime * result + ((neighborhood == null) ? 0 : neighborhood.hashCode());
+		result = prime * result + ((number == null) ? 0 : number.hashCode());
+		result = prime * result + ((officeName == null) ? 0 : officeName.hashCode());
+		result = prime * result + ((password == null) ? 0 : password.hashCode());
+		result = prime * result + ((perfis == null) ? 0 : perfis.hashCode());
+		result = prime * result + ((phone == null) ? 0 : phone.hashCode());
+		result = prime * result + ((renovation == null) ? 0 : renovation.hashCode());
+		result = prime * result + ((slug == null) ? 0 : slug.hashCode());
+		result = prime * result + ((start == null) ? 0 : start.hashCode());
+		result = prime * result + ((state == null) ? 0 : state.hashCode());
+		result = prime * result + ((status == null) ? 0 : status.hashCode());
+		result = prime * result + ((street == null) ? 0 : street.hashCode());
+		result = prime * result + ((verification == null) ? 0 : verification.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Tenant other = (Tenant) obj;
+		if (account == null) {
+			if (other.account != null)
+				return false;
+		} else if (!account.equals(other.account))
+			return false;
+		if (cep == null) {
+			if (other.cep != null)
+				return false;
+		} else if (!cep.equals(other.cep))
+			return false;
+		if (city == null) {
+			if (other.city != null)
+				return false;
+		} else if (!city.equals(other.city))
+			return false;
+		if (country == null) {
+			if (other.country != null)
+				return false;
+		} else if (!country.equals(other.country))
+			return false;
+		if (creci == null) {
+			if (other.creci != null)
+				return false;
+		} else if (!creci.equals(other.creci))
+			return false;
+		if (domain == null) {
+			if (other.domain != null)
+				return false;
+		} else if (!domain.equals(other.domain))
+			return false;
+		if (email == null) {
+			if (other.email != null)
+				return false;
+		} else if (!email.equals(other.email))
+			return false;
+		if (endDate == null) {
+			if (other.endDate != null)
+				return false;
+		} else if (!endDate.equals(other.endDate))
+			return false;
+		if (id == null) {
+			if (other.id != null)
+				return false;
+		} else if (!id.equals(other.id))
+			return false;
+		if (lastName == null) {
+			if (other.lastName != null)
+				return false;
+		} else if (!lastName.equals(other.lastName))
+			return false;
+		if (neighborhood == null) {
+			if (other.neighborhood != null)
+				return false;
+		} else if (!neighborhood.equals(other.neighborhood))
+			return false;
+		if (number == null) {
+			if (other.number != null)
+				return false;
+		} else if (!number.equals(other.number))
+			return false;
+		if (officeName == null) {
+			if (other.officeName != null)
+				return false;
+		} else if (!officeName.equals(other.officeName))
+			return false;
+		if (password == null) {
+			if (other.password != null)
+				return false;
+		} else if (!password.equals(other.password))
+			return false;
+		if (perfis == null) {
+			if (other.perfis != null)
+				return false;
+		} else if (!perfis.equals(other.perfis))
+			return false;
+		if (phone == null) {
+			if (other.phone != null)
+				return false;
+		} else if (!phone.equals(other.phone))
+			return false;
+		if (renovation == null) {
+			if (other.renovation != null)
+				return false;
+		} else if (!renovation.equals(other.renovation))
+			return false;
+		if (slug == null) {
+			if (other.slug != null)
+				return false;
+		} else if (!slug.equals(other.slug))
+			return false;
+		if (start == null) {
+			if (other.start != null)
+				return false;
+		} else if (!start.equals(other.start))
+			return false;
+		if (state == null) {
+			if (other.state != null)
+				return false;
+		} else if (!state.equals(other.state))
+			return false;
+		if (status == null) {
+			if (other.status != null)
+				return false;
+		} else if (!status.equals(other.status))
+			return false;
+		if (street == null) {
+			if (other.street != null)
+				return false;
+		} else if (!street.equals(other.street))
+			return false;
+		if (verification == null) {
+			if (other.verification != null)
+				return false;
+		} else if (!verification.equals(other.verification))
+			return false;
+		return true;
+	}
+
+	@Override
     public String toString() {
         final StringBuilder sb = new StringBuilder();
         sb.append(getSlug());
@@ -196,5 +375,6 @@ public class Tenant implements Serializable {
         sb.append(getEmail());
         sb.append('\n');
         return sb.toString();
+        
     }
 }

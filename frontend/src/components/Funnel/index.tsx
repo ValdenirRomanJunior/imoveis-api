@@ -1,7 +1,10 @@
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { FunnelContainer } from './styles';
 import Funnel from "react-apexcharts";
+import { Step } from '../../types/opportunity';
+import { countstepsName, stepsName, stepsOpportunity } from '../../services/resources/lead';
+import { steps } from 'framer-motion';
 
 
 type SeriesData = {
@@ -11,64 +14,128 @@ type SeriesData = {
 
 type ChartData = {
     labels: {
-        categories: string[];
+        categories: string[] ;
     };
         series: SeriesData[];
 }
 
+
+type Counts = {
+    name:string;
+    count:number;
+}
+
+
 function Funil(){
 
+  
     const [chartData, setChartData]= useState<ChartData>({ 
 
         labels: {
-          categories: ['captura','em atendimento']
+          categories: []
     },
     series: [
         {
             name: "funil",
-            data: [1380, 1100, 990, 880, 740, 548, 330, 200]                 
+            data: []                   
         }
     ]
     });
 
+    const [counts,setCounts] = useState<Counts[]>()
+    const getcountSteps = async () => {     
+        const data= await countstepsName() as Counts[]
+        setCounts(data as Counts[])
+        const myLabels = data.map(x=>x.name);
+        var indices: number[]=[];
+        
+        for(let i = 0; i<data.length; i++) {  
+            indices.push(i)
+        }
+        var  meuArrayInvertido= indices.slice(0).reverse();
+       
+       
+   
+        setChartData({
+            labels: {           
+                categories:myLabels
+          },
+          series: [
+              {
+                  name: 'funil',
+                  data: [8,7,6,5,4,3,2,1]
+              }
+          ]
+        })
 
+    
+}
+    useEffect(() =>{      
+ getcountSteps()
+          
+    },[])
 
-
-
-
-
+    
     const options = {
+        
+    
         plotOptions: {
+          
           
             bar: {
                 horizontal: true,
                 isFunnel: true,
                 
+                
             }
         },
         dataLabels: {
+          
             enabled: true,
             formatter: function (val:string, opt:any) {
-              return opt.w.globals.labels[opt.dataPointIndex] + ':  ' + val
+                if(opt.w.globals.labels[opt.dataPointIndex] === undefined){
+                     return ' '  +':  ' + ''
+
+                }else{
+                return opt.w.globals.labels[opt.dataPointIndex] + ':  ' + ''
+                }
+             
             },
-       
+           
             dropShadow: {
               enabled: true,
             }},
-            
+          
               
     };
-    
+   
 
     return(
         <FunnelContainer>
-    <Funnel
-            options={{...options,xaxis:chartData.labels}}
-            series={chartData.series}
-            type="bar"
-            height="240"
-            
-      />
+          <div className='counts-item'>
+                {counts && counts.map(item=>(
+                    
+                        <span>{item.count}</span>
+                    
+                )
+                    
+               
+                )}
+                </div>
+                  <Funnel
+
+                  options={{...options,xaxis:chartData?.labels}}
+                  series={chartData?.series}
+                  type="bar"
+                  height="240"
+                  
+                  
+                
+                  
+            />
+
+      
+  
 
        </FunnelContainer>
 

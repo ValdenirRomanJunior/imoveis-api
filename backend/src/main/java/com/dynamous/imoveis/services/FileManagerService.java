@@ -1,6 +1,8 @@
 package com.dynamous.imoveis.services;
 
+import com.dynamous.imoveis.entities.Account;
 import com.dynamous.imoveis.entities.Image;
+import com.dynamous.imoveis.entities.Property;
 import com.dynamous.imoveis.entities.Tenant;
 import com.dynamous.imoveis.repositories.ImageRepository;
 import com.dynamous.imoveis.security.UserSS;
@@ -29,6 +31,13 @@ public class FileManagerService {
     
     @Autowired
     private ImageRepository imageRepository;
+    
+    
+	@Autowired
+	private TenantService tenantService;
+	
+	@Autowired
+	private AccountService accountService;
 
     @Value("${img.prefix.tenant.property}")
     private String prefix;
@@ -38,7 +47,7 @@ public class FileManagerService {
 
     
     //SERVICE ENTIDADE PARA FOTO PROPRIEDADE
-    public URI uploadPropertyPictures(MultipartFile multipartFile) {
+    public URI uploadPropertyPictures(MultipartFile multipartFile, Property property) {
         UserSS user = UserService.authenticated();
         if (user == null) {
         	throw new AuthorizationException("erro");
@@ -46,9 +55,9 @@ public class FileManagerService {
         BufferedImage jpgImage = imageService.getJpgImageFromFile(multipartFile);                 	
         String fileName = prefix +user.getId()+".jpg";
        
-        return s3Service.uploaFile(imageService.getInputStream(jpgImage, "jpg"), fileName, "image");
+        return s3Service.uploaFile(imageService.getInputStream(jpgImage, "jpg"), fileName, "image", property);
     }
-    
+    	
     //SERVICE DA ENTIDADE PARA FOTO PROFILE
     public URI uploadProfilePictures(MultipartFile multipartFile) {
         UserSS user = UserService.authenticated();
@@ -67,8 +76,11 @@ public class FileManagerService {
          if (user == null) {
          	throw new AuthorizationException("erro");
          }
+         
+         	Tenant tenant= tenantService.find(user.getId());
+	    	Account account= accountService.find(tenant.getAccount().getId());
         PageRequest pageRequest = PageRequest.of(page,linesPerPage, Sort.Direction.valueOf(direction),orderBy);
-        return imageRepository.findPageByTenant(user.getId(),pageRequest);
+        return imageRepository.findPageByAccount(account.getId(),pageRequest);
     }
 
     

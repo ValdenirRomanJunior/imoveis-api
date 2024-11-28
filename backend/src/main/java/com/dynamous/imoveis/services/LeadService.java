@@ -7,6 +7,7 @@ import com.dynamous.imoveis.dto.LeadNewSiteDTO;
 import com.dynamous.imoveis.dto.LeadUpdateDTO;
 import com.dynamous.imoveis.dto.TenantDTO;
 import com.dynamous.imoveis.dto.TenantNewDTO;
+import com.dynamous.imoveis.entities.Account;
 import com.dynamous.imoveis.entities.Lead;
 import com.dynamous.imoveis.entities.Opportunity;
 import com.dynamous.imoveis.entities.Property;
@@ -57,6 +58,10 @@ public class LeadService {
     @Autowired
     private OpportunityRepository opRepository;
     
+    
+	@Autowired
+	private AccountService accountService;
+    
    
     public Lead find(Long id) {
       UserSS user = UserService.authenticated();
@@ -65,7 +70,8 @@ public class LeadService {
             throw new AuthorizationException("Acesso negado");
         }
         Tenant tenant= tenantService.find(user.getId());
-        Optional<Lead> lead = leadRepository.findByIdAndTenant(id, tenant);
+    	Account account= accountService.find(tenant.getAccount().getId());   
+        Optional<Lead> lead = leadRepository.findByIdAndAccount(id, account);
         return lead.orElseThrow(() -> new ObjectNotFoundException(
                 "Página não encontrada! Id:" + ", Type" + Lead.class.getName()));
     }
@@ -108,35 +114,48 @@ public class LeadService {
         newObj.setPhone(lead.getPhone());
         newObj.setMessage(newObj.getMessage());
         newObj.setInstant(newObj.getInstant());
-        Tenant tenant= tenantService.find(newObj.getTenant().getId());
-        newObj.setTenant(tenant);
+        Account account= accountService.find(newObj.getAccount().getId());
+        newObj.setAccount(account);
         newObj.setPropertyId(newObj.getPropertyId());
-        Opportunity opportunity= opportunityService.find(newObj.getOpportunity().getId());
-        newObj.setOpportunity(opportunity);
+       
+        if(newObj.getOpportunity() !=  null) {
+         Opportunity opportunity= opportunityService.find(newObj.getOpportunity().getId());
+         newObj.setOpportunity(opportunity);
+        }
+        if(newObj.getOpportunity() ==  null){
+        	newObj.setOpportunity(null);
+        }
+       
     
-
+    
     }
+    
 
     public Page<Lead> findPage(String name,Integer page, Integer linesPerPage, String orderBy, String direction){
         UserSS user = UserService.authenticated();
-       Tenant tenant = tenantService.find(user.getId());
+     
        
         if(user==null || !user.hasRole(Perfil.TENANT)){
             throw new AuthorizationException("Acesso negado");
         }
-       
+        Tenant tenant = tenantService.find(user.getId());
+     	Account account= accountService.find(tenant.getAccount().getId()); 
         PageRequest pageRequest = PageRequest.of(page,linesPerPage, Sort.Direction.valueOf(direction),orderBy);
-        return leadRepository.findByNameAndTenantLeadsIn(name, tenant, pageRequest);
+        return leadRepository.findByNameAndAccountLeadsIn(name, account, pageRequest);
     }
 
     public Lead fromDTO(LeadNewDTO objDto){
     		UserSS user = UserService.authenticated();
+    		  if(user==null || !user.hasRole(Perfil.TENANT)){
+    	            throw new AuthorizationException("Acesso negado");
+    	        }
     		Tenant tenant= tenantService.find(user.getId());
+    	 	Account account= accountService.find(tenant.getAccount().getId()); 
     		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
     		
     		String newDate= sdf.format(new Date());
-    		Lead lead = new Lead(null, objDto.getName(), objDto.getEmail(),objDto.getPhone(),objDto.getMessage(),newDate);
-    		lead.setTenant(tenant);   		
+    		Lead lead = new Lead(null, objDto.getName(), objDto.getEmail(),objDto.getPhone(),objDto.getMessage(),newDate);		
+    		lead.setAccount(account);  		
             return lead; 		   
     }
 
@@ -147,7 +166,8 @@ public class LeadService {
 		Lead lead = new Lead(null, objDto.getName(), objDto.getEmail(),objDto.getPhone(),objDto.getMessage(),newDate);
 		lead.setPropertyId(objDto.getPropertyId());
 		Tenant tenant= tenantService.findSite(objDto.getTenantId());
-		lead.setTenant(tenant);
+		Account account= accountService.find(tenant.getAccount().getId()); 
+		lead.setAccount(account);
         return lead;
 		   
 }
@@ -159,9 +179,8 @@ public class LeadService {
 		
 		String newDate= sdf.format(new Date());
 		Lead lead = new Lead(null, objDto.getName(), objDto.getEmail(),objDto.getPhone(),objDto.getMessage(),newDate);	
-		Tenant tenant= tenantService.findByDomain(objDto.getUrl());
-		
-		lead.setTenant(tenant);
+		Account account= accountService.findByDomain(objDto.getUrl()); 
+		lead.setAccount(account);
         return lead;
 		   
 }
@@ -177,8 +196,9 @@ public class LeadService {
     @Transactional
     public void deleteAllByTenant(Long id) {
     	Tenant tenant= tenantService.find(id);
+    	Account account= accountService.find(tenant.getAccount().getId());
        try {
-            leadRepository.deleteAllByTenant(tenant);
+            leadRepository.deleteAllByAccount(account);
         } catch (DataIntegrityViolationException  | EmptyResultDataAccessException | StaleStateException e) {
           throw new DataIntegrityException("Não é possivel deletar porque tem objetos anexados: ");
         }

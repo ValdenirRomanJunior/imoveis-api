@@ -184,7 +184,6 @@ const handleChange= (currentImage:ImageItem, index:number) => {
 };
         
     
- 
     
     const getAllImages = async () => {
         const {data}= await getTenantImages(pageNumber);

@@ -45,8 +45,12 @@ public class TenantUpdateDTO implements Serializable {
     @Length( max=100, message = "O tamanho deve ser no máximo 100 caracteres")
     private String domain;
     
+    private String proprietario;
+    
     
     private Integer signedDays;
+    
+
 
     public TenantUpdateDTO(){
 
@@ -137,6 +141,17 @@ public class TenantUpdateDTO implements Serializable {
 	public void setSignedDays(Integer signedDays) {
 		this.signedDays = signedDays;
 	}
+
+
+	public String getProprietario() {
+		return proprietario;
+	}
+
+
+	public void setProprietario(String proprietario) {
+		this.proprietario = proprietario;
+	}
+	
 	
     
 }

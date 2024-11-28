@@ -66,6 +66,7 @@ const EditTenantComponent = ({tenant}: Prop) =>{
         const [form, setForm] = useState({
             
             slug:tenant?.slug,
+            proprietario:tenant.proprietario,
             lastName:tenant?.lastName,
             email:tenant?.email,
             password:'',
@@ -142,7 +143,7 @@ const EditTenantComponent = ({tenant}: Prop) =>{
                     setLoadingTenant(true)
  
                     
-                const data = await editTenant(slug, lastName, email,password, status,form['creci'],form['domain'],initialValuesVerification() as string,form['signedDays'],`${params.tenantId} `)
+                const data = await editTenant(slug, lastName, email,password, status,form['creci'],form['domain'],initialValuesVerification() as string,form['signedDays'],`${params.tenantId}`, form['proprietario'])
                         console.log(data)
                 if(data.status === 204){
                                  
@@ -194,12 +195,18 @@ const EditTenantComponent = ({tenant}: Prop) =>{
             <form onSubmit={(e)=> {handleSubmit(e)}}>
             <FormContainer>
 
-                <label>Nome*</label>       
+                <label>Nome Imobiliária*</label>       
                 <Input id="slug" name="slug" value={form['slug'] } onChange={(e) => handleChange(e)} onKeyUp={handleKeyUp} maxLength={25}/>
                 {errors.map(x => { if(x.fieldName === 'slug') return  <p className='formField__error'>{x.message}</p>})}
                 { emptyValue && form['slug'] === '' ?<span className='formField__error'>Selecione o número de Quartos</span>: ''}
 
-                     <label>Sobrenome*</label>            
+                <label>Nome proprietario*</label>            
+                <Input id="proprietario" name="proprietario" value={form['proprietario'] } onChange={(e) => handleChange(e)} onKeyUp={handleKeyUp} maxLength={35}/>
+                {errors.map(x => { if(x.fieldName === 'proprietario') return  <p className='formField__error'>{x.message}</p>})}
+                { emptyValue && form['proprietario'] === '' ?<span className='formField__error'>Selecione o número de Quartos</span>: ''} 
+
+
+                     <label>Sobrenome proprietario*</label>            
                 <Input id="lastName" name="lastName" value={form['lastName'] } onChange={(e) => handleChange(e)} onKeyUp={handleKeyUp} maxLength={35}/>
                 {errors.map(x => { if(x.fieldName === 'lastName') return  <p className='formField__error'>{x.message}</p>})}
                 { emptyValue && form['lastName'] === '' ?<span className='formField__error'>Selecione o número de Quartos</span>: ''} 

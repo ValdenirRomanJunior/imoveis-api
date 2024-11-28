@@ -16,6 +16,7 @@ import com.dynamous.imoveis.dto.LeadUpdateDTO;
 import com.dynamous.imoveis.dto.StepNewDTO;
 import com.dynamous.imoveis.dto.StepUpdateDTO;
 import com.dynamous.imoveis.dto.TenantNewDTO;
+import com.dynamous.imoveis.entities.Account;
 import com.dynamous.imoveis.entities.Lead;
 import com.dynamous.imoveis.entities.Opportunity;
 import com.dynamous.imoveis.entities.Step;
@@ -23,6 +24,7 @@ import com.dynamous.imoveis.entities.Tenant;
 import com.dynamous.imoveis.enums.Perfil;
 import com.dynamous.imoveis.enums.Status;
 import com.dynamous.imoveis.enums.Verification;
+import com.dynamous.imoveis.repositories.AccountRepository;
 import com.dynamous.imoveis.repositories.StepRepository;
 import com.dynamous.imoveis.security.UserSS;
 import com.dynamous.imoveis.services.exceptions.AuthorizationException;
@@ -38,12 +40,17 @@ public class StepService {
 	@Autowired
 	private TenantService tenantService;
 	
+	@Autowired
+	private AccountService accountService;
+	
+	@Autowired
+	private AccountRepository aR;
 
     public Step find(Long id) {
         UserSS user = UserService.authenticated();
         
          if(user.getId() == null){
-             throw new AuthorizationException("Acesso negado");
+             throw new AuthorizationException("Acesso negadoss");
          }
          Optional<Step> step = repo.findById(id);
          return step.orElseThrow(() -> new ObjectNotFoundException(
@@ -51,9 +58,18 @@ public class StepService {
      }
     
 	public List<Step> findAll() {
-		return repo.findAll();
+		 UserSS user = UserService.authenticated();
+	        
+         if(user.getId() == null){
+             throw new AuthorizationException("Acesso negado");
+         }
+         Tenant tenant = tenantService.find(user.getId());
+     	Account account= accountService.find(tenant.getAccount().getId());
+		return repo.findAllByAccount(account);
 	}
 	
+	
+					
     @Transactional
     public Step insert(Step obj) {
     
@@ -63,9 +79,11 @@ public class StepService {
           }
     		obj.setId(null);
     		Tenant tenant= tenantService.find(user.getId()); 
-        	obj.setTenant(tenant);
-    	Long count= repo.countStepByTenantId(user.getId());
-    	  System.out.println(count+ "COUNT COUNT");
+        	//obj.setTenant(tenant);
+    			
+    		Account account= accountService.find(tenant.getAccount().getId());
+    	   Long count= repo.countStepByAccount(account);
+    	 
     	  if(count ==8){
     		
               throw new   DataIntegrityException("Você não pode cadastrar mais que 8 etapas");
@@ -93,8 +111,10 @@ public class StepService {
              throw new AuthorizationException("Acesso negado");
          }
    	  	Tenant tenant = tenantService.find(user.getId());
+     	Account account= accountService.find(tenant.getAccount().getId());
 		Step step = new Step(null,objDto.getName());
-		step.setTenant(tenant);
+		step.setAccount(account);
+	
        
         return step;
 		
@@ -109,8 +129,7 @@ public class StepService {
     private void updateData(Step newObj, StepUpdateDTO step) {
     
         newObj.setName(step.getName());
-        Tenant tenant= tenantService.find(newObj.getTenant().getId());
-        newObj.setTenant(tenant);
+       newObj.setAccount(newObj.getAccount());
     
     
 

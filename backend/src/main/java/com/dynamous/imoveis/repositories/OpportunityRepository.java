@@ -1,6 +1,7 @@
 package com.dynamous.imoveis.repositories;
 
 
+import com.dynamous.imoveis.entities.Account;
 import com.dynamous.imoveis.entities.Lead;
 import com.dynamous.imoveis.entities.Opportunity;
 import com.dynamous.imoveis.entities.Property;
@@ -29,18 +30,21 @@ import org.springframework.transaction.annotation.Transactional;
 public interface OpportunityRepository extends JpaRepository <Opportunity,Long> {
 
  
-    @Query("SELECT count(l) FROM Opportunity l WHERE l.tenant.id= :id")
-	Long countOpportunityByTenantId(Long id);
+    @Query("SELECT count(l) FROM Opportunity l WHERE l.account.id= :id")
+	Long countOpportunityByAccountId(Long id);
     
-    @Query("SELECT l FROM Opportunity l where l.tenant = :tenant")
-	    Page<Opportunity> findByTenantOpportunityIn(@Param("tenant") Tenant tenant, Pageable pageable);
+    @Query("SELECT l FROM Opportunity l where l.account = :account")
+	    Page<Opportunity> findByAccountOpportunityIn(@Param("account") Account account, Pageable pageable);
 
 	 
-	void deleteAllByTenant(Tenant tenant);
+	void deleteAllByAccount(Account account);
 
-	List<Opportunity> findAllByTenant(Tenant tenant);
+	List<Opportunity> findAllByAccount(Account account);
 
-	Optional<Opportunity> findByIdAndTenant(Long id, Tenant tenant);
+	Optional<Opportunity> findByIdAndAccount(Long id, Account account);
+	
+	@Query("SELECT count(o) FROM Opportunity o WHERE o.step.id= :id")
+	Long countByStep(@Param("id")Long id);
 	
 
 }

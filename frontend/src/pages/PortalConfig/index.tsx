@@ -21,7 +21,7 @@ import imageDefault from '../../assets/images/no-pictures.png';
 import { Property } from '../../types/property';
 import { propertiesToPortal } from '../../services/resources/property';
 import { MdAttachMoney, MdOutlineBedroomChild, MdOutlineSell } from 'react-icons/md';
-import { TbBath } from "react-icons/tb";
+
 import { IoCarSportOutline, IoHomeOutline } from 'react-icons/io5';
 import { IoIosArrowRoundForward } from "react-icons/io";
 

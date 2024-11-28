@@ -1,5 +1,6 @@
 package com.dynamous.imoveis.repositories;
 
+import com.dynamous.imoveis.entities.Account;
 import com.dynamous.imoveis.entities.City;
 import com.dynamous.imoveis.entities.Property;
 import com.dynamous.imoveis.entities.State;
@@ -18,12 +19,24 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public interface StepRepository extends JpaRepository<Step,Long> {
 
-	 @Query("SELECT count(l) FROM Step l WHERE l.tenant.id= :id")
-		Long countStepByTenantId(Long id);
+	// @Query("SELECT count(l) FROM Step l WHERE l.tenant.id= :id")
+		//Long countStepByTenantId(Long id);
 	 	
-	 	Step findFirstByTenant(Tenant tenant);
+	 	//Step findFirstByTenant(Tenant tenant);
 
-		Step findByName(String name);
+		//Step findByNameAndTenant(String name, Tenant tenant);
+
+		//List<Step> findAllByTenant(Tenant tenant);
+
+		Long countStepByAccount(Account account);
+
+		List<Step> findAllByAccount(Account account);
+	
+		Step findByNameAndAccount(String name, Account account);
+	
+		Step findFirstByAccount(Account account);
+
+	
 	    
   
   

@@ -28,14 +28,14 @@ public class FileManagerController {
     private FileManagerService service;
 
     
-    @PostMapping(value="/save", produces = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<Void> uploadPropertyPictures(@RequestParam(name="file") MultipartFile file){
+ //   @PostMapping(value="/save")
+   // public ResponseEntity<Void> uploadPropertyPictures(@RequestParam(name="file") MultipartFile file){
     	
-        URI uri = service.uploadPropertyPictures(file);
-        return ResponseEntity.created(uri).build();
-    }
+       // URI uri = service.uploadPropertyPictures(file);
+       // return ResponseEntity.created(uri).build();
+    //}
     
-    @PostMapping(value="/save/profile", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @PostMapping(value="/save/profile")
     public ResponseEntity<Void> uploadProfilePictures(@RequestParam(name="file") MultipartFile file){
         URI uri = service.uploadProfilePictures(file);
         return ResponseEntity.created(uri).build();

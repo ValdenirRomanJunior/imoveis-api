@@ -29,9 +29,7 @@ public class AuthController {
 	
 	@Autowired
 	private TenantRepository tenantRepository;
-	
-
-	
+		
 	@Autowired
 	private UserAdminRepository userAdminRepository;
 
@@ -81,9 +79,8 @@ public class AuthController {
      		else {
      			  tenant = tenantRepository.findByEmail(email);
      		}
-        
-         
-                       
+	     		
+	     		
           if (tenant == null && userAdmin == null) {
               throw new UsernameNotFoundException(email);
               

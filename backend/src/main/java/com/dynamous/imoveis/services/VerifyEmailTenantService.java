@@ -26,13 +26,19 @@ public class VerifyEmailTenantService {
 	
 	public void verifyEmailTenant(EmailDTO emailDto) throws UnknownHostException {
 		
-			Tenant tenant = tenantRepository.findByEmail(emailDto.getEmail());				
+			
+		
+			Tenant tenant = tenantRepository.findByEmail(emailDto.getEmail());
+		
 			 if (tenant == null){
 		           throw new UserNameNotFoundException("Usuario não encontrado");
 			 }
 			 if(tenant.getVerification().equals(Verification.VERIFICADO)) {
+			
 				 throw new com.dynamous.imoveis.services.exceptions.IllegalArgumentException("Cadastro já verificado");
+				
 			 }
+				System.out.println(tenant.getVerification());
 			 tenant.setVerification(Verification.VERIFICADO);	 
 			 tenantService.updateNoLogin(tenant);
 			 

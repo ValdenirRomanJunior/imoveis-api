@@ -282,7 +282,7 @@ const handleChangeEdit = (e:any) => {
     console.log(emptyValues)
     if(formEdit['name'] !== ""){
     setLoadingEditName(true)
-        console.log(idEdit)
+        
 
         const data = await editStep(formEdit['name'] as string, idEdit as number) 
       if(data.status === 204){
@@ -336,9 +336,10 @@ const handleChangeEdit = (e:any) => {
    setIdEdit(id as number)
     
   }
+  let perfilTenant=Object.values(user.perfis).some(obj => obj === 'TENANT');
     return(
         <>
-        {user?.perfis?.[0] === 'TENANT'? 
+        {perfilTenant? 
         <ErrorBoundary FallbackComponent={ErrorHandler}>
         <div>
         
@@ -360,11 +361,10 @@ const handleChangeEdit = (e:any) => {
                         
                         
                        <div className='input-wrapper-data'>
-                        {!loadingEditName && steps.id ===idEdit &&
-                         <p className="message-digit-space">digite o nome da estapa sem espaços</p>}
+                    
+                      
                          {!loadingEditName && steps.id ===idEdit &&
-                        
-                       <input placeholder="Digite o nome etapa sem espaços" className="input-class" id="name" name="name" value={formEdit['name']} key={steps.id} onChange={(e) => handleChangeEdit(e)} maxLength={41} onKeyUp={handleKeyUpEdit}></input> }
+                          <><p className="message-digit-space">digite o nome da estapa sem espaços</p><input placeholder="Digite o nome etapa sem espaços" className="input-class" id="name" name="name" value={formEdit['name']} key={steps.id} onChange={(e) => handleChangeEdit(e)} maxLength={41} onKeyUp={handleKeyUpEdit}></input></> }
                         
                        {!loadingEditName && steps.id ===idEdit &&
                        <div className='button-wrapper-send-data'><button className='button-send-data' type='submit'>Salvar</button> <span style={{cursor:"pointer"}} className='button-cancel-data' onClick={handleCancelEdit}>cancelar</span></div>}

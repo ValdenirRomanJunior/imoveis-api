@@ -13,25 +13,20 @@ import { UserDto, getImageIfExist, refreshToken } from '../../services/resources
 import { getPublishedPropertiesById, getTotalPropertiesById } from '../../services/resources/property';
 import { getTotalLeadsById } from '../../services/resources/lead';
 
-import PageNotFound from '../../components/PageNotFound';
 import PageNotFoundDashboard from '../../components/PageNotFoundDashboard';
 import { ErrorBoundary } from 'react-error-boundary';
-import { Sign } from 'crypto';
-import SignIn from '../SignIn';
 import useAuth from '../../hooks/useAuth';
-import { IoEyeOutline } from 'react-icons/io5';
+import { IoCloudUploadOutline, IoEyeOutline } from 'react-icons/io5';
 import { RiDoorLockLine } from 'react-icons/ri';
 import Funil from '../../components/Funnel';
+import { AiOutlineHome, AiOutlineUser } from 'react-icons/ai';
 
 
- 
+
 
 const Dashboard = ()=>{
   
     const navigate = useNavigate();
-
-
-   // const {user, getCurrentUser} = useAuth();
 
     const [imageUser,setImageUser]= useState<string>("");
     const [totalProperties,setTotalProperties]= useState();
@@ -41,18 +36,6 @@ const Dashboard = ()=>{
     const [errorMessage,setErrorMessage]= useState("");
     const [errorMessageTotalLeads,setErrorMessageTotalLeads]= useState("");
     
-    const {user, getCurrentUser} = useAuth();
-    useEffect(() =>{
-        
-        getCurrentUser()
-      
-        if(user === null){
-            setErrors(true)
-        }
-       
-    },[])
-
-  
     const refreshTokenUser = async ()=>{
    
         const  resp = await refreshToken();    
@@ -68,26 +51,34 @@ const Dashboard = ()=>{
   refreshTokenUser()
 },[])
 
-    const initials= user.slug.substring(0,1)+ user.lastName?.substring(0,1) as string;
-   
- 
-
-    const getUrl = async() =>{       
-        const data=  await getImageIfExist(user.id,user.perfis[0]);
-            if(data){
-               // const url=`${BASE_URL_FROM_BUCKET}cp${user.id}.jpg`;
-                setImageUser(data);
-                return data;
-            }
+    const {user, getCurrentUser} = useAuth();
+    useEffect(() =>{
         
-      }  
-    
-      useEffect(() => {  
-        if(user.id !== '' && user.perfis[0] !== ''){
-        getUrl()
-        } 
-        }, [user.id, user.perfis]);
+        getCurrentUser()
+      
+        if(user === null){
+            setErrors(true)
+        }
+       
+    },[])
 
+  
+
+   // const getUrl = async() =>{       
+       // const data=  await getImageIfExist(user.id,user.perfis[0]);
+       //     if(data){
+               // const url=`${BASE_URL_FROM_BUCKET}cp${user.id}.jpg`;
+             //   setImageUser(data);
+             //   return data;
+         //   }
+        
+     // }  
+    
+      //useEffect(() => {  
+      //  if(user.id !== '' && user.perfis[0] !== ''){
+      //  getUrl()
+     //   } 
+      //  }, [user.id, user.perfis]);
 
 
         const getTotalProperties = async() =>{
@@ -150,11 +141,13 @@ const Dashboard = ()=>{
  
               
     
-
+            let perfilTenant=Object.values(user.perfis).some(obj => obj === 'TENANT');
+            let perfilAdmin=Object.values(user.perfis).some(obj => obj === 'ADMIN');
     
     return(
         <>
-        {user?.perfis?.[0] === 'TENANT' || user?.perfis?.[0] === 'ADMIN' ? 
+
+        { perfilTenant ||  perfilAdmin ? 
           
         <div>
        
@@ -175,7 +168,7 @@ const Dashboard = ()=>{
            <div className='top-right-side'>               
               
                   <div className='card-wrapper-top'>             
-                     <p>Ver todos os meus imóveis cadastrados</p>
+                     <p>Ver todas as minhas oportunidades</p>
                      <Link to='/properties'> <button  className="button-top"><IoEyeOutline /> Ver Oportunidades</button> </Link>
                  </div>
             </div>
@@ -186,21 +179,21 @@ const Dashboard = ()=>{
                 <div className='cards-wrapper'>          
              <div className='card-wrapper-left'>
                    <div className='card-lef-inside'>
-                     <div><p>Imóveis Cadastrados</p></div>
+                     <div className='title-card-left-wrapper'><div className='icon-card-left-wrapper'><AiOutlineHome className='icon-card-left first-card' /></div><p>Imóveis Cadastrados</p></div>
 
                      <span className='number-card-dashboard'>{totalProperties && totalProperties}</span>
                    </div>
                    </div>
                             <div className='card-wrapper-left'>
                             <div className='card-lef-inside'>
-                                <div><p>Leads</p></div>
+                                <div className='title-card-left-wrapper'><div className='icon-card-left-wrapper'><AiOutlineUser className='icon-card-left second-card'/></div><p className='second-title'>Leads</p></div>
                                 <span className='number-card-dashboard'>{totalLeads && totalLeads}</span>
                             </div>
                             </div>
                           
                             <div className='card-wrapper-left'>
                     <div className='card-lef-inside'>
-                        <div><p>Imóveis Publicados</p></div>
+                        <div className='title-card-left-wrapper'><div className='icon-card-left-wrapper'><IoCloudUploadOutline className='icon-card-left'/></div><p>Imóveis Publicados</p></div>
                         <span className='number-card-dashboard'>{publishedProperties && publishedProperties}</span>
                     </div>
                     </div>
@@ -213,14 +206,18 @@ const Dashboard = ()=>{
 
 
             <div className='right-side'>
+
             <div  className='card-right-bottom'>    
                 <h2 ><RiDoorLockLine className='icon-portais'/>Oportunidades</h2>
                 <Funil/>              
             </div>
+            
+
             <Card width='100%' height='100%' noShadow={true} border='1px solid #e6e9ed' borderRadius='2px' >
+            <h2 className='title-perfil-card'><RiDoorLockLine className='icon-portais'/>Corretor</h2>
                 <UserInfo>
                     <div className='user-image-wrapper-dashboard'>
-                    {imageUser !== '' ? <img src={imageUser} alt='Foto Perfil'/>:<p className='initials'>{initials ? initials: ''}</p>}
+                    {imageUser !== '' ? <img src={imageUser} alt='Foto Perfil'/>:<p className='initials'>{user ? user.slug.substring(0,1)+ user.email?.substring(0,1) as string: 'sem nome'}</p>}
                     </div>
                     <p className='name-perfil-dashboard'>{user.slug}</p>
                     <p className='name-perfil-dashboard'>{user.lastName}</p>

@@ -1,6 +1,7 @@
 import styled from "styled-components";
 
 export const ImagesContainer = styled.div`
+    cursor: pointer;
     width: 100%;
     overflow: visible;
 
@@ -28,6 +29,9 @@ export const UploadImage = styled.div`
     margin-top: 6px;
     text-align: center;
     cursor: pointer;
+    position: relative;
+  
+    
 
     display: flex;
     flex-direction: column;
@@ -38,6 +42,26 @@ export const UploadImage = styled.div`
         width: 100%;
         font-size: 40px;
     }
+
+    input[type='file']{
+   position: absolute;
+   top:0;
+   left: 0;
+   opacity:0;
+   z-index:1;
+    width: 160px;
+    height: 122px;
+    cursor: pointer;
+
+}
+
+
+
+input[type=file]::-webkit-file-upload-button{
+    cursor:pointer;
+    
+}
+
 
 `
 
@@ -73,6 +97,7 @@ img{
     top:0;
     right: 0;
     font-size: 25px;
+    background:#fff;
 }
 
 `

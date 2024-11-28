@@ -64,7 +64,7 @@ public class IntegracoesController {
 			
 			property.setId((long) 1);
 			property.setName("Jean");
-			property.setTenant(property.getTenant());
+			property.setAccount(property.getAccount());
 					
 			XStream xStream = new XStream(new DomDriver());
 			xStream.alias("property", Property.class);

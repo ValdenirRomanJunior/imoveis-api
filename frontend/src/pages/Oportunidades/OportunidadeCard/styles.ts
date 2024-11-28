@@ -4,13 +4,14 @@ import styled, { css } from "styled-components";
 
 
 export const OportunidadeContainer = styled.div`
-  
+
+
 .leadWrapper{
     width: 100%;
     
     flex-direction:column;
     justify-content: space-between;
-    height: 85px;
+    height: 83px;
   
     background-color: ${({theme}) => theme.colors.background};
     margin-top: 10px;
@@ -19,17 +20,6 @@ export const OportunidadeContainer = styled.div`
     font-family:'Nunito Sans', sans-serif;
     position: relative;
     
-
-    ::after{
-     content: "";
-     width:5px;
-     height:75px;
-     background: #3d76e04d;
-
-     position: absolute;
-     top:0;
-     left:0;
-    } 
 
     .link-item-lead{
      width:80%;
@@ -40,7 +30,7 @@ export const OportunidadeContainer = styled.div`
     .list-steps-change{
       background: #fff;
       position: absolute;
-      top:-80%;
+      top:-65%;
       right:0;
       padding-left:0;
       border-radius:3px;
@@ -54,7 +44,17 @@ export const OportunidadeContainer = styled.div`
      scroll-behavior: smooth;
      touch-action: auto;
 
+    } 
+     .list-steps-change::-webkit-scrollbar {
+      display: none;
     }
+
+
+     .list-steps-change::-webkit-scrollbar {
+
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
      .icon-opportunity-op{
         cursor: pointer;
      }
@@ -274,11 +274,20 @@ export const OportunidadeContainer = styled.div`
         }
       }
     
-      .icon-opportunity-op{
-      position: absolute;
+    .icon-opportunity-op-wrapper{
+        position: absolute;
       bottom:30%;
       right:7%;
       z-index:0 !important;
+        width:40px;
+        height:40px;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+      .icon-opportunity-op{
+  
       }
     
     .link-detail-property-lead{
@@ -295,28 +304,17 @@ export const OportunidadeContainer = styled.div`
         font-size: 10px;
     }
 
-    @media screen and (min-width:390px){
+    @media screen and (min-width:350px){
         width: 100%;   
         display: flex; 
         flex-direction:column;
         justify-content: space-between;
         position:relative;
-    
-            ::after{
-            content: "";
-            width:5px;
-            height:82px;
-            background: #3d76e04d;
-
-            position: absolute;
-            top:0;
-            left:0;
-         } 
-        
-        
+             
         background-color: ${({theme}) => theme.colors.background};
-        margin-top: 20px;
-        border-bottom: 1px solid rgb(222,222,222);
+        margin-top: 10px;
+        border: 1px solid rgb(222,222,222);
+        border-radius:5px;
         padding:0 5px;
         font-family:'Nunito Sans', sans-serif;
     
@@ -487,10 +485,7 @@ export const OportunidadeContainer = styled.div`
             border-top: .5px solid #ebebeb;
         }
     }
-     @media screen and (min-width:1000px){
-     margin-top:10px;
 
-}
 }
 
     height: auto;
@@ -517,28 +512,30 @@ export const OportunidadeContainer = styled.div`
    .sc-ikJyIC.grQsfG.rec.rec-pagination{
     display:none;
 }
+
     .column{
-         width:100%;
-         
-              border: 1px dashed #dadada;
+              width:100%;        
               padding:5px 7px;
               margin-top: 20px;
              -webkit-box-shadow: 0px 1px 21px -5px rgba(204,222,255,1);
              -moz-box-shadow: 0px 1px 21px -5px rgba(204,222,255,1);
               box-shadow: 0px 1px 21px -5px rgba(204,222,255,1);
               border-radius:7px;
-              min-height: 370px;
-            
+              max-height: 75vh;
+              overflow-y: scroll;    
+                        
     }
+
       .title-column{
-         font-family: 'Nunito Sans', sans-serif;     
-         font-weight:600;
-         text-align: center;
-         font-size:12px;
-         background:#0848e917;
-         padding: 7px  0;
-         color:#6e6e6e; 
-         border-top-right-radius: 7px;
+                font-family: 'Nunito Sans', sans-serif;     
+                font-weight:600;
+                text-align: center;
+                font-size:12px;
+                border-bottom:3px solid #c1c8ff;
+                padding: 7px  0;
+                color:#6e6e6e; 
+                border-top-right-radius: 7px;
+                margin-bottom:15px;
 
         }
      
@@ -567,7 +564,18 @@ export const OportunidadeContainer = styled.div`
       
   
    
-        
+    @media screen and (min-width:1000px){
+     margin-top:10px;
+
+         .column::-webkit-scrollbar {
+    display: none;
+}
+.column {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+}
 
 
   

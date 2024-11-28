@@ -1,10 +1,15 @@
 package com.dynamous.imoveis.repositories;
 
 
+import com.dynamous.imoveis.entities.Account;
 import com.dynamous.imoveis.entities.Tenant;
+import com.dynamous.imoveis.enums.Perfil;
 
+import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -29,4 +34,9 @@ public interface TenantRepository extends JpaRepository <Tenant,Long> {
     @Transactional(readOnly = true)
 	Optional<Tenant> findByDomain(String domain);
 
-}
+	Page<Tenant> findAllByPerfis(PageRequest pageRequest, int perfil);
+
+	//@Query("SELECT t FROM Tenant t LEFT JOIN t.perfis p WHERE t.account = :account")
+	List<Tenant> findAllByAccount(Account account);
+    
+	}

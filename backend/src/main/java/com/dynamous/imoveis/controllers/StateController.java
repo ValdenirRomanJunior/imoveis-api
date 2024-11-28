@@ -28,7 +28,7 @@ public class StateController {
 	@Autowired
 	private CityService cityService;
 	
-	@GetMapping(produces = {MediaType.APPLICATION_JSON_VALUE})
+	@GetMapping
 	public ResponseEntity <List<StateDTO>> findAll(){
 		//bsucar somente estados do tenant
 		List<State> list = stateService.findAll();

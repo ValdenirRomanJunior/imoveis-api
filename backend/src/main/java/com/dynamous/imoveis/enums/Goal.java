@@ -10,7 +10,8 @@ public enum Goal implements Serializable {
 
 	
 	ALUGUEL(1,"Aluguel"),
-    VENDA(2,"Venda");
+    VENDA(2,"Venda"),
+    VENDAEALUGUEL(3,"Venda/Aluguel");
 
     private int cod;
     private String description;

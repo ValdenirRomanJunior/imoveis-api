@@ -1,6 +1,7 @@
 package com.dynamous.imoveis.repositories;
 
 
+import com.dynamous.imoveis.entities.Account;
 import com.dynamous.imoveis.entities.Lead;
 import com.dynamous.imoveis.entities.Property;
 import com.dynamous.imoveis.entities.Tenant;
@@ -28,17 +29,16 @@ public interface LeadRepository extends JpaRepository <Lead,Long> {
     @Transactional(readOnly = true)
     Lead findByEmail(String email);
 
-    @Query("SELECT count(l) FROM Lead l WHERE l.tenant.id= :id")
-	Long countLeadByTenantId(Long id);
+    @Query("SELECT count(l) FROM Lead l WHERE l.account.id= :id")
+	Long countLeadByAccountId(Long id);
     
     
-	
-	 @Query("SELECT l FROM Lead l where LOWER(l.name) like %:name% AND l.tenant = :tenant")
-	    Page<Lead> findByNameAndTenantLeadsIn(@Param("name")String name, @Param("tenant") Tenant tenant, Pageable pageable);
+	 @Query("SELECT l FROM Lead l where LOWER(l.name) like %:name% AND l.account = :account")
+	    Page<Lead> findByNameAndAccountLeadsIn(@Param("name")String name, @Param("account") Account account, Pageable pageable);
 
 	 
-	void deleteAllByTenant(Tenant tenant);
+	void deleteAllByAccount(Account account);
 
-	Optional<Lead> findByIdAndTenant(Long id, Tenant tenant);
+	Optional<Lead> findByIdAndAccount(Long id, Account account);
 
 }

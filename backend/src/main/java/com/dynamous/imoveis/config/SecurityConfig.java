@@ -48,10 +48,21 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 			"/leads/saveLeadHome/**",
 			"/properties/findAll/**",
 			"/opportunities/steps/**",
-			"/integracoes/toxml/**"
+			"/integracoes/toxml/**",
+			"/opportunities/saveLeadHome/**",
+			"/opportunities/saveDetailSite/**",
+			"/opportunities/SSe/**",
+			"/opportunities/stepsName/**",
+			"/opportunities/countOpportByStep/**",
+			"/usertenants/findAll/**",
+			"/steps/**",
+			"/steps/updateStep/**",
+			"/states/findAllByAccount/**",
+			"/properties/findAllDistricts/**",
+		
 			
 			
-							
+											
 	};
 
 	private static final String[] PUBLIC_MATCHERS_GET = {		
@@ -62,7 +73,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 			"/properties/searchTest/**",
 			"/properties/getAllAddress/**",
 			"/properties/findAddress/**",
-			"/properties/findAddress/{nameUrl}/**"
+			"/properties/findAddress/{nameUrl}/**",
+			
+			
 		
 
 	};
@@ -75,9 +88,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		}
 
 		http.cors().and().csrf().disable();
-		http.authorizeRequests()
+		 http.authorizeRequests()
+		 		
 				.antMatchers(PUBLIC_MATCHERS).permitAll()
 				.antMatchers(HttpMethod.GET, PUBLIC_MATCHERS_GET).permitAll()
+							
 				//.antMatchers(HttpMethod.GET,"/images/").permitAll()
 				//.antMatchers(HttpMethod.GET,"/images/**").permitAll()
 				.anyRequest().authenticated()
@@ -99,12 +114,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	@Bean
 	CorsConfigurationSource corsConfigurationSource() {
 		CorsConfiguration configuration = new CorsConfiguration().applyPermitDefaultValues();
-		configuration.setAllowedMethods(Arrays.asList("POST","PUT", "DELETE", "OPTIONS"));
+		configuration.setAllowedMethods(Arrays.asList("GET,POST","PUT", "DELETE", "OPTIONS"));
 		configuration.setAllowedOrigins(Arrays.asList("*"));
 		
-		   configuration.addAllowedOrigin("*");
+	 	
 	        configuration.addAllowedHeader("*");
 	        configuration.addAllowedMethod("*");
+	        configuration.setAllowCredentials(false);
 		
 		
 		final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
@@ -132,5 +148,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	    public AccessDeniedHandler accessDeniedHandler(){
 	        return new CustomAccessDeniedHandler();
 	    }
+	 
+	 
 
 }

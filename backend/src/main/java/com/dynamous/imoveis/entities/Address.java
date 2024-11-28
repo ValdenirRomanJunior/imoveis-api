@@ -21,6 +21,8 @@ public class Address implements Serializable {
     private String number;
     private String district;
     private String cep;
+    private String Zone;
+    private String complement;
 
     @JsonIgnore
     @OneToOne
@@ -31,7 +33,11 @@ public class Address implements Serializable {
     @Fetch(FetchMode.SELECT)
     @JoinColumn(name = "city_id")
     private City city;
-
+    
+    @ManyToOne
+    @JoinColumn(name="account_id")
+    private Account account;
+    
     public Address(){
 
     }
@@ -101,8 +107,18 @@ public class Address implements Serializable {
     public void setCity(City city) {
         this.city = city;
     }
+    
+    
 
-    @Override
+    public Account getAccount() {
+		return account;
+	}
+
+	public void setAccount(Account account) {
+		this.account = account;
+	}
+
+	@Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;

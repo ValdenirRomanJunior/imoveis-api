@@ -10,8 +10,62 @@ justify-content: center;
 background-color: ${({theme}) => theme.colors.backgroundLight};
 
 
-@media screen and (min-width:100px){
+.title-steps{
+    width:100%;
+    display: flex;
     align-items: center;
+    justify-content: flex-start;
+    padding:0 20px;
+    margin-top: 40px;
+  
+    
+   h2{
+    color: #5d5d5d;
+    font-weight: 400 !important;
+    font-family:"Poppins",sans-serif;
+    font-size:17px;
+    color:#5d5d5d;
+    margin-bottom:0;
+    margin-left:7px;
+   }
+   .icon-title-steps{
+    color: #6475fd;
+    font-size:19px;
+   }
+
+}
+    .bar-top-location{
+         padding:5px 20px;
+         width:100%;
+        span{
+        font-size:12px;
+        font-family:"Open Sans", sans-serif;
+        color:gray;
+        }
+    
+}
+
+ @media screen and (min-width: 1000px){
+    align-items: center;
+
+    .title-steps{
+    padding: 0 90px;
+    h2{
+    
+    }
+    }
+    
+
+        .bar-top-location{
+         padding:10px 20px;
+         width:100%;
+        span{
+        font-size:13px;
+        font-family:"Open Sans", sans-serif;
+        color:gray;
+        margin-left:70px;
+        }
+    
 }
 `
 
@@ -20,7 +74,7 @@ export const BodyPropertiesContainer = styled.main`
     display:flex;
     flex-direction: column;
 
-    padding: 20px 0 30px 0;
+    padding: 10px 0 30px 0;
 
 
     @media screen and (min-width: 1000px){
@@ -36,15 +90,14 @@ export const TitleWrapper = styled.div`
     display: flex;
     align-items: center;
     justify-content: space-around;
-    padding: 10px 60px;
+    padding: 10px 50px;
 
     
     .title-properties{
         text-align: left;
        
-
         font-family: "Poppins", sans-serif;
-        font-size: 15px;
+        font-size: 13px;
         color: #5d5d5d;
         font-weight: 400;
         margin-bottom: 0;
@@ -78,6 +131,16 @@ export const TitleWrapper = styled.div`
         }
 
     }
+        .featured-properties{
+        font-size:13px;
+        border:1px solid #001fa0d9;
+        color:#001fa0d9;
+        padding:6px 7px;
+        border-radius:5px;
+        margin-bottom:0;
+        cursor: pointer;
+        
+        }
     @media screen and (min-width: 450px){
         padding: 10px 80px 10px 80px;
     }

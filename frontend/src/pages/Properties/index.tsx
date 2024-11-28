@@ -6,12 +6,12 @@ import {PropertiesBackground,BodyPropertiesContainer,TitleWrapper} from './style
 import BarTop from '../../components/Bartop';
 import { Link, useNavigate } from 'react-router-dom';
 import {VscHome } from 'react-icons/vsc';
-import {IoIosAdd} from 'react-icons/io';
+import {IoIosAdd, IoIosArrowRoundForward} from 'react-icons/io';
 import { refreshToken } from '../../services/resources/user';
 import LoadingLogin from '../../components/LoadingLogin';
 import PageNotFound from '../../components/PageNotFound';
 import useAuth from '../../hooks/useAuth';
-import {BiSearch} from 'react-icons/bi'
+import {BiBorderRadius, BiSearch} from 'react-icons/bi'
 import Modal from 'react-modal';
 import Search from '../../components/Search';
 import  './styleModal.css';
@@ -54,7 +54,7 @@ useEffect(() =>{
 
 
   const getParamsToSearch = (id:string,state:string,city:string,goal:string,type:string) => {
-    console.log('param city'+city)
+    
     
      if(id.length === 0 && state.length === 0 && city.length === 0 && goal.length === 0 && type.length === 0){
     
@@ -75,31 +75,35 @@ useEffect(() =>{
      }   
   }
 
-      
-  
     
    const getBooleanCloseModal = (param:boolean)=> { 
- 
     setParamToCloseModal(param);
     
    }
 
+    const handleToFeatured = ()=>{
+        navigate("/featured")
+    }
+    let perfilTenant=Object.values(user.perfis).some(obj => obj === 'TENANT');
+
     
     return(
       <>
-        {user?.perfis?.[0] === 'TENANT' ? 
+        {perfilTenant? 
       <div>
     
  
     <PropertiesBackground>
        <Header /> 
       <BarTop />
+      <div className="title-steps"><BiBorderRadius className="icon-title-steps"/><h2>Imóveis</h2></div>
        <BodyPropertiesContainer>
-        
+     
         <TitleWrapper>
          
-        <h1 className='title-properties'>Meus Imóveis</h1>
+        <h2 className='featured-properties' onClick={handleToFeatured}>Ver Destacados</h2>
         
+      
         <Search param={paramToCloseModal} onChange={getParamsToSearch} />
         <Link to="/registration"> <button className="button-add-lead" >
         <VscHome className="icon-add-lead"/> <IoIosAdd className='icon-add-lead-positive'/></button> </Link>

@@ -1,4 +1,5 @@
 export function convertToBlob (image:string){
+ 
     var byteString= atob(image.split(',')[1]);
     var mimeString= image.split(',')[0].split(':')[1].split(';')[0];
     var ab= new ArrayBuffer(byteString.length);

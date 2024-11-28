@@ -34,7 +34,7 @@ public class TenantNewDTO implements Serializable {
     @Length( max=20, message = "O tamanho deve ser no máximo 15 caracteres")
     private String creci;
     
-     
+    private String proprietario;
  
 
     public TenantNewDTO(){
@@ -79,6 +79,14 @@ public class TenantNewDTO implements Serializable {
 
 	public void setCreci(String creci) {
 		this.creci = creci;
+	}
+
+	public String getProprietario() {
+		return proprietario;
+	}
+
+	public void setProprietario(String proprietario) {
+		this.proprietario = proprietario;
 	}
 
 	

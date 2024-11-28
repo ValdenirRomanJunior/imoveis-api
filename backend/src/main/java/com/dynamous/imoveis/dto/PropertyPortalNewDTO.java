@@ -25,7 +25,7 @@ public class PropertyPortalNewDTO implements Serializable {
     private String Subtipo;
     
     @NotEmpty(message = "Preenchimento obrigatório")
-    @Length(min=1, max=250, message = "O tamanho deve ser entre 1 e 250 caracteres")
+    @Length(min=1, max=450, message = "O tamanho deve ser entre 1 e 450 caracteres")
     private String description;
 
     @NotNull 

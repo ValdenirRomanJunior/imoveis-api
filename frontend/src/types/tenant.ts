@@ -1,6 +1,7 @@
 export type Tenant ={
     id:number;
     slug: string;
+    proprietario:string;
     lastName: string;
     email:string;
     password:string;
@@ -11,6 +12,7 @@ export type Tenant ={
     endDate:string;
     renovation:string;
     verification:string;
+    perfis:string[] 
     images:[{
         id:number;
         url:string;

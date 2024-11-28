@@ -28,7 +28,7 @@ public class PropertyUpdateDTO implements Serializable {
     @Length(min=1, max=80, message = "O tamanho deve ser entre 1 e 80 caracteres")
     private String name;
     @NotEmpty(message = "Preenchimento obrigatório")
-    @Length(min=1, max=250, message = "O tamanho deve ser entre 1 e 250 caracteres")
+    @Length(min=1, max=350, message = "O tamanho deve ser entre 1 e 350 caracteres")
     private String description;
     
     @NotNull 
@@ -38,6 +38,9 @@ public class PropertyUpdateDTO implements Serializable {
     private Integer goal;
     @NotEmpty(message = "Preenchimento obrigatório")
     private String numberRooms;
+    
+    @NotEmpty(message = "Preenchimento obrigatório")
+    private String suites;
   
     @NotEmpty(message = "Preenchimento obrigatório")
     private String bathRooms;
@@ -71,7 +74,14 @@ public class PropertyUpdateDTO implements Serializable {
     
     private String areaTotal;
     
+    private List<Long> deletedIds;
+    
     private List<ImageUrl> images= new ArrayList<>();
+    
+    @NotEmpty(message = "Preenchimento obrigatório")
+    private String	financeable;
+    @NotEmpty(message = "Preenchimento obrigatório")
+    private String permuta;
 
   
 
@@ -261,10 +271,32 @@ public class PropertyUpdateDTO implements Serializable {
 	public void setAreaTotal(String areaTotal) {
 		this.areaTotal = areaTotal;
 	}
-
+	public List<Long> getDeletedIds() {
+		return deletedIds;
+	}
+	public void setDeletedIds(List<Long> deletedIds) {
+		this.deletedIds = deletedIds;
+	}
+	public String getFinanceable() {
+		return financeable;
+	}
+	public void setFinanceable(String financeable) {
+		this.financeable = financeable;
+	}
+	public String getPermuta() {
+		return permuta;
+	}
+	public void setPermuta(String permuta) {
+		this.permuta = permuta;
+	}
+	public String getSuites() {
+		return suites;
+	}
+	public void setSuites(String suites) {
+		this.suites = suites;
+	}
 	
 	
-
 
 }
 

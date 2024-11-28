@@ -4,11 +4,13 @@ package com.dynamous.imoveis;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
-
+import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
+
 
 @SpringBootApplication(scanBasePackages = {"com.dynamous.imoveis","com.dynamous.imoveis.config"})
 @EnableWebMvc
@@ -29,7 +31,7 @@ public class ImoveisApplication {
 		        return new WebMvcConfigurerAdapter() {
 		            @Override
 		            public void addCorsMappings(CorsRegistry registry) {
-		                registry.addMapping("/**").allowedOrigins("http://localhost:3000");
+		                registry.addMapping("/**").allowedOrigins("http://localhost:8080","*");
 		            }
 		        };
 	 }

@@ -5,14 +5,15 @@ import Header from '../../components/Header';
 import {BodyTenantsContainer,TenantsBackground,TitleWrapper} from './styles';
 import BarTop from '../../components/Bartop';
 import { Link, useNavigate } from 'react-router-dom';
-import CardTenant from './CardTenant';
+import CardTenant from './CardAccount';
 import { refreshToken } from '../../services/resources/user';
 import LoadingLogin from '../../components/LoadingLogin';
 import useAuth from '../../hooks/useAuth';
 import PageNotFound from '../../components/PageNotFound';
+import CardAccount from './CardAccount';
 
 
-const Tenants = ()=>{
+const Accounts = ()=>{
 
   const {user, getCurrentUser} = useAuth();
   useEffect(() =>{
@@ -28,7 +29,7 @@ const Tenants = ()=>{
     const refreshTokenUser = async ()=>{
         const  resp = await refreshToken();    
         if(resp === 204){  
-          navigate('/tenants')
+          navigate('/accounts')
         }else{
             navigate('/')
         }
@@ -52,10 +53,10 @@ const Tenants = ()=>{
         
         <TitleWrapper>
         <h1 className='title-properties'>Meus Clientes</h1>
-        <Button className='register-button'><Link to="/registrationTenant">Cadastrar</Link></Button>
+        <Button className='register-button'><Link to="/accountRegistration">Cadastrar</Link></Button>
         </TitleWrapper>
        
-        <CardTenant />
+        <CardAccount />
        </BodyTenantsContainer>
     </TenantsBackground>
   
@@ -66,4 +67,4 @@ const Tenants = ()=>{
 
 }
 
-export default Tenants;
+export default Accounts;

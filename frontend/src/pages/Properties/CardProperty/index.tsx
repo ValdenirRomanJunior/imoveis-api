@@ -2,11 +2,11 @@
 
 import React, { useEffect, useState } from 'react'
 import Card from '../../../components/Card';
-import {CardWrapper,CardContent,CardContainer,MessageNoProperties,StatusProperty, InputRangeProperty} from './styles';
+import {CardWrapper,CardContent,CardContainer,MessageNoProperties,StatusProperty, InputRangeProperty, StatusFeatured} from './styles';
 import {AiOutlineEdit} from 'react-icons/ai';
 import {BsTrash} from 'react-icons/bs';
 import {BiMap} from 'react-icons/bi';
-import {  changeStatusPropertyReq, deletePropertyReq, propertiesPageable} from '../../../services/resources/property';
+import {  changeStatusPropertyReq, changeStatusPropertyReqFeature, deletePropertyReq, propertiesPageable} from '../../../services/resources/property';
 import { Link } from 'react-router-dom';
 import { Property, PropertyPage } from "../../../types/property";
 import Pagination from '../../../components/Pagination';
@@ -33,8 +33,7 @@ type Props={
 }
 
 
-
-const CardListItem = ({id,name,images,price,address,statusProperty,onChange,close,error,booleanModal}: Property) =>{
+const CardListItem = ({id,name,images,price,address,statusProperty,statusFeatured,onChange,close,error,booleanModal}: Property) =>{
 
     const [loading,setLoading]= useState(false);
    
@@ -95,8 +94,7 @@ const intialValueStatusProperty = () =>{
 const [statusPropertyState,setStatusProperty]= useState(()=> intialValueStatusProperty());
 const [colorStatus,setColorStatus]= useState(false);
 
-const [form, setForm] = useState({
-            
+const [form, setForm] = useState({            
     status:statusPropertyState as string
 });
 
@@ -110,7 +108,6 @@ const handleChange = async(e:any) =>{
     }); 
     setColorStatus(true);
               
-            // console.log(data)
       }  
 
       const sendChangeStatus = async() => {
@@ -142,30 +139,115 @@ const handleChange = async(e:any) =>{
       },[form.status])
     
 
+
+      //abaixo updateFeatures
+
+      const intialValueStatusFeature = () =>{
+        if(statusFeatured === 'DESTACADO'){
+      
+            return '1' as string;
+        }
+        if(statusFeatured === 'NAO_DESTACADO'){
+            return '2' as string;
+        }
+      
+    }
+    
+const [statusFeatureState,setStatusFeature]= useState(()=> intialValueStatusFeature());
+const [colorStatusFeature,setColorStatusFeature]= useState(false);
+
+const [formFeature, setFormFeature] = useState({            
+    statusF:statusFeatureState as string
+});
+
+const handleChangeFeature = async(e:any) =>{
+                             
+    const field= e.target.getAttribute('name');
+    const value= e.target.value;
+    setFormFeature({ ...formFeature,
+        [field]:value,
+        
+    }); 
+    setColorStatusFeature(true);
+              
+      }  
+
+      const sendChangeStatusFeature = async() => {
+        const data= await changeStatusPropertyReqFeature(String(id),Number(formFeature['statusF']));
+
+        if(data.status === 204){
+            setLoading(true);
+            setTimeout(()=> {
+            setLoading(false)         
+            },500)
+        }
+        if(data.response.status === 404 || data.response.status === 403){
+            setLoading(true);
+            setTimeout(()=> {
+            setLoading(false)        
+            },500)
+            
+            setFormFeature({ ...formFeature,
+                ['statusF']:intialValueStatusFeature() as string,
+                
+            });           
+        }
+      }
+      
+      useEffect(()=> {
+        if(colorStatusFeature=== true){
+            sendChangeStatusFeature()
+        }
+      },[formFeature.statusF])
+
+      const [copyId,setCopyId]= useState(false);
+
+      const handleCopyId = (id:number) => {
+        
+        var url_atual = String(id);   
+        navigator.clipboard.writeText(url_atual);
+        setCopyId(true)
+        setTimeout(() => {
+            setCopyId(false)
+        },3000)
+    }
+
     return(
         <CardWrapper>
             {loading &&<LoadingLogin/>}
+            <div className='status-wrapper'>
             <StatusProperty statusProperty={form['status'] as string}><MdPublishedWithChanges/>
             { form['status'] ==='1' &&
                  <p>PUBLICADO</p> } 
                   { form['status'] ==='2' &&
                  <p>NÃO PUBLICADO</p> } 
-           
-               
+                         
                     <InputRangeProperty> 
                          <input id="status" name="status" value={form['status']} min='1' max='2'  type='range'   onChange={(e) => handleChange(e)}/>    
                     </InputRangeProperty>
                 </StatusProperty> 
 
-         <Card width='100%' height='100%' noShadow={true} borderRadius="0" background={false}> 
+
+                <StatusFeatured statusFeatured={formFeature['statusF'] as string}><MdPublishedWithChanges/>
+            { formFeature['statusF'] ==='1' &&
+                 <p>EM DESTAQUE</p> } 
+                  { formFeature['statusF'] ==='2' &&
+                 <p>NÃO DESTACADO</p> } 
+                  
+                    <InputRangeProperty> 
+                         <input id="statusF" name="statusF" value={formFeature['statusF']} min='1' max='2'  type='range'   onChange={(e) => handleChangeFeature(e)}/>    
+                    </InputRangeProperty>
+                </StatusFeatured> 
+                </div>
+           <Card width='100%' height='100%' noShadow={true} borderRadius="0" background={true} > 
                  
-              <CardContent>
+              <CardContent copyId={copyId}>
                     
                    
                     {images?.[0] ?  <Link to={`/details/${id}`}> <img src={images?.[0]?.url }/> </Link> : <Link to={`/details/${id}`}><img src={defaultImage}/> </Link>}            
                      <div className='text-wrapper-card'>
                      <Link to={`/details/${id}`} className='link-wrapper-name-cod'> <p className='title-card-property'>{name}</p></Link>  
-                     <span className='cod-property-card'>cod.{id}</span>
+                     <span className='cod-property-card' style={{cursor:'pointer'}} onClick={()=>handleCopyId(id)}>cod.{id}</span>
                      <p className='value'>R${price}</p>
                      <div className='localization-wrapper'>
                      <p className='localization'><BiMap className='localization-icon'/>

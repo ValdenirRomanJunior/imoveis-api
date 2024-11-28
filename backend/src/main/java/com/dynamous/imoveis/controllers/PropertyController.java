@@ -1,34 +1,55 @@
 package com.dynamous.imoveis.controllers;
 
+import com.dynamous.imoveis.dto.FeatureDTO;
 import com.dynamous.imoveis.dto.PropertyNewDTO;
 import com.dynamous.imoveis.dto.PropertyUpdateDTO;
+import com.dynamous.imoveis.entities.Account;
 import com.dynamous.imoveis.entities.Address;
 import com.dynamous.imoveis.entities.ImageUrl;
 import com.dynamous.imoveis.entities.Property;
+import com.dynamous.imoveis.entities.Tenant;
+import com.dynamous.imoveis.enums.Feature;
+import com.dynamous.imoveis.enums.StatusFeatured;
 import com.dynamous.imoveis.enums.StatusProperty;
+import com.dynamous.imoveis.repositories.AccountRepository;
 import com.dynamous.imoveis.repositories.CityRepository;
 import com.dynamous.imoveis.repositories.PropertyCustomRepository;
 import com.dynamous.imoveis.repositories.PropertyRepository;
+import com.dynamous.imoveis.security.UserSS;
+import com.dynamous.imoveis.services.AccountService;
+import com.dynamous.imoveis.services.FileManagerService;
 import com.dynamous.imoveis.services.PropertyService;
 import com.dynamous.imoveis.services.TenantService;
+import com.dynamous.imoveis.services.UserService;
+import com.dynamous.imoveis.services.exceptions.AuthorizationException;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import javax.validation.Valid;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.SortedSet;
 import java.util.stream.Collectors;
 
 
 @RestController
-@RequestMapping(value = "/properties", produces = {MediaType.APPLICATION_JSON_VALUE})
+@RequestMapping(value = "/properties")
 public class PropertyController {
 
     @Autowired
@@ -40,8 +61,16 @@ public class PropertyController {
     @Autowired
     private  PropertyCustomRepository propertyCustomRepo;
     
+	@Autowired
+	private TenantService tenantService;
+	
+	@Autowired
+	private AccountService accountService;
+	
+	@Autowired
+	private AccountRepository accountRepository;
     
-
+    
     
     @GetMapping(value = "/find/{id}", produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<?> findById(@PathVariable Long id){ 
@@ -51,33 +80,32 @@ public class PropertyController {
     }
 
     @PreAuthorize("hasAnyRole('TENANT')")
-    @PostMapping(value="/save", produces = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<Void> save(@Valid @RequestBody PropertyNewDTO propertyNewDTO){
-   	  
-        Property property = service.fromDTO(propertyNewDTO);
-      
-        service.save(property);
+    @PostMapping(value="/save", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+    public ResponseEntity<Void> save(@Valid @RequestPart("propertyNewDTO") PropertyNewDTO propertyNewDTO,@RequestPart(name="file", required = false) List<MultipartFile> file) throws JsonMappingException, JsonProcessingException{
+    		 	
+    Property property = service.fromDTO(propertyNewDTO,file);
+       service.save(property,file);
+       
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").
-                buildAndExpand(property.getId()).toUri();
+             buildAndExpand(property.getId()).toUri();
         return ResponseEntity.created(uri).build();
     }
-
+    
     @PreAuthorize("hasAnyRole('TENANT')")
-    @PutMapping(value = "/update/{id}", produces = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<Void> update(@Valid @RequestBody PropertyUpdateDTO propertyUpdateDTO, @PathVariable Long id){
+    @PutMapping(value = "/update/{id}",  consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+    public ResponseEntity<Void> update(@Valid @RequestPart("propertyUpdateDTO") PropertyUpdateDTO propertyUpdateDTO, @PathVariable Long id,@RequestPart(name="file", required = false) List<MultipartFile> files) throws URISyntaxException{
     	propertyUpdateDTO.setId(id);
-  
-    	Property property = service.fromDTOUpdate(propertyUpdateDTO); 
-    	
+    	Property property = service.fromDTOUpdate(propertyUpdateDTO,files);   	
         property.setId(id);			     				
         service.update(property);
+        
         return ResponseEntity.noContent().build();
 
     }
 
     @PreAuthorize("hasAnyRole('TENANT')")
     @DeleteMapping(value = "/delete/{id}", produces = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<Void> delete(@PathVariable Long id){
+    public ResponseEntity<Void> delete(@PathVariable Long id) throws URISyntaxException{
         service.delete(id);
         return ResponseEntity.noContent().build();
     }
@@ -102,7 +130,6 @@ public class PropertyController {
     	
     		//Page<Property> list= service.findByTenantBaseView(goal, typeProperty, name,  page, linesPerPage, orderBy, direction);
     Page<Property> list = propertyCustomRepo.findByPage(id,state, city, goal, typeProperty, page, linesPerPage, orderBy, direction);
-    System.out.println(list.getTotalElements() + " "+ "TOTAL DE IMAGENS");
          ImageUrl imgux=null;
          List<ImageUrl> OneImg=null;
        	for( Property item : list) {       		 		
@@ -122,8 +149,15 @@ public class PropertyController {
     @GetMapping(value = "/totalProperties/{id}", produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<?> getTotalProperties(@PathVariable Long id){ 
     
-    	
-       Long total= propertyRepository.countByTenantId(id);     
+		 UserSS user = UserService.authenticated();
+	        
+         if(user.getId() == null){
+             throw new AuthorizationException("Acesso negado");
+         }
+         Tenant tenant = tenantService.find(user.getId());
+     	Account account= accountService.find(tenant.getAccount().getId());
+     	
+       Long total= propertyRepository.countByAccountId(account.getId());     
         return ResponseEntity.ok().body(total);
     }
     
@@ -154,10 +188,29 @@ public class PropertyController {
     }
     
     @PreAuthorize("hasAnyRole('TENANT')")
+    @PutMapping(value = "/updateStatusFeatured/{id}/{statusF}", produces = {MediaType.APPLICATION_JSON_VALUE})
+    public ResponseEntity<Void> updateStatusFeatured(@PathVariable Long id, @PathVariable Integer statusF ){
+    	
+    	Property property= service.find(id);
+    	property.setStatusFeatured(StatusFeatured.toEnum(statusF));
+        service.updateStatus(property);
+        
+        return ResponseEntity.noContent().build();
+        
+    }		
+    	
+    		
+    @PreAuthorize("hasAnyRole('TENANT')")
     @GetMapping(value = "/publishedProperties/{id}", produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<?> getPublishedProperties(@PathVariable Long id){ 
-    	 	
-       Long total= propertyRepository.publishedByTenantId(id);     
+		 UserSS user = UserService.authenticated();
+	        
+         if(user.getId() == null){
+             throw new AuthorizationException("Acesso negado");
+         }
+         Tenant tenant = tenantService.find(user.getId());
+     	Account account= accountService.find(tenant.getAccount().getId());
+       Long total= propertyRepository.publishedByAccountId(account.getId());     
         return ResponseEntity.ok().body(total);
     }
     //busca paginada site tenant
@@ -210,19 +263,43 @@ public class PropertyController {
 		return ResponseEntity.ok().body(list);
 		
 	}
+    //busca home site
     @GetMapping(value= "/findAll/{nameUrl}", produces = {MediaType.APPLICATION_JSON_VALUE})
 	public ResponseEntity <List<Property>> findAll(@PathVariable String nameUrl){
-    	List<Property> list = service.findFourByTenant(nameUrl);
+    	List<Property> list = service.findByStatusFeatured(nameUrl);
     	
 		return ResponseEntity.ok().body(list);
 		
 	}
-    @GetMapping(value= "/findAll", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @GetMapping(value= "/findAllFeatures", produces = {MediaType.APPLICATION_JSON_VALUE})
   	public ResponseEntity <List<Property>> findAllPropertiesAsList(){
-      	List<Property> list = service.findAll();
+      	List<Property> list = service.findAllByTenantAndStatusFeatured();
       	
   		return ResponseEntity.ok().body(list);
   		
   	}
-
+    
+    @GetMapping(value= "/findAllFeature", produces = {MediaType.APPLICATION_JSON_VALUE})
+  	public ResponseEntity<List<FeatureDTO>> findAllFeatures(){
+    	
+  
+    	List<FeatureDTO> features= new ArrayList<FeatureDTO>();
+    	  for (Feature x : Feature.values()) {
+    		  		FeatureDTO feature= new FeatureDTO();
+    		  		feature.setId(x.getCod());
+    		  		feature.setName(x.getDescription());
+    		  		features.add(feature);
+    	  		}
+    	      	  
+    	  return ResponseEntity.ok().body(features);
+    }
+    
+    @GetMapping(value= "/findAllDistricts", produces = {MediaType.APPLICATION_JSON_VALUE})
+  	public ResponseEntity <List<String>> findAllDistrictsByAccount(){
+      	List<String> list = service.findAllDistrictsByAccount();
+      	
+  		return ResponseEntity.ok().body(list);
+  		
+  	}
+    
 }

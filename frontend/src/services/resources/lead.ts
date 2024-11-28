@@ -44,7 +44,7 @@ export const editLead = (name:string, email:string, phone:String,id:number) => {
                                               });
 }
 export const editLeadStep = (id:number,stepId: number) => {
-  return api.put(`/leads/updateStepLead/${id}/${stepId}`,{id,stepId})
+  return api.put(`/leads/updateStepLead/${id}/${stepId}`)
                                            
                                                .then(response =>{
                                                   return response;
@@ -91,28 +91,44 @@ export const editLeadStep = (id:number,stepId: number) => {
   }
 
 
-  export const opportunitiesPageable = () => {
+export const opportunitiesPageable = () => {
     return api.get(`/opportunities/page`)
-                                  
-              
+                                               
 }
 export const stepsOpportunity = () => {
   return api.get(`/opportunities/steps`)
             
 }
+export const stepsName = () => {
+  return api.get(`/opportunities/stepsName`)
+            
+}
+export const countstepsName = () => {
+  return api.get(`/opportunities/countOpportByStep`)
+                    .then(response =>{
+                      if(response != null){
+                        return response.data 
+                      
+                      }
+                    
+                    }).catch((error) =>{
+                      return error
+                    
+                  });
+            
+            }
 export const newStep = (name:string) => {
-
   return api.post('/steps/saveStep',{name})
 
-                                               .then(response =>{
-                                                if(response != null){
-                                                return response
+                                            .then(response =>{
+                                                  if(response != null){
+                                                  return response
+                                                    
+                                                } }).catch((error) =>{
+                                                    return error
                                                   
-                                              } }).catch((error) =>{
-                                                  return error
-                                                 
-                                              });
-}
+                                                });
+  }
 
 
 export const deleteStep = (id:number) => {

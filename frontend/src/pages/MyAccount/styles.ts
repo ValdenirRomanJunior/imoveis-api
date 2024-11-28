@@ -93,12 +93,11 @@ export const BodyMyAccountContainer = styled.main`
         visibility:visible;
         
     }
-    
-
+  
     
 
     @media screen and (min-width: 1000px){
-        width:1145px;
+        width:50%;
     }
 
 
@@ -212,8 +211,143 @@ export const CardAccount = styled.div<{status:'ACTIVE' | 'DESACTIVATED'}>`
                     color:${({status,theme}) => status === 'ACTIVE' ?  theme.colors.green : theme.colors.red};
                    
                 }
+            }        
+        }
+
+        .title-users-account{
+
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+
+ 
+   .link-add-user{
+           font-size:13px !important;
+           }
+
+        h2{
+        margin-bottom: 0;
+       font-size:17px;
+        }
+        
+        }
+        .users-account-wrapper{
+            display: flex;
+            flex-direction: column;
+
+        
+
+            .list-users-account{
+                 margin-top:10px;
+                margin-bottom: 0;
+                padding-left:0;
+
+                li{
+               background: #f8f8f8;
+               border: 1px solid #ebebeb;
+                  margin-top:10px;
+
+                 height:30px;             
+                 padding 8px 7px;
+                 display: flex;
+                 align-items: center;
+
+                 .user-account-name{
+                     font-size:14px;
+                     text-overflow: ellipsis;
+                    overflow: hidden;
+                 }
+
+                 .edit-remove-user-wrapper{
+                 margin-left:20px;
+                 font-size:13px;
+                 color:#49599f;
+
+                 display: flex;
+                 align-items: center;
+
+                 .edit-user-link{
+                 margin-right:15px;
+                 }
+      
+                 }
+
+                  .initials-user-account-wrapper{
+                    width:25px;
+                    height:25px;
+                    border: .3px solid #e6e9ed;
+                    border-radius: 50%;
+                    padding:3px;
+                    margin-right:3px;
+                 
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                  }
+                  .initials-user-account{
+                    color:#008ace;        
+
+                  }
+
+                  p{
+                  margin-bottom:0;
+                  }
+                }
+            }
+        }
+
+
+           @media screen and (min-width: 1000px){
+
+            .list-users-account{
+                width:350px;
+
+                
+                li{
+               background: #f8f8f8;
+               border: 1px solid #ebebeb;
+                  margin-top:10px;
+
+                 height:30px;             
+                 padding 5px 10px;
+                 display: flex;
+                 align-items: center;
+
+                 .user-account-name{
+                     font-size:14px;
+                     text-overflow: ellipsis;
+                    overflow: hidden;
+                 }
+
+                 .edit-remove-user-wrapper{
+                 margin-left:20px;
+                 font-size:13px;
+                 color:#49599f;
+                 }
+                  .initials-user-account-wrapper{
+                    width:25px;
+                    height:25px;
+                    border: .3px solid #e6e9ed;
+                    border-radius: 50%;
+                    padding:3px;
+                    margin-right:3px;
+                 
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+
+                  }
+                  .initials-user-account{
+                    color:#008ace;  
+
+                  }
+                  p{
+                  margin-bottom:0;
+
+                  }
+                }
             }
 
-         
-        }
+           
+    }
 `

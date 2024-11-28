@@ -13,10 +13,15 @@ import Button from '../../components/Button';
 import useAuth from '../../hooks/useAuth';
 import { BASE_URL_FROM_BUCKET } from '../../utils/request-image';
 import { hasFormSubmit } from '@testing-library/user-event/dist/utils';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import LoadingLogin from '../../components/LoadingLogin';
 import PageNotFound from '../../components/PageNotFound';
 import { ErrorBoundary } from 'react-error-boundary';
+import { deleteUserTenant, findAllUserTenant } from '../../services/resources/userTenant';
+import { Tenant } from '../../types/tenant';
+import { IoCloseOutline } from 'react-icons/io5';
+import Loading from '../../components/Loading';
+
 
 
 const MyAccount = ()=>{
@@ -36,7 +41,7 @@ const MyAccount = ()=>{
 
     const [initials, setInitials]= useState(() => {
         if(user){
-            return user.slug?.substring(0,1)+ user.lastName?.substring(0,1) as string;
+            return user.slug?.substring(0,1)+ user.email?.substring(0,1) as string;
 
         }
         return 'error' as string;
@@ -85,8 +90,7 @@ const MyAccount = ()=>{
                   setSuccessMessage(true)
                     },1000) 
               
-            
-           
+                
               setTimeout(()=>{
               setSuccessMessage(false);
 
@@ -166,11 +170,94 @@ useEffect(() => {
             return <PageNotFound/>;
           }
 
+
+          const [userTenants, setUserTenants]= useState<Tenant[]>();
+          const getListUsers= async()=>{
+            const data=  await findAllUserTenant();
+            setUserTenants(data.data as Tenant[])
+            
+          }
+
+          useEffect(() => {  
+            getListUsers()
+             
+            }, []);
+
+            const [selectedUsers,setSelectedUsers]= useState<Tenant[]>([]);
+               let aux=[...selectedUsers as Tenant[]] 
+            useEffect(() => {  
+               userTenants && userTenants.forEach((item:any) =>{
+                    if(!item.perfis.includes('ACCOUNT') ){
+                       
+                       // selectedUsers.push(item as Tenant)
+                        setSelectedUsers([
+                             {
+            
+                            id:item.id,
+                            slug: item.slug,
+                            proprietario:'',
+                            lastName: '',
+                            email:'',
+                            password:'',
+                            status:'',
+                            creci:'',
+                            domain:'',
+                            start:'',
+                            endDate:'',
+                            renovation:'',
+                            verification:'',
+                            perfis:[''] ,
+                            images:[{
+                                id:1 ,
+                                url:''
+                             }] 
+                    }]  as Tenant[])
+                      
+                       
+                    }
+                })
+                 
+                }, [userTenants]);
+
+           console.log(selectedUsers)
+         
     
+            let perfilTenant=Object.values(user.perfis).some(obj => obj === 'TENANT');
+            let perfilAdmin=Object.values(user.perfis).some(obj => obj === 'ADMIN');
+            let perfilAccount=Object.values(user.perfis).some(obj => obj === 'ACCOUNT');
+
+            const [initialsUser, setInitialsUser]= useState(() => {
+                if(user){
+                    return user.slug?.substring(0,1)+ user.email?.substring(0,1) as string;
+        
+                }
+                return 'error' as string;
+        
+            });
+
+            const [isVisible, setIsVisible] = useState(false);
+       
+            
+
+            const handleToRemove = async (id:number) => {
+                setIsVisible(true);       
+           const data = await deleteUserTenant((String(id)));
+           console.log(data.status)
+           if(data.status === 204){
+           
+            setTimeout(async ()=> { 
+                setIsVisible(false)                   
+              
+           },500)    
+           setSelectedUsers([])
+           getListUsers()
+           }     
+    }
+          
     return(
         <>
        
-        {user?.perfis?.[0] === 'TENANT' || user?.perfis?.[0] === 'ADMIN' ? 
+        {perfilTenant || perfilAdmin ? 
         
         <ErrorBoundary FallbackComponent={ErrorHandler}>
         <div>
@@ -212,7 +299,7 @@ useEffect(() => {
             <h2>Perfil</h2>
             
             <div className='card-account-wrapper-name'>
-                <label>Nome</label>
+                <label>Imobiliária</label>
                 <p>{user.slug} {user.lastName}</p>
             </div>
             <div className='card-account-wrapper-email'>
@@ -220,10 +307,6 @@ useEffect(() => {
                 <p>{user.email}</p>
             </div>
            
-            <div className='card-account-wrapper-date'>
-                <label>Pago até</label>
-                {user.endDate ? <p>{user.endDate}</p>: <p>00/00/00</p>}
-            </div>
             <div className='card-account-wrapper-status'>
                 <label>Status</label>
                 <p>{user.status}</p>
@@ -233,11 +316,41 @@ useEffect(() => {
                 <label>CRECI</label>
                 {user.creci ? <p>{user.creci}</p>:<p>Por favor atualize o creci</p>}
             </div>
-           
-            </div>
-        </CardAccount>
-       
         
+            </div>
+         
+        </CardAccount>
+        {perfilAccount  &&
+        <CardAccount status='ACTIVE'>           
+            <div className='card-account-wrapper'> 
+
+            <div className='title-users-account'> <h2>Usuários</h2> <Link to={"/userRegistration"} className='link-add-user'>Adicionar usuário</Link></div>
+            
+            <div className='users-account-wrapper'>
+         
+            <ul className='list-users-account'>
+             
+                {selectedUsers && selectedUsers.map(item=> (
+                <>
+                {!isVisible ? 
+                    
+                <li><div className='initials-user-account-wrapper'><p className='initials-user-account'>{initialsUser}</p></div><p className='user-account-name'>{item.slug}</p> <div className='edit-remove-user-wrapper'><p className='edit-user-link'><Link to={`/editUser/${item.id}`}>editar</Link></p>    
+                <p onClick={()=>handleToRemove(item.id)}>excluir</p></div></li> 
+                :
+                <p style={{background:'#dadada',width:'100%', height:'30px;', position:'relative' ,color:'#dadada', borderRadius:'5px'}}><Loading/>s</p>}
+                </>
+                ))}
+               
+                     
+                    
+               
+            </ul>     
+            </div>
+
+            </div>
+         
+        </CardAccount>
+        }
        </BodyMyAccountContainer>
     </MyAccountBackground>
   

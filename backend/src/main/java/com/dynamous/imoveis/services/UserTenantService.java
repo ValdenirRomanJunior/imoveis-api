@@ -1,0 +1,242 @@
+package com.dynamous.imoveis.services;
+
+import com.amazonaws.AmazonServiceException;
+import com.dynamous.imoveis.dto.TenantDTO;
+import com.dynamous.imoveis.dto.TenantNewDTO;
+import com.dynamous.imoveis.dto.TenantUpdateDTO;
+import com.dynamous.imoveis.dto.UserTenantNewDTO;
+import com.dynamous.imoveis.dto.UserTenantUpdateDTO;
+import com.dynamous.imoveis.entities.Account;
+import com.dynamous.imoveis.entities.Property;
+import com.dynamous.imoveis.entities.Tenant;
+import com.dynamous.imoveis.enums.Perfil;
+import com.dynamous.imoveis.enums.Status;
+import com.dynamous.imoveis.enums.Verification;
+import com.dynamous.imoveis.repositories.AccountRepository;
+import com.dynamous.imoveis.repositories.LeadRepository;
+import com.dynamous.imoveis.repositories.TenantRepository;
+import com.dynamous.imoveis.security.UserSS;
+import com.dynamous.imoveis.services.exceptions.AuthorizationException;
+import com.dynamous.imoveis.services.exceptions.DataIntegrityException;
+import com.dynamous.imoveis.services.exceptions.ObjectNotFoundException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import java.net.URISyntaxException;
+import java.net.UnknownHostException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+import java.util.Optional;
+
+
+@Service
+public class UserTenantService {
+
+    @Autowired
+    private TenantRepository tenantRepository;
+
+    @Autowired
+    private BCryptPasswordEncoder pe;
+
+    @Autowired
+    private EmailService emailService;
+    
+    @Autowired
+    private S3Service s3Service;
+    
+    
+    @Autowired
+    private PropertyService propertyService;
+    
+    
+    @Autowired
+    private LeadRepository leadRepository;
+    
+	@Autowired
+	private AccountService accountService;
+	
+	@Autowired
+	private AccountRepository accountRepo;
+    
+   
+    public Tenant find(Long id) {
+        UserSS user = UserService.authenticated();
+       
+        if(id==null || !user.hasRole(Perfil.ACCOUNT) && !id.equals(user.getId())){
+            throw new AuthorizationException("Acesso negado");
+        }
+        Optional<Tenant> tenant = tenantRepository.findById(id);
+        return tenant.orElseThrow(() -> new ObjectNotFoundException(
+                "Página não encontrada! Id:" + ", Type" + Tenant.class.getName()));
+    }
+    
+    public Tenant findSite(Long id) {      
+        Optional<Tenant> tenant = tenantRepository.findById(id);
+        return tenant.orElseThrow(() -> new ObjectNotFoundException(
+                "Página não encontrada! Id:" + ", Type" + Tenant.class.getName()));
+    }
+    
+    @Transactional
+    public Tenant insert(Tenant obj) throws UnknownHostException{
+        obj.setId(null);
+        //para salvar user  buscar accout que ela ja existe
+        UserSS user = UserService.authenticated();       
+        if(user==null || !user.hasRole(Perfil.ACCOUNT)){
+            throw new AuthorizationException("Acesso negado");
+        }
+        Tenant tenant = find(user.getId());
+        Account accountaux = accountService.find(tenant.getAccount().getId());
+        
+         Account account = new Account(accountaux.getId(),null,obj.getDomain(),obj.getSlug(),null,obj.getCreci(),obj.getProprietario());
+         accountRepo.save(account);
+         obj.setAccount(account);
+        tenantRepository.save(obj);   
+        return obj;
+    }
+
+    
+    public Tenant update(Tenant tenant) {
+        Tenant newObj= find(tenant.getId());
+        updateData(newObj,tenant);
+        return tenantRepository.save(newObj);
+    }
+    
+    
+
+    private void updateData(Tenant newObj, Tenant tenant) {
+        newObj.setSlug(tenant.getSlug());
+        newObj.setEmail(tenant.getEmail());
+        newObj.setLastName(tenant.getLastName());
+        newObj.setStatus(tenant.getStatus());
+        newObj.setPassword(tenant.getPassword());
+        newObj.setVerification(tenant.getVerification());
+        newObj.setDomain(tenant.getDomain());
+        newObj.setCreci(tenant.getCreci());
+        newObj.setRenovation(tenant.getRenovation());
+        newObj.setEndDate(tenant.getEndDate());
+
+    }
+
+    public Tenant updateNoLogin(Tenant tenant) {
+        Tenant newObj= findSite(tenant.getId());
+        updateData(newObj,tenant);
+        return tenantRepository.save(newObj);
+    }
+    
+	public void delete(Long id){
+    	find(id);
+       	                              	             
+       try {    	    
+            tenantRepository.deleteById(id);
+           
+        } catch (DataIntegrityViolationException e) {
+          throw new DataIntegrityException("Não é possivel deletar porque tem objetos anexados: ");
+        }
+    	                  
+    }
+
+ 
+	
+	
+    public List<Tenant> findAll() {
+        return tenantRepository.findAll();
+    }
+
+    public Page<Tenant> findPage(Integer page, Integer linesPerPage, String orderBy, String direction){
+        PageRequest pageRequest = PageRequest.of(page,linesPerPage, Sort.Direction.valueOf(direction),orderBy);
+        
+        UserSS user = UserService.authenticated();       
+        if(user==null || !user.hasRole(Perfil.ACCOUNT)){
+            throw new AuthorizationException("Acesso negado");
+        }
+          
+       // return tenantRepository.findAllByPerfis(pageRequest,2);
+        return null;
+    }
+
+    public Tenant fromDTO(UserTenantNewDTO objDto){
+    		
+        UserSS user = UserService.authenticated();       
+        if(user==null || !user.hasRole(Perfil.ACCOUNT)){
+            throw new AuthorizationException("Acesso negado");
+        }
+        Tenant tenantAux = find(user.getId());
+        Account accountaux = accountService.find(tenantAux.getAccount().getId());
+    		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");   		
+    		String newDate= sdf.format(new Date()); 
+    		Tenant tenant = new Tenant(null, objDto.getSlug(), objDto.getEmail(),pe.encode(objDto.getPassword()), Status.ATIVO,null,Verification.VERIFICADO,objDto.getCreci(),newDate,null,null,accountaux.getDomain(),null);  		
+            tenant.addPerfil(Perfil.TENANT);
+            return tenant;
+    		
+    	   
+    }
+    
+    public Tenant fromUpdateDTO(UserTenantUpdateDTO objDto){
+   
+    	Tenant ten = find(objDto.getId());
+    	Tenant tenant=null;
+
+    	 	
+    	Tenant tenantAux = find(objDto.getId());
+		 Account  newObj =  accountService.find(tenantAux.getAccount().getId());
+	     Account account = new Account(newObj.getId(),null,newObj.getDomain(),objDto.getSlug(),null,objDto.getCreci(), newObj.getProprietario());
+        accountRepo.save(account);
+        tenantAux.setAccount(account);
+    	
+		tenant = new Tenant(objDto.getId(), objDto.getSlug(), objDto.getEmail(),pe.encode(objDto.getPassword()), Status.ATIVO,null,Verification.VERIFICADO,objDto.getCreci(),ten.getStart(),ten.getRenovation(),ten.getEndDate(),newObj.getDomain(),null);
+        tenant.addPerfil(Perfil.TENANT);
+       
+        
+        return tenant;
+			
+	   
+}
+
+
+    public Tenant fromDTO(TenantDTO objDto) { 
+    		Tenant tenant = new Tenant(objDto.getId(), objDto.getSlug(), objDto.getEmail(), pe.encode(objDto.getPassword()), Status.toEnum(objDto.getStatus().getCod()),objDto.getLastName(),Verification.toEnum(objDto.getVerification().getCod()),objDto.getCreci(),objDto.getStart(),objDto.getRenovation(),objDto.getEndDate(),null,null);
+            tenant.addPerfil(Perfil.TENANT);
+            return tenant;
+    		  	
+    }
+    
+    public static String generateEndDate(Date renovation, Integer signedDays) {
+    		 
+    	  Calendar cal = Calendar.getInstance();
+    	 cal.setTime(renovation);
+    	  	 
+    	SimpleDateFormat sd = new SimpleDateFormat("dd/MM/yyyy");
+    	
+    	if(signedDays == 30) {
+    		cal.add(Calendar.DAY_OF_MONTH, 30);
+    	}
+    	if(signedDays == 90) {
+    		cal.add(Calendar.DAY_OF_MONTH, 90);
+    	}
+    	if(signedDays == 180) {
+    		cal.add(Calendar.DAY_OF_MONTH, 180);
+    	}
+    	if(signedDays == 365) {
+    		cal.add(Calendar.DAY_OF_MONTH, 365);
+    	}
+    	
+    	
+    	return sd.format(cal.getTime());
+    	
+    }
+
+	   public Tenant findByDomain(String domain) {
+		      
+		        Optional<Tenant> tenant = tenantRepository.findByDomain(domain);
+		        return tenant.orElseThrow(() -> new ObjectNotFoundException(
+		                "Página não encontrada! Id:" + ", Type" + Tenant.class.getName()));
+		    }
+	  
+}

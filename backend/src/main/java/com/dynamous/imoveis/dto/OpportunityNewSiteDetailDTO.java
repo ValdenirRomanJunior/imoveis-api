@@ -36,7 +36,7 @@ public class OpportunityNewSiteDetailDTO implements Serializable {
     
     private Long propertyId;
     
-    private Long tenantId;
+
     
 
     
@@ -44,14 +44,6 @@ public class OpportunityNewSiteDetailDTO implements Serializable {
 
     }
 	
-    public Long getTenantId() {
-		return tenantId;
-	}
-
-
-	public void setTenantId(Long tenantId) {
-		this.tenantId = tenantId;
-	}
 
 
     public String getName() {

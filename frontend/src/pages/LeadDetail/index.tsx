@@ -202,7 +202,7 @@ const LeadDetail = () => {
             }          
            setErrorsLead([])
         }
-
+        console.log(form['name'])
         const handleSubmit = async (e:any) =>{     
           e.preventDefault()        
           let emptyValues=Object.values(form).some(obj => obj === '');
@@ -282,11 +282,11 @@ const LeadDetail = () => {
         getLead()
     },500)
       }
-  
+      let perfilTenant=Object.values(user.perfis).some(obj => obj === 'TENANT');
       
     return(
       <>
-        {user?.perfis?.[0] === 'TENANT' && !errorGetLead? 
+        {perfilTenant && !errorGetLead? 
         <div>
      
         <LeadDetailBackground>

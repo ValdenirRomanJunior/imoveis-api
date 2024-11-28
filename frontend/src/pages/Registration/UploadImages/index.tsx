@@ -1,6 +1,6 @@
 import {ImagesContainer, UploadImage,ImageWrapper} from './styles';
 import {MdPhotoCamera} from 'react-icons/md';
-import { FormEvent, useEffect, useState } from 'react';
+import { FormEvent, useEffect, useRef, useState } from 'react';
 import Modal from 'react-modal';
 import { IoCloseOutline } from 'react-icons/io5';
 import GetImages from './GetImages';
@@ -14,209 +14,114 @@ import LoadingFile from '../../../components/LoadingFile';
 
 
 interface PropImages{ 
-    handleResult:(imgs: ImageItem[]) => void;
+    handleResult:(fileBase64:string[]) => void;   
     cleanImages:boolean;
 }
 
+type Url= {
+    name:string
+    
+}
 
 const UploadImages = (props:PropImages) =>{
+
     const navigate = useNavigate();
-    const [imagesSelected, setImagesSelected] = useState<ImageItem[]>([]);
+  
     const [loading,setLoading]= useState(false);
     const [error,setError]= useState(false);
     const [successMessage,setSuccessMessage]= useState(false);
    
-    const [fileBase64,setFileBase64]= useState<string>("");
+ 
     const [errorMaxSize,setErrorMaxSize]= useState(false);
 
     const [messageFile, setMessageFile]= useState(false);
 
+    const inspectionPictureRef = useRef<HTMLInputElement | any>();
+    const [imagesSelected, setImagesSelected] = useState<any[]>([]);
+    const [fileBase64,setFileBase64]= useState<string[]>([]);
 
 
-    const formSubmit= async()=> {
-          setLoading(true)
-        const data=await  uploadPropertyImage(fileBase64 as string);            
-        if(data.status === 201){     
-                setLoading(false)
-                setSuccessMessage(true)
-                cancelSendImage();
-
-                setTimeout(()=>{
-                setSuccessMessage(false);
-
-                },4000)
-               
-           
-        }
-
-        if(data.response.data.status !== 201 && data.response.data.status !== 411 ){        
-                setLoading(false)
-                setError(true);
-                cancelSendImage();
-
-                setTimeout(() => {
-                 setError(false);
-                
-                },4000)                         
-           
-        }
-
-        if(data.response.data.status === 411){ 
-           
-            setLoading(false)
-            setErrorMaxSize(true);
-            cancelSendImage();
-    
-            setTimeout(() => {
-             setErrorMaxSize(false);
-            
-            },4000)                 
-       
-    }
-                  
-}
-
-useEffect(() => { 
-    if(fileBase64 !== " " || "" || null){
-     
-            //formSubmit()
-              
-    }
-}, [fileBase64]);
-
-
-    function convertFile(files: FileList|null){
+    function convertFile(files:any){
+              console.log(files)
+        setImagesSelected([...imagesSelected,...files])
+        
+        if(imagesSelected){
+            for (let i = 0; i < files.length; i++) {
           
-        if(files){
-            const fileRef= files[0] || ""
+            const fileRef= files[i] || ""
             const fileType: string=fileRef.type || ""
-            const reader= new FileReader()
+            const reader= new FileReader()         
+
             reader.readAsBinaryString(fileRef)
-            reader.onload=(ev: any) =>{        
-                setFileBase64(`data:${fileType as string};base64,${btoa(ev.target.result )}`);
-                
-                                      
-            }                 
-        }     
+            reader.onload=(ev: any) =>{  
+                 fileBase64.push(`data:${fileType as string};base64,${btoa(ev.target.result )}`)   
+                setFileBase64([...fileBase64]);               
+             
+               
+            }
+                       
+            }
+           
+                     
+        } 
+          
+           
+        navigate("/registration")
     }
-
-    const cancelSendImage = () => {       
-        Array.from(document.querySelectorAll('[class=".input-add-image"]')).forEach(
-            input => (input.classList.value = "")
-          );
-            setFileBase64('')
-        
-        }            
     
-        
-
-    const removePhoto =(url:string) => { 
     
-        let newList=imagesSelected.filter((l => l.url !== url));
-        localStorage.setItem('images',JSON.stringify(newList))
-        setImagesSelected(newList);          
+    const removePhoto =(index:number) => { 
+        const fileListArr = Array.from(imagesSelected);
+        setImagesSelected(fileListArr.filter((_, i) => i !== index));
+        setFileBase64(fileListArr.filter((_, i) => i !== index) )
+        
+        if(imagesSelected.length -1 === 0){
+            inspectionPictureRef.current.value= ""     
+              setFileBase64([])
+              setImagesSelected([])
+           
+              
+        }
+     
+                
     }
   
   
  
  useEffect(() => {
-  
+
+    props.handleResult([...fileBase64])  
      if(props.cleanImages === true){
         setImagesSelected([]);
      }
-    
-     
-}, [props.cleanImages]);
-
- 
-    const [modalIsOpen, setIsOpen] = useState(false);
-
-    const handleOpenModal =() => {
-        setIsOpen(true);
-    }
-
-    const handleCloseModal =() =>{                 
-            setIsOpen(false)
-            setFileBase64('');
-                    
-    }
-  
-    const handleToRegistration =() =>{
        
-        navigate("/registration")
-        let itemImages=JSON.parse(localStorage.getItem('images') || '[]') as ImageItem[];
-        
-        if(itemImages === null){
-            localStorage.removeItem('images')
-        }
-        
-        setImagesSelected([...imagesSelected,...itemImages]);
-       
-        props.handleResult([...imagesSelected,...itemImages])
-        localStorage.removeItem('images')
-        setIsOpen(false)
-        
-        
-    }
-    localStorage.removeItem('images');
-    //localStorage.setItem('images',JSON.stringify(imagesSelected))
+}, [props.cleanImages, fileBase64]);
 
-  
-        
+
+
     return(
         <ImagesContainer>
             <h3 className='title-photos'>Fotos</h3>
     
-            <p>Adicione até <strong>10 fotos</strong></p>
+            <p>Adicione até <strong>15 fotos</strong></p>
             <div>
-            <UploadImage  onClick={handleOpenModal}>
+            <UploadImage >
                 <MdPhotoCamera className='icon-photo'/>
                 <span>Adicionar fotos</span>
                 <span>PNG e JPG somente</span>
-            </UploadImage>
+                <input className='input-add-image' name='file' type="file"  ref={inspectionPictureRef} multiple={true} accept="image/png,image/jpeg" onChange={(e) => convertFile(e.target.files)}/>
 
-            <Modal
-                isOpen={modalIsOpen}
-                onRequestClose={handleToRegistration}   
-                className='ModalR'
-                
-                                         
-            >
-                <div className='title-wrapper'>
-                <h2 className='title-fileManager'>Minhas Imagens</h2>
-                
-                <form id='form-image-profile' onSubmit={formSubmit}> +           
-               <input className='input-add-image' name='file' type="file" accept="image/png,image/jpeg" onChange={(e) => convertFile(e.target.files)}/>
-                 
-             </form> 
-                   
-                </div>
-                { successMessage===true && <div className='message-file-success'>Adicionada com sucesso!</div>}
-                 {fileBase64.length>0 && <div className='message-add-image'>1 Imagem selecionada :<button className='cancel-button-file' onClick={cancelSendImage}>Cancelar</button> {loading===false ? <button className='send-button-file' onClick={formSubmit}>Enviar</button>: <button className='send-button-file' ><LoadingFile/></button>}</div>}
-                 { error===true && <div className='message-file-error'>Tente mais tarde</div>}
-                 { errorMaxSize===true && <div className='message-file-error'>Tamanho Máximo é de 10M</div>}
-                <IoCloseOutline onClick={handleCloseModal} className='button-close-modal-registration' />        
-                <GetImages  onClick={handleToRegistration} image={{
-                        id: 0,
-                        url: '',
-                        idTenant: 0,
-                        selected: false
-                    }} onChange={function (image: ImageItem): void {
-                        throw new Error('Function not implemented.');
-                    } }
-                    refreshImages={successMessage}
-                    onChanges={removePhoto} handleChange={Function} checked={false}/>   
-                
-                
-            </Modal>
+            </UploadImage>
+         
             </div>
-     
-        
-            { imagesSelected && imagesSelected.map((image) => {
+                 
+            {imagesSelected && Array.from(imagesSelected).map((item,index:any)=>  {
+               
                 return(
                 <ImageWrapper>
-                <AiFillCloseCircle className='button-close' onClick={()=>removePhoto(image.url)}/>
-                <img src={image.url} id="urlId" alt='imagem propriedade'/>
+                <AiFillCloseCircle className='button-close' onClick={()=>removePhoto(index)}/>
+                
+                <img src={URL.createObjectURL(item as any)} id="urlId" alt='imagem propriedade'/>
                 
             </ImageWrapper>
                 )

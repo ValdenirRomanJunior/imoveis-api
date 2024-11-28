@@ -103,7 +103,8 @@ const Oportunidades = () => {
     }
 
             
-    const handleSubmit = async (e:any) =>{   
+    const handleSubmit = async (e:any) =>{ 
+
         e.preventDefault()    
         let emptyValues= form['name']==='' || form['email']==='' || form['phone'] === '';  
         
@@ -121,6 +122,18 @@ const Oportunidades = () => {
             setLoadingAddLead(false)
             setParam("getLeads")
             setParam('');  
+            setButtonVisible(false)
+            setForm({ ...form,
+                name:'',
+                email:'',
+                phone:'',
+                idProperty:''
+                
+            }); 
+
+            setTimeout(()=>{
+                setSuccessMessage(false)
+            },2000)
           }
 
             if(data.response.data.errors){              
@@ -170,6 +183,7 @@ const Oportunidades = () => {
         setErrors([]);
         setSuccessMessage(false) 
         openButton()
+        setButtonVisible(false)
     }
     
     
@@ -224,6 +238,7 @@ useEffect(() => {
 
 
        const cleanProperty = ()=> {
+        setNameProperty('')
         setErrorsproperty(" ");
         setForm({ ...form,
             name:form['name'],
@@ -240,9 +255,11 @@ useEffect(() => {
     
             setButtonVisible(buttonVisible=>!buttonVisible)
       }
+
+      let perfilTenant=Object.values(user.perfis).some(obj => obj === 'TENANT');
     return(
         <>
-        {user?.perfis?.[0] === 'TENANT'  ? 
+        {perfilTenant ? 
         <ErrorBoundary FallbackComponent={ErrorHandler}>
 
         <div>
@@ -256,7 +273,7 @@ useEffect(() => {
         
             <div className="title-leads"><BiBorderRadius className="icon-title-lead"/><h2>Oportunidades</h2>
             <button className="button-add-lead" onClick={handleOpenModal}><BsPersonPlus className="icon-add-lead"/></button>
-            <Link to={`/steps`} ><BsFillGearFill className="icon-step-config"/></Link>
+            <Link to={`/steps`} className="etapa-config-wrapper"><BsFillGearFill className="icon-step-config"/><span className="etapa-text">Etapas</span></Link>
             </div>
             
                  
@@ -324,11 +341,11 @@ useEffect(() => {
 
 
                 
-                    { !loadingAddLead  && (form['name'] && form['email'] && form['phone'] && form['idProperty'] && nameProperty) && buttonVisible &&
+                    { !loadingAddLead  && (form['name'] && form['email'] && form['phone'] && nameProperty !== '') && buttonVisible &&
                     <Button   className="button-send-email" onClick={(e)=> handleSubmit(e)} >Adicionar</Button> 
                      
                        }
-                             { !loadingAddLead  && (form['name'] && form['email'] && form['phone'] && form['idProperty'] && !nameProperty) && buttonVisible &&
+                             { !loadingAddLead  && (form['name'] && form['email'] && form['phone'] && form['idProperty'] && nameProperty ==='') && buttonVisible &&
                     <Button   disabled className="button-send-email" onClick={(e)=> handleSubmit(e)} >Adicionar</Button> 
                      
                        }

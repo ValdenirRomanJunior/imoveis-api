@@ -1,7 +1,9 @@
 package com.dynamous.imoveis.services;
 
+import com.dynamous.imoveis.entities.Account;
 import com.dynamous.imoveis.entities.ImageUrl;
 import com.dynamous.imoveis.entities.Property;
+import com.dynamous.imoveis.entities.Tenant;
 import com.dynamous.imoveis.repositories.ImageRepository;
 import com.dynamous.imoveis.repositories.ImageUrlRepository;
 import com.dynamous.imoveis.services.exceptions.DataIntegrityException;
@@ -31,10 +33,17 @@ public class ImageUrlService {
     @Autowired
     private ImageUrlRepository imageUrlRepository;
 
-
+    @Autowired
+	private AccountService accountService;
+    
+    @Autowired
+    private TenantService tenantService;
+    
     @Transactional(readOnly = true)
     public java.util.List<ImageUrl> findByIdTenantAndUrl(Long idTenant, String url) {
-        java.util.List<ImageUrl> imageUrl = imageUrlRepository.findDistinctByIdTenantAndUrl(idTenant, url);
+    	Tenant tenant = tenantService.find(idTenant);
+    	Account account= accountService.find(tenant.getAccount().getId());
+        java.util.List<ImageUrl> imageUrl = imageUrlRepository.findDistinctByIdAccountAndUrl(account.getId(), url);
         
         return imageUrl;
 

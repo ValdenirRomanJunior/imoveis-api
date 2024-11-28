@@ -1,12 +1,12 @@
 /* eslint-disable no-loop-func */
-import {  useEffect, useState } from 'react';
+import {  useEffect, useRef, useState } from 'react';
 import BarTop from '../../components/Bartop';
 import Button from '../../components/Button';
 import Header from '../../components/Header';
 import Input from '../../components/Input';
 import {EditBackground,BodyEditContainer, FormContainer} from './styles';
 import UploadImages from './UploadImages';
-import {editProperty, findProperty} from '../../services/resources/property';
+import {editProperty, findProperty, getCaracteristicas, getDistricts} from '../../services/resources/property';
 import {ImageItem} from '../../types/Images'
 import api from '../../utils/requests';
 import { Link, useNavigate, useParams } from 'react-router-dom';
@@ -19,6 +19,10 @@ import PageNotFound from '../../components/PageNotFound';
 import LoadingLogin from '../../components/LoadingLogin';
 import { ErrorBoundary } from 'react-error-boundary';
 import useAuth from '../../hooks/useAuth';
+import { IoCloseOutline } from 'react-icons/io5';
+import { IoIosArrowDown } from 'react-icons/io';
+import { Feature } from '../Registration';
+
 
 type Error = {
     fieldName:string;
@@ -61,11 +65,11 @@ type IBGECYTYResponse = {
 
 type Prop = {
     property: Property;
+    blobs:Blob[];
 }
 
 
-
-const EditComponent = ({property}: Prop) =>{
+const EditComponent = (property: Prop) =>{
 
     const params = useParams();
     
@@ -75,24 +79,83 @@ const EditComponent = ({property}: Prop) =>{
     const [ufs, setUfs]= useState<IBGEUFResponse[]>([]);
     const [cities, setCities]= useState<IBGECYTYResponse[]>([]);
     const [state, setState]=useState(); 
-    const [images, setImages] = useState<ImageItem[]>([]);
+    const [imagesBase64, setImagesBase64] = useState<String[]>([]);
+    const [imagesSelected, setImagesSelected] = useState<ImageItem[]>([]);
     const [successMessage, setSuccessMessage] = useState(false);
     const [loadingTenant, setLoadingTenant]=useState(false);
     const [cleanImagesForm,setCleanImagesForm] = useState(false);
+    const [deletedIds,setDeletedIds]=useState<any[]>([])
     
-    const imagesFromUpdate=(property.images?.map(x => { return { id: x.id, url: x.url, idTenant: x.idTenant, selected: true }; })) ;
- 
-     
-     //pega imagens do UploadImages
   
-     const getImagesUrls = (data:ImageItem[]) => {  
-          
-         setImages(data);
-       
-                                          
-    }
     
+     const getImagesUrls = (fileBase64:string[],imagesSelected:ImageItem[], deleteIds:any[]) => { 
+        console.log(fileBase64)
+        console.log(imagesSelected) 
+        setImagesSelected(imagesSelected as ImageItem[])
+         setImagesBase64(fileBase64);
+         setDeletedIds(deleteIds)
+        
+    }
+
+    const [isVisibleDistricts,setIsVisibleDistricts]= useState(false);
+        
+    const handleChangeVisibilityDistricts = () =>{
+        setIsVisibleDistricts(isVisibleDistricts=>!isVisibleDistricts)
+    }
+    const [bairrosCadastrados,setBairrosCadastrados]= useState<string[]>([]);
+  const getBairrosCadastrados= async()=> {
+    const data = await getDistricts();
+ 
+    setBairrosCadastrados(data.data)
+    
+}
+
+useEffect( () =>  {
+    getBairrosCadastrados()
+    },[])
+
+
+      //features do backend
+      const [isDropdownVisibleFeatures,setIsDropDownVisibleFeatures]=useState(false)
+      const [selectedFeatures,setSelectedFeatures]= useState<Feature[]>([])
+      const [features,setFeatures]= useState<Feature[]>([]);
+      const getCaracteristicasFeatures = async () => {
+         const data = await getCaracteristicas() as Feature[];
+          setFeatures(data)
+          setSelectedFeatures(property.property.features)   
+  
+      }
+         
+      useEffect( () =>  {
+      getCaracteristicasFeatures()
+      },[])
+
+      
+      const cleanIndexTypeFeatures = (id:number)=>{
+        const fileListArr = Array.from(selectedFeatures);
+        setSelectedFeatures(fileListArr.filter((_, i) => i !== id));
+       
+      }
+ 
    
+      //useref features
+      const refFeatures = useRef<HTMLDivElement>(null);
+  
+
+      useEffect(() => {
+          document.addEventListener("click", handleClickOutsideFeatures, false);
+          return () => {
+            document.removeEventListener("click", handleClickOutsideFeatures, false);
+          };
+        }, []);
+      
+        const handleClickOutsideFeatures = (event:any) => {
+          if (refFeatures.current && !refFeatures.current.contains(event.target)) {
+            setIsDropDownVisibleFeatures(false)
+                                   
+          }
+        };
+    
     useEffect(() => {
         api.get('https://servicodados.ibge.gov.br/api/v1/localidades/estados/')
         .then(
@@ -115,32 +178,21 @@ const EditComponent = ({property}: Prop) =>{
 
         //verificar valores  goal
         const changeGoal = () => {
-            if(property.goal === 'ALUGUEL'){
+            if(property.property.goal === 'ALUGUEL'){
                 return '1';
             }
-            if(property.goal === 'VENDA'){
+            if(property.property.goal === 'VENDA'){
                 return '2';
             }
-        }
-
-        const changeType = () => {
-            if(property.typeProperty === 'Casa'){
-                return '1';
-            }
-            if(property.typeProperty === 'Apartamento'){
-                return '2';
-            }
-            if(property.typeProperty === 'Terreno'){
+            if(property.property.goal === 'VENDAEALUGUEL'){
                 return '3';
             }
-            if(property.typeProperty === 'Comercial'){
-                return '4';
-            }
         }
 
+                  
             const changeState = ()=>{
                 for (const uf in ufs) {
-                    if(ufs[uf].sigla ===property.address.city.state.name){
+                    if(ufs[uf].sigla ===property.property.address.city.state.name){
                         const aux=ufs[uf];
                         setState(aux as any)
                     }
@@ -152,27 +204,29 @@ const EditComponent = ({property}: Prop) =>{
        
         const [form, setForm] = useState({
           
-            name:property.name,
-            description:property.description,
-            typeProperty:changeType(),
+            name:property.property.name,
+            description:property.property.description,
+            typeProperty:property.property.typeProperty,
             goal:changeGoal(),
-            numberRooms:property.numberRooms,
-            bathRooms:property.bathRooms,
-            area:property.area,
-            iptu:property.iptu,
-            vacancies:property.vacancies,
-            condominium:property.condominium,
-            price:property.price,
-            uf:property.address.city.state.name,
-            city:property.address.city.name,
-            district:property.address.district,
-            street:property.address.street,
-            number:property.address.number,
-            cep:property.address.cep,
-            areaTotal:property.areaTotal
+            numberRooms:property.property.numberRooms,
+            suites:property.property.suites,
+            bathRooms:property.property.bathRooms,
+            area:property.property.area,
+            iptu:property.property.iptu,
+            vacancies:property.property.vacancies,
+            condominium:property.property.condominium,
+            price:property.property.price,
+            uf:property.property.address.city.state.name,
+            city:property.property.address.city.name,
+            district:property.property.address.district,
+            street:property.property.address.street,
+            number:property.property.address.number,
+            cep:property.property.address.cep,
+            areaTotal:property.property.areaTotal
 
 
 });
+
        
 const cleanForm = () =>{
 
@@ -191,9 +245,10 @@ const cleanForm = () =>{
     setForm({ ...form,
         name:"",
     description:"",
-    typeProperty:"",
+    typeProperty:"1",
     goal:"",
     numberRooms:"",
+    suites:"",
     bathRooms:"",
     area:"",
     iptu:"",
@@ -223,16 +278,13 @@ const cleanForm = () =>{
                     [field]:value,
                 }); 
              
-
                   
                 if(e.target.name === "uf"){
                     setState(e.target.value);
                   
-                }
-          
-        
+                }                 
             }
-       
+
 
             const changeCity = () => {
                 if(form['uf']===''){
@@ -254,13 +306,43 @@ const cleanForm = () =>{
                
             const handleKeyUp = (e: React.FormEvent<HTMLInputElement>) =>{
 
+                if(e.currentTarget.name  === 'suites'){                  
+                    number(e);
+                    setForm({ ...form,     
+                        suites:e.currentTarget.value
+                                   
+                        });     
+                }
+
+                if(e.currentTarget.name  === 'vacancies'){                  
+                    number(e);
+                    setForm({ ...form,     
+                        vacancies:e.currentTarget.value
+                                   
+                        });     
+                }
                 if(e.currentTarget.name  === 'number'){                  
                     number(e);
                     setForm({ ...form,     
                         number:e.currentTarget.value
                                    
-                        });
-       
+                        });     
+                }
+
+                if(e.currentTarget.name  === 'numberRooms'){                  
+                    number(e);
+                    setForm({ ...form,     
+                        numberRooms:e.currentTarget.value
+                                   
+                        });     
+                }
+
+                if(e.currentTarget.name  === 'bathRooms'){                  
+                    number(e);
+                    setForm({ ...form,     
+                        bathRooms:e.currentTarget.value
+                                   
+                        });     
                 }
 
                 if(e.currentTarget.name  === 'areaTotal'){                  
@@ -312,8 +394,9 @@ const cleanForm = () =>{
             }  
                
           
-                
+                console.log(form['suites'])
             const handleSubmitForm = async (e:any) =>{
+            
               e.preventDefault();
               setLoadingTenant(true)
         
@@ -382,8 +465,8 @@ const cleanForm = () =>{
                 if(!emptyValues){
                         
                   
-                const data = await editProperty(name, description,typeProperty, goal, numberRooms, bathRooms,area, form['areaTotal'],iptu,vacancies,condominium,                                      
-                price, state, city, district, street, number, cep, images,`${params.propertyId}`)
+                const data = await editProperty(name, description,selectedItemIndex as any, goal, numberRooms,form['suites'], bathRooms,area, form['areaTotal'],iptu,vacancies,condominium,                                      
+                price, state, city, district, street, number, cep,imagesSelected, imagesBase64 as string[], deletedIds as number[],selectedFeatures,selectedRadioBtn,selectedRadioBtnPermuta,`${params.propertyId}`)
               
                
                 if(data.status === 204){
@@ -393,6 +476,7 @@ const cleanForm = () =>{
                     
                     setSuccessMessage(true)
                     setLoadingTenant(false)
+                    getBairrosCadastrados()
                     setTimeout(()=>{
                         setLoadingTenant(true);
                     },1000)
@@ -412,7 +496,7 @@ const cleanForm = () =>{
                         console.log(data.response.data.errors)
                                                                                        
                     }
-                    else if(data.response.status === 404 || data.response.status === 403 ){
+                    else if(data.response.status === 404 || data.response.status === 403 || data.response.status === 400){
                         console.log(data.response.status)
                         setOtherError(true)
                         setSuccessMessage(false)
@@ -421,14 +505,148 @@ const cleanForm = () =>{
                         setTimeout(()=>{
                             setOtherError(false)
                         },2000)
-                    } 
-      
-           
+                    }          
        }
     }
 
+  
+    const [isDropdownVisible,setIsDropDownVisible]=useState(false)
+    const [itemsList,setItemsList]= useState([
+     
+        {
+            type:"Casa",
+            value:"1"
+        },
+        {
+            type:"Apartamento",
+            value:"2"
+        },
+        {
+            type:"Terreno",
+            value:"3"
+        },
+        {
+            type:"Casa Comercial",
+            value:"4"
+        },
+        {
+            type:"Casa de Condomínio",
+            value:"5"
+        },
+    
+        {
+            type:"Flat",
+            value:"6"
+        },
+        {
+            type:"Chácara",
+            value:"7"
+        },
+        {
+            type:"Sítio",
+            value:"8"
+        },
+        {
+            type:"Fazenda",
+            value:"9"
+        },
+        {
+            type:"Galpão/Barracão",
+            value:"10"
+        },
+        {
+            type:"Pousada",
+            value:"11"
+        },
+        {
+            type:"Studio",
+            value:"12"
+        },
+        {
+            type:"Sala Comercial",
+            value:"13"
+        },
+        {
+            type:"Sobrado",
+            value:"14"
+        },
+        {
+            type:"Lançamento",
+            value:"15"
+        }
+    ])
 
-                 
+    const changeType = () => {
+        const found = itemsList.find((element) => element.type === property.property.typeDescription );
+        
+     
+        if(found){
+            setSelectedItemIndex(Number(found.value) -1  as any)
+        }
+        return found?.value
+    }
+
+            useEffect(() => {
+                changeType()
+            }, [property.property.typeProperty]);
+
+          
+
+         //selected index typeProperty
+        const [selectedItemIndex,setSelectedItemIndex]=useState(null);
+        const ref = useRef<HTMLDivElement>(null);
+        console.log(selectedItemIndex)
+  
+        useEffect(() => {
+            document.addEventListener("click", handleClickOutside, false);
+            return () => {
+              document.removeEventListener("click", handleClickOutside, false);
+            };
+          }, []);
+        
+          const handleClickOutside = (event:any) => {
+            if (ref.current && !ref.current.contains(event.target)) {
+              setIsDropDownVisible(false)
+                       
+            }
+          };
+          const cleanIndexType = ()=>{
+            setSelectedItemIndex(null)
+            setForm({ ...form,
+                'typeProperty':'',
+            });         
+          }
+              
+          
+          const [selectedRadioBtn, setSelectedRadioBtn]= useState(property.property.financeable)
+          const isRadioSelected = (value:string): boolean=> selectedRadioBtn=== value ;
+
+           const handleRadioClick = (e:React.ChangeEvent<HTMLInputElement>): void=> setSelectedRadioBtn(e.currentTarget.value)
+
+           const [selectedRadioBtnPermuta, setSelectedRadioBtnPermuta]= useState(property.property.permuta)
+           const isRadioSelectedPermuta = (value:string): boolean=> selectedRadioBtnPermuta=== value ;
+
+            const handleRadioClickPermuta = (e:React.ChangeEvent<HTMLInputElement>): void=> setSelectedRadioBtnPermuta(e.currentTarget.value)
+
+
+                                //useref bairros
+          const refBairros = useRef<HTMLDivElement>(null);
+      
+  
+          useEffect(() => {
+              document.addEventListener("click", handleClickOutsideBairros, false);
+              return () => {
+                document.removeEventListener("click", handleClickOutsideBairros, false);
+              };
+            }, []);
+          
+            const handleClickOutsideBairros = (event:any) => {
+              if (refBairros.current && !refBairros.current.contains(event.target)) {
+                setIsVisibleDistricts(false)
+                                       
+              }
+            };
+                console.log(form['district'])
     return(
         <div>
      
@@ -448,7 +666,7 @@ const cleanForm = () =>{
                { emptyValue && form['name'] === '' ? <span className='formField__error'>Este campo é requerido</span>: ''}
 
                 <label>Descrição*</label>
-                <textarea id="description"  value={form['description']} name="description" rows={4}  onChange={(e) => handleChange(e)} maxLength={250}></textarea>
+                <textarea id="description"  value={form['description']} name="description" rows={4}  onChange={(e) => handleChange(e)} maxLength={350}></textarea>
                 {errors.map(x => { if(x.fieldName === 'description') return  <p className=' formField__error'>{x.message}</p>})}
                 { emptyValue && form['description'] === '' ?<span className='formField__error'>Este campo é requerido</span>: ''}
 
@@ -456,46 +674,83 @@ const cleanForm = () =>{
                     <select  name='goal'  id='goal' value={form['goal'] }   placeholder='selecione'  onChange={(e) => handleChange(e)} >
                     <option value='' >Selecione</option>
                     <option key='ALUGUEL' value='1'>Alugar</option>
-                    <option  key='VENDA' value='2'>Vender</option>                   
+                    <option  key='VENDA' value='2'>Vender</option>
+                    <option  key='VENDAEALUGUEL' value='3'>Vender/Alugar</option>                    
                 </select>
                 {errors.map(x => { if(x.fieldName === 'goal') return  <p className=' formField__error'>{x.message}</p>})}
                 { emptyValue && form['goal'] === '' ?<span className='formField__error'>Selecione uma Finalidade</span>: ''}
                 
             
                 <label>Tipo*</label>
-                <select  name='typeProperty' placeholder='selecione' id='typeProperty' value={form['typeProperty'] }   onChange={(e) => handleChange(e)} >
-                    <option value=''  >Selecione</option>
-                    <option  key='Casa' value='1'>Casa</option>
-                    <option  key='Apartamento' value='2'>Apartamento</option>
-                    <option  key='Terreno' value='3'>Terreno</option>
-                    <option  key='Comercial' value='4'>Comercial</option>
-                </select>
-                {errors.map(x => { if(x.fieldName === 'typeProperty') return  <p className=' formField__error'>{x.message}</p>})}
-                { emptyValue && form['typeProperty'] === '' ?<span className='formField__error'>Selecione um Tipo</span>: ''}
+                <div className="custom-dropdown" ref={ref}>
+                    <div className="custom-dropdown-selection" onClick={e=> {
+                        setIsDropDownVisible(!isDropdownVisible);
+                    }}>
+                        {selectedItemIndex !== null ? itemsList[selectedItemIndex].type :"Tipo"}
+                        {selectedItemIndex !== null && <IoCloseOutline  onClick={cleanIndexType} className="icon-clean-type"/> }
 
-          
+                        <IoIosArrowDown className="arrow-type" />
+                    </div>
+                    {isDropdownVisible ? 
+                    <div className="items-holder">
+                        {
+                            itemsList.map((item,index) => (
+                                <div key={item.value} className="dropdown-item" onClick={e => {
+                                    setSelectedItemIndex(index as any)
+                                    setIsDropDownVisible(false)
+                                    setForm({ ...form,
+                                        'typeProperty':'1',
+                                    });
+                                    }}>
+                                    {item.type}
+                                                               
+                                </div>
+                            ))
+                        }
+                    </div>: <></>}
+                 
+                </div> 
+                {errors.map(x => { if(x.fieldName === 'typeProperty') return  <p className=' formField__error'>{x.message}</p>})}
+                { emptyValue && selectedItemIndex === null ?<span className='formField__error'>Selecione um Tipo</span>: ''}
+
+                <label className='label-financeable'>Financiavel*</label>
+                <div className='financeable-background'>
+                <div className='financeable-container'>
+                    <div className='financeable-wrapper'>
+                    <label className='financeable-item-label'>Não</label>
+                    <input 
+                    type='radio'
+                    name='radio-financeable'
+                    value="nao"
+                    checked={isRadioSelected('nao')}
+                    onChange={handleRadioClick}
+                     />
+                </div>
+                <div className='financeable-wrapper'>
+                    <label className='financeable-item-label'>Sim</label>
+                    <input 
+                    type='radio'
+                    name='radio-financeable'
+                    value="sim"
+                    checked={isRadioSelected('sim')}
+                    onChange={handleRadioClick}
+                     />
+            </div>
+                </div>
+                </div> 
+
                 <label>Quartos*</label>
-                <select name='numberRooms' value={form['numberRooms'] }  placeholder='selecione' id='numberRooms'  onChange={(e) => handleChange(e)}>
-                <option value=''  >Selecione</option>
-                    <option key='0' value='0'>0</option>
-                    <option key='1' value='1'>1</option>
-                    <option key='2' value='2'>2</option>
-                    <option key='3' value='3'>3</option>
-                    <option key='4' value='4 ou mais'>4 ou mais</option>
-                </select>
+                <Input type='text'  name='numberRooms' id='numberRooms' value={form['numberRooms']} onKeyUp={handleKeyUp} onChange={(e) => handleChange(e)}/>            
                 {errors.map(x => { if(x.fieldName === 'numberRooms') return  <p className=' formField__error'>{x.message}</p>})}
                 { emptyValue && form['numberRooms'] === '' ?<span className='formField__error'>Selecione o número de Quartos</span>: ''}
                 
+                <label>Suites*</label>
+                <Input type='text'  name='suites' id='suites' value={form['suites']} onKeyUp={handleKeyUp} onChange={(e) => handleChange(e)}/>
+                {errors.map(x => { if(x.fieldName === 'suites') return  <p className='formField__error_reg'>{x.message}</p>})}
+                { emptyValue && form['suites'] === '' ?<span className='formField__error_reg'>Selecione o número de Suites</span>: ''}
 
                 <label>Banheiros*</label>
-                <select  id="bathRooms" name="bathRooms" value={form['bathRooms'] }  placeholder='selecione' onChange={(e) => handleChange(e)}>
-                    <option value=''  >Selecione</option>
-                    <option key='0' value='0'>0</option>
-                    <option key='1' value='1'>1</option>
-                    <option key='2' value='2'>2</option>
-                    <option key='3' value='3'>3</option>
-                    <option key='4' value='4 ou mais'>4 ou mais</option>
-                </select>
+                <Input type='text'  name='bathRooms' id='bathRooms' value={form['bathRooms']} onKeyUp={handleKeyUp} onChange={(e) => handleChange(e)}/>            
                 {errors.map(x => { if(x.fieldName === 'bathRooms') return  <p className=' formField__error'>{x.message}</p>})}
                 { emptyValue && form['bathRooms'] === '' ? <span className='formField__error'>Selecione o número de Banheiros</span>: ''}
               
@@ -510,16 +765,36 @@ const cleanForm = () =>{
                 { emptyValue && form['areaTotal'] === '' ?<span className='formField__error'>Preencha o total da Área externa</span>: ''}
 
                 <label>Vagas</label>
-                <select id="vacancies" name="vacancies" value={form['vacancies']}  placeholder='selecione' onChange={(e) => handleChange(e)}>
-                <option value='' >Selecione</option>
-                    <option key='0' value='0'>0</option>
-                    <option key='1' value='1'>1</option>
-                    <option key='2' value='2'>2</option>
-                    <option key='3' value='3'>3</option>
-                    <option key='4' value='4 ou mais'>4 ou mais</option>
-                </select>
+                <Input type='text'  name='vacancies' value={form['vacancies'] }  id='vacancies' onKeyUp={handleKeyUp} onChange={(e) => handleChange(e)}/>
                 {errors.map(x => { if(x.fieldName === 'vacancies') return  <p className=' formField__error'>{x.message}</p>})}
                 { emptyValue && form['vacancies'] === '' ?<span className='formField__error'>Este campo é requerido</span>: ''}
+
+                <label>Comodidades*</label>
+                <div className="custom-dropdown-feature" ref={refFeatures}>
+                    <div className="custom-dropdown-selection-feature" onClick={e=> {setIsDropDownVisibleFeatures(!isDropdownVisibleFeatures); }}>
+                        {!isDropdownVisibleFeatures && selectedFeatures.length===0 && "Selecione"}         
+                        { selectedFeatures.map((item,index) => (<span className='item-selected-dropdown-feature'>{item.name}<IoCloseOutline  onClick={()=>cleanIndexTypeFeatures(index)} className="icon-clean-type-feature"/></span>))}
+                                    
+                        <IoIosArrowDown className="arrow-type-feature" />
+                    </div>
+                    {isDropdownVisibleFeatures ? 
+                    <div className="items-holder-feature">
+                        {
+                            
+                            features && features.map((item,index) => (
+                                <div key={item.id} className="dropdown-item-feature" onClick={e => {
+                                    
+                                    setSelectedFeatures([...selectedFeatures,item])
+                                    setIsDropDownVisibleFeatures(false)                               
+                                    }}>
+                                    {item.name}
+                                                               
+                                </div>
+                            ))
+                        }
+                    </div>: <></>}
+                 
+                </div> 
 
                 <label>IPTU(R$)</label>
                 <Input id="iptu" name="iptu" value={form['iptu'] }  maxLength={14} onKeyUp={handleKeyUp} onChange={(e) => handleChange(e)}/>
@@ -530,7 +805,31 @@ const cleanForm = () =>{
                 <Input  id="condominium" name="condominium" value={form['condominium'] }  maxLength={14} onKeyUp={handleKeyUp} onChange={(e) => handleChange(e)}/>
                 {errors.map(x => { if(x.fieldName === 'condominium') return  <p className=' formField__error'>{x.message}</p>})}
                 { emptyValue && form['condominium'] === '' ?<span className='formField__error'>Este campo é requerido</span>: ''}
-
+                <label className='label-permuta'>Permuta*</label>
+                <div className='permuta-background'>
+                <div className='permuta-container'>
+                    <div className='permuta-wrapper'>
+                    <label className='permuta-item-label'>Não</label>
+                    <input 
+                    type='radio'
+                    name='radio-permuta'
+                    value="nao"
+                    checked={isRadioSelectedPermuta('nao')}
+                    onChange={handleRadioClickPermuta}
+                     />
+                </div>
+                <div className='permuta-wrapper'>
+                    <label className='permuta-item-label'>Sim</label>
+                    <input 
+                    type='radio'
+                    name='radio-permuta'
+                    value="sim"
+                    checked={isRadioSelectedPermuta('sim')}
+                    onChange={handleRadioClickPermuta}
+                     />
+            </div>
+                </div>
+                </div>   
                
                 <label>Preço(R$)</label>
                 <Input type='text' id='price' name='price'value={form['price'] }  maxLength={14} onKeyUp={handleKeyUp} onChange={(e) => handleChange(e)}/>    
@@ -558,11 +857,27 @@ const cleanForm = () =>{
                 </select>
                 {errors.map(x => { if(x.fieldName === 'city') return  <p className=' formField__error'>{x.message}</p>})}
                 { emptyValue && form['city'] === '' ?<span className='formField__error'>Este campo é requerido</span>: ''}
-
-                <label>Bairro</label>
-                <Input  name='district'  id='district' value={form['district'] }  onChange={(e) => handleChange(e)}/>
-                {errors.map(x => { if(x.fieldName === 'district') return  <p className=' formField__error'>{x.message}</p>})}
-                { emptyValue && form['district'] === '' ?<span className='formField__error'>Este campo é requerido</span>: ''}
+                <label>Bairro*</label>
+                <div ref={refBairros}>
+                <Input  name='district'  id='district' value={form['district']}  placeholder='selecione ou adicione um novo bairro' onClick={handleChangeVisibilityDistricts} onChange={(e) => handleChange(e)} />
+                {errors.map(x => { if(x.fieldName === 'district') return  <p className=' formField__error_reg'>{x.message}</p>})}
+                { emptyValue && form['district'] === '' ?<span className='formField__error_reg'>Este campo é requerido</span>: ''}
+                {isVisibleDistricts &&
+                <div className='bairros-cadastrados-wrapper' >
+                    <ul className='ul-list-bairros-cadastrados'>
+                        {bairrosCadastrados && bairrosCadastrados.map(item => (
+                            <i className='li-bairro-cadastrado' id='district' style={{cursor:'pointer'}} onClick={(e) => {
+                                setIsVisibleDistricts(false)
+                                setForm({ ...form,
+                                    'district':item,
+                                });
+                            }}>{item}</i>
+                        ))}
+                        
+                    </ul>
+                </div>
+                         } 
+                         </div>
                 
                 <label>Rua</label>
                 <Input   name='street'  id='street' value={form['street'] }  onChange={(e) => handleChange(e)}/>
@@ -581,7 +896,7 @@ const cleanForm = () =>{
                 {errors.map(x => { if(x.fieldName === 'cep') return  <p className=' formField__error'>{x.message}</p>})}
                 { emptyValue && form['cep'] === '' ?<span className='formField__error'>Este campo é requerido</span>: ''}
                      
-                <UploadImages images={imagesFromUpdate as ImageItem[]}  handleResult={getImagesUrls}/>
+                <UploadImages images={property.property.images as unknown as ImageItem[]}  handleResult={getImagesUrls}/>
                
                
                 <div className='buttom-register-wrapper'>
@@ -618,6 +933,7 @@ const Edit = () =>{
     const [property,setProperty]=useState<Property>();
     const [errors,setErrors]= useState (false);
     const [otherError,setOtherError]= useState (false);
+    const [blobImages,setBlobImages]=useState<Blob[]>([]);
  
     const p = `${params.propertyId}`;
 
@@ -637,22 +953,33 @@ const Edit = () =>{
 
    
 
+var myInit = {
+    headers:{
+     
+        'Access-Control-Allow-Headers': 'Content-Type',
+        "Access-Control-Allow-Origin": "https://master--steady-cheesecake-480a84.netlify.app",
+        "Access-Control-Allow-Methods": "OPTIONS,POST,GET" 
+              
+    }
 
+  };
 
     const getProperty = async() => {
        
         const data = await findProperty(p);
         if(data.status === 200){  
-         
+       
             setProperty(data.data as Property) 
+  
+         
           }if(data.response.status === 404){ 
-            console.log(data.response.data.error)
+           
             setErrors(true);
              
           }
-
+        
             if(data.response.status === 400){ 
-            console.log(data.response.data.error)
+        
             setErrors(true);
              
           }
@@ -678,15 +1005,16 @@ useEffect(() =>{
   getCurrentUser();
 },[])
  
+let perfilTenant=Object.values(user.perfis).some(obj => obj === 'TENANT');
     return(
         <ErrorBoundary FallbackComponent={ErrorHandler}>
           
             {errors && <PageNotFound/>}
 
-            {user?.perfis?.[0] === 'TENANT' ? 
+            {perfilTenant? 
          <>
           { property?.id  && !errors &&      
-            <EditComponent property={property as unknown as Property}/> } 
+            <EditComponent blobs={blobImages} property={property as unknown as Property}/> } 
             </>                
             : <PageNotFound/>}
         

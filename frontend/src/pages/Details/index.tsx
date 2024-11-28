@@ -27,6 +27,7 @@ const Details = ()=>{
 
     const [property, setProperty]= useState<Property>();
     const [copyUrl,setCopyUrl]= useState(false);
+    const [copyId,setCopyId]= useState(false);
     const [errors,setErrors]=useState();
 
 
@@ -73,9 +74,12 @@ const Details = ()=>{
         goal:property?.goal as string,
         area:property?.area as string,
         numberRooms:property?.numberRooms as string,
+        suites:property?.suites as string,
         bathRooms:property?.bathRooms as string,
         vacancies:property?.vacancies as string,
         areaTotal:property?.areaTotal as string,
+        permuta:property?.permuta as string,
+        financeable:property?.financeable as string
 
     }
 
@@ -98,16 +102,26 @@ const Details = ()=>{
     ]
 
 
+
     const copyPropertyUrl = () => {
-      
-        var url_atual = window.location.href;   
+        
+        var url_atual = `https://${user.domain}/detail/${property?.id}`;   
         navigator.clipboard.writeText(url_atual);
         setCopyUrl(true)
         setTimeout(() => {
             setCopyUrl(false)
         },3000)
-
     }
+
+    const handleCopyId = () => {
+        
+      var url_atual = String(property?.id);   
+      navigator.clipboard.writeText(url_atual);
+      setCopyId(true)
+      setTimeout(() => {
+          setCopyId(false)
+      },3000)
+  }
 
     const ErrorHandler = () => {
         return <PageNotFound/>;
@@ -121,10 +135,11 @@ const Details = ()=>{
       
       },[])
   
+      let perfilTenant=Object.values(user.perfis).some(obj => obj === 'TENANT');
 
     return(
         <>
-        {user?.perfis?.[0] === 'TENANT' ? 
+        {perfilTenant? 
      
         <div>
        
@@ -136,7 +151,7 @@ const Details = ()=>{
     <DetailsBackground>
             <Header />
              <BarTop />
-        <DetailsBodyContainer copyUrl={copyUrl}>
+        <DetailsBodyContainer copyUrl={copyUrl} copyId={copyId}>
      
         <PhotosContainer>
                   <div className='container-photos'>
@@ -170,7 +185,7 @@ const Details = ()=>{
          
          <div className='price-cod-wrapper-detail'>
          <h2  className='price'>R$ {property?.price}</h2>
-         <span className='cod-property-detail'>Cod.{property?.id}</span>
+         <span className='cod-property-detail' style={{cursor:'pointer'}} onClick={handleCopyId}>Cod.{property?.id}</span>
          </div>
          <Localization>
          <div className='localization-detail-wrapper'>               
@@ -191,11 +206,12 @@ const Details = ()=>{
         </Description>
         <h4>Detalhes </h4>
         <Detail details={details}/>
+
         <h4>Endereço</h4>
         <Address address={address}/>
 
         
-    <div onClick={copyPropertyUrl} className='button-wrapper'> Copiar link<MdOutlineCopyAll className='icon-copy'/></div>
+    <div onClick={copyPropertyUrl} style={{cursor:'pointer'}} className='button-wrapper'> Copiar link<MdOutlineCopyAll className='icon-copy'/></div>
     </DetailsBodyContainer>
     </DetailsBackground>
     </ErrorBoundary>

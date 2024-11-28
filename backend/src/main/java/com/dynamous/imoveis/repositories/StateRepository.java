@@ -1,5 +1,6 @@
 package com.dynamous.imoveis.repositories;
 
+import com.dynamous.imoveis.entities.Account;
 import com.dynamous.imoveis.entities.City;
 import com.dynamous.imoveis.entities.State;
 
@@ -20,6 +21,10 @@ public interface StateRepository extends JpaRepository<State,Long> {
 	
 	@Transactional(readOnly = true)
 	public List<State> findAllByOrderByName();
+
+	List<State> findAllByAccountOrderByName(Account account);
+
+
 	
 
 	

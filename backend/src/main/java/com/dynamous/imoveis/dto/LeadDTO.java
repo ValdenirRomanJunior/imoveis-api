@@ -29,7 +29,7 @@ public class LeadDTO implements Serializable {
     
     private Long propertyId;
     
-    private Long tenantId;
+    private Long accountId;
     
     private String instant;
     
@@ -46,7 +46,7 @@ public class LeadDTO implements Serializable {
         phone=lead.getPhone();
         message=lead.getMessage();
         propertyId=(lead.getPropertyId() == null) ? null : lead.getPropertyId();
-        tenantId=lead.getTenant().getId();
+        accountId=lead.getAccount().getId();
         instant=lead.getInstant();
         opportunityId=(lead.getOpportunity()== null) ? null : lead.getOpportunity().getId();
     }
@@ -110,12 +110,14 @@ public class LeadDTO implements Serializable {
 		this.propertyId = propertyId;
 	}
 
-	public Long getTenantId() {
-		return tenantId;
+
+
+	public Long getAccountId() {
+		return accountId;
 	}
 
-	public void setTenantId(Long tenantId) {
-		this.tenantId = tenantId;
+	public void setAccountId(Long accountId) {
+		this.accountId = accountId;
 	}
 
 	public Long getOpportunityId() {

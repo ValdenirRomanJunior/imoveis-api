@@ -31,8 +31,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     	
     	try {
     	
-    	        //Tenant tenant = tenantRepository.findByEmail(email);
-    	       // UserAdmin userAdmin = userAdminRepository.findByEmail(email);
+    	     	
     	     	 UserAdmin userAdmin= null;
     	    	 Tenant tenant= null;
     	     		if(email.equals("admin@outlook.com")) {

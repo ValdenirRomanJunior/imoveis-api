@@ -29,7 +29,7 @@ padding-left: 1rem;
     padding:0 10px;
     margin-top: 40px;
   
-    
+}    
    h2{
     color: #5d5d5d;
     font-weight: 400 !important;
@@ -58,22 +58,22 @@ padding-left: 1rem;
         align-itens: center;
        
         border-radius: 3px;
-
+}
         .icon-add-step{
             font-family:'Nunito Sans', sans-serif;
             font-size:20px;
 
         }
-     }
-}
+     
+
         .steps-wrapper{
             width:100%;
-
+}
             ul{
             width:100%;
             margin-top:30px;
             padding-left:0;
-
+}
             li{
             margin-top:15px;
             background: #fff;
@@ -102,8 +102,10 @@ padding-left: 1rem;
                 width:40%;
                  display: flex;               
                align-items:center;
+
                 }
             span{
+
                 width:60%;
                 font-size:14px;
                 text-transform: uppercase;
@@ -124,9 +126,7 @@ padding-left: 1rem;
                 font-size: 12px;
                  cursor:pointer;
             }
-            }
-        
-            }
+           
             .edit-label{
              cursor:pointer;
              font-size:15px !important; 
@@ -134,18 +134,22 @@ padding-left: 1rem;
              color: #001fa0d9;
             }
 
+
+
             .input-wrapper-data{
                 display: flex;
+                margin-top:5px;
+                position: relative;
+               
             }
                 .input-class{
-                    padding:10px 10px;
+                    width:160px;
+                    padding:6px 6px;
                 }
-.button-wrapper-send-data{
-    display: flex;
-    align-items: center;
-   
-
-}
+        .button-wrapper-send-data{
+            display: flex;
+            align-items: center;
+            }
 
     .button-send-data{  
         background:#49599f;
@@ -168,18 +172,18 @@ padding-left: 1rem;
         border:none;
         border-radius: 4px;
         
-        font-size: 13px;
+        font-size: 12px !important;
         margin-left: 10px;
         position: relative;
       
         height:22px;
 }
 
-.message-digit-space{
-position:absolute;
-    top:-38%;
-    left:0;
-}
+            .message-digit-space{
+            position:absolute;
+                top:-48%;
+                left:5px !important;
+            }
 
  @media screen and (min-width:1000px){
     width: 80%;   
@@ -197,7 +201,7 @@ position:absolute;
     justify-content: flex-start;
     padding:0 10px;
     margin-top: 40px;
-  
+} 
     
    h2{
     color: #5d5d5d;
@@ -227,20 +231,21 @@ position:absolute;
         align-itens: center;
        
         border-radius: 3px;
-
+}
         .icon-add-step{
             font-family:'Nunito Sans', sans-serif;
             font-size:20px;
 
         }
-     }
-}
+     
+
         .steps-wrapper{
             width:100%;
-
+}
             >ul{
             width:100%;
             margin-top:20px;
+}
             >li{
             margin-top:15px;
             background: #fff;
@@ -278,12 +283,27 @@ position:absolute;
               margin-right:4px;
                 font-size: 15px;
             }
-            }
+            
         
+            
+             .input-class{
+                    width:190px;
+                    padding:6px 6px;
+                }
+
+            
+
+                  .input-wrapper-data{
+                display: flex;
+                margin-top:20px;
+
+               
             }
 
-
-
+            .message-digit-space{
+        position:absolute;
+        top:-48%;
+        left:-115px !important;
+    }
 }
-
 `

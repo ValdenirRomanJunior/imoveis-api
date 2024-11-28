@@ -41,8 +41,8 @@ public class Opportunity implements Serializable {
     
     @JsonIgnore
     @ManyToOne
-    @JoinColumn(name="tenant_id")
-    private Tenant tenant;
+    @JoinColumn(name="account_id")
+    private Account account;
     
      
     public Opportunity(){
@@ -73,17 +73,15 @@ public class Opportunity implements Serializable {
 		this.propertyId = property;
 	}
 	
-	
+		
 
-	public Tenant getTenant() {
-		return tenant;
+	public Account getAccount() {
+		return account;
 	}
 
-	public void setTenant(Tenant tenant) {
-		this.tenant = tenant;
+	public void setAccount(Account account) {
+		this.account = account;
 	}
-	
-	
 
 	public Lead getLead() {
 		return lead;
@@ -114,12 +112,12 @@ public class Opportunity implements Serializable {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
+		result = prime * result + ((account == null) ? 0 : account.hashCode());
 		result = prime * result + ((id == null) ? 0 : id.hashCode());
 		result = prime * result + ((instant == null) ? 0 : instant.hashCode());
 		result = prime * result + ((lead == null) ? 0 : lead.hashCode());
 		result = prime * result + ((propertyId == null) ? 0 : propertyId.hashCode());
 		result = prime * result + ((step == null) ? 0 : step.hashCode());
-		result = prime * result + ((tenant == null) ? 0 : tenant.hashCode());
 		return result;
 	}
 
@@ -132,6 +130,11 @@ public class Opportunity implements Serializable {
 		if (getClass() != obj.getClass())
 			return false;
 		Opportunity other = (Opportunity) obj;
+		if (account == null) {
+			if (other.account != null)
+				return false;
+		} else if (!account.equals(other.account))
+			return false;
 		if (id == null) {
 			if (other.id != null)
 				return false;
@@ -157,13 +160,10 @@ public class Opportunity implements Serializable {
 				return false;
 		} else if (!step.equals(other.step))
 			return false;
-		if (tenant == null) {
-			if (other.tenant != null)
-				return false;
-		} else if (!tenant.equals(other.tenant))
-			return false;
 		return true;
 	}
+	
+	
 
 
 	

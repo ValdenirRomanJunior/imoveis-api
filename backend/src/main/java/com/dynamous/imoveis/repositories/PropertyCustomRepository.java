@@ -22,9 +22,11 @@ import org.springframework.data.repository.support.PageableExecutionUtils;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.dynamous.imoveis.entities.Account;
 import com.dynamous.imoveis.entities.Property;
 import com.dynamous.imoveis.entities.Tenant;
 import com.dynamous.imoveis.security.UserSS;
+import com.dynamous.imoveis.services.AccountService;
 import com.dynamous.imoveis.services.UserService;
 import com.dynamous.imoveis.services.exceptions.AuthorizationException;
 
@@ -37,6 +39,9 @@ public class PropertyCustomRepository {
 	@Autowired
 	private TenantRepository tenantRepository;
 	
+	@Autowired
+	private AccountService accountService;
+	
 	public PropertyCustomRepository(EntityManager em) {
 		this.em=em;
 	}
@@ -45,8 +50,7 @@ public class PropertyCustomRepository {
 	 @EntityGraph(
 			    
 			    attributePaths = {
-			      "tenant",
-			      "tenant.perfis",
+			      "account",
 			      "address",
 			      "address.city",
 			      "address.city.state",
@@ -64,13 +68,13 @@ public class PropertyCustomRepository {
      	PageRequest pageRequest = PageRequest.of(page, linesPerPage, Sort.Direction.valueOf(direction), orderBy);
      	Pageable pr= pageRequest;
         Tenant tenant= tenantRepository.findById(user.getId()).get();
-    	
+    	Account account = accountService.find(tenant.getAccount().getId());
         
-    	String query="select P from Property P JOIN FETCH P.tenant JOIN FETCH P.address a LEFT JOIN FETCH a.city c LEFT JOIN FETCH c.state ";
+    	String query="select P from Property P JOIN FETCH P.account JOIN FETCH P.address a LEFT JOIN FETCH a.city c LEFT JOIN FETCH c.state ";
     	String condition = "where";
     	
-    	if(tenant != null) {
-    		query += condition + " P.tenant= :tenant ";
+    	if(account != null) {
+    		query += condition + " P.account= :account ";
     		condition = " and ";
     	}
     	
@@ -105,8 +109,8 @@ public class PropertyCustomRepository {
     
     	
     	
-    	if(tenant != null) {
-    		q.setParameter("tenant", tenant);
+    	if(account != null) {
+    		q.setParameter("account", account);
     	}
     	if(id != null) {
     		q.setParameter("id", id);
@@ -158,13 +162,13 @@ public class PropertyCustomRepository {
             throw new AuthorizationException("Acesso negado");
         }
         Tenant tenant= tenantRepository.findById(user.getId()).get();
-   
+    	Account account = accountService.find(tenant.getAccount().getId());
      
     	String query="select P from Property P ";
     	String condition = "where";
     	
-    	if(tenant != null) {
-    		query += condition + " P.tenant= :tenant WHERE P IN :properties";
+    	if(account != null) {
+    		query += condition + " P.account= :account WHERE P IN :properties";
     		condition = " and ";
     	}
     	
@@ -209,10 +213,7 @@ public class PropertyCustomRepository {
     		q.setParameter("typeProperty", typeProperty);
     	}
     	
-    
-    	
-    	 
-    
+       
     	List<Property> l=q.getResultList();
     	
    

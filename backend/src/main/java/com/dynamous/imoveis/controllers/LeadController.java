@@ -6,15 +6,18 @@ import com.dynamous.imoveis.dto.LeadNewHomeSiteDTO;
 import com.dynamous.imoveis.dto.LeadNewSiteDTO;
 import com.dynamous.imoveis.dto.LeadUpdateDTO;
 import com.dynamous.imoveis.dto.PropertyUpdateDTO;
+import com.dynamous.imoveis.entities.Account;
 import com.dynamous.imoveis.entities.Lead;
 import com.dynamous.imoveis.entities.Opportunity;
 import com.dynamous.imoveis.entities.Property;
 import com.dynamous.imoveis.entities.Step;
 import com.dynamous.imoveis.entities.Tenant;
+import com.dynamous.imoveis.repositories.AccountRepository;
 import com.dynamous.imoveis.repositories.LeadRepository;
 import com.dynamous.imoveis.repositories.OpportunityRepository;
 import com.dynamous.imoveis.repositories.StepRepository;
 import com.dynamous.imoveis.repositories.TenantRepository;
+import com.dynamous.imoveis.services.AccountService;
 import com.dynamous.imoveis.services.LeadService;
 import com.dynamous.imoveis.services.OpportunityService;
 import com.dynamous.imoveis.services.StepService;
@@ -63,6 +66,11 @@ public class LeadController {
     @Autowired 
     private StepRepository stepRepo;
     
+	@Autowired
+	private AccountService accountService;
+	
+	@Autowired
+	private AccountRepository accountRepository;
    
     @PreAuthorize("hasAnyRole('TENANT')")
     @GetMapping(value = "/find/{id}", produces = {MediaType.APPLICATION_JSON_VALUE})
@@ -91,16 +99,18 @@ public class LeadController {
     @PreAuthorize("hasAnyRole('TENANT')")
     @PutMapping(value = "/updateStepLead/{id}/{stepId}", produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<Void> update(@PathVariable Long id, @PathVariable Long stepId){
-    
+   
     	Lead lead= service.find(id);
-    	Step step= stepService.find(stepId);
-    	Tenant tenant= tenantService.find(lead.getTenant().getId());
-    	lead.setTenant(tenant);
+    	Step step= stepService.find(stepId);    
+    	Account account= accountService.find(lead.getAccount().getId());
+    	lead.setAccount(account);
+    	
     	Opportunity opportunity= opService.find(lead.getOpportunity().getId());
+    
     	opportunity.setStep(step);
     	lead.setOpportunity(opportunity);
     	opRepository.save(opportunity);
-    	tenRepository.save(tenant);
+    	accountRepository.save(account);
     	stepRepo.save(step);
         service.updateLeadStep(lead);
         return ResponseEntity.noContent().build();
@@ -125,8 +135,10 @@ public class LeadController {
     
     @PreAuthorize("hasAnyRole('TENANT')")
     @GetMapping(value = "/totalLeads/{id}", produces = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<?> getTotalLeads(@PathVariable Long id){    	  	
-       Long total= leadRepository.countLeadByTenantId(id);      
+    public ResponseEntity<?> getTotalLeads(@PathVariable Long id){
+    	Tenant tenant = tenantService.find(id);
+    	Account account = accountService.find(tenant.getAccount().getId());
+       Long total= leadRepository.countLeadByAccountId(account.getId());      
         return ResponseEntity.ok().body(total);
     }
     

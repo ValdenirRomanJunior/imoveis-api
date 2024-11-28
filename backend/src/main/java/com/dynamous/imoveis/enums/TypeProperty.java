@@ -7,8 +7,20 @@ public enum TypeProperty  implements Serializable {
         Casa(1,"Casa"),
         Apartamento(2,"Apartamento"),
         Terreno(3,"Terreno"),
-        Comercial(4,"Comercial");
-
+        CasaComercial(4,"Casa Comercial"),
+		CasaDeCondominio(5,"Casa de Condomínio"),
+		Flat(6,"Flat"),
+		Chacara(7,"Chácara"),
+		Sitio(8,"Sítio"),
+		Fazenda(9,"Fazenda"),
+		GalpaoBarracao(10,"Galpão/Barracão"),
+		Pousada(11,"Pousada"),
+		Studio(12,"Studio"),
+		SalaComercial(13,"Sala Comercial"),
+		Sobrado(14,"Sobrado"),
+		Lancamento(15,"Lançamento");
+				
+				
         private int cod;
         private String description;
 

@@ -103,16 +103,13 @@ export const uploadProfileImage = (image:string)=>{
         let formData : FormData = new FormData();
         formData.set('file',imageBlob,`file.${ext}`);
         return api.post('/pictures/save/profile', formData)
-         .then(response =>{
-            
+         .then(response =>{            
               return response;
            
           }).catch((error) =>{
             return error
            
-        });
-
- 
+        }); 
 }
 
 export const refreshToken = async () => {  
@@ -120,8 +117,7 @@ export const refreshToken = async () => {
         
         response =>{                   
             const tokenString =JSON.stringify(response.headers.authorization);         
-             localStorage.setItem('token', tokenString)
-               
+             localStorage.setItem('token', tokenString)               
              return response.status;
             
         }

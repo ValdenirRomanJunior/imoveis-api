@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 import styled from "styled-components";
 
 
@@ -6,7 +6,7 @@ export const HeaderContainer = styled.header`
     width:100%;
     height:45px;
 
-    background-color: #f6f8fa;
+    background-color: #fff;
 
     display: flex;
     align-items: center;
@@ -122,7 +122,7 @@ export const BoxLinks = styled.div<{ linksModal: boolean}>`
     opacity: ${({linksModal}) => (linksModal ? '0' : '1')};
     left: ${({linksModal}) => (linksModal ? '100px' : '-80px')};
     box-shadow: ${({linksModal}) => (linksModal ? '0 10px 10px 0 rgb(0 0 1 / 10%)':'0 10px 10px 0 rgb(100 149 237 / 20%)')};
-    
+    z-index:1;
 
 
 
@@ -206,12 +206,12 @@ export const SideBarContainer = styled.div<{ sidebar: boolean}>`
     background-color: ${({theme}) => theme.colors.background};
     border-right:1px solid #e6e9ed;
     position:absolute;
-    top:61px;
+    top:50px;
     transition: all .5s cubic-bezier(.2,1,.2,1),width .5s cubic-bezier(.2,1,.2,1) .3s,box-shadow .5s cubic-bezier(.2,1,.2,1) .3s;
     left: ${({sidebar}) => (sidebar ? '0' : '-100%')};
     box-shadow: ${({sidebar}) => (sidebar ? '0 30px 50px 0 rgb(0 0 0 / 30%)' : 'none' )};
   
-   
+       z-index: 1;
    
     
 
@@ -278,16 +278,21 @@ export const SideBarTop = styled.div`
   
     `
 
-export const NavIcon = styled(Link)`
+export const NavIcon = styled(NavLink)`
     font-size:1.2rem;
     display: flex;
     padding:8px 0;
     padding: 15px;
+    align-items: center;
+  
+
+
+  
     
     align-items:center;
     color:${({theme}) => theme.colors.secondary};
   
- 
+  
 
     p{
         margin-bottom:0;
@@ -297,31 +302,95 @@ export const NavIcon = styled(Link)`
         position:relative;
 
     }
+
+
     .site-link{
         color:#008ace;
         font-size: 18px;
     }
 
+   .icon-wrapper-pulse{
+    position:relative;
+    width:20px;
+
+   }
+
+    .pulse{
+    height: 20px;
+    width: 20px;
+    background:linear-gradient(#ffffff94, #ffffff5c);
+    position:absolute;
+    margin:auto;
+    left:0;
+    right: 0;
+    top:0;
+    bottom:0;
+    border-radius:50%;
+    display: grid;
+    place-items: center;
+
+
+    }
+    .pulse:before, 
+    .pulse:after{
+        content:"";
+        position:absolute;
+        height:100%;
+        width:100%;
+        background: #82b1fb61;
+        border-radius:50%;
+        z-index: -1;
+        opacity: 0.7;
+    }
+     
+    .pulse:before{
+    animation: pulse 3s ease-out infinite;
+    }
+    .pulse:after{
+    animation: pulse 3s 1.5s ease-out infinite;
+    }
+
+    @keyframes pulse {
+        100%{
+        transform:scale(2.5);
+        opacity:0;
+
+        }
+       
+    }
+         .icon-pulse{
+        font-size:14px;
+        color:#6d99f4;
+        }
+
+        
     @media screen and (min-width: 1000px){
          position: relative;
          padding: 18.1px 13px;
-         display: block;
+         display: flex;
+         align:items: center;
          white-space: nowrap;
          width:100%;
          transition:all .5s cubic-bezier(.2,1,.2,1),width .5s cubic-bezier(.2,1,.2,1) .3s;
          overflow: hidden;
        
-         
+   
+            .icon-wrapper-pulse{
+            position:relative;
+            width:25px;
             
-      
-       .icon-sidebar{
+             margin-left:5px;
+             margin-top:0;
+
+          }
+            
+        .icon-sidebar{
         position:absolute;
         top: 20px;
         left: 18px;
         vertical-align: middle;
         overflow: hidden;
-      
-    
+     
        }
 
        p{
@@ -331,6 +400,61 @@ export const NavIcon = styled(Link)`
        
         
        }
+
+        .icon-wrapper-pulse{
+        position:absolute;
+        width:20px;
+
+   }
+
+    .pulse{
+    height: 20px;
+    width: 20px;
+    background:linear-gradient(#ffffff94, #ffffff5c);
+    position:absolute;
+    margin:auto;
+    left:0;
+    right: 0;
+    top:0;
+    bottom:0;
+    border-radius:50%;
+    display: grid;
+    place-items: center;
+
+
+    }
+    .pulse:before, 
+    .pulse:after{
+        content:"";
+        position:absolute;
+        height:100%;
+        width:100%;
+        background: #82b1fb61;
+        border-radius:50%;
+        z-index: -1;
+        opacity: 0.7;
+    }
+     
+    .pulse:before{
+    animation: pulse 3s ease-out infinite;
+    }
+    .pulse:after{
+    animation: pulse 3s 1.5s ease-out infinite;
+    }
+
+    @keyframes pulse {
+        100%{
+        transform:scale(2.5);
+        opacity:0;
+
+        }
+       
+    }
+         .icon-pulse{
+        font-size:14px;
+        color:#6d99f4;
+        }
+
     }
 
     

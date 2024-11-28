@@ -2,29 +2,42 @@ package com.dynamous.imoveis.dto;
 
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
+import org.hibernate.annotations.Type;
 import org.hibernate.validator.constraints.Length;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.dynamous.imoveis.entities.Image;
 import com.dynamous.imoveis.entities.ImageUrl;
+import com.dynamous.imoveis.enums.Feature;
 
 import javax.persistence.Column;
+import javax.persistence.Lob;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+
+
+
 public class PropertyNewDTO implements Serializable {
     private static final long serialVersionUID = 1L;
+    	
+    
+    	
 
     @NotEmpty(message = "Preenchimento obrigatório")
     @Length(min=2, max=80, message = "O tamanho deve ser entre 2 e 80 caracteres")
     private String name;
     @NotEmpty(message = "Preenchimento obrigatório")
-    @Length(min=1, max=250, message = "O tamanho deve ser entre 1 e 250 caracteres")
+    
+   
+   @Length(min=1, max=350, message = "O tamanho deve ser entre 1 e 350 caracteres")
     private String description;
-
+    
     @NotNull 
     private Integer typeProperty;
   
@@ -35,6 +48,8 @@ public class PropertyNewDTO implements Serializable {
   
     @NotEmpty(message = "Preenchimento obrigatório")
     private String bathRooms;
+    @NotEmpty(message = "Preenchimento obrigatório")
+    private String suites;
     @NotEmpty(message = "Preenchimento obrigatório")
     private String area;
     @NotEmpty(message = "Preenchimento obrigatório")
@@ -64,10 +79,16 @@ public class PropertyNewDTO implements Serializable {
     private String cep;
     @NotEmpty(message = "Preenchimento obrigatório")
     private String areaTotal;
+    	
+	
+    private MultipartFile file;
     
- 
-    private List<ImageUrl> images= new ArrayList<>();
+    private List<FeatureDTO> features;
 
+    @NotEmpty(message = "Preenchimento obrigatório")
+    private String	financeable;
+    @NotEmpty(message = "Preenchimento obrigatório")
+    private String permuta;
   
 
     public PropertyNewDTO(){
@@ -212,20 +233,52 @@ public class PropertyNewDTO implements Serializable {
 		this.uf = state;
 	}
 
-	public List<ImageUrl> getImages() {
-		return images;
-	}
-
-	public void setImages(List<ImageUrl> images) {
-		this.images = images;
-	}
-
 	public String getAreaTotal() {
 		return areaTotal;
 	}
 
 	public void setAreaTotal(String areaTotal) {
 		this.areaTotal = areaTotal;
+	}
+
+	public MultipartFile getFile() {
+		return file;
+	}
+
+	public void setFile(MultipartFile file) {
+		this.file = file;
+	}
+
+	public List<FeatureDTO> getFeatures() {
+		return features;
+	}
+
+	public void setFeatures(List<FeatureDTO> features) {
+		this.features = features;
+	}
+
+	public String getFinanceable() {
+		return financeable;
+	}
+
+	public void setFinanceable(String financeable) {
+		this.financeable = financeable;
+	}
+
+	public String getPermuta() {
+		return permuta;
+	}
+
+	public void setPermuta(String permuta) {
+		this.permuta = permuta;
+	}
+
+	public String getSuites() {
+		return suites;
+	}
+
+	public void setSuites(String suites) {
+		this.suites = suites;
 	}
 
 

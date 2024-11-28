@@ -10,7 +10,7 @@ align-items: center;
 height:auto;
 
 `
-export const DetailsBodyContainer = styled.div<{copyUrl:boolean}>`
+export const DetailsBodyContainer = styled.div<{copyUrl:boolean,copyId:boolean}>`
 width: 100%;   
 display: flex;  
 flex-direction: column;
@@ -39,8 +39,73 @@ height: auto;
 .cod-property-detail{
     font-size:14px;
     color: gray;
+    position:relative;
 
 }
+   .cod-property-detail::before{
+    position: absolute;
+    top:-55px;
+    left:-120%;
+    transform: translate(-50%,-50%);
+    content: "copiado";
+
+    background-color: gray;
+    display: flex;
+    color:#fff;
+    font-size:12px;
+    padding:5px 15px;
+    -webkit-box-shadow: 0px 0px 13px -5px rgba(214,214,214,1);
+    -moz-box-shadow: 0px 0px 13px -5px rgba(214,214,214,1);
+    box-shadow: 0px 0px 13px -5px rgba(214,214,214,1);
+    text-align: center;
+    display:${({copyId}) => copyId === true ?  'block' : 'none'};
+    font-weight: bold;
+    transition: transform .3s;
+    animation: copyId 4s ease-in-out;
+    transform: translateY(0) scale(0);
+    opacity:0;
+    font-weight:400;
+   
+
+
+  }
+
+  @keyframes copyId {
+    
+    0%{
+        transition: .1s;
+        transform: translateY(0) scale(1.2);
+        opacity:0.3;
+       
+       
+    } 
+    25%{
+       
+        transform: translateY(10px) scale(1.2);
+        opacity:1;   
+        
+              
+    }
+
+    50%{
+       
+        transform: translateY(10px) scale(1.2);
+        opacity:.9; 
+                
+    }
+    75%{
+       
+        transform: translateY(10px) scale(1.2);
+        opacity:.3;
+                    
+    }
+    100%{
+       
+        transform: translateY(10px) scale(1.2);
+        opacity:0;
+                    
+    }
+  }
 
 h4{
     width:100%;

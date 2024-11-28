@@ -29,7 +29,7 @@ const LazyDetails = React.lazy(() => import('../pages/Details'));
 const LazyEdit = React.lazy(() => import('../pages/Edit'));
 const LazyLeads = React.lazy(() => import('../pages/Leads'));
 const LazyAccount = React.lazy(() => import('../pages/MyAccount'));
-const LazyRegistrationTenant = React.lazy(() => import('../pages/RegistrationTenant'));
+const LazyAccountRegistration = React.lazy(() => import('../pages/AccountRegistration'));
 const LazyTenants = React.lazy(() => import('../pages/Tenants'));
 const LazyEditTenant = React.lazy(() => import('../pages/EditTenant'));
 const LazyConfirmationPage = React.lazy(() => import('../pages/ConfirmationPage'));
@@ -40,15 +40,16 @@ const LazySteps = React.lazy(() => import('../pages/Steps'));
 const LazyPortals = React.lazy(() => import('../pages/Portals'));
 const LazyPortal = React.lazy(() => import('../pages/Portal'));
 const LazyPortalConfig = React.lazy(() => import('../pages/PortalConfig'));
+const LazyFeatured = React.lazy(() => import('../pages/Featured'));
+const LazyUserRegistration = React.lazy(() => import('../pages/UserRegistration'));
+const LazyEditUser = React.lazy(() => import('../pages/EditUser'));
 
 
 
 export const Router = () => {
 
-  
     return (
-        
-       
+             
         <BrowserRouter>
 
             <Routes>
@@ -62,8 +63,8 @@ export const Router = () => {
                 <Route path="/edit/:propertyId"  element={<React.Suspense fallback={<LoadingLogin/>}><LazyEdit/></React.Suspense>} />     
                 <Route path="/leads"  element={<React.Suspense fallback={<LoadingLogin/>}><LazyLeads/></React.Suspense>} />
                 <Route path="/account"  element={<React.Suspense fallback={<LoadingLogin/>}><LazyAccount/></React.Suspense>} />
-                <Route path="/registrationTenant"  element={<React.Suspense fallback={<LoadingLogin/>}><LazyRegistrationTenant/></React.Suspense>} />
-                <Route path="/tenants"  element={<React.Suspense fallback={<LoadingLogin/>}><LazyTenants/></React.Suspense>} />
+                <Route path="/accountRegistration"  element={<React.Suspense fallback={<LoadingLogin/>}><LazyAccountRegistration /></React.Suspense>} />
+                <Route path="/accounts"  element={<React.Suspense fallback={<LoadingLogin/>}><LazyTenants/></React.Suspense>} />
                 <Route path="/edittenant/:tenantId" element={<React.Suspense fallback={<LoadingLogin/>}><LazyEditTenant/></React.Suspense>} />
                 <Route path="/verification/:tenantEmail" element={<React.Suspense fallback={<LoadingLogin/>}><LazyConfirmationPage/></React.Suspense>} />
                 <Route path="/leadDetail/:leadId"  element={<React.Suspense fallback={<LoadingLogin/>}><LazyLeadDetail/></React.Suspense>} />
@@ -73,8 +74,12 @@ export const Router = () => {
                 <Route path="/portais"  element={<React.Suspense fallback={<LoadingLogin/>}><LazyPortals/></React.Suspense>} />
                 <Route path="/portal"  element={<React.Suspense fallback={<LoadingLogin/>}><LazyPortal/></React.Suspense>} />
                 <Route path="/portalConfig"  element={<React.Suspense fallback={<LoadingLogin/>}><LazyPortalConfig/></React.Suspense>} />
+                <Route path="/featured"  element={<React.Suspense fallback={<LoadingLogin/>}><LazyFeatured/></React.Suspense>} />
+                <Route path="/userRegistration"  element={<React.Suspense fallback={<LoadingLogin/>}><LazyUserRegistration/></React.Suspense>} />
+                <Route path="/editUser/:tenantId"  element={<React.Suspense fallback={<LoadingLogin/>}><LazyEditUser/></React.Suspense>} />
               
             </Routes>
+          
         </BrowserRouter>
               
     )

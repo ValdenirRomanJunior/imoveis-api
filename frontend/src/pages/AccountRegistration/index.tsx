@@ -22,7 +22,7 @@ type Error = {
 
 
 
-const RegistrationTenant = () =>{
+const AccountRegistration = () =>{
 
     const [otherError, setOtherError] = useState(false);
     const [errors, setErrors] = useState<Error[]>([]);
@@ -35,7 +35,7 @@ const RegistrationTenant = () =>{
     const refreshTokenUser = async ()=>{
         const  resp = await refreshToken();    
         if(resp === 204){  
-          navigate('/registrationTenant')
+          navigate('/accountRegistration')
         }else{
             navigate('/')
         }
@@ -57,14 +57,14 @@ useEffect(() =>{
         const [form, setForm] = useState<any>({
             
             slug:"",
+            proprietario:"",
             lastName:"",
             email:"",
             password:"",
             creci:"",
           
-         
-    
         })
+        
         const cleanForm = () =>{
 
             Array.from(document.querySelectorAll("input")).forEach(
@@ -73,6 +73,7 @@ useEffect(() =>{
               
             setForm({ ...form,
                 slug:"",
+                proprietario:"",
                 lastName:"",
                 email:"",
                 password:"",
@@ -136,7 +137,7 @@ useEffect(() =>{
 
                    
                     
-                const data = await newTenant(slug, lastName,email,password,creci)
+                const data = await newTenant(slug, lastName,email,password,creci,form['proprietario'])
                 console.log(data.response)
                     
                 if(data.status === 201){
@@ -189,12 +190,17 @@ useEffect(() =>{
             <form onSubmit={(e)=> {handleSubmit(e)}}>
             <FormContainer>
 
-                <label>Nome*</label>
+                <label>Nome Imobiliaria*</label>
                 <Input id="slug" name="slug" onChange={(e) => handleChange(e)} onKeyUp={handleKeyUp} maxLength={25} />          
                 {errors.map(x => { if(x.fieldName === 'slug') return  <p className=' formField__error'>{x.message}</p>})}
                 { emptyValue && form['slug'] === '' ? <span className='formField__error'>Este campo é r'equerido</span>: ''}
 
-                <label>Sobrenome*</label>
+                <label>Nome Proprietario*</label>
+                <Input id="proprietario" name="proprietario"  onChange={(e) => handleChange(e)} onKeyUp={handleKeyUp} maxLength={35} />
+                {errors.map(x => { if(x.fieldName === 'proprietario') return  <p className=' formField__error'>{x.message}</p>})}
+                { emptyValue && form['proprietario'] === '' ?<span className='formField__error'>Este campo é requerido</span>: ''}
+
+                <label>Sobrenome Proprietario*</label>
                 <Input id="lastName" name="lastName"  onChange={(e) => handleChange(e)} onKeyUp={handleKeyUp} maxLength={35} />
                 {errors.map(x => { if(x.fieldName === 'lastName') return  <p className=' formField__error'>{x.message}</p>})}
                 { emptyValue && form['lastName'] === '' ?<span className='formField__error'>Este campo é requerido</span>: ''}
@@ -243,6 +249,6 @@ useEffect(() =>{
     )
 }
 
-export default RegistrationTenant;
+export default AccountRegistration;
 
 

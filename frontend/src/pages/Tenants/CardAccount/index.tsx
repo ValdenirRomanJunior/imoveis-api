@@ -40,6 +40,8 @@ type Props = {
   const handleToDelete = async () => {
 
     const data =  await deleteTenant(String(tenant.id));
+        
+ 
   }
 
     return(
@@ -80,7 +82,7 @@ type Props = {
 
 }
 
-const CardTenant = ()=>{
+const CardAccount = ()=>{
 
     const [pageNumber, setPageNumber] = useState(0);
 
@@ -130,4 +132,4 @@ const CardTenant = ()=>{
 
 }
 
-export default CardTenant;
+export default CardAccount;

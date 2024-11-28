@@ -24,6 +24,8 @@ import java.net.UnknownHostException;
 import java.util.List;
 import java.util.stream.Collectors;
 
+
+/// CONTROLLER PARA ACCOUNTS
 @RestController
 @RequestMapping(value = "/tenants", produces = {MediaType.APPLICATION_JSON_VALUE})
 public class TenantController {
@@ -46,8 +48,7 @@ public class TenantController {
         Tenant obj = service.fromDTO(objDto);
 
         service.insert(obj);
-       
-        
+               
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").
                   buildAndExpand(obj.getId()).toUri();
         return ResponseEntity.created(uri).build();
@@ -67,7 +68,7 @@ public class TenantController {
     	        tenant=service.update(tenant);
     	        return ResponseEntity.noContent().build();
     	}
-    	
+    		
     	objDto.setId(id);
     	
         Tenant tenant= service.fromUpdateDTO(objDto);
@@ -86,13 +87,13 @@ public class TenantController {
 
     @PreAuthorize("hasAnyRole('ADMIN')")
     @GetMapping(value = "/page", produces = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity <Page<TenantDTO>> findPage(
+    public ResponseEntity <Page<Tenant>> findPage(
             @RequestParam(value = "page",defaultValue = "0") Integer page,
             @RequestParam(value = "linesPerPage",defaultValue = "24")  Integer linesPerPage,
             @RequestParam(value = "orderBy",defaultValue = "slug")String orderBy,
             @RequestParam(value = "direction",defaultValue = "ASC")  String direction){
         Page<Tenant> list=service.findPage(page,linesPerPage,orderBy,direction);
-        Page<TenantDTO>listDTO=list.map(x -> new TenantDTO(x));
-        return ResponseEntity.ok().body(listDTO);
+      ///  Page<TenantDTO>listDTO=list.map(x -> new TenantDTO(x));
+        return ResponseEntity.ok().body(list);
     }
 }

@@ -1,5 +1,7 @@
 package com.dynamous.imoveis.services;
 
+import com.dynamous.imoveis.controllers.CountOpportunity;
+import com.dynamous.imoveis.dto.CountObjectDTO;
 import com.dynamous.imoveis.dto.LeadDTO;
 import com.dynamous.imoveis.dto.LeadNewDTO;
 import com.dynamous.imoveis.dto.LeadNewHomeSiteDTO;
@@ -10,6 +12,7 @@ import com.dynamous.imoveis.dto.OpportunityNewHomeSiteDTO;
 import com.dynamous.imoveis.dto.OpportunityNewSiteDetailDTO;
 import com.dynamous.imoveis.dto.TenantDTO;
 import com.dynamous.imoveis.dto.TenantNewDTO;
+import com.dynamous.imoveis.entities.Account;
 import com.dynamous.imoveis.entities.Lead;
 import com.dynamous.imoveis.entities.Opportunity;
 import com.dynamous.imoveis.entities.Property;
@@ -37,11 +40,15 @@ import org.springframework.data.domain.Sort;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 @Service
 public class OpportunityService {
@@ -61,7 +68,11 @@ public class OpportunityService {
     @Autowired
     private LeadService leadService;
     
-  
+	@Autowired
+	private AccountService accountService;
+	
+  private final List<SseEmitter> emitters=new CopyOnWriteArrayList<SseEmitter>();
+    
     public Opportunity find(Long id) {
     	 UserSS user = UserService.authenticated();
          
@@ -70,10 +81,11 @@ public class OpportunityService {
          }
          
          Tenant tenant= tenantService.find(user.getId());
-        Optional<Opportunity> opportunity = opportunityRepository.findByIdAndTenant(id,tenant);
+       	Account account= accountService.find(tenant.getAccount().getId());   
+        Optional<Opportunity> opportunity = opportunityRepository.findByIdAndAccount(id,account);
 
         return opportunity.orElseThrow(() -> new ObjectNotFoundException(
-                "Página não encontrada! Id:" + ", Type" + Opportunity.class.getName()));
+                "Página não encontradaOP! Id:" + ", Type" + Opportunity.class.getName()));
     }
     
     @Transactional
@@ -82,7 +94,16 @@ public class OpportunityService {
    
     
     	//obj.setStep(obj.getStep().);
-        opportunityRepository.save(obj);      
+        opportunityRepository.save(obj);    
+        
+        for(SseEmitter emitter: emitters) {
+        	try {
+        		emitter.send("nova oportunidade");
+        	}catch (IOException e) {
+			emitter.complete();
+			emitters.remove(emitter);
+			}
+        }
         return obj;
     }
 
@@ -99,25 +120,28 @@ public class OpportunityService {
 
     public List<Opportunity> findAll() {
     	 UserSS user = UserService.authenticated();
-         Tenant tenant = tenantService.find(user.getId());
+    
          
           if(user==null || !user.hasRole(Perfil.TENANT)){
               throw new AuthorizationException("Acesso negado");
           }
-        return opportunityRepository.findAllByTenant(tenant);
+          Tenant tenant = tenantService.find(user.getId());
+        	Account account= accountService.find(tenant.getAccount().getId());  
+        return opportunityRepository.findAllByAccount(account);
         
     }
 
     public Page<Opportunity> findPage(Integer page, Integer linesPerPage, String orderBy, String direction){
         UserSS user = UserService.authenticated();
-       Tenant tenant = tenantService.find(user.getId());
+     
        
         if(user==null || !user.hasRole(Perfil.TENANT)){
             throw new AuthorizationException("Acesso negado");
         }
-       
+        Tenant tenant = tenantService.find(user.getId());
+    	Account account= accountService.find(tenant.getAccount().getId()); 
         PageRequest pageRequest = PageRequest.of(page,linesPerPage, Sort.Direction.valueOf(direction),orderBy);
-        return opportunityRepository.findByTenantOpportunityIn(tenant, pageRequest);
+        return opportunityRepository.findByAccountOpportunityIn(account, pageRequest);
     }
 
     //oportunidade que vem crm, quando cria a oportunidade ou pelo lead com ou sem vinculo com imovel
@@ -132,10 +156,11 @@ public class OpportunityService {
         		String newDate= sdf.format(new Date());
         		
         		 Tenant tenant=tenantService.find(user.getId());
+        		 Account account= accountService.find(tenant.getAccount().getId()); 
+        		 
         		 Opportunity opportunity = new Opportunity(null,newDate);
-         		opportunity.setTenant(tenant);
-         		        		 
-        		 Step firtsStep= stepRepository.findFirstByTenant(tenant);
+         		opportunity.setAccount(account);  		 
+        		 Step firtsStep= stepRepository.findFirstByAccount(account);
          		if(firtsStep != null ) {
          			opportunity.setStep(firtsStep);
          		}
@@ -147,9 +172,8 @@ public class OpportunityService {
     	       	     	        	 
     	         lead.setPropertyId(objDto.getPropertyId());
     	    	 opportunity.setPropertyId(objDto.getPropertyId());   	    	  	   	    
-    	    	 
-    	       	     
-    	        lead.setTenant(tenant);
+    	    	 	   	       	     
+    	        lead.setAccount(account);
     	        leadService.insert(lead);
     	              		
     	        opportunity.setLead(lead);
@@ -164,21 +188,55 @@ public class OpportunityService {
     	
     	SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");		
 		String newDate= sdf.format(new Date());
-		Opportunity opportunity = new Opportunity(null,newDate);	
-		Tenant tenant= tenantService.findByDomain(objDto.getUrl());	
-		opportunity.setTenant(tenant);
-        return opportunity;
-		   
+		
+	
+		 Opportunity opportunity = new Opportunity(null,newDate);
+		 Account account= accountService.findByDomain(objDto.getUrl()); 
+		 opportunity.setAccount(account); 
+		 Step firtsStep= stepRepository.findFirstByAccount(account);
+ 		if(firtsStep != null ) {
+ 			opportunity.setStep(firtsStep);
+ 		}
+ 		if(firtsStep == null ) {
+ 			 throw new DataIntegrityException("Precisa ter pelo menos 1 etapa cadastrada ");
+ 		}
+		 
+        Lead lead= new Lead(null,objDto.getName(),objDto.getEmail(),objDto.getPhone(),objDto.getMessage(),newDate);     	     	        	 
+         lead.setPropertyId(null);
+    	 opportunity.setPropertyId(null);   	    	  	   	       	 	   	       	     
+        lead.setAccount(account);
+        leadService.insert(lead);              		
+        opportunity.setLead(lead);	
+        lead.setOpportunity(opportunity);
+	
+        return opportunity; 		   
 }
     //oportunidade que vem do detalhe do imovel do site do cliente
     public Opportunity fromDTODetailSite(OpportunityNewSiteDetailDTO objDto){ 
     	
-    	SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");		
+    	SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");    	
     	String newDate= sdf.format(new Date());
+    	
+    	Property property = propertyService.find(objDto.getPropertyId());
+		 Account account= accountService.find(property.getAccount().getId()); 
+		 
     	Opportunity opportunity = new Opportunity(null, newDate);
+    	opportunity.setAccount(account);
     	opportunity.setPropertyId(objDto.getPropertyId());
-		Tenant tenant= tenantService.findSite(objDto.getTenantId());
-		opportunity.setTenant(tenant);
+    	 Step firtsStep= stepRepository.findFirstByAccount(account);
+  		if(firtsStep != null ) {
+  			opportunity.setStep(firtsStep);
+  		}
+  		if(firtsStep == null ) {
+  			 throw new DataIntegrityException("Precisa ter pelo menos 1 etapa cadastrada ");
+  		}
+  	   Lead lead= new Lead(null,objDto.getName(),objDto.getEmail(),objDto.getPhone(),objDto.getMessage(),newDate);
+  	   lead.setPropertyId(objDto.getPropertyId());
+  	   lead.setAccount(account);
+    	leadService.insert(lead);
+    	
+    	 opportunity.setLead(lead);			
+	     lead.setOpportunity(opportunity);
         return opportunity;
 		   
 }
@@ -187,8 +245,9 @@ public class OpportunityService {
     @Transactional
     public void deleteAllByTenant(Long id) {
     	Tenant tenant= tenantService.find(id);
+    	 Account account= accountService.find(tenant.getAccount().getId()); 
        try {
-    	   opportunityRepository.deleteAllByTenant(tenant);
+    	   opportunityRepository.deleteAllByAccount(account);
         } catch (DataIntegrityViolationException  | EmptyResultDataAccessException | StaleStateException e) {
           throw new DataIntegrityException("Não é possivel deletar porque tem objetos anexados: ");
         }
@@ -197,5 +256,37 @@ public class OpportunityService {
 	public OpportunityDTO fromDTOFind(Opportunity opportunity) {
 			OpportunityDTO opportunityDTO = new OpportunityDTO(opportunity);		
 		return opportunityDTO;
+	}
+	
+	public void adEmitter(SseEmitter emitter) {
+		emitters.add(emitter);
+		emitter.onCompletion(()-> emitters.remove(emitter));
+		emitter.onTimeout(()-> emitters.remove(emitter));
+		
+	}
+		
+	public List<CountOpportunity> countByStepName() {
+		
+ 	 UserSS user = UserService.authenticated();        
+         if(user == null){
+             throw new AuthorizationException("Acesso negado");
+         }
+         
+         Tenant tenant= tenantService.find(user.getId());
+     	Account account= accountService.find(tenant.getAccount().getId());   
+		List<Step> steps= stepRepository.findAllByAccount(account);
+		Long count;
+		List<CountOpportunity> list= new ArrayList<CountOpportunity>();
+		
+			for(Step step: steps) {
+			 CountOpportunity countOpportunity = new CountOpportunity();
+			  count= opportunityRepository.countByStep(step.getId());
+				countOpportunity.setCount(count);
+				countOpportunity.setName(step.getName());
+				list.add(countOpportunity);
+			
+					
+			}
+		return list;
 	}
 }

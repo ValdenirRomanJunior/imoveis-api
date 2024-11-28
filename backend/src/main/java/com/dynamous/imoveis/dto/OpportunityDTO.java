@@ -37,7 +37,7 @@ public class OpportunityDTO implements Serializable {
     
     private Long propertyId;
     
-    private Long tenantId;
+    private Long accountId;
     
  
 
@@ -54,7 +54,7 @@ public class OpportunityDTO implements Serializable {
         stepId=(opportunity.getStep() == null) ? null : opportunity.getStep().getId();
         messageLead=opportunity.getLead().getMessage();
         propertyId=(opportunity.getPropertyId() == null) ? null : opportunity.getPropertyId();
-        tenantId=opportunity.getTenant().getId();
+        accountId=opportunity.getAccount().getId();
         instant=opportunity.getInstant();
         idLead=opportunity.getLead().getId();
        
@@ -85,12 +85,14 @@ public class OpportunityDTO implements Serializable {
 		this.propertyId = propertyId;
 	}
 
-	public Long getTenantId() {
-		return tenantId;
+
+
+	public Long getAccountId() {
+		return accountId;
 	}
 
-	public void setTenantId(Long tenantId) {
-		this.tenantId = tenantId;
+	public void setAccountId(Long accountId) {
+		this.accountId = accountId;
 	}
 
 	public String getNameLead() {
@@ -149,8 +151,5 @@ public class OpportunityDTO implements Serializable {
 		this.idLead = idLead;
 	}
 
-	
-
-	
-    
+ 
 }

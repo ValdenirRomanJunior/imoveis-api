@@ -1,4 +1,7 @@
+import { Feature } from "../pages/Registration";
+
 export type Property = {
+    booleanFeatured: (status:boolean)=> void;
     booleanModal:boolean;
     error:string;
     close:boolean;
@@ -8,6 +11,7 @@ export type Property = {
     description: string,
     goal: string,
     typeProperty: string,
+    typeDescription:string
     numberRooms:string,
     bathRooms:string,
     area:string,
@@ -17,6 +21,11 @@ export type Property = {
     price:string,
     areaTotal: string,
     statusProperty:string,
+    statusFeatured:string,
+    features:Feature[],
+    financeable:string,
+    permuta:string,
+    suites:string,
     images?:[{
         id:number,
         url:string,

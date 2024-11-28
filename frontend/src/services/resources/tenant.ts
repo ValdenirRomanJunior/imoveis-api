@@ -25,8 +25,8 @@ export const tenantsPageable = (pageNumber: number) => {
 
 
 
-export const newTenant = (slug:string, lastName:string, email: string, password:string,creci:string) => {
-    return api.post('/tenants/save',{slug, lastName, email,password,creci})
+export const newTenant = (slug:string, lastName:string, email: string, password:string,creci:string,proprietario:string) => {
+    return api.post('/tenants/save',{slug, lastName, email,password,creci,proprietario})
                                                  .then(response =>{
                                                     return response
                                                  }).catch((error) =>{
@@ -35,9 +35,9 @@ export const newTenant = (slug:string, lastName:string, email: string, password:
                                                 });
 }
 
-export const editTenant = (slug:string, lastName:string, email: string,password:string, status: string,creci:string, domain:string,verification:string,signedDays:string, id:string) => {
+export const editTenant = (slug:string, lastName:string, email: string,password:string, status: string,creci:string, domain:string,verification:string,signedDays:string, id:string,proprietario:string) => {
 
-    return api.put(`/tenants/update/${id}`,{slug, email,status,lastName, password,creci,domain,verification,signedDays})
+    return api.put(`/tenants/update/${id}`,{slug, email,status,lastName, password,creci,domain,verification,signedDays,proprietario})
                                              
                                                  .then(response =>{
                                                     return response;

@@ -4,11 +4,13 @@ import com.amazonaws.AmazonServiceException;
 import com.dynamous.imoveis.dto.TenantDTO;
 import com.dynamous.imoveis.dto.TenantNewDTO;
 import com.dynamous.imoveis.dto.TenantUpdateDTO;
+import com.dynamous.imoveis.entities.Account;
 import com.dynamous.imoveis.entities.Property;
 import com.dynamous.imoveis.entities.Tenant;
 import com.dynamous.imoveis.enums.Perfil;
 import com.dynamous.imoveis.enums.Status;
 import com.dynamous.imoveis.enums.Verification;
+import com.dynamous.imoveis.repositories.AccountRepository;
 import com.dynamous.imoveis.repositories.LeadRepository;
 import com.dynamous.imoveis.repositories.TenantRepository;
 import com.dynamous.imoveis.security.UserSS;
@@ -55,6 +57,12 @@ public class TenantService {
     @Autowired
     private LeadRepository leadRepository;
     
+	@Autowired
+	private AccountService accountService;
+	
+	@Autowired
+	private AccountRepository accountRepo;
+    
    
     public Tenant find(Long id) {
         UserSS user = UserService.authenticated();
@@ -62,6 +70,13 @@ public class TenantService {
         if(id==null || !user.hasRole(Perfil.ADMIN) && !id.equals(user.getId())){
             throw new AuthorizationException("Acesso negado");
         }
+        Optional<Tenant> tenant = tenantRepository.findById(id);
+        return tenant.orElseThrow(() -> new ObjectNotFoundException(
+                "Página não encontrada! Id:" + ", Type" + Tenant.class.getName()));
+    }
+    
+    public Tenant findTenantStep(Long id) {
+      
         Optional<Tenant> tenant = tenantRepository.findById(id);
         return tenant.orElseThrow(() -> new ObjectNotFoundException(
                 "Página não encontrada! Id:" + ", Type" + Tenant.class.getName()));
@@ -77,23 +92,28 @@ public class TenantService {
     @Transactional
     public Tenant insert(Tenant obj) throws UnknownHostException{
         obj.setId(null);
-        try {
-        	emailService.sendVerificationHtmlEmail(obj);
-        }catch (UnknownHostException e) {
-			throw new UnknownHostException("falha ao enviar email");
-		}
-        	
+       // try {
+        	//emailService.sendVerificationHtmlEmail(obj);
+       // }catch (UnknownHostException e) {
+			//throw new UnknownHostException("falha ao enviar email");
+		//}
+
+	
+         obj.addPerfil(Perfil.ACCOUNT);
+         Account account = new Account(null,null,obj.getDomain(),obj.getSlug(),null,obj.getCreci(),obj.getProprietario());
+         accountRepo.save(account);
+         obj.setAccount(account);
         tenantRepository.save(obj);   
         return obj;
     }
 
-
+    
     public Tenant update(Tenant tenant) {
         Tenant newObj= find(tenant.getId());
         updateData(newObj,tenant);
         return tenantRepository.save(newObj);
     }
-    
+    	
     
 
     private void updateData(Tenant newObj, Tenant tenant) {
@@ -118,27 +138,32 @@ public class TenantService {
 	public void delete(Long id){
     	find(id);
     	//leadService.deleteAllByTenant(id);
-    	Long countLeads=leadRepository.countLeadByTenantId(id);
-    	List<Property> properties= propertyService.findFourByTenant(id);
-    	
-    	
-    	//deletar todos os leads
-    	if((countLeads == 0) && (properties.size() ==0)) {
-    			 		 
-        try {   	    
-            s3Service.deleteAllFiles(id);
-            } catch (URISyntaxException | AmazonServiceException  e) {
-                throw new AmazonServiceException("Não é possivel deletar porque tem objetos anexados: ");
+    	Tenant tenant = find(id);
+    	Account account= accountService.find(tenant.getAccount().getId());
+    		
+  			 		 
+    	//   try {   	    
+          //  s3Service.deleteAllFiles(id);
+            //} catch (URISyntaxException | AmazonServiceException  e) {
+               // throw new AmazonServiceException("Não é possivel deletar porque tem objetos anexados: ");
                 
-            }
-    	}
-    	                                  	             
+           // }
+
+    	if(tenant.getPerfis().contains(Perfil.ACCOUNT)) {  		
+    		  try {    	    
+    	            accountRepo.deleteById(account.getId());
+    	           
+    	        } catch (DataIntegrityViolationException e) {
+    	          throw new DataIntegrityException("Não é possivel deletar porque tem objetos anexados: ");
+    	        }    		
+    	
        try {    	    
             tenantRepository.deleteById(id);
            
         } catch (DataIntegrityViolationException e) {
-          throw new DataIntegrityException("Não é possivel deletar porque tem objetos anexados: ");
+          throw new DataIntegrityException("Não é possivel deletar porque tem objetos anexadoss: ");
         }
+    	}
     	                  
     }
 
@@ -149,19 +174,24 @@ public class TenantService {
 
     public Page<Tenant> findPage(Integer page, Integer linesPerPage, String orderBy, String direction){
         PageRequest pageRequest = PageRequest.of(page,linesPerPage, Sort.Direction.valueOf(direction),orderBy);
-        return tenantRepository.findAll(pageRequest);
+        
+        UserSS user = UserService.authenticated();       
+        if(user==null || !user.hasRole(Perfil.ADMIN)){
+            throw new AuthorizationException("Acesso negado");
+        }
+          
+        return tenantRepository.findAllByPerfis(pageRequest,4);
     }
 
     public Tenant fromDTO(TenantNewDTO objDto){
     		
     		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");   		
     		String newDate= sdf.format(new Date()); 
-    		Tenant tenant = new Tenant(null, objDto.getSlug(), objDto.getEmail(),pe.encode(objDto.getPassword()), Status.ATIVO,objDto.getLastName(),Verification.NAO_VERIFICADO,objDto.getCreci(),newDate,null,null);
-    		
+    		Tenant tenant = new Tenant(null, objDto.getSlug(), objDto.getEmail(),pe.encode(objDto.getPassword()), Status.ATIVO,objDto.getLastName(),Verification.VERIFICADO,objDto.getCreci(),newDate,null,null,null,objDto.getProprietario());  		
             tenant.addPerfil(Perfil.TENANT);
             return tenant;
     		
-    	   
+            		
     }
     
     public Tenant fromUpdateDTO(TenantUpdateDTO objDto){
@@ -172,17 +202,25 @@ public class TenantService {
     	Tenant ten = find(objDto.getId());
     	Tenant tenant=null;
     	if(objDto.getSignedDays() != null) {
-    			
+    	  			
     		String endDate= generateEndDate(new Date(),objDto.getSignedDays());
-    		tenant = new Tenant(objDto.getId(), objDto.getSlug(), objDto.getEmail(),pe.encode(objDto.getPassword()), Status.toEnum(objDto.getStatus()),objDto.getLastName(),Verification.toEnum(objDto.getVerification()),objDto.getCreci(),ten.getStart(),renovation,endDate);
+    		tenant = new Tenant(objDto.getId(), objDto.getSlug(), objDto.getEmail(),pe.encode(objDto.getPassword()), Status.toEnum(objDto.getStatus()),objDto.getLastName(),Verification.toEnum(objDto.getVerification()),objDto.getCreci(),ten.getStart(),renovation,endDate,objDto.getDomain(),objDto.getProprietario());
     	    tenant.addPerfil(Perfil.TENANT);
-            tenant.setDomain(objDto.getDomain());
+    	    tenant.addPerfil(Perfil.ACCOUNT);
+           
             return tenant;
     	}
     	 	
-		tenant = new Tenant(objDto.getId(), objDto.getSlug(), objDto.getEmail(),pe.encode(objDto.getPassword()), Status.toEnum(objDto.getStatus()),objDto.getLastName(),Verification.toEnum(objDto.getVerification()),objDto.getCreci(),ten.getStart(),ten.getRenovation(),ten.getEndDate());
+    	Tenant tenantAux = find(objDto.getId());
+		 Account  newObj =  accountService.find(tenantAux.getAccount().getId());
+	     Account account = new Account(newObj.getId(),null,objDto.getDomain(),objDto.getSlug(),null,objDto.getCreci(), objDto.getProprietario());
+        accountRepo.save(account);
+        tenantAux.setAccount(account);
+    	
+		tenant = new Tenant(objDto.getId(), objDto.getSlug(), objDto.getEmail(),pe.encode(objDto.getPassword()), Status.toEnum(objDto.getStatus()),objDto.getLastName(),Verification.toEnum(objDto.getVerification()),objDto.getCreci(),ten.getStart(),ten.getRenovation(),ten.getEndDate(),objDto.getDomain(),objDto.getProprietario());
         tenant.addPerfil(Perfil.TENANT);
-        tenant.setDomain(objDto.getDomain());
+        tenant.addPerfil(Perfil.ACCOUNT);
+        
         return tenant;
 		
 	   
@@ -190,7 +228,7 @@ public class TenantService {
 
 
     public Tenant fromDTO(TenantDTO objDto) { 
-    		Tenant tenant = new Tenant(objDto.getId(), objDto.getSlug(), objDto.getEmail(), pe.encode(objDto.getPassword()), Status.toEnum(objDto.getStatus().getCod()),objDto.getLastName(),Verification.toEnum(objDto.getVerification().getCod()),objDto.getCreci(),objDto.getStart(),objDto.getRenovation(),objDto.getEndDate());
+    		Tenant tenant = new Tenant(objDto.getId(), objDto.getSlug(), objDto.getEmail(), pe.encode(objDto.getPassword()), Status.toEnum(objDto.getStatus().getCod()),objDto.getLastName(),Verification.toEnum(objDto.getVerification().getCod()),objDto.getCreci(),objDto.getStart(),objDto.getRenovation(),objDto.getEndDate(),null,null);
             tenant.addPerfil(Perfil.TENANT);
             return tenant;
     		  	

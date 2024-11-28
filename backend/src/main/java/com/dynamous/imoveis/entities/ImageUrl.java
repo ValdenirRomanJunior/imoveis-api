@@ -26,7 +26,7 @@ public class ImageUrl implements Serializable{
 	private Long id;
 	@Column(columnDefinition="TEXT", length = 1000)
 	private String url;
-	private Long idTenant;
+	private Long idAccount;
 	
 	 @JsonIgnore
 	 @ManyToOne
@@ -37,10 +37,10 @@ public class ImageUrl implements Serializable{
 		// TODO Auto-generated constructor stub
 	}
 	
-	public ImageUrl(Long id, String url, Long idTenant) {
+	public ImageUrl(Long id, String url, Long idAccount) {
 		this.id=id;
 		this.url=url;
-		this.idTenant=idTenant;
+		this.idAccount=idAccount;
 	}
 
 	public Long getId() {
@@ -59,15 +59,17 @@ public class ImageUrl implements Serializable{
 		this.url = url;
 	}
 
-	public Long getIdTenant() {
-		return idTenant;
+
+	
+	
+
+	public Long getIdAccount() {
+		return idAccount;
 	}
 
-	public void setIdTenant(Long idTenant) {
-		this.idTenant = idTenant;
+	public void setIdAccount(Long idAccount) {
+		this.idAccount = idAccount;
 	}
-	
-	
 
 	public Property getProperty() {
 		return property;

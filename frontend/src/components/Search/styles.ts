@@ -86,6 +86,59 @@ export const SearchContent= styled.div<{iconDelete:boolean}>`
         color:#c6c6c6;
     }
 
+    .custom-dropdown{
+      
+         border: 1px solid #c9c9c9;      
+        position: relative;
+        color:gray;
+        padding: 2px 18px 2px 8px;
+        margin-left:8px;
+        font-size:12px;
+        width:45%;
+        display: flex;
+        align-items: center;
+        height:38px;
+        
+  }
+    .custom-dropdown-selection{
+        background-color:#fff;
+        position: relative;
+        width:100%;
+      
+         
+    }
+        .arrow-type{
+        position: absolute;
+        right:-8%;
+        top:20%;
+        font-size:14px;
+        font-weight:700;
+        }
+
+       .custom-dropdown .items-holder{
+       position:absolute;
+       top:100%;
+         background-color:#fff;
+         width:100%;
+         border: 1px solid gray;
+         z-index:1;
+         max-height: 180px;
+         border-radius:5px;
+         padding:5px 0;
+         overflow:scroll;          
+    }
+         .icon-clean-type{
+          margin-left:5px;
+         }
+
+        .custom-dropdown .items-holder .dropdown-item{
+        padding: 10px 16px;
+        cursor:pointer;
+        color:gray;
+      
+        }
+
+
     .type-goal-wrapper{
         width:100%;
         border-bottom: 1px solid #b1b3b0;
