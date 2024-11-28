@@ -5,6 +5,8 @@ import Funnel from "react-apexcharts";
 import { Step } from '../../types/opportunity';
 import { countstepsName, stepsName, stepsOpportunity } from '../../services/resources/lead';
 import { steps } from 'framer-motion';
+import useAuth from '../../hooks/useAuth';
+import PageNotFoundDashboard from '../PageNotFoundDashboard';
 
 
 type SeriesData = {
@@ -28,6 +30,18 @@ type Counts = {
 
 function Funil(){
 
+    const [errors,setErrors]= useState(false);
+
+    const {user, getCurrentUser} = useAuth();
+    useEffect(() =>{
+        
+        getCurrentUser()
+      
+        if(user === null){
+            setErrors(true)
+        }
+       
+    },[])
   
     const [chartData, setChartData]= useState<ChartData>({ 
 
@@ -109,8 +123,11 @@ function Funil(){
               
     };
    
-
+    let perfilTenant=Object.values(user.perfis).some(obj => obj === 'TENANT');
+    let perfilAdmin=Object.values(user.perfis).some(obj => obj === 'ADMIN');
     return(
+        <>
+        { perfilTenant ? 
         <FunnelContainer>
           <div className='counts-item'>
                 {counts && counts.map(item=>(
@@ -138,6 +155,8 @@ function Funil(){
   
 
        </FunnelContainer>
+         : <PageNotFoundDashboard/>}
+      </>
 
     );
 }

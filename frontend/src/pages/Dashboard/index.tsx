@@ -147,7 +147,7 @@ const Dashboard = ()=>{
     return(
         <>
 
-        { perfilTenant ? 
+        { perfilTenant ||  perfilAdmin ? 
           
         <div>
        
