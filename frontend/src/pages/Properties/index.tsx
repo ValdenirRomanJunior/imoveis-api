@@ -86,6 +86,7 @@ useEffect(() =>{
     }
     let perfilTenant=Object.values(user.perfis).some(obj => obj === 'TENANT');
 
+ 
     
     return(
       <>

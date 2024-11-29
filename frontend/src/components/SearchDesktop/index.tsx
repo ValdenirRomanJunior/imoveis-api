@@ -222,7 +222,7 @@ const SearchDesktop = ({onChange,param}:Props)=>{
             
           }
 
-    
+  
     return(
         
     <SearchContainer>
@@ -283,7 +283,7 @@ const SearchDesktop = ({onChange,param}:Props)=>{
                 </select>
                 <SearchButtonContainer>
                   
-                    <button className="search-button-send"  disabled={disabled}  onClick={()=> onChange(id,state,city,goal,type+1)}>Buscar</button>
+                    <button className="search-button-send"  disabled={disabled}  onClick={()=> onChange(id,state,city,goal,type)}>Buscar</button>
                 </SearchButtonContainer>
 
              

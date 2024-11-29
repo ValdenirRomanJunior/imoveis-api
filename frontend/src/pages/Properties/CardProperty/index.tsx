@@ -353,6 +353,7 @@ const CardProperty = ({id,state,city,goal,type,onChange,paramToGetAll}:Props)=>{
     },[paramToGetAll, pageNumberSearch, onChange])
 
    
+    console.log(type)
     const getProperties = async () => {
      
         const data= await propertiesPageable(id,state,city,goal,type,pageNumber);  

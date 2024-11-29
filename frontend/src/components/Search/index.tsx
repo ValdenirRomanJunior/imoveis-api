@@ -296,7 +296,7 @@ const [selectedItemIndex,setSelectedItemIndex]=useState(null);
                                 <div key={item.value} className="dropdown-item" onClick={e => {
                                     setSelectedItemIndex(index as any)
                                     setIsDropDownVisible(false)
-                                    setType(item.value);
+                                    setType(String(index));
                                     }}>                                      
                                     {item.type}
                                         
@@ -316,7 +316,7 @@ const [selectedItemIndex,setSelectedItemIndex]=useState(null);
                 </div>
                 <SearchButtonContainer onClick={handleCloseModal}>
                 
-                    <button className="search-button-send"  disabled={disabled} onClick={()=> onChange(id,state,city,goal,type,)}>Buscar</button>
+                    <button className="search-button-send"  disabled={disabled} onClick={()=> onChange(id,state,city,goal,type)}>Buscar</button>
                 </SearchButtonContainer>
                 
                 <SearchCodeWrapper >

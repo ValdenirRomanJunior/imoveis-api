@@ -35,6 +35,8 @@ export const SearchContent= styled.div`
         width:100px;
     
     }
+
+    
     .custom-dropdown{
       
          border: 1px solid #c9c9c9;      
