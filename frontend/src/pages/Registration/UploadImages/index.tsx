@@ -41,7 +41,7 @@ const UploadImages = (props:PropImages) =>{
     const [imagesSelected, setImagesSelected] = useState<any[]>([]);
     const [fileBase64,setFileBase64]= useState<string[]>([]);
 
-    const WIDTH = 600;
+    const WIDTH = 500;
     function convertFile(files:any){
     
               console.log(files)

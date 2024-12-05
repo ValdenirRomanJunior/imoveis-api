@@ -29,7 +29,7 @@ const UploadImages = (props:PropImages) =>{
     const [imagesSelected, setImagesSelected] = useState<ImageItem[]>([...props.images]);
     const [deleteIds,setDeleteIds]= useState<any[]>([]);
 
-    const WIDTH = 600;
+    const WIDTH = 500;
     function convertFile(files:any){
        
         setImagesSelected([...imagesSelected])
