@@ -25,6 +25,6 @@ public class CountOpportunity implements Serializable{
 	
 	
 	
-	
+		
 
 }

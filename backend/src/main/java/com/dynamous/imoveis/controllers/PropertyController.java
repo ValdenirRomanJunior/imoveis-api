@@ -5,6 +5,7 @@ import com.dynamous.imoveis.dto.PropertyNewDTO;
 import com.dynamous.imoveis.dto.PropertyUpdateDTO;
 import com.dynamous.imoveis.entities.Account;
 import com.dynamous.imoveis.entities.Address;
+import com.dynamous.imoveis.entities.Image;
 import com.dynamous.imoveis.entities.ImageUrl;
 import com.dynamous.imoveis.entities.Property;
 import com.dynamous.imoveis.entities.Tenant;
@@ -130,12 +131,12 @@ public class PropertyController {
     	
     		//Page<Property> list= service.findByTenantBaseView(goal, typeProperty, name,  page, linesPerPage, orderBy, direction);
     Page<Property> list = propertyCustomRepo.findByPage(id,state, city, goal, typeProperty, page, linesPerPage, orderBy, direction);
-         ImageUrl imgux=null;
-         List<ImageUrl> OneImg=null;
+         Image imgux=null;
+         List<Image> OneImg=null;
        	for( Property item : list) {       		 		
        		if( item.getImages().size() >0 ) {  
        	    imgux = item.getImages().get(0);    		
-       		OneImg = new ArrayList<ImageUrl>();
+       		OneImg = new ArrayList<Image>();
        		item.setImages(OneImg);
        		item.getImages().add(imgux);
        		}
@@ -164,11 +165,11 @@ public class PropertyController {
     @GetMapping(value = "/findLeadProperty/{id}", produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<?> findByIdLeadProperty(@PathVariable Long id){    
         Property property=service.findByTenant(id);
-        ImageUrl imgux=null;
-        List<ImageUrl> OneImg=null;
+        Image imgux=null;
+        List<Image> OneImg=null;
     	if( property.getImages().size() >0 ) {  
        		imgux = property.getImages().get(0);    		
-       		OneImg = new ArrayList<ImageUrl>();
+       		OneImg = new ArrayList<Image>();
        		property.setImages(OneImg);
        		property.getImages().add(imgux);
        		}
@@ -229,14 +230,14 @@ public class PropertyController {
           
     	 //Page<Property> list= service.search(id,state, city, goal, typeProperty, page, linesPerPage, orderBy, direction);
          Page<Property> list = service.findByTenantMatchAnyParam(goal,typeProperty,name, nameUrl,page, linesPerPage, orderBy, direction);
-         ImageUrl imgux=null;
-         List<ImageUrl> OneImg=null;
+         Image imgux=null;
+         List<Image> OneImg=null;
          
        	for( Property item : list) {
        		
        		if( item.getImages().size() >0 ) {  
        		imgux = item.getImages().get(0);    		
-       		OneImg = new ArrayList<ImageUrl>();
+       		OneImg = new ArrayList<Image>();
        		item.setImages(OneImg);
        		item.getImages().add(imgux);
        		

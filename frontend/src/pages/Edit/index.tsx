@@ -394,12 +394,18 @@ const cleanForm = () =>{
             }  
                
           
-                console.log(form['suites'])
-            const handleSubmitForm = async (e:any) =>{
-            
+            const [fileSize,setFileSize]=useState(false);
+            let somaImages= imagesBase64.length + imagesSelected.length;
+            const handleSubmitForm = async (e:any) =>{         
               e.preventDefault();
-              setLoadingTenant(true)
-        
+              if(somaImages >15){
+                setFileSize(true);
+              }
+             
+            
+              if(somaImages <16){
+                setLoadingTenant(true)
+              }
                 let emptyValues=Object.values(form).some(obj => obj === '');
                 setEmptyValue(emptyValues);
                 
@@ -458,11 +464,9 @@ const cleanForm = () =>{
                 let cep: any;            
                 for (var prop16 in form) {if(prop16 === 'cep'){ cep=form[prop16];}}
                  
-                if(emptyValues){
-                    setLoadingTenant(false)
-                }
+
                 
-                if(!emptyValues){
+                if(!emptyValues && somaImages as any <16){
                         
                   
                 const data = await editProperty(name, description,selectedItemIndex as any, goal, numberRooms,form['suites'], bathRooms,area, form['areaTotal'],iptu,vacancies,condominium,                                      
@@ -470,7 +474,7 @@ const cleanForm = () =>{
               
                
                 if(data.status === 204){
-                    
+                    setFileSize(false)
                     setCleanImagesForm(true);
                     cleanForm()
                     
@@ -895,7 +899,9 @@ const cleanForm = () =>{
                 <Input  name='cep'  id='cep' value={form['cep'] }  onKeyUp={handleKeyUp} onChange={(e) => handleChange(e)}/> 
                 {errors.map(x => { if(x.fieldName === 'cep') return  <p className=' formField__error'>{x.message}</p>})}
                 { emptyValue && form['cep'] === '' ?<span className='formField__error'>Este campo é requerido</span>: ''}
-                     
+                {fileSize &&
+                   <p style={{color:'red',fontSize:'14px'}}>É permitido no máximo 15 imagens</p>
+                   }  
                 <UploadImages images={property.property.images as unknown as ImageItem[]}  handleResult={getImagesUrls}/>
                
                

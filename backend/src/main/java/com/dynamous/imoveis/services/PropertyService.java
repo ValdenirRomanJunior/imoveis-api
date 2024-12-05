@@ -125,47 +125,18 @@ public class PropertyService {
     //CRIA UM IMOVEL
     @Transactional
     public Property save(Property property,List<MultipartFile>files) {
-        property.setId(null);
-        
-    	 UserSS user = UserService.authenticated();
-    	 
-         if(user==null || !user.hasRole(Perfil.TENANT)){
-             throw new AuthorizationException("Acesso negado");
-         }
-         Tenant tenant = tenantService.find(user.getId());
-      	 Account account= accountService.find(tenant.getAccount().getId());   
-         property = propertyRepository.save(property);
          
-         Property propertyBack= find(property.getId());
-         
-    
-          	
+    	Account account = accountService.find(property.getAccount().getId());
+    	property = propertyRepository.save(property);
          if(files !=null) {       	       	 	
-    	for( MultipartFile file: files ) {
-    		    		  
-    		 URI uri= serviceFile.uploadPropertyPictures(file,propertyBack);
-    		  	
-    		 Image image =imageRepo.findByUrl(String.valueOf(uri));   			  	 				     			
-    			 image.setUrl(String.valueOf(uri));    			
-    			 	
-    			  List<ImageUrl> listImages= new ArrayList<ImageUrl>();
-    	     		ImageUrl img = new ImageUrl();
-	           		img.setId(null);
-	           		img.setUrl(String.valueOf(uri));
-	           		//setar depois que salvar property
-	           			
-	        		img.setIdAccount(account.getId()); 
-	        		img.setProperty(property);
-	        		listImages.add(img);
-	        		property.getImages().addAll(listImages);
-	        			        		
+    	for( MultipartFile file: files ) {    		    		  
+    		 URI uri=serviceFile.uploadPropertyPictures(file,account, property);
+    		
     	}	 
-     }
-    	     	  
-        // imageRepo.saveAll(property.getImagesBucket());     
-         addressRepository.save(property.getAddress());
-         imageUrlRepository.saveAll(property.getImages());
-               
+     }    	    	    	 
+           addressRepository.save(property.getAddress());
+                    
+           
         return property;		
     }
     		
@@ -173,27 +144,24 @@ public class PropertyService {
     //ATUALIZA STATUS IMÓVEL
     public Property updateStatus(Property property) {
     	   
-       imageUrlRepository.saveAll(property.getImages());
+       //imageUrlRepository.saveAll(property.getImages());
        addressRepository.save(property.getAddress()); 
        return propertyRepository.save(property);
    }
     
     
-    
+    	
 
     //DELETA UM IMÓVEL
     public void delete(Long id) throws URISyntaxException {
         UserSS user = UserService.authenticated();
         //buscar com sql se tem mais de 1 imovel com este nome de cidade cadastrada. 
         Property property= find(id);
-   
-      
-        if(user==null || !user.hasRole(Perfil.TENANT) && !property.getAccount().getId().equals(user.getId())){
+        
+        if(user==null || !user.hasRole(Perfil.TENANT)){
             throw new AuthorizationException("Acesso negado");
         }	
-        Tenant tenant = tenantRepository.findById(user.getId()).get();
-        Account account= accountService.find(tenant.getAccount().getId());
-
+        
 
         try {
         	 s3Service.deleteAllFiles(id);
@@ -208,8 +176,7 @@ public class PropertyService {
    
     public Property fromDTO(PropertyNewDTO propertyNewDTO, List<MultipartFile> files) {
     	UserSS user = UserService.authenticated();
-    		
-    		
+    		   		
     		Property property = new Property(null, propertyNewDTO.getName(), propertyNewDTO.getDescription(), TypeProperty.toEnum(propertyNewDTO.getTypeProperty()),Goal.toEnum(propertyNewDTO.getGoal()), 
 					   propertyNewDTO.getNumberRooms(),propertyNewDTO.getSuites(), propertyNewDTO.getBathRooms(), propertyNewDTO.getArea(), propertyNewDTO.getIptu(),
 					   	propertyNewDTO.getVacancies(),propertyNewDTO.getCondominium(), propertyNewDTO.getPrice(), propertyNewDTO.getAreaTotal(),StatusProperty.NAO_PUBLICADO, StatusFeatured.NAO_DESTACADO,propertyNewDTO.getFinanceable(),propertyNewDTO.getPermuta());    		
@@ -235,7 +202,7 @@ public class PropertyService {
         		stateAux.setAccount(account);
         		stateRepository.save(stateAux);
         		cityRepository.save(cityAux);
-        		
+        			
         		 Address address = new Address(null, propertyNewDTO.getStreet(), propertyNewDTO.getNumber(), propertyNewDTO.getDistrict(), propertyNewDTO.getCep(), property, cityAux);
         		 property.setAddress(address);
         		 address.setAccount(account);
@@ -267,7 +234,7 @@ public class PropertyService {
         updateData(newObj, property);
         
         
-        imageUrlRepository.saveAll(newObj.getImages());
+        //imageUrlRepository.saveAll(newObj.getImages());
         addressRepository.save(newObj.getAddress()); // problema em salvar adress     
         
         
@@ -289,7 +256,7 @@ public class PropertyService {
         newObj.setPrice(property.getPrice());
         newObj.setStatusProperty(property.getStatusProperty());
         newObj.setAreaTotal(property.getAreaTotal());               	        			     		
-        newObj.getImages().addAll(property.getImages());
+        //newObj.getImages().addAll(property.getImages());
         newObj.setAddress(property.getAddress());                                 		            		
         newObj.setAccount(newObj.getAccount());
         newObj.setSuites(property.getSuites());
@@ -344,62 +311,24 @@ public class PropertyService {
 		
 	}
 
-	 
-
-	property.setAccount(account);
-	//property.setTenant(tenant);
-
 	
-	 //List<ImageUrl> listImages=propertyUpdateDTO.getImages();	 
+	property.setAccount(account);
 	
 	 List<Image> listToDelete=imageRepo.findByIdIn(propertyUpdateDTO.getDeletedIds());
 	 s3Service.deleteAllFilesFromUpdate(listToDelete);
 	 
-	 
-	 List<Image> listToUpdate= imageRepo.findAllByProperty(property);
-	 
-		try {				
-	  	  	imageUrlRepository.deleteByPropertyId(propertyUpdateDTO.getId()); // pode haver um erro  aqui nesta deleção
-	  	  	
-	   } catch (DataIntegrityViolationException  | EmptyResultDataAccessException | StaleStateException e ) {
-	     new DataIntegrityException("impossible delete with other objects: ");
-	       }
-		List<ImageUrl> listUrl= new ArrayList<ImageUrl>();	 
-	for(Image img : listToUpdate) {	
-		ImageUrl imgUrl = new ImageUrl();
-		imgUrl.setId(null);
-		imgUrl.setUrl(img.getUrl());
-		imgUrl.setIdAccount(img.getIdAccount());       		
-		imgUrl.setProperty(property);
-		listUrl.add(imgUrl);		
-	    property.getImages().addAll(listUrl);
-    	}
-	 		
-	
+
     if(files !=null) {       	       	 	
 	for( MultipartFile file: files ) {
 		    		  
-		 URI uri= serviceFile.uploadPropertyPictures(file,propAux);
+		 URI uri= serviceFile.uploadPropertyPictures(file,account,propAux);
 		 
-		 Image image =imageRepo.findByUrl(String.valueOf(uri));   			  	 				     			
-			 image.setUrl(String.valueOf(uri));    			
-			 	
-			  List<ImageUrl> listImageBucket= new ArrayList<ImageUrl>();
-	     		ImageUrl img = new ImageUrl();
-          		img.setId(null);
-          		img.setUrl(String.valueOf(uri));
-          		//setar depois que salvar property
-          			
-	       		img.setIdAccount(account.getId()); 
-	       		img.setProperty(property);
-	       		listImageBucket.add(img);
-	       		property.getImages().addAll(listImageBucket);
-       		
-	}	 
-}
-    
+	       		
+		}	 		
+	}
+    			
 	return property;
-	
+		
 }
 	
 	//busca paginada por tenant 20/05/2024

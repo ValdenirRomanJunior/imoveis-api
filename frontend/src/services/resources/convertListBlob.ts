@@ -1,5 +1,5 @@
 export function convertToBlobList (image:string[]){
-    console.log(image)
+    
     let array: Blob[]=[];
     for(var j=0; j< image.length; j++){
 
@@ -13,7 +13,7 @@ export function convertToBlobList (image:string[]){
     } 
     array.push(new Blob([ab], {type: mimeString}))
    // return new Blob([ab], {type: mimeString});
-   console.log(array)
+  
  
     }
     return array;

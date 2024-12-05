@@ -11,6 +11,7 @@ import { useNavigate } from 'react-router-dom';
 import { url } from 'inspector';
 import { uploadPropertyImage } from '../../../services/resources/property';
 import LoadingFile from '../../../components/LoadingFile';
+import { convertToBlob } from '../../../services/resources/covertToBlob';
 
 
 interface PropImages{ 
@@ -40,48 +41,66 @@ const UploadImages = (props:PropImages) =>{
     const [imagesSelected, setImagesSelected] = useState<any[]>([]);
     const [fileBase64,setFileBase64]= useState<string[]>([]);
 
-
+    const WIDTH = 600;
     function convertFile(files:any){
+    
               console.log(files)
-        setImagesSelected([...imagesSelected,...files])
+        //setImagesSelected([...imagesSelected,...files])
         
-        if(imagesSelected){
+        if(files){
             for (let i = 0; i < files.length; i++) {
-          
+            
+                
             const fileRef= files[i] || ""
             const fileType: string=fileRef.type || ""
+            let aux='' as string;
             const reader= new FileReader()         
-
             reader.readAsBinaryString(fileRef)
-            reader.onload=(ev: any) =>{  
-                 fileBase64.push(`data:${fileType as string};base64,${btoa(ev.target.result )}`)   
-                setFileBase64([...fileBase64]);               
-             
-               
+            reader.onload=(ev: any) =>{ 
+                aux=`data:${fileType as string};base64,${btoa(ev.target.result )}`
+                // fileBase64.push(`data:${fileType as string};base64,${btoa(ev.target.result )}`)   
+                //setFileBase64([...fileBase64]); 
+                console.log(aux.length) 
+                
+                   if(aux.length > 383995){
+                                   
+                let img = document.createElement("img");
+                img.src = aux;
+                img.onload = (e: any) => {
+                    // set a width value for the height of the produced image to depend on (i.e. WIDTH = 100 will be 100px)
+                    let canvas = document.createElement("canvas");
+                    let ratio = WIDTH / e.target.width;          
+                    canvas.width = WIDTH;
+                    canvas.height = e.target.height * ratio;               
+                    const context = canvas.getContext("2d") as CanvasRenderingContext2D;                
+                    context.drawImage(img, 0, 0, canvas.width, canvas.height);                
+                    let newImageUrl = context.canvas.toDataURL("image/jpg", 90); // quality ranges 1-100
+                    
+                    fileBase64.push(newImageUrl)
+                    setFileBase64([...fileBase64]); 
+                 }  
+                } else{
+                    fileBase64.push(`data:${fileType as string};base64,${btoa(ev.target.result )}`)   
+                    setFileBase64([...fileBase64]); 
+                }     
             }
-                       
+                           
             }
-           
-                     
+                               
         } 
           
            
         navigate("/registration")
     }
+      
     
-    
-    const removePhoto =(index:number) => { 
-        const fileListArr = Array.from(imagesSelected);
-        setImagesSelected(fileListArr.filter((_, i) => i !== index));
-        setFileBase64(fileListArr.filter((_, i) => i !== index) )
-        
-        if(imagesSelected.length -1 === 0){
-            inspectionPictureRef.current.value= ""     
-              setFileBase64([])
-              setImagesSelected([])
-           
-              
-        }
+    const removePhoto =(index:string) => { 
+       let  imgs=fileBase64.filter((l => l !== index));
+      setFileBase64(imgs)
+      if(fileBase64.length  === 0){
+        inspectionPictureRef.current.value= " "     
+             setFileBase64([])         
+    } 
      
                 
     }
@@ -92,7 +111,7 @@ const UploadImages = (props:PropImages) =>{
 
     props.handleResult([...fileBase64])  
      if(props.cleanImages === true){
-        setImagesSelected([]);
+       setFileBase64([])
      }
        
 }, [props.cleanImages, fileBase64]);
@@ -109,19 +128,19 @@ const UploadImages = (props:PropImages) =>{
                 <MdPhotoCamera className='icon-photo'/>
                 <span>Adicionar fotos</span>
                 <span>PNG e JPG somente</span>
-                <input className='input-add-image' name='file' type="file"  ref={inspectionPictureRef} multiple={true} accept="image/png,image/jpeg" onChange={(e) => convertFile(e.target.files)}/>
+                <input className='input-add-image' name='file' type="file"  ref={inspectionPictureRef}  multiple={true} accept="image/png,image/jpeg" onChange={(e) => convertFile(e.target.files)}/>
 
             </UploadImage>
          
             </div>
                  
-            {imagesSelected && Array.from(imagesSelected).map((item,index:any)=>  {
+            {fileBase64 && Array.from(fileBase64).map((item,index:any)=>  {
                
                 return(
                 <ImageWrapper>
-                <AiFillCloseCircle className='button-close' onClick={()=>removePhoto(index)}/>
+                <AiFillCloseCircle className='button-close' onClick={()=>removePhoto(item)}/>
                 
-                <img src={URL.createObjectURL(item as any)} id="urlId" alt='imagem propriedade'/>
+                <img src={item} id="urlId" alt='imagem propriedade'/>
                 
             </ImageWrapper>
                 )

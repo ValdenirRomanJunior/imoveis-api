@@ -240,7 +240,7 @@ const [selectedItemIndex,setSelectedItemIndex]=useState(null);
         setSelectedItemIndex(null)
      
       }
-   
+      console.log(type)
     return(
     <SearchContainer>
      <BiSearch className='icon-search-properties' onClick={handleOpenModal}/>
@@ -296,7 +296,7 @@ const [selectedItemIndex,setSelectedItemIndex]=useState(null);
                                 <div key={item.value} className="dropdown-item" onClick={e => {
                                     setSelectedItemIndex(index as any)
                                     setIsDropDownVisible(false)
-                                    setType(String(index));
+                                    setType(String(item.value));
                                     }}>                                      
                                     {item.type}
                                         

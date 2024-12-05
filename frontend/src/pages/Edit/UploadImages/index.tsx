@@ -29,7 +29,7 @@ const UploadImages = (props:PropImages) =>{
     const [imagesSelected, setImagesSelected] = useState<ImageItem[]>([...props.images]);
     const [deleteIds,setDeleteIds]= useState<any[]>([]);
 
-
+    const WIDTH = 600;
     function convertFile(files:any){
        
         setImagesSelected([...imagesSelected])
@@ -39,12 +39,37 @@ const UploadImages = (props:PropImages) =>{
                 
             const fileRef= files[i]  || ""
             const fileType: string=fileRef.type || ""
+            let aux='' as string;
             const reader= new FileReader()         
 
             reader.readAsBinaryString(fileRef)
             reader.onload=(ev: any) =>{  
-                 fileBase64.push(`data:${fileType};base64,${btoa(ev.target.result )}`)   
-                setFileBase64([...fileBase64]);                                 
+                aux=`data:${fileType as string};base64,${btoa(ev.target.result )}`
+                // fileBase64.push(`data:${fileType as string};base64,${btoa(ev.target.result )}`)   
+                //setFileBase64([...fileBase64]); 
+                console.log(aux.length) 
+                
+                   if(aux.length > 383995){
+                                   
+                let img = document.createElement("img");
+                img.src = aux;
+                img.onload = (e: any) => {
+                    // set a width value for the height of the produced image to depend on (i.e. WIDTH = 100 will be 100px)
+                    let canvas = document.createElement("canvas");
+                    let ratio = WIDTH / e.target.width;          
+                    canvas.width = WIDTH;
+                    canvas.height = e.target.height * ratio;               
+                    const context = canvas.getContext("2d") as CanvasRenderingContext2D;                
+                    context.drawImage(img, 0, 0, canvas.width, canvas.height);                
+                    let newImageUrl = context.canvas.toDataURL("image/jpg", 90); // quality ranges 1-100
+                    
+                    fileBase64.push(newImageUrl)
+                    setFileBase64([...fileBase64]); 
+                 }  
+                } else{
+                    fileBase64.push(`data:${fileType as string};base64,${btoa(ev.target.result )}`)   
+                    setFileBase64([...fileBase64]); 
+                }                          
              
             }   
           }                              

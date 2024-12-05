@@ -47,7 +47,7 @@ public class FileManagerService {
 
     
     //SERVICE ENTIDADE PARA FOTO PROPRIEDADE
-    public URI uploadPropertyPictures(MultipartFile multipartFile, Property property) {
+    public URI uploadPropertyPictures(MultipartFile multipartFile, Account account, Property property) {
         UserSS user = UserService.authenticated();
         if (user == null) {
         	throw new AuthorizationException("erro");
@@ -55,7 +55,7 @@ public class FileManagerService {
         BufferedImage jpgImage = imageService.getJpgImageFromFile(multipartFile);                 	
         String fileName = prefix +user.getId()+".jpg";
        
-        return s3Service.uploaFile(imageService.getInputStream(jpgImage, "jpg"), fileName, "image", property);
+        return s3Service.uploaFile(imageService.getInputStream(jpgImage, "jpg"), fileName, "image", account, property);
     }
     	
     //SERVICE DA ENTIDADE PARA FOTO PROFILE

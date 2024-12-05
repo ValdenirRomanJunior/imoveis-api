@@ -14,7 +14,7 @@ INSERT INTO perfis (tenant_id, perfis) VALUES (2,2);
 INSERT INTO perfis (tenant_id, perfis) VALUES (3,2);
 INSERT INTO perfis (tenant_id, perfis) VALUES (3,4);
 
-			
+					
 INSERT INTO user_admin_perfis (user_admin_id, perfis) VALUES (1,1);
 
 INSERT INTO property (name, description, type_property, goal,number_rooms, bath_rooms,area, iptu, vacancies, condominium, price, area_total, status_property,status_featured, account_id) VALUES ('casa1 conta1','casa linda', 1,1, '1','1', '234', '3323', '1','3323','123','23345',1,1,1);

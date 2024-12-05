@@ -63,51 +63,46 @@ public class S3Service {
     @Value("${img.prefix.tenant.property}")
     private String prefix;
 
-    public URI uploaFile(MultipartFile multipartFile,Property property){
+    public URI uploaFile(MultipartFile multipartFile, Account account ,Property property){
         try {
             String fileName = multipartFile.getOriginalFilename();
             InputStream is = multipartFile.getInputStream();
             String contentType = multipartFile.getContentType();
-            return uploaFile(is,fileName,contentType,property);
+            return uploaFile(is,fileName,contentType,account ,property);
         } catch (IOException e) {
           throw  new FileException(("Erro de Io" + e.getMessage()));
         }
     }
-    public URI uploaFile(InputStream is, String fileName, String contentType, Property property) throws AmazonServiceException {
+    public URI uploaFile(InputStream is, String fileName, String contentType, Account account, Property property) throws AmazonServiceException {
     	
-    	  UserSS user = UserService.authenticated();
-          if (user == null) {
-        	  throw new AuthorizationException("erro");
-          }
-          Tenant tenant = tenantService.find(user.getId());
-      	Account account= accountService.find(tenant.getAccount().getId());
+    	
           Image image = new Image(null,null,account.getId());
           
           imageRepository.save(image);
-          Optional<Image> imageId= imageRepository.findById(image.getId());
+          Image imageId=  imageService.find(image.getId());
+          List<Image> images = new ArrayList<Image>();
         try {
         	 
             
              ObjectMetadata meta = new ObjectMetadata();
              meta.setContentType(contentType);
              LOG.info("Iniciando upload");
-             String newFileName = prefix + account.getId()+imageId.get().getId()+ ".jpg";
+             String newFileName = prefix + account.getId()+imageId.getId()+ ".jpg";
              
              s3client.putObject(bucketName, newFileName, is,meta);
              LOG.info("Finalizado upload");
              URI urlImage=s3client.getUrl(bucketName, newFileName).toURI();
-             String url= String.valueOf(urlImage);
-           
-             Image imageComplete = new Image(imageId.get().getId(),url,account.getId());
-             imageComplete.setProperty(property);
-             imageRepository.save(imageComplete);
-             //boolean exist = s3client.doesObjectExist(bucketName, newFileName);
-           
-         
-             return s3client.getUrl(bucketName,newFileName).toURI();
+             String url= String.valueOf(urlImage);           
+             imageId.setUrl(url);
+             imageId.setIdAccount(account.getId());
+             imageId.setProperty(property);
+             images.add(imageId);
+             property.getImages().addAll(images);
+             imageRepository.saveAll(images);
+             return urlImage;
             
         } catch (URISyntaxException | AmazonClientException e) {
-        	imageRepository.deleteById(imageId.get().getId());
+        	imageRepository.deleteById(imageId.getId());
            throw new FileException(("Erro ao converter URL para URI"));
            
         }
@@ -173,7 +168,7 @@ public class S3Service {
    	       	 if(img !=null) {
    	       		 ids.add(img.getId());
    	       	 }
-   	        }
+   	        }	
    	        
    	        imageUrlService.deleteAllById(ids);
    	   	 

@@ -31,7 +31,7 @@ public class Image implements Serializable {
 
 	private Long idAccount;
 	
-	
+	@JsonIgnore
 	@JoinColumn(name = "property_id")
 	@ManyToOne
 	private Property property;

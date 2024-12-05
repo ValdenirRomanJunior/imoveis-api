@@ -92,14 +92,14 @@ public class Property implements Serializable {
     @CollectionTable(name="FEATURES")
     private Set<Integer> features =new HashSet<>();
     	
-    @JsonIgnore
-    @OneToMany(mappedBy = "property",cascade = CascadeType.ALL)
-    private List<Image> imagesBucket = new ArrayList<Image>();
+    
+    @OneToMany(mappedBy = "property",fetch = FetchType.EAGER,cascade = CascadeType.ALL)
+    private List<Image> images = new ArrayList<Image>();
  
     
     //fetch = FetchType.EAGER,mappedBy = "property",cascade=CascadeType.REMOVE, orphanRemoval = tru
-    @OneToMany(mappedBy = "property",fetch = FetchType.EAGER,cascade = CascadeType.REMOVE)
-    private List<ImageUrl> images= new ArrayList<ImageUrl>();
+    ///@OneToMany(mappedBy = "property",cascade = CascadeType.REMOVE)
+  //  private List<ImageUrl> images= new ArrayList<ImageUrl>();
 
 
     
@@ -271,22 +271,22 @@ public class Property implements Serializable {
         this.address = address;
     }
 
-    public List<ImageUrl> getImages() {
-        return images;
-    }
+    //public List<ImageUrl> getImages() {
+     //   return images;
+   // }
 
-    public void setImages(List<ImageUrl> images) {
-        this.images = images;
-    }
+   // public void setImages(List<ImageUrl> images) {
+    //    this.images = images;
+   // }
    
 
 
-	public List<Image> getImagesBucket() {
-		return imagesBucket;
+	public List<Image> getImages() {
+		return images;
 	}
 
-	public void setImagesBucket(List<Image> imagesBucket) {
-		this.imagesBucket = imagesBucket;
+	public void setImages(List<Image> images) {
+		this.images = images;
 	}
 
 	

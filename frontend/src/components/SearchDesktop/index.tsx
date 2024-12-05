@@ -265,7 +265,7 @@ const SearchDesktop = ({onChange,param}:Props)=>{
                                 <div key={item.value} className="dropdown-item" onClick={e => {
                                     setSelectedItemIndex(index as any)
                                     setIsDropDownVisible(false)
-                                    setType(String(index));
+                                    setType(String(item.value));
                                     }}>
                                     {item.type}
                                                                

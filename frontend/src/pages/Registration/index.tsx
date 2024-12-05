@@ -301,16 +301,20 @@ const Registration = () =>{
                     
             }
            
-          
+            const [fileSize,setFileSize]=useState(false);
+            
             const handleSubmit = async (e:any) => {
               e.preventDefault();
+              if(fileBase64Images?.length as any >15){
+                setFileSize(true);
+              }
             
         
                 let emptyValues=Object.values(form).some(obj => obj === '');
                 setEmptyValue(emptyValues);
                 
                                 
-                if(!emptyValues) {
+                if(!emptyValues && fileBase64Images?.length as any <16) {
                     setLoadingTenant(true)
                  
                              
@@ -319,6 +323,7 @@ const Registration = () =>{
                  
                 
                 if(data.status === 201){
+                    setFileSize(false)
                     setSelectedItemIndex(null)
                     setSelectedFeatures([])
                     setCleanImagesForm(true);
@@ -773,9 +778,11 @@ const Registration = () =>{
                 <Input  name='cep'  id='cep' onKeyUp={handleKeyUp} onChange={(e) => handleChange(e)}/> 
                 {errors.map(x => { if(x.fieldName === 'cep') return  <p className=' formField__error_reg'>{x.message}</p>})}
                 { emptyValue && form['cep'] === '' ?<span className='formField__error_reg'>Este campo é requerido</span>: ''}
-                     
+                {fileSize &&
+                   <p style={{color:'red',fontSize:'14px'}}>É permitido no máximo 15 imagens</p>
+                   }
                 <UploadImages handleResult={getImagesUrls} cleanImages={cleanImagesForm}/>
-               
+                 
                 <div className='buttom-register-wrapper'>
                 
                   {

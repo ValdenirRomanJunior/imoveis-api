@@ -59,7 +59,7 @@ export const getPublishedPropertiesById = (id:string) => {
 }
         
 export const propertiesPageable = (id:string,state:string, city:string,goal:string, typeProperty:string ,pageNumber: number) => {
-    return api.get(`/properties/search?id=${id}&state=${state}&city=${city}&goal=${goal}&typeProperty=${typeProperty+1}&size=12&page=${pageNumber}&sort=name`)
+    return api.get(`/properties/search?id=${id}&state=${state}&city=${city}&goal=${goal}&typeProperty=${typeProperty}&size=12&page=${pageNumber}&sort=name`)
           .then(response =>{
             return response;
           }).catch(error => {
@@ -104,7 +104,7 @@ export const newProperty = (name:string, description:string, typeProperty: numbe
              type: "application/json"
             }));
         }
-            
+         
         if(images.length >0){      
           let imageBlob= convertToBlobList(images) as Blob[];                    
             for(var i=0; i< imageBlob.length; i++){                                

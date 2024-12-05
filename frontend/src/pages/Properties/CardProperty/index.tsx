@@ -64,7 +64,7 @@ const CardListItem = ({id,name,images,price,address,statusProperty,statusFeature
 
             setTimeout(() => {
                 setLoading(false)
-            }, 1000);
+            }, 500);
    
   }
 
