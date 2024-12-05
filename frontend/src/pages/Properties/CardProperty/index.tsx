@@ -38,6 +38,8 @@ const CardListItem = ({id,name,images,price,address,statusProperty,statusFeature
     const [loading,setLoading]= useState(false);
    
     useEffect(()=>{
+       
+
         if(booleanModal){
             setLoading(true)
             setTimeout(()=>{
@@ -57,14 +59,14 @@ const CardListItem = ({id,name,images,price,address,statusProperty,statusFeature
 
   const handlePutId = ()=>{
     
-            setLoading(true) 
+            //setLoading(true) 
                     setPutId(true)
                     onChange(id);
             setIsOpen(false)
 
-            setTimeout(() => {
-                setLoading(false)
-            }, 500);
+           // setTimeout(() => {
+               // setLoading(false)
+           // }, 500);
    
   }
 
@@ -404,29 +406,35 @@ const CardProperty = ({id,state,city,goal,type,onChange,paramToGetAll}:Props)=>{
         setPageNumberSearch(newPageNumberSearch);
            
     }
+    
+    const [loadingDelete,setLoadingDelete]= useState(false);
 
-    const deleteProperty = async (id: number) => { 
+    const deleteProperty = async (id: number) => {
+        setLoadingDelete(true)
         setCloseModalProperty(false);
    const data = await deletePropertyReq(String(id));
-   setTimeout(async ()=> {
+ 
     if(data.status === 204){
        setPageNumber(0);
-       getProperties();   
+       getProperties();
+       setLoadingDelete(false)
     }
-    if(data.status !== 204){    
+    if(data.status !== 204){ 
+        setLoadingDelete(false)   
         setError(data.response.data.error);
     }
       
-   },500)
+  
   }
 
 
 
     return(
+        
         <> { page.content.length>0 ?
         
         <CardContainer>   
-               
+                {loadingDelete &&<LoadingLogin/>}
             {page.content && page.content.map(property => (
             <div className='wrapper-properties' key={property.id}>  
             <CardListItem {...property} onChange={deleteProperty} close={closeModalProperty} error={error} booleanModal={booleanLoadingModal} />
@@ -436,7 +444,7 @@ const CardProperty = ({id,state,city,goal,type,onChange,paramToGetAll}:Props)=>{
             )}
          <Pagination page={page} onChange={handlePageChange}/>
          </CardContainer>:  <CardContainer>   
-               
+                 {loadingDelete &&<LoadingLogin/>}
                {pageSearch.content && pageSearch.content.map(property => (
                <div className='wrapper-properties' key={property.id}>  
                <CardListItem {...property} onChange={deleteProperty} close={closeModalProperty} error={error} booleanModal={booleanLoadingModal} />

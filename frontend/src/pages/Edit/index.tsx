@@ -83,6 +83,7 @@ const EditComponent = (property: Prop) =>{
     const [imagesSelected, setImagesSelected] = useState<ImageItem[]>([]);
     const [successMessage, setSuccessMessage] = useState(false);
     const [loadingTenant, setLoadingTenant]=useState(false);
+    const [loadingWait, setLoadingWait]=useState(false);
     const [cleanImagesForm,setCleanImagesForm] = useState(false);
     const [deletedIds,setDeletedIds]=useState<any[]>([])
     
@@ -467,7 +468,7 @@ const cleanForm = () =>{
 
                 
                 if(!emptyValues && somaImages as any <16){
-                        
+                    setLoadingWait(true)     
                   
                 const data = await editProperty(name, description,selectedItemIndex as any, goal, numberRooms,form['suites'], bathRooms,area, form['areaTotal'],iptu,vacancies,condominium,                                      
                 price, state, city, district, street, number, cep,imagesSelected, imagesBase64 as string[], deletedIds as number[],selectedFeatures,selectedRadioBtn,selectedRadioBtnPermuta,`${params.propertyId}`)
@@ -483,6 +484,7 @@ const cleanForm = () =>{
                     getBairrosCadastrados()
                     setTimeout(()=>{
                         setLoadingTenant(true);
+                        setLoadingWait(false);
                     },1000)
                     setTimeout(()=>{
                         setLoadingTenant(false)
@@ -497,6 +499,7 @@ const cleanForm = () =>{
                         setErrors(data.response.data.errors);
                         setSuccessMessage(false)
                         setLoadingTenant(false)
+                        setLoadingWait(false);
                         console.log(data.response.data.errors)
                                                                                        
                     }
@@ -505,7 +508,7 @@ const cleanForm = () =>{
                         setOtherError(true)
                         setSuccessMessage(false)
                         setLoadingTenant(false)
-
+                        setLoadingWait(false);
                         setTimeout(()=>{
                             setOtherError(false)
                         },2000)
@@ -650,12 +653,13 @@ const cleanForm = () =>{
                                        
               }
             };
-                console.log(form['district'])
+               
     return(
         <div>
      
        
        <EditBackground>
+       {loadingWait &&<LoadingLogin/>}
         <Header />
         <BarTop />
         <BodyEditContainer>

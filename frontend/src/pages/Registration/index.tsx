@@ -70,6 +70,7 @@ const Registration = () =>{
     const [images, setImages] = useState<ImageItem[]>([]);
     const [successMessage, setSuccessMessage] = useState(false);
     const [loadingTenant, setLoadingTenant]=useState(false);
+    const [loadingWait, setLoadingWait]=useState(false);
     const [cleanImagesForm,setCleanImagesForm] = useState(false);
     const [fileBase64Images,setFileBase64Images]=useState<String[]>();
    
@@ -314,9 +315,11 @@ const Registration = () =>{
                 setEmptyValue(emptyValues);
                 
                                 
-                if(!emptyValues && fileBase64Images?.length as any <16) {
-                    setLoadingTenant(true)
-                 
+                if(!emptyValues && fileBase64Images?.length as any <16) {            
+                    setLoadingTenant(true)                 
+                    setLoadingWait(true)
+                   
+                
                              
                 const data = await newProperty(form['name'],form['description'],selectedItemIndex as any,form['goal'] , form['numberRooms'], form['suites'],form['bathRooms'],form['area'],form['areaTotal'], form['iptu'],form['vacancies'],form['condominium'],                                      
                 form['price'],form['uf'],form['city'],form['street'],form['number'],form['district'],form['cep'], fileBase64Images as string[],selectedFeatures,selectedRadioBtn,selectedRadioBtnPermuta)
@@ -330,6 +333,7 @@ const Registration = () =>{
                     cleanForm()                    
                     setSuccessMessage(true)
                     setLoadingTenant(false)
+                    setLoadingWait(false);
                     getBairrosCadastrados()
 
                     setTimeout(()=>{
@@ -342,23 +346,23 @@ const Registration = () =>{
                         setErrors(data.response.data.errors);
                         setSuccessMessage(false)
                         setLoadingTenant(false)
+                        setLoadingWait(false);
                                                                                        
                     }  
-                    else if(data.response.status === 404 || data.response.status === 403 || data.response.status === 400){
-                   
+                    else if(data.response.status === 404 || data.response.status === 403 || data.response.status === 400){               
                         setOtherError(true)
                         setSuccessMessage(false)
                         setLoadingTenant(false)
+                        setLoadingWait(false);
                        
                         setTimeout(()=>{
                             setOtherError(false)
                         },2000)
-                    }
-          
-             
-         } 
-                        
-     }
+                    }         
+                 }                        
+              }
+
+
 
      const ErrorHandler = () => {
         return <PageNotFound/>;
@@ -529,6 +533,7 @@ const Registration = () =>{
  
        {perfilTenant? 
        <RegistrationBackground>
+         {loadingWait &&<LoadingLogin/>}
         <Header />
         <BarTop />
         <BodyRegistrationContainer>
