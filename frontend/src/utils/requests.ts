@@ -22,7 +22,7 @@ export const tokenAux= localStorage.getItem('token') || '';
              'Authorization':`${tokenString}`,
              'Content-Type': 'application/json',           
              'Access-Control-Allow-Headers': 'Content-Type',
-             "Access-Control-Allow-Origin": "https://steady-cheesecake-480a84.netlify.app/",
+             "Access-Control-Allow-Origin": "https://app.standi.com.br/",
              "Access-Control-Allow-Methods": "OPTIONS,POST,GET"
 
         
