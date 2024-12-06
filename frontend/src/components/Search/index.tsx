@@ -267,7 +267,7 @@ const [selectedItemIndex,setSelectedItemIndex]=useState(null);
                  ))}  
                        
                 </select>  
-                <IoIosCloseCircleOutline onClick={handleToDeleteUF} className="deleteUF"/>    
+                   
                 </div> 
                     
         

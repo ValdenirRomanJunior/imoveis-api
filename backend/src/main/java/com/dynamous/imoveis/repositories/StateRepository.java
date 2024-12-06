@@ -21,14 +21,13 @@ public interface StateRepository extends JpaRepository<State,Long> {
 	
 	@Transactional(readOnly = true)
 	public List<State> findAllByOrderByName();
-
-	List<State> findAllByAccountOrderByName(Account account);
+	
+	//List<State> findAllByAccountOrderByName(Account account);
 
 	
 
-
 	
-	   
+	   	
 	
 	
 }

@@ -91,6 +91,9 @@ public class PropertyService {
     private ImageService imageService;
     
     @Autowired
+    private CityService cityService;
+    
+    @Autowired
     private AmazonS3 s3client;	
     
     @Value("${s3.bucket}")
@@ -149,7 +152,7 @@ public class PropertyService {
        return propertyRepository.save(property);
    }
     
-    
+    	
     	
 
     //DELETA UM IMÓVEL
@@ -161,8 +164,9 @@ public class PropertyService {
         if(user==null || !user.hasRole(Perfil.TENANT)){
             throw new AuthorizationException("Acesso negado");
         }	
-        
-
+     
+    
+     
         try {
         	 s3Service.deleteAllFiles(id);
             propertyRepository.deleteById(id);
@@ -170,10 +174,11 @@ public class PropertyService {
             //se tem mais existe algum imovel cadastrado com esta cidade e estado, caso não tem excluir esta cidade
         } catch (DataIntegrityViolationException  | EmptyResultDataAccessException | StaleStateException e) {
             throw new DataIntegrityException("impossible delete with other objects: ");
-        }                     
+        } 
+           
     }
 
-   
+    
     public Property fromDTO(PropertyNewDTO propertyNewDTO, List<MultipartFile> files) {
     	UserSS user = UserService.authenticated();
     		   		
@@ -197,27 +202,34 @@ public class PropertyService {
     	     City city = cityRepository.findByNameAndState(propertyNewDTO.getCity(),state);
         	if(state == null) {
         		State stateAux = new State(null,propertyNewDTO.getState());
-        		stateAux.setAccount(account);
+        	
         		City cityAux= new City(null,propertyNewDTO.getCity(), stateAux);
-        		stateAux.setAccount(account);
+        	
+     
         		stateRepository.save(stateAux);
         		cityRepository.save(cityAux);
         			
         		 Address address = new Address(null, propertyNewDTO.getStreet(), propertyNewDTO.getNumber(), propertyNewDTO.getDistrict(), propertyNewDTO.getCep(), property, cityAux);
         		 property.setAddress(address);
+        		
         		 address.setAccount(account);
         		       	
         	}else if(state != null && city== null){
         		City cityAux= new City(null,propertyNewDTO.getCity(), state);
+        	
         		cityRepository.save(cityAux);
         		 Address address = new Address(null, propertyNewDTO.getStreet(), propertyNewDTO.getNumber(), propertyNewDTO.getDistrict(), propertyNewDTO.getCep(), property, cityAux);
         		 property.setAddress(address);
+        	
         		 address.setAccount(account);
         	}else {
         	  	city.setState(state);
+        	
                 Address address = new Address(null, propertyNewDTO.getStreet(), propertyNewDTO.getNumber(), propertyNewDTO.getDistrict(), propertyNewDTO.getCep(), property, city);
                 property.setAddress(address);
                 address.setAccount(account);
+               
+                
         	}
         	       	
         	
@@ -287,26 +299,32 @@ public class PropertyService {
 	 
 	 if(state == null) {
 		State stateAux = new State(null,propertyUpdateDTO.getState());
-		stateAux.setAccount(account);
-		 City cityAux= new City(null,propertyUpdateDTO.getCity(), stateAux);		
+	
+		 City cityAux= new City(null,propertyUpdateDTO.getCity(), stateAux);	
+	
 		 Address address = new Address(propertyUpdateDTO.getId(),propertyUpdateDTO.getStreet(),propertyUpdateDTO.getNumber(), propertyUpdateDTO.getDistrict(), propertyUpdateDTO.getCep(), property, cityAux);
 		 address.setAccount(account);
+	
 		 property.setAddress(address);
-		stateAux.setAccount(account);
+		
 		       	
 	}else if(state != null && city == null){
 		
 		 City cityAux= new City(null,propertyUpdateDTO.getCity(), state);
-		 cityAux.setState(state);	
+		 cityAux.setState(state);
+		
 		 Address address = new Address(propertyUpdateDTO.getId(), propertyUpdateDTO.getStreet(), propertyUpdateDTO.getNumber(), propertyUpdateDTO.getDistrict(), propertyUpdateDTO.getCep(), property, cityAux);
 		 property.setAddress(address);
+		
 		 address.setAccount(account);
 		 
 	}else {
 		
 	  	city.setState(state);
+	
         Address address = new Address(propertyUpdateDTO.getId(), propertyUpdateDTO.getStreet(), propertyUpdateDTO.getNumber(), propertyUpdateDTO.getDistrict(), propertyUpdateDTO.getCep(), property, city);
         property.setAddress(address);
+       
         address.setAccount(account);
 		
 	}
@@ -322,8 +340,7 @@ public class PropertyService {
 	for( MultipartFile file: files ) {
 		    		  
 		 URI uri= serviceFile.uploadPropertyPictures(file,account,propAux);
-		 
-	       		
+			       		
 		}	 		
 	}
     			

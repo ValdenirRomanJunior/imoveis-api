@@ -23,6 +23,8 @@ public class City  implements Serializable {
     @JoinColumn(name="state_id")
     @Fetch(FetchMode.SELECT)
     private State state;
+    
+
 
     public Long getId() {
         return id;
@@ -51,8 +53,10 @@ public class City  implements Serializable {
     public City(){
 
     }
+    
+   
 
-    public City(Long id, String name, State state) {
+	public City(Long id, String name, State state) {
         this.id = id;
         this.name = name;
         this.state = state;

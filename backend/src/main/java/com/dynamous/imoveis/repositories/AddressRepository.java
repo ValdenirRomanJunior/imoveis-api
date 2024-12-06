@@ -4,6 +4,7 @@ import com.dynamous.imoveis.entities.Account;
 import com.dynamous.imoveis.entities.Address;
 import com.dynamous.imoveis.entities.City;
 import com.dynamous.imoveis.entities.Property;
+import com.dynamous.imoveis.entities.State;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -22,6 +23,11 @@ public interface AddressRepository extends JpaRepository<Address,Long> {
     @Query("SELECT DISTINCT district FROM Address a WHERE a.account= :account")
 	List<String> findAllDistrictsByAccountAndDistrict(Account account);
     
-   
-    	
+    Long countByCity(City city);
+
+    @Query("SELECT DISTINCT city FROM Address a WHERE a.account= :account")
+	List<City> findAllCitiesByAccount(Account account);
+    
+    
+    		
 }

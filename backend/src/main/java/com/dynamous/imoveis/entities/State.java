@@ -26,10 +26,7 @@ public class State implements Serializable {
     @Fetch(FetchMode.SUBSELECT)
     private List<City> cities = new ArrayList<>();
     
-    
-    @ManyToOne
-    @JoinColumn(name="account_id")
-    private Account account;
+   
 
     public Long getId() {
         return id;
@@ -66,15 +63,7 @@ public class State implements Serializable {
     }
     
     
-    
-
-	public Account getAccount() {
-		return account;
-	}
-
-	public void setAccount(Account account) {
-		this.account = account;
-	}
+   
 
 	@Override
     public boolean equals(Object o) {

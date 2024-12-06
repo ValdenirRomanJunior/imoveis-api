@@ -1,5 +1,6 @@
 package com.dynamous.imoveis.repositories;
 
+import com.dynamous.imoveis.entities.Account;
 import com.dynamous.imoveis.entities.City;
 import com.dynamous.imoveis.entities.Property;
 import com.dynamous.imoveis.entities.State;
@@ -28,7 +29,8 @@ public interface CityRepository extends JpaRepository<City,Long> {
 
 	City findByNameAndState(String city, State state);
     
-  
+	//@Query("SELECT count(c) FROM City c WHERE c.account= :account and c.name = :name")
+	Long countByName(String name);
   
 }
 

@@ -38,6 +38,7 @@ public class Address implements Serializable {
     @JoinColumn(name="account_id")
     private Account account;
     
+    
     public Address(){
 
     }
@@ -117,6 +118,8 @@ public class Address implements Serializable {
 	public void setAccount(Account account) {
 		this.account = account;
 	}
+	
+	
 
 	@Override
     public boolean equals(Object o) {
