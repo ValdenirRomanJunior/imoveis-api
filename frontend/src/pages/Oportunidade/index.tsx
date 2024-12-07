@@ -190,6 +190,7 @@ const Oportunidade = () => {
 }
 let perfilTenant=Object.values(user.perfis).some(obj => obj === 'TENANT');
 
+   
     return(
 
         <>
@@ -304,10 +305,10 @@ let perfilTenant=Object.values(user.perfis).some(obj => obj === 'TENANT');
                  </div>
                  <div className='whats-checkbox-wrapper'> 
                  {Opportunity?.phoneLead && !property?.id &&                                          
-                 <a href={`https://wa.me/55${Opportunity.phoneLead}`} target='blank'><span className='info-item-wrapper-whats'><FaWhatsapp className='icon-item-info-oportunity' />Conversar</span></a>
+                 <a href={`https://wa.me/55${Opportunity.phoneLead.replace(/[^0-9]/g, '')}`} target='blank'><span className='info-item-wrapper-whats'><FaWhatsapp className='icon-item-info-oportunity' />Conversar</span></a>
                    }
                     {Opportunity?.phoneLead && property?.id &&                                          
-                 <a href={`https://wa.me/55${Opportunity.phoneLead}?text=https://${user.domain}/detail/${property?.id}`} target='blank'><span className='info-item-wrapper-whats'><FaWhatsapp className='icon-item-info-oportunity' />Conversar</span></a>
+                 <a href={`https://wa.me/55${Opportunity.phoneLead.replace(/[^0-9]/g, '')}?text=https://${user.domain}/detail/${property?.id}`} target='blank'><span className='info-item-wrapper-whats'><FaWhatsapp className='icon-item-info-oportunity' />Conversar</span></a>
                    }
                  {property?.id &&
                   <div  onClick={copyLink} className='button-wrapper'>Copiar imóvel <MdOutlineCopyAll className='icon-copy'/> </div>
