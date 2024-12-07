@@ -169,7 +169,7 @@ const Dashboard = ()=>{
               
                   <div className='card-wrapper-top'>             
                      <p>Ver todas as minhas oportunidades</p>
-                     <Link to='/properties'> <button  className="button-top"><IoEyeOutline /> Ver Oportunidades</button> </Link>
+                     <Link to='/oportunidades'> <button  className="button-top"><IoEyeOutline /> Ver Oportunidades</button> </Link>
                  </div>
             </div>
 
