@@ -165,7 +165,7 @@ public class Tenant implements Serializable {
 		this.endDate = endDate;
 	}
 	
-	
+		
 
 	public String getRenovation() {
 		return renovation;

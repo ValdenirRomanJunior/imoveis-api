@@ -21,6 +21,7 @@ import com.dynamous.imoveis.enums.StatusProperty;
 import com.dynamous.imoveis.enums.TypeProperty;
 import com.dynamous.imoveis.repositories.AddressRepository;
 import com.dynamous.imoveis.repositories.CityRepository;
+
 import com.dynamous.imoveis.repositories.ImageRepository;
 import com.dynamous.imoveis.repositories.ImageUrlRepository;
 import com.dynamous.imoveis.repositories.PropertyRepository;
@@ -42,12 +43,18 @@ import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import org.thymeleaf.expression.Maps;
 
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.mail.Multipart;
@@ -92,6 +99,8 @@ public class PropertyService {
     
     @Autowired
     private CityService cityService;
+    
+
     
     @Autowired
     private AmazonS3 s3client;	
@@ -188,7 +197,7 @@ public class PropertyService {
     			
     			if(!propertyNewDTO.getFeatures().isEmpty()) {
     				  for(FeatureDTO feature : propertyNewDTO.getFeatures()) {
-    					  
+    					
     					  	Integer i=feature.getId(); 					  		
     	    	        	property.addFeature(Feature.toEnum(i));
     					
@@ -228,6 +237,7 @@ public class PropertyService {
                 Address address = new Address(null, propertyNewDTO.getStreet(), propertyNewDTO.getNumber(), propertyNewDTO.getDistrict(), propertyNewDTO.getCep(), property, city);
                 property.setAddress(address);
                 address.setAccount(account);
+                
                
                 
         	}
@@ -241,9 +251,16 @@ public class PropertyService {
     }
     
 
-    public Property update(Property property) {  	
-        Property newObj = find(property.getId());       
-        updateData(newObj, property);
+    public Property update(Property property,List<FeatureDTO> features) {  	
+        Property newObj = find(property.getId());    
+        updateData(newObj, property, features);
+        if(!features.isEmpty()) {
+    			 for(FeatureDTO featureNew : features) {	
+    						 	Integer i=featureNew.getId(); 					  		
+    			  	        	newObj.addFeature(Feature.toEnum(i));
+    							
+    	        }
+    		}
         
         
         //imageUrlRepository.saveAll(newObj.getImages());
@@ -254,7 +271,7 @@ public class PropertyService {
     }
 
     //METODO AUX PARA ATUALIZAR PROPRIEDADE
-    private void updateData(Property newObj, Property property) {
+    private void updateData(Property newObj, Property property, List<FeatureDTO> features) {
         newObj.setName(property.getName());
         newObj.setDescription(property.getDescription());
         newObj.setTypeProperty(property.getTypeProperty());
@@ -272,6 +289,11 @@ public class PropertyService {
         newObj.setAddress(property.getAddress());                                 		            		
         newObj.setAccount(newObj.getAccount());
         newObj.setSuites(property.getSuites());
+        Set<Integer> featuresEmpty =new HashSet<>();
+        	newObj.setFeatures(featuresEmpty);
+	       
+	        
+    
         stateRepository.save(property.getAddress().getCity().getState());
 		cityRepository.save(property.getAddress().getCity());
 		        			
@@ -289,6 +311,11 @@ public class PropertyService {
         Property property = new Property(propertyUpdateDTO.getId(), propertyUpdateDTO.getName(), propertyUpdateDTO.getDescription(), TypeProperty.toEnum(propertyUpdateDTO.getTypeProperty()), Goal.toEnum(propertyUpdateDTO.getGoal()), 
         		propertyUpdateDTO.getNumberRooms(),propertyUpdateDTO.getSuites() ,propertyUpdateDTO.getBathRooms(), propertyUpdateDTO.getArea(), propertyUpdateDTO.getIptu(),
         		propertyUpdateDTO.getVacancies(),propertyUpdateDTO.getCondominium(), propertyUpdateDTO.getPrice(), propertyUpdateDTO.getAreaTotal(),propAux.getStatusProperty(),propAux.getStatusFeatured(),propertyUpdateDTO.getFinanceable(),propertyUpdateDTO.getPermuta());
+        
+        
+        
+	
+		
         
         State state= stateRepository.findByName(propertyUpdateDTO.getState());
         //verificar se tem uma cidade deste estado cadastrada, se tiver tra

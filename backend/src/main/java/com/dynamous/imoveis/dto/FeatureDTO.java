@@ -2,12 +2,17 @@ package com.dynamous.imoveis.dto;
 
 import java.io.Serializable;
 
+import javax.persistence.Entity;
+
 import com.dynamous.imoveis.entities.City;
 import com.dynamous.imoveis.enums.Feature;
 
-public class FeatureDTO implements Serializable{
+
+
+public class FeatureDTO  implements Serializable{
 	private static final long serialVersionUID = 1L;
 	
+
 	
 	private int id;
 	private String name;
@@ -46,5 +51,7 @@ public class FeatureDTO implements Serializable{
 	        }
 	            throw new com.dynamous.imoveis.services.exceptions.IllegalArgumentException("Tipo invalido"+ cod);
 	        }
+	 
+	 
 
 }

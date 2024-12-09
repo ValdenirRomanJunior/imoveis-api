@@ -526,6 +526,7 @@ const Registration = () =>{
               }
             };
 
+            console.log(selectedFeatures)
     return(
         <ErrorBoundary FallbackComponent={ErrorHandler}>
         <div>

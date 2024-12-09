@@ -83,7 +83,7 @@ public class PropertyUpdateDTO implements Serializable {
     @NotEmpty(message = "Preenchimento obrigatório")
     private String permuta;
 
-  
+    private List<FeatureDTO> features;
 
     public PropertyUpdateDTO(){
 
@@ -294,6 +294,12 @@ public class PropertyUpdateDTO implements Serializable {
 	}
 	public void setSuites(String suites) {
 		this.suites = suites;
+	}
+	public List<FeatureDTO> getFeatures() {
+		return features;
+	}
+	public void setFeatures(List<FeatureDTO> features) {
+		this.features = features;
 	}
 	
 	

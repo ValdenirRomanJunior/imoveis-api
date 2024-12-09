@@ -43,8 +43,10 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.SortedSet;
 import java.util.stream.Collectors;
 
@@ -98,7 +100,7 @@ public class PropertyController {
     	propertyUpdateDTO.setId(id);
     	Property property = service.fromDTOUpdate(propertyUpdateDTO,files);   	
         property.setId(id);			     				
-        service.update(property);
+        service.update(property, propertyUpdateDTO.getFeatures());
         
         return ResponseEntity.noContent().build();
 
@@ -132,11 +134,11 @@ public class PropertyController {
     		//Page<Property> list= service.findByTenantBaseView(goal, typeProperty, name,  page, linesPerPage, orderBy, direction);
     Page<Property> list = propertyCustomRepo.findByPage(id,state, city, goal, typeProperty, page, linesPerPage, orderBy, direction);
          Image imgux=null;
-         List<Image> OneImg=null;
+         Set<Image> OneImg=null;
        	for( Property item : list) {       		 		
        		if( item.getImages().size() >0 ) {  
-       	    imgux = item.getImages().get(0);    		
-       		OneImg = new ArrayList<Image>();
+       	    imgux = item.getImages().iterator().next();    		
+       		OneImg = new HashSet<>();
        		item.setImages(OneImg);
        		item.getImages().add(imgux);
        		}
@@ -166,10 +168,10 @@ public class PropertyController {
     public ResponseEntity<?> findByIdLeadProperty(@PathVariable Long id){    
         Property property=service.findByTenant(id);
         Image imgux=null;
-        List<Image> OneImg=null;
+        Set<Image> OneImg=null;
     	if( property.getImages().size() >0 ) {  
-       		imgux = property.getImages().get(0);    		
-       		OneImg = new ArrayList<Image>();
+       		imgux = property.getImages().iterator().next();    		
+       		OneImg = new HashSet<>();
        		property.setImages(OneImg);
        		property.getImages().add(imgux);
        		}
@@ -231,13 +233,13 @@ public class PropertyController {
     	 //Page<Property> list= service.search(id,state, city, goal, typeProperty, page, linesPerPage, orderBy, direction);
          Page<Property> list = service.findByTenantMatchAnyParam(goal,typeProperty,name, nameUrl,page, linesPerPage, orderBy, direction);
          Image imgux=null;
-         List<Image> OneImg=null;
+         Set<Image> OneImg=null;
          
        	for( Property item : list) {
        		
        		if( item.getImages().size() >0 ) {  
-       		imgux = item.getImages().get(0);    		
-       		OneImg = new ArrayList<Image>();
+       		imgux = item.getImages().iterator().next();    		
+       		OneImg =  new HashSet<>();
        		item.setImages(OneImg);
        		item.getImages().add(imgux);
        		

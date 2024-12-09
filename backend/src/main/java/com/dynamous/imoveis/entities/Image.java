@@ -5,6 +5,7 @@ import java.io.Serializable;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -30,12 +31,15 @@ public class Image implements Serializable {
 	private String url;
 
 	private Long idAccount;
-	
+		
 	@JsonIgnore
 	@JoinColumn(name = "property_id")
 	@ManyToOne
 	private Property property;
 
+
+	
+	
 	
 	public Image() {
 		// TODO Auto-generated constructor stub
@@ -48,7 +52,8 @@ public class Image implements Serializable {
 		
 	}
 
-	
+
+
 	public Long getId() {
 		return id;
 	}

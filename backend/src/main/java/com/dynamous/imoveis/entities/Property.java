@@ -4,6 +4,7 @@ package com.dynamous.imoveis.entities;
 
 import javax.persistence.*;
 
+import org.hibernate.annotations.IndexColumn;
 import org.hibernate.annotations.Type;
 import org.springframework.data.domain.Page;
 
@@ -83,43 +84,36 @@ public class Property implements Serializable {
     private String gatedCondominium;
     private String unitFloor;
     	
-    		
+    
+    
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name="WARRANTIES")
     private Set<Integer> warranties  =new HashSet<>();
     
+    
+   
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name="FEATURES")
     private Set<Integer> features =new HashSet<>();
     	
     
-    @OneToMany(mappedBy = "property",fetch = FetchType.EAGER,cascade = CascadeType.ALL)
-    private List<Image> images = new ArrayList<Image>();
- 
-    
-    //fetch = FetchType.EAGER,mappedBy = "property",cascade=CascadeType.REMOVE, orphanRemoval = tru
-    ///@OneToMany(mappedBy = "property",cascade = CascadeType.REMOVE)
-  //  private List<ImageUrl> images= new ArrayList<ImageUrl>();
-
-
-    
-    //@ManyToOne
-    //@JoinColumn(name="tenant_id") 
-    //private Tenant tenant;	
-    
     @ManyToOne
     @JoinColumn(name="account_id")
     private Account account;
     	
-
+    
     @OneToOne(mappedBy = "property",cascade = CascadeType.ALL,orphanRemoval = true)
     private Address address;
-    
+    	
  
+    @OneToMany(mappedBy = "property",cascade =  CascadeType.ALL,fetch = FetchType.EAGER)
+    //@OrderColumn(name = "images" )
+    private Set<Image> images = new HashSet<>();    
+    	
     public Property() {
 		// TODO Auto-generated constructor stub
 	}
-   
+    
     public Property(Long id, String name, String description, TypeProperty typeProperty, Goal goal, String numberRooms,String suites,
     		String bathRooms,String area, String iptu,String vacancies,String condominium, String price, String areaTotal, StatusProperty statusProperty, StatusFeatured statusFeatured, String financeable, String permuta) {
         this.id = id;
@@ -271,21 +265,12 @@ public class Property implements Serializable {
         this.address = address;
     }
 
-    //public List<ImageUrl> getImages() {
-     //   return images;
-   // }
 
-   // public void setImages(List<ImageUrl> images) {
-    //    this.images = images;
-   // }
-   
-
-
-	public List<Image> getImages() {
+	public Set<Image> getImages() {
 		return images;
 	}
 
-	public void setImages(List<Image> images) {
+	public void setImages(Set<Image> images) {
 		this.images = images;
 	}
 
@@ -307,14 +292,15 @@ public class Property implements Serializable {
         warranties.add(warranty.getCod());
     }
     
-	public Set<FeatureDTO> getfeatures(){
+	public Set<FeatureDTO> getFeatures(){
         return features.stream().map(x -> FeatureDTO.toDescription(x)).collect(Collectors.toSet());
     }
 
-    public void addFeature(Feature feature){
-    	
+    public void addFeature(Feature feature){   	
         features.add(feature.getCod());
     }
+    
+ 
     
 	public String getRentalprice() {
 		return rentalprice;
@@ -383,21 +369,17 @@ public class Property implements Serializable {
 		this.suites = suites;
 	}
 
-	@Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Property property = (Property) o;
-        return Objects.equals(id, property.id);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id);
-    }
-
 
     public Address getAddress() {
         return address;
     }
+
+	public void setFeatures(Set<Integer> features) {
+		this.features = features;
+	}
+
+
+    
+    
+    
 }

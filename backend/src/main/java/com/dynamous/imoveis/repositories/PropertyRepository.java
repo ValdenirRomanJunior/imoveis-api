@@ -72,6 +72,7 @@ public interface PropertyRepository extends JpaRepository<Property,Long> {
 
 		List<Property> findFirst4ByAccountAndStatusFeaturedAndStatusProperty(Account account, int statusFeatured, int statusProperty);
 		
+		Optional<Property> findById(Long id);
 
   
 }

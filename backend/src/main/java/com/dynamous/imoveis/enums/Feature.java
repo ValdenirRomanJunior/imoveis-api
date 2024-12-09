@@ -5,7 +5,8 @@ import java.util.stream.Collectors;
 
 import com.dynamous.imoveis.dto.FeatureDTO;
 
-public enum Feature  implements Serializable {
+public enum Feature implements Serializable{
+	
 
 		ADMINISTRACAO(1,"Administração"),
 		SISTEMADEALARME(2,"Sistema de alarme"),
@@ -191,8 +192,6 @@ public enum Feature  implements Serializable {
         }
             throw new com.dynamous.imoveis.services.exceptions.IllegalArgumentException("Tipo invalido"+ cod);
         }
-    
-
     
 
 }

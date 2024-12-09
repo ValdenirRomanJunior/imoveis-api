@@ -96,6 +96,7 @@ public class S3Service {
              imageId.setUrl(url);
              imageId.setIdAccount(account.getId());
              imageId.setProperty(property);
+             
              images.add(imageId);
              property.getImages().addAll(images);
              imageRepository.saveAll(images);

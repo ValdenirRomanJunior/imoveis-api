@@ -23,8 +23,7 @@ import java.util.List;
 
 
 
-public class PropertyNewDTO implements Serializable {
-    private static final long serialVersionUID = 1L;
+public class PropertyNewDTO {
     	
     
     	
@@ -83,13 +82,13 @@ public class PropertyNewDTO implements Serializable {
 	
     private MultipartFile file;
     
-    private List<FeatureDTO> features;
+   
 
     @NotEmpty(message = "Preenchimento obrigatório")
     private String	financeable;
     @NotEmpty(message = "Preenchimento obrigatório")
     private String permuta;
-  
+    private List<FeatureDTO> features;
 
     public PropertyNewDTO(){
 
