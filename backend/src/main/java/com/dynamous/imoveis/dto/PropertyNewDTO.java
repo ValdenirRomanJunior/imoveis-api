@@ -34,7 +34,7 @@ public class PropertyNewDTO {
     @NotEmpty(message = "Preenchimento obrigatório")
     
    
-   @Length(min=1, max=350, message = "O tamanho deve ser entre 1 e 350 caracteres")
+   @Length(min=1, max=500, message = "O tamanho deve ser entre 1 e 500 caracteres")
     private String description;
     
     @NotNull 
