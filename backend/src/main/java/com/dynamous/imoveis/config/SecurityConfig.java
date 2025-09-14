@@ -47,6 +47,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 			"/leads/saveSite/**",
 			"/leads/saveLeadHome/**",
 			"/properties/findAll/**",
+			"/api/properties/findAll/**",
 			"/opportunities/steps/**",
 			"/integracoes/toxml/**",
 			"/opportunities/saveLeadHome/**",
@@ -59,10 +60,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 			"/steps/updateStep/**",
 			"/states/findAllByAccount/**",
 			"/properties/findAllDistricts/**",
+			"/themes/**",
+			"/api/themes/**",
 		
 			
 			
-											
+															
 	};
 
 	private static final String[] PUBLIC_MATCHERS_GET = {		
@@ -74,6 +77,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 			"/properties/getAllAddress/**",
 			"/properties/findAddress/**",
 			"/properties/findAddress/{nameUrl}/**",
+			"/properties/findAllFeatures/**",
 			
 			
 		
@@ -114,14 +118,25 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	@Bean
 	CorsConfigurationSource corsConfigurationSource() {
 		CorsConfiguration configuration = new CorsConfiguration().applyPermitDefaultValues();
-		configuration.setAllowedMethods(Arrays.asList("GET,POST","PUT", "DELETE", "OPTIONS"));
-		configuration.setAllowedOrigins(Arrays.asList("*"));
+		configuration.setAllowedMethods(Arrays.asList("GET","POST","PUT", "DELETE", "OPTIONS"));
 		
-	 	
+		// Allow localhost for development
+		configuration.addAllowedOrigin("http://localhost:3000");
+		configuration.addAllowedOrigin("https://localhost:3000");
+		
+		// Allow Netlify domains
+		configuration.addAllowedOriginPattern("https://*.netlify.app");
+		
+		// Allow subdomains for custom domains
+		configuration.addAllowedOriginPattern("https://*.app.standi.com.br");
+		configuration.addAllowedOriginPattern("http://*.app.standi.com.br");
+		
+		// Allow any HTTPS domain for custom domains (will be validated by our API)
+		configuration.addAllowedOriginPattern("https://*");
+		
 	        configuration.addAllowedHeader("*");
 	        configuration.addAllowedMethod("*");
 	        configuration.setAllowCredentials(false);
-		
 		
 		final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 		source.registerCorsConfiguration("/**", configuration);

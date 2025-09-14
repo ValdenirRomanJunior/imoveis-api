@@ -27,6 +27,7 @@ import com.dynamous.imoveis.repositories.StateRepository;
 import com.dynamous.imoveis.repositories.TenantRepository;
 import com.dynamous.imoveis.security.UserSS;
 
+import java.util.List;
 
 import com.dynamous.imoveis.services.exceptions.ObjectNotFoundException;
 
@@ -75,6 +76,32 @@ public class AccountService {
         return account.orElseThrow(() -> new ObjectNotFoundException(
                 "Página não encontrada! Id:" + ", Type" + Account.class.getName()));
     }
+    
+    public Account findByCompanyName(String companyName) throws ObjectNotFoundException {
+        List<Account> accounts = repo.findByCompanyNameWithTenants(companyName);
+        if (accounts.isEmpty()) {
+            throw new ObjectNotFoundException("Account not found with company name: " + companyName);
+        }
+        // Return the first account if multiple exist
+        return accounts.get(0);
+    }
+    
+    public List<Account> findAll() {
+        List<Account> accounts = repo.findAll();
+        System.out.println("Total accounts found: " + accounts.size());
+        for (Account account : accounts) {
+            System.out.println("Account ID: " + account.getId() + ", CompanyName: " + account.getCompanyName());
+        }
+        return accounts;
+    }
+    
+    public Optional<Account> findByCustomDomain(String customDomain) {
+        return repo.findByCustomDomain(customDomain);
+    }
+    
+    public Account update(Account account) {
+        return repo.save(account);
+    }
  
-}		
+}
 	

@@ -1,26 +1,20 @@
 /* eslint-disable jsx-a11y/alt-text */
 /* eslint-disable react-hooks/rules-of-hooks */
-import { base64 } from '@firebase/util';
 import React, { useEffect, useState } from 'react'
 import BarTop from '../../components/Bartop';
 import Header from '../../components/Header';
-import defaultImage from '../../assets/images/no-pictures.png';
 import {MdPhotoCamera} from 'react-icons/md';
 
 import {MyAccountBackground,BodyMyAccountContainer,TitleWrapper, CardAccount} from './styles';
 import {  getImageIfExist, refreshToken, uploadProfileImage } from '../../services/resources/user';
-import Button from '../../components/Button';
 import useAuth from '../../hooks/useAuth';
-import { BASE_URL_FROM_BUCKET } from '../../utils/request-image';
-import { hasFormSubmit } from '@testing-library/user-event/dist/utils';
 import { Link, useNavigate } from 'react-router-dom';
-import LoadingLogin from '../../components/LoadingLogin';
 import PageNotFound from '../../components/PageNotFound';
 import { ErrorBoundary } from 'react-error-boundary';
 import { deleteUserTenant, findAllUserTenant } from '../../services/resources/userTenant';
 import { Tenant } from '../../types/tenant';
-import { IoCloseOutline } from 'react-icons/io5';
 import Loading from '../../components/Loading';
+import CustomDomainManager from '../../components/CustomDomainManager';
 
 
 
@@ -123,11 +117,8 @@ const MyAccount = ()=>{
            
 }
 useEffect(() => { 
-    if(fileBase64 !== " " || "" || null){
-       
-            formSubmit()
-        
-        
+    if(fileBase64 && fileBase64 !== ""){
+        formSubmit()
     }
 }, [fileBase64]);
 
@@ -184,47 +175,22 @@ useEffect(() => {
             }, []);
 
             const [selectedUsers,setSelectedUsers]= useState<Tenant[]>([]);
-               let aux=[...selectedUsers as Tenant[]] 
-            useEffect(() => {  
-               userTenants && userTenants.forEach((item:any) =>{
-                    if(!item.perfis.includes('ACCOUNT') ){
-                       
-                       // selectedUsers.push(item as Tenant)
-                        setSelectedUsers([
-                             {
             
-                            id:item.id,
-                            slug: item.slug,
-                            proprietario:'',
-                            lastName: '',
-                            email:'',
-                            password:'',
-                            status:'',
-                            creci:'',
-                            domain:'',
-                            start:'',
-                            endDate:'',
-                            renovation:'',
-                            verification:'',
-                            perfis:[''] ,
-                            images:[{
-                                id:1 ,
-                                url:''
-                             }] 
-                    }]  as Tenant[])
-                      
-                       
-                    }
-                })
-                 
-                }, [userTenants]);
+            useEffect(() => {  
+               if(userTenants) {
+                   const filteredUsers = userTenants.filter((item:any) => 
+                       !item.perfis.includes('ACCOUNT')
+                   );
+                   setSelectedUsers(filteredUsers);
+               }
+            }, [userTenants]);
 
            console.log(selectedUsers)
          
     
-            let perfilTenant=Object.values(user.perfis).some(obj => obj === 'TENANT');
-            let perfilAdmin=Object.values(user.perfis).some(obj => obj === 'ADMIN');
-            let perfilAccount=Object.values(user.perfis).some(obj => obj === 'ACCOUNT');
+            let perfilTenant=user?.perfis ? Object.values(user.perfis).some(obj => obj === 'TENANT') : false;
+let perfilAdmin=user?.perfis ? Object.values(user.perfis).some(obj => obj === 'ADMIN') : false;
+let perfilAccount=user?.perfis ? Object.values(user.perfis).some(obj => obj === 'ACCOUNT') : false;
 
             const [initialsUser, setInitialsUser]= useState(() => {
                 if(user){
@@ -320,6 +286,12 @@ useEffect(() => {
             </div>
          
         </CardAccount>
+        
+        {/* Custom Domain Manager - Only for Account users */}
+        {perfilAccount && user?.id && (
+          <CustomDomainManager accountId={user.id} />
+        )}
+        
         {perfilAccount  &&
         <CardAccount status='ACTIVE'>           
             <div className='card-account-wrapper'> 
@@ -331,19 +303,23 @@ useEffect(() => {
             <ul className='list-users-account'>
              
                 {selectedUsers && selectedUsers.map(item=> (
-                <>
+                <li key={item.id}>
                 {!isVisible ? 
-                    
-                <li><div className='initials-user-account-wrapper'><p className='initials-user-account'>{initialsUser}</p></div><p className='user-account-name'>{item.slug}</p> <div className='edit-remove-user-wrapper'><p className='edit-user-link'><Link to={`/editUser/${item.id}`}>editar</Link></p>    
-                <p onClick={()=>handleToRemove(item.id)}>excluir</p></div></li> 
+                    <>
+                    <div className='initials-user-account-wrapper'><p className='initials-user-account'>{initialsUser}</p></div>
+                    <p className='user-account-name'>{item.slug}</p> 
+                    <div className='edit-remove-user-wrapper'>
+                        <p className='edit-user-link'><Link to={`/editUser/${item.id}`}>editar</Link></p>    
+                        <p onClick={()=>handleToRemove(item.id)}>excluir</p>
+                    </div>
+                    </>
                 :
-                <p style={{background:'#dadada',width:'100%', height:'30px;', position:'relative' ,color:'#dadada', borderRadius:'5px'}}><Loading/>s</p>}
-                </>
+                <div style={{background:'#dadada',width:'100%', height:'30px', position:'relative' ,color:'#dadada', borderRadius:'5px'}}>
+                    <Loading/>
+                </div>
+                }
+                </li>
                 ))}
-               
-                     
-                    
-               
             </ul>     
             </div>
 

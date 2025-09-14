@@ -45,7 +45,7 @@ public class ImageService {
     	
         String ext = FilenameUtils.getExtension(uploadfile.getOriginalFilename());
         System.out.println("CAIU AQUI"+ ext);
-        if(!"png".equals(ext) && !"jpeg".equals(ext)){
+        if(!"png".equals(ext) && !"jpeg".equals(ext) && !"jpg".equals(ext)){
             throw new FileException("Somente imagens PNG e JPG são permitidos");
         }
         		
@@ -79,7 +79,34 @@ public class ImageService {
         catch (IOException e){
             throw new FileException("erro ao ler arquivo");
         }
-    }		
+    }
+    
+    // Method to get PNG image without conversion to JPG
+    public BufferedImage getPngImageFromFile(MultipartFile multipartFile) {
+        String fileName = multipartFile.getOriginalFilename();
+        String ext = fileName.substring(fileName.lastIndexOf(".") + 1).toLowerCase();
+        
+        if (!"png".equals(ext)) {
+            throw new FileException("Somente imagens PNG são permitidas para logo");
+        }
+        
+        try {
+            return ImageIO.read(multipartFile.getInputStream());
+        } catch (IOException e) {
+            throw new FileException("erro ao ler arquivo PNG");
+        }
+    }
+    
+    // Method to get InputStream from PNG BufferedImage
+    public InputStream getPngInputStream(BufferedImage image) {
+        try {
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            ImageIO.write(image, "png", baos);
+            return new ByteArrayInputStream(baos.toByteArray());
+        } catch (IOException e) {
+            throw new FileException("erro ao processar imagem PNG");
+        }
+    }
     		
     
     

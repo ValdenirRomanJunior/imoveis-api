@@ -15,6 +15,7 @@ import { BiFilterAlt } from 'react-icons/bi';
 import { NavLink } from "react-router-dom";
 import React from 'react';
 import { number } from '../../pages/Registration/masks';
+import { MdDesignServices } from 'react-icons/md';
 
 const Header = () =>{
 
@@ -35,9 +36,9 @@ const Header = () =>{
 
     
 
-    const initials= user.slug.substring(0,1)+ user.email.substring(0,1) || '';
+    const initials= user?.slug?.substring(0,1) + user?.email?.substring(0,1) || '';
     
-    const userPerfil= user.perfis[0];
+    const userPerfil= user?.perfis?.[0];
     
     const getUrl = async() =>{
      
@@ -58,7 +59,7 @@ const Header = () =>{
      
         getUrl()
        
-        }, [user.id]);
+        }, [user?.id]);
    
 
   
@@ -77,8 +78,8 @@ const Header = () =>{
     const [sidebar, setSidebar] =useState(false);
     const showSidebar = () => setSidebar(!sidebar);
 
-    let perfilTenant=Object.values(user.perfis).some(obj => obj === 'TENANT');
-            let perfilAdmin=Object.values(user.perfis).some(obj => obj === 'ADMIN');
+    let perfilTenant=user?.perfis ? Object.values(user.perfis).some(obj => obj === 'TENANT') : false;
+    let perfilAdmin=user?.perfis ? Object.values(user.perfis).some(obj => obj === 'ADMIN') : false;
 
 
     return(
@@ -96,7 +97,7 @@ const Header = () =>{
 
                 <UserInfo onClick={showLinksModal}>                           
                    <div className='user-image-wrapper'>
-                       {imageUser !== '' && user.email !== 'admin@outlook.com' ? <img src={imageUser} alt='Foto Perfil'/>:<p className='initials'>{initials}</p>}
+                       {imageUser !== '' && user?.email !== 'admin@outlook.com' ? <img src={imageUser} alt='Foto Perfil'/>:<p className='initials'>{initials}</p>}
                    </div>
                   
                     <BoxLinks  linksModal={linksModal} >
@@ -112,13 +113,12 @@ const Header = () =>{
                 <SideBarTop >
                     <NavIcon to="#" onClick={ (event) => event.preventDefault() }>
                         <IoIosArrowForward  className='icon-sidebar'/>
-                      {user.domain ?  <p className='text-sidebar-top'><a href=''><Link className='site-link' to={''}>{user.domain}</Link></a></p>: <p className='text-sidebar-top'><a href=''><Link className='site-link' to={''}>site ainda não publicado</Link></a></p>} 
+                      {user?.domain ?  <p className='text-sidebar-top'><a href={`/site/${user.domain}`} target='_blank'><span className='site-link'>{user.domain}</span></a></p>: <p className='text-sidebar-top'><a href=''><Link className='site-link' to={''}>site ainda não publicado</Link></a></p>} 
                     </NavIcon>
                     
                 </SideBarTop>
                 {perfilTenant &&
                 <>
-          
             <NavIcon to="/dashboard">
             <VscDashboard className='icon-sidebar'/>
             <p className='description-icon' >Painel</p>
@@ -142,6 +142,11 @@ const Header = () =>{
             </div>
             </div>
             <p className='description-icon-op '>Oportunidades</p>
+            </NavIcon>
+
+            <NavIcon to="/temaEdit">
+            <MdDesignServices className='icon-sidebar'/>
+            <p className='description-icon'>Editor de Tema</p>
             </NavIcon>
                                
             </>

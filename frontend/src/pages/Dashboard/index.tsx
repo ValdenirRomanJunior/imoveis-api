@@ -20,6 +20,7 @@ import { IoCloudUploadOutline, IoEyeOutline } from 'react-icons/io5';
 import { RiDoorLockLine } from 'react-icons/ri';
 import Funil from '../../components/Funnel';
 import { AiOutlineHome, AiOutlineUser } from 'react-icons/ai';
+import AdminStats from '../../components/AdminStats';
 
 
 
@@ -141,8 +142,8 @@ const Dashboard = ()=>{
  
               
     
-            let perfilTenant=Object.values(user.perfis).some(obj => obj === 'TENANT');
-            let perfilAdmin=Object.values(user.perfis).some(obj => obj === 'ADMIN');
+            let perfilTenant=user?.perfis ? Object.values(user.perfis).some(obj => obj === 'TENANT') : false;
+            let perfilAdmin=user?.perfis ? Object.values(user.perfis).some(obj => obj === 'ADMIN') : false;
     
     return(
         <>
@@ -157,11 +158,11 @@ const Dashboard = ()=>{
                  
         <Header />     
         <BarTop />
-    
+     <AdminStats isVisible={user?.perfis?.includes('ADMIN')} />
         
         <p className='left-side-message-user'>Olá, <strong>{user.slug}</strong>, o que temos pra hoje?</p>
         <BodyContainer>
-       
+        
                   
             <div className='left-side'>
 
@@ -201,6 +202,8 @@ const Dashboard = ()=>{
                    
                 </div>
                 </div>
+
+                  
             </div>
 
 
@@ -230,8 +233,11 @@ const Dashboard = ()=>{
          
             </div>
             
+            {/* Componente de estatísticas administrativas */}
+           
+            
         </BodyContainer>
-     
+  
         </DashboardBackground> 
         : <Dashboard/>}  
         </ErrorBoundary>

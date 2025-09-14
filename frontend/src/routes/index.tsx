@@ -4,6 +4,7 @@ import {
     Route,
    
     Link,
+    Navigate,
 } from "react-router-dom";
 
 //import Dashboard from "../pages/Dashboard";
@@ -22,6 +23,7 @@ import PageNotFound from "../components/PageNotFound";
 //import ConfirmationPage from "../pages/ConfirmationPage";
 import React from "react";
 import LoadingLogin from "../components/LoadingLogin";
+import LoadingPage from "../pages/Site/LoadingPage";
 const LazyDashboard = React.lazy(() => import('../pages/Dashboard'));
 const LazyProperties = React.lazy(() => import('../pages/Properties'));
 const LazyRegistration = React.lazy(() => import('../pages/Registration'));
@@ -43,6 +45,11 @@ const LazyPortalConfig = React.lazy(() => import('../pages/PortalConfig'));
 const LazyFeatured = React.lazy(() => import('../pages/Featured'));
 const LazyUserRegistration = React.lazy(() => import('../pages/UserRegistration'));
 const LazyEditUser = React.lazy(() => import('../pages/EditUser'));
+const LazyTemaEdit = React.lazy(() => import('../pages/TemaEdit'));
+const LazySite = React.lazy(() => import('../pages/Site'));
+const LazyImoveis = React.lazy(() => import('../pages/Site/Properties'));
+const LazyDetail = React.lazy(() => import('../pages/Site/Detail'));
+
 
 
 
@@ -54,8 +61,7 @@ export const Router = () => {
 
             <Routes>
            
-                <Route path="/"  element={<SignIn />} /> 
-                <Route path='*' element={<PageNotFound/>}/>
+                <Route path="/"  element={<SignIn />} />
                 <Route path="/dashboard"  element={<React.Suspense fallback={<LoadingLogin/>}><LazyDashboard/></React.Suspense>} />                            
                 <Route path="/properties"  element={<React.Suspense fallback={<LoadingLogin/>}><LazyProperties/></React.Suspense>} />
                 <Route path="/registration"  element={<React.Suspense fallback={<LoadingLogin/>}><LazyRegistration/></React.Suspense>} />
@@ -77,7 +83,12 @@ export const Router = () => {
                 <Route path="/featured"  element={<React.Suspense fallback={<LoadingLogin/>}><LazyFeatured/></React.Suspense>} />
                 <Route path="/userRegistration"  element={<React.Suspense fallback={<LoadingLogin/>}><LazyUserRegistration/></React.Suspense>} />
                 <Route path="/editUser/:tenantId"  element={<React.Suspense fallback={<LoadingLogin/>}><LazyEditUser/></React.Suspense>} />
-              
+
+                <Route path="/temaEdit"  element={<React.Suspense fallback={<div>Carregando...</div>}><LazyTemaEdit/></React.Suspense>} />
+                <Route path="/site/:companyName"  element={<React.Suspense fallback={<div>Carregando...</div>}><LazySite/></React.Suspense>} />
+                <Route path="/site/:companyName/imoveis"  element={<React.Suspense fallback={<div>Carregando...</div>}><LazyImoveis/></React.Suspense>} />
+                 <Route path="/site/:companyName/detail/:propertyId"  element={<React.Suspense fallback={<LoadingPage/>}> <LazyDetail /> </React.Suspense>} /> 
+                <Route path='*' element={<PageNotFound/>}/>
             </Routes>
           
         </BrowserRouter>

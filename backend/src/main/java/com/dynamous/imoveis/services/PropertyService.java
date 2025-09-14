@@ -406,9 +406,9 @@ public class PropertyService {
 	}
 
 	 @Transactional(readOnly = true)
-	public List<Property> findByStatusFeatured(String domain) {
+	public List<Property> findByStatusFeatured(String companyName) {
 		   
-	     Account account = accountService.findByDomain(domain);  
+	     Account account = accountService.findByCompanyName(companyName);  
 		List<Property> list = propertyRepository.findFirst4ByAccountAndStatusFeaturedAndStatusProperty(account,1,1);
 		return list;
 	}
@@ -463,6 +463,17 @@ public class PropertyService {
 	    	Account account= accountService.find(tenant.getAccount().getId());
 		
 		return addressRepository.findAllDistrictsByAccountAndDistrict(account);
-	}	
-}		
+	}
+	
+	public List<Property> findAllFeaturedPropertiesPublic() {
+		// Método público para buscar propriedades em destaque sem autenticação
+		// Por enquanto, retorna todas as propriedades com status featured
+		// Em uma implementação real, você pode filtrar por tenant específico ou usar outros critérios
+		return propertyRepository.findAll().stream()
+				.filter(property -> property.getStatusFeatured() != null && 
+						property.getStatusFeatured() == com.dynamous.imoveis.enums.StatusFeatured.DESTACADO)
+				.limit(6) // Limita a 6 propriedades
+				.collect(java.util.stream.Collectors.toList());
+	}
+}
 	

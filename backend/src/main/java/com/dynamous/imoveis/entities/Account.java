@@ -41,6 +41,9 @@ public class Account implements Serializable {
     private String start;
     private String endDate;
     private String domain;
+    private String customDomain;
+    private String netlifySiteId;
+    private String netlifyToken;
     private String renovation;
     private String officeName;
     private String phone;
@@ -128,6 +131,30 @@ public class Account implements Serializable {
 	public void setDomain(String domain) {
 		this.domain = domain;
 	}
+
+	public String getCustomDomain() {
+		return customDomain;
+	}
+
+	public void setCustomDomain(String customDomain) {
+        this.customDomain = customDomain;
+    }
+
+    public String getNetlifySiteId() {
+        return netlifySiteId;
+    }
+
+    public void setNetlifySiteId(String netlifySiteId) {
+        this.netlifySiteId = netlifySiteId;
+    }
+
+    public String getNetlifyToken() {
+        return netlifyToken;
+    }
+
+    public void setNetlifyToken(String netlifyToken) {
+        this.netlifyToken = netlifyToken;
+    }
 
 	public String getProprietario() {
 		return proprietario;

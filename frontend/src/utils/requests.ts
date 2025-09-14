@@ -1,4 +1,4 @@
- import axios from 'axios';
+import axios from 'axios';
  const BASE_URL = process.env.REACT_APP_BACKEND_URL ?? "http://localhost:8080";
  
 export const tokenAux= localStorage.getItem('token') || '';
@@ -20,7 +20,7 @@ export const tokenAux= localStorage.getItem('token') || '';
         
         config.headers = {
              'Authorization':`${tokenString}`,
-             'Content-Type': 'application/json',           
+             'Content-Type': 'application/json; charset=utf-8',           
              'Access-Control-Allow-Headers': 'Content-Type',
              "Access-Control-Allow-Origin": "https://app.standi.com.br/",
              "Access-Control-Allow-Methods": "OPTIONS,POST,GET"

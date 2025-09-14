@@ -40,5 +40,8 @@ public interface LeadRepository extends JpaRepository <Lead,Long> {
 	void deleteAllByAccount(Account account);
 
 	Optional<Lead> findByIdAndAccount(Long id, Account account);
+	
+	// Método para dashboard administrativo
+	Long countByAccount(Account account);
 
 }

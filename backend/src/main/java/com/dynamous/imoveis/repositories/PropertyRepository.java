@@ -73,6 +73,17 @@ public interface PropertyRepository extends JpaRepository<Property,Long> {
 		List<Property> findFirst4ByAccountAndStatusFeaturedAndStatusProperty(Account account, int statusFeatured, int statusProperty);
 		
 		Optional<Property> findById(Long id);
+		
+		// Métodos para dashboard administrativo
+	Long countByGoal(Integer goal);
+	Long countByAccount(Account account);
+	Long countByAccountAndStatusProperty(Account account, Integer statusProperty);
+	
+	@Query("SELECT COUNT(DISTINCT p.account.id) FROM Property p")
+	Long countDistinctAccountIds();
+	
+	@Query("SELECT COUNT(p) FROM Property p WHERE p.statusProperty = 1")
+	Long countByPublishedTrue();
 
   
 }

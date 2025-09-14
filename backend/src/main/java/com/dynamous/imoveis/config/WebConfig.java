@@ -1,12 +1,16 @@
 package com.dynamous.imoveis.config;
 
 
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
+import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.http.converter.StringHttpMessageConverter;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.accept.ContentNegotiationManager;
 import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.config.annotation.ContentNegotiationConfigurer;
@@ -32,6 +36,17 @@ registry.addResourceHandler("/webjars/**", "/resources/**", "/static/**", "/imag
 						"classpath:/resources/", "classpath:/static/css/", "classpath:/static/js/", "/resources/**",
 						"/WEB-INF/classes/static/**");
 		
+ }
+ 
+ @Override
+ public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
+     StringHttpMessageConverter stringConverter = new StringHttpMessageConverter(StandardCharsets.UTF_8);
+     stringConverter.setWriteAcceptCharset(false);
+     converters.add(stringConverter);
+     
+     MappingJackson2HttpMessageConverter jsonConverter = new MappingJackson2HttpMessageConverter();
+     jsonConverter.setDefaultCharset(StandardCharsets.UTF_8);
+     converters.add(jsonConverter);
  }
  
 

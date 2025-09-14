@@ -70,6 +70,33 @@ public class FileManagerService {
         return s3Service.uploaFileProfile(imageService.getInputStream(jpgImage, "jpg"), fileName, "image");
     }
     
+    //SERVICE PARA UPLOAD DE LOGO DO TEMA
+    public URI uploadThemeLogo(MultipartFile multipartFile) {
+        // For theme uploads, use a fixed tenant ID (1) since themes are public
+        BufferedImage pngImage = imageService.getPngImageFromFile(multipartFile);
+        String fileName = "logo_theme_1.png";
+       
+        return s3Service.uploadThemeFile(imageService.getPngInputStream(pngImage), fileName, "image/png");
+    }
+    
+    //SERVICE PARA UPLOAD DE BANNER DO TEMA
+    public URI uploadThemeBanner(MultipartFile multipartFile) {
+        // For theme uploads, use a fixed tenant ID (1) since themes are public
+        BufferedImage jpgImage = imageService.getJpgImageFromFile(multipartFile);
+        String fileName = "banner_theme_1.jpg";
+       
+        return s3Service.uploadThemeFile(imageService.getInputStream(jpgImage, "jpg"), fileName, "image/jpeg");
+    }
+    
+    //SERVICE PARA UPLOAD DE FOTO DO CORRETOR
+    public URI uploadThemeAgentPhoto(MultipartFile multipartFile) {
+        // For theme uploads, use a fixed tenant ID (1) since themes are public
+        BufferedImage jpgImage = imageService.getJpgImageFromFile(multipartFile);
+        String fileName = "agent_theme_1.jpg";
+       
+        return s3Service.uploadThemeFile(imageService.getInputStream(jpgImage, "jpg"), fileName, "image/jpeg");
+    }
+    
     
     public Page<Image> findPage(Integer page, Integer linesPerPage, String orderBy, String direction){
     	 UserSS user = UserService.authenticated();

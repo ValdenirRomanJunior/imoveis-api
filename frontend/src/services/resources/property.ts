@@ -269,14 +269,36 @@ export const getTAllAddressRequest = (nameUrl:string) => {
             
 }
 
+export const getAllAddress = () => {
+  return api.get('/getAllAddress') 
+                .then(response =>{                       
+                    return response; 
+                               
+                  }
+                 
+                ).catch((error) =>{
+                  return error
+                 
+              });
+}
+
 export const searchProperties = ( name:string,goal:string, typeProperty:string , url:string,pageNumber: number) => {
-  return api.get(`/properties/searchTest?name=${name}&goal=${goal}&typeProperty=${typeProperty}&nameUrl=${url}&size=12&page=${pageNumber}&sort=name`)
+  return api.get(`/properties/searchTest?name=${name}&goal=${goal}&typeProperty=${typeProperty}&nameUrl=${url}&linesPerPage=12&page=${pageNumber}&orderBy=name&direction=ASC`)
         .then(response =>{
           return response;
         }).catch(error => {
           return error;
         })
             
+}
+
+export const searchPropertiesGeneral = () => {
+  return api.get(`/properties/findAllFeatures`)
+        .then(response =>{
+          return response;
+        }).catch(error => {
+          return error;
+        })
 }
 export const propertiesToPortal = () => {
 

@@ -138,6 +138,25 @@ public class S3Service {
       }
   }
   
+  //service s3 para enviar arquivos de tema (público, sem autenticação)
+  public URI uploadThemeFile(InputStream is, String fileName, String contentType) throws AmazonServiceException{
+               
+      try {
+           ObjectMetadata meta = new ObjectMetadata();
+           meta.setContentType(contentType);
+           LOG.info("Iniciando upload de tema");
+           
+           s3client.putObject(bucketName, fileName, is,meta);
+           LOG.info("Finalizado upload de tema");
+        
+           return s3client.getUrl(bucketName,fileName).toURI();
+          
+      } catch (URISyntaxException | AmazonClientException  e) {
+         throw new FileException(("Erro ao converter URL para URI"));
+         
+      }
+  }
+  
     
     
     

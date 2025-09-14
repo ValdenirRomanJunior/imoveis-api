@@ -20,8 +20,13 @@ import org.springframework.transaction.annotation.Transactional;
 public interface AccountRepository extends JpaRepository<Account,Long> {
 
 	Optional<Account> findByDomain(String domain);
-
-
+	Optional<Account> findByCompanyName(String companyName);
+	Optional<Account> findByCustomDomain(String customDomain);
+	
+	@Query("SELECT a FROM Account a LEFT JOIN FETCH a.tenants WHERE a.companyName = :companyName")
+	List<Account> findByCompanyNameWithTenants(@Param("companyName") String companyName);
+	
+	Long countByStatus(Integer status);
 
  
     

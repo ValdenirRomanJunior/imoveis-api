@@ -276,7 +276,7 @@ public class PropertyController {
 	}
     @GetMapping(value= "/findAllFeatures", produces = {MediaType.APPLICATION_JSON_VALUE})
   	public ResponseEntity <List<Property>> findAllPropertiesAsList(){
-      	List<Property> list = service.findAllByTenantAndStatusFeatured();
+      	List<Property> list = service.findAllFeaturedPropertiesPublic();
       	
   		return ResponseEntity.ok().body(list);
   		
