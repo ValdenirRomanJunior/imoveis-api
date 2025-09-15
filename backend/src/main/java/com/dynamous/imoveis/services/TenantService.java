@@ -62,6 +62,9 @@ public class TenantService {
 	
 	@Autowired
 	private AccountRepository accountRepo;
+	
+	@Autowired
+	private VercelDomainService vercelDomainService;
     
    
     public Tenant find(Long id) {
@@ -101,6 +104,20 @@ public class TenantService {
 	
          obj.addPerfil(Perfil.ACCOUNT);
          Account account = new Account(null,null,obj.getDomain(),obj.getSlug(),null,obj.getCreci(),obj.getProprietario());
+         
+         // Criar subdomínio automaticamente na Vercel
+         try {
+             boolean subdomainCreated = vercelDomainService.createSubdomain(obj.getSlug());
+             if (subdomainCreated) {
+                 account.setDomain(obj.getSlug() + ".standi.com.br");
+                 System.out.println("Subdomínio criado com sucesso: " + account.getDomain());
+             } else {
+                 System.err.println("Falha ao criar subdomínio para: " + obj.getSlug());
+             }
+         } catch (Exception e) {
+             System.err.println("Erro ao criar subdomínio: " + e.getMessage());
+         }
+         
          accountRepo.save(account);
          obj.setAccount(account);
         tenantRepository.save(obj);   

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { FiSave, FiExternalLink } from 'react-icons/fi';
+import axios from 'axios';
+import { FiSave, FiExternalLink, FiGlobe, FiCheck, FiX } from 'react-icons/fi';
 import useAuth from '../../hooks/useAuth';
 import {
   AiOutlineHome,
@@ -30,6 +31,7 @@ import {
   Input,
   Textarea,
   ColorInput,
+  Button,
   FileInput,
   SaveButton,
   TabContainer,
@@ -95,6 +97,14 @@ const TemaEdit: React.FC = () => {
   const [saving, setSaving] = useState(false);
   const [loading, setLoading] = useState(true);
   const [previewKey, setPreviewKey] = useState(0);
+  
+  // Estados para gerenciamento de domínio
+  const [domainInfo, setDomainInfo] = useState<any>(null);
+  const [customDomain, setCustomDomain] = useState('');
+  const [domainLoading, setDomainLoading] = useState(false);
+  const [verifying, setVerifying] = useState(false);
+  const [domainMessage, setDomainMessage] = useState<{ type: 'success' | 'error' | 'info'; text: string } | null>(null);
+  const [verificationStatus, setVerificationStatus] = useState<any>(null);
   const [themeConfig, setThemeConfig] = useState<ThemeConfig>({
     name: 'Tema Padrão',
     mainColor: '#007bff',
@@ -171,10 +181,104 @@ const TemaEdit: React.FC = () => {
       };
       
       setThemeConfig(parsedData);
+      loadDomainInfo(); // Carregar informações de domínio junto com o tema
     } catch (error) {
       console.error('Error loading theme config:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  // Funções para gerenciamento de domínio
+  const loadDomainInfo = async () => {
+    if (!user?.id) return;
+    
+    try {
+      setDomainLoading(true);
+      const response = await axios.get(`/api/domain/info/${user.id}`);
+      setDomainInfo(response.data);
+    } catch (error) {
+      console.error('Erro ao carregar informações de domínio:', error);
+    } finally {
+      setDomainLoading(false);
+    }
+  };
+
+  const addCustomDomain = async () => {
+    if (!customDomain.trim() || !user?.id) return;
+    
+    try {
+      setDomainLoading(true);
+      setDomainMessage(null);
+      
+      const response = await axios.post('/api/domain/custom', {
+        accountId: user.id,
+        domain: customDomain.trim()
+      });
+      
+      setDomainMessage({ type: 'success', text: 'Domínio personalizado adicionado com sucesso!' });
+      setCustomDomain('');
+      loadDomainInfo();
+    } catch (error: any) {
+      setDomainMessage({ 
+        type: 'error', 
+        text: error.response?.data?.message || 'Erro ao adicionar domínio personalizado' 
+      });
+    } finally {
+      setDomainLoading(false);
+    }
+  };
+
+  const verifyDomain = async (domain: string) => {
+    if (!user?.id) return;
+    
+    try {
+      setVerifying(true);
+      setDomainMessage(null);
+      
+      const response = await axios.post('/api/domain/verify', {
+        accountId: user.id,
+        domain
+      });
+      
+      setVerificationStatus(response.data);
+      
+      if (response.data.verified) {
+        setDomainMessage({ type: 'success', text: 'Domínio verificado com sucesso!' });
+        loadDomainInfo();
+      } else {
+        setDomainMessage({ type: 'error', text: 'Falha na verificação do domínio. Verifique as configurações DNS.' });
+      }
+    } catch (error: any) {
+      setDomainMessage({ 
+        type: 'error', 
+        text: error.response?.data?.message || 'Erro ao verificar domínio' 
+      });
+    } finally {
+      setVerifying(false);
+    }
+  };
+
+  const removeCustomDomain = async (domain: string) => {
+    if (!user?.id) return;
+    
+    try {
+      setDomainLoading(true);
+      setDomainMessage(null);
+      
+      await axios.delete('/api/domain/custom', {
+        data: { accountId: user.id, domain }
+      });
+      
+      setDomainMessage({ type: 'success', text: 'Domínio personalizado removido com sucesso!' });
+      loadDomainInfo();
+    } catch (error: any) {
+      setDomainMessage({ 
+        type: 'error', 
+        text: error.response?.data?.message || 'Erro ao remover domínio personalizado' 
+      });
+    } finally {
+      setDomainLoading(false);
     }
   };
 
@@ -726,17 +830,153 @@ const TemaEdit: React.FC = () => {
       case 'configuracoes':
         return (
           <TabContent>
-            <FormGroup>
-              <Label>Domínio Personalizado</Label>
-              <Input
-                value={themeConfig.customDomain}
-                onChange={(e) => handleDirectChange('customDomain', e.target.value)}
-                placeholder="Ex: www.minhaImobiliaria.com.br"
-              />
-              <small style={{ color: '#6c757d', fontSize: '12px' }}>
-                Digite o domínio personalizado que será usado para acessar seu site
-              </small>
-            </FormGroup>
+            {/* Seção de Domínio */}
+            <div style={{ marginBottom: '32px' }}>
+              <SectionTitle style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
+                <FiGlobe /> Configuração de Domínio
+              </SectionTitle>
+              
+              {/* Subdomínio Automático */}
+              <div style={{ 
+                backgroundColor: '#f8fafc', 
+                padding: '16px', 
+                borderRadius: '8px', 
+                marginBottom: '16px',
+                border: '1px solid #e2e8f0'
+              }}>
+                <h4 style={{ margin: '0 0 8px 0', fontSize: '14px', fontWeight: '600' }}>Subdomínio Automático</h4>
+                <p style={{ margin: '0 0 8px 0', fontSize: '13px', color: '#64748b' }}>
+                  Seu site está disponível automaticamente em:
+                </p>
+                <div style={{ 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  gap: '8px',
+                  padding: '8px 12px',
+                  backgroundColor: '#ffffff',
+                  border: '1px solid #d1d5db',
+                  borderRadius: '6px',
+                  fontSize: '14px',
+                  fontFamily: 'monospace'
+                }}>
+                  {domainInfo?.subdomain || `${user?.slug || 'seu-slug'}.standi.com.br`}
+                  <FiExternalLink 
+                    style={{ cursor: 'pointer', color: '#3b82f6' }}
+                    onClick={() => window.open(`https://${domainInfo?.subdomain || `${user?.slug}.standi.com.br`}`, '_blank')}
+                  />
+                </div>
+              </div>
+
+              {/* Domínio Personalizado */}
+              <div style={{ 
+                backgroundColor: '#f8fafc', 
+                padding: '16px', 
+                borderRadius: '8px', 
+                border: '1px solid #e2e8f0'
+              }}>
+                <h4 style={{ margin: '0 0 8px 0', fontSize: '14px', fontWeight: '600' }}>Domínio Personalizado</h4>
+                <p style={{ margin: '0 0 12px 0', fontSize: '13px', color: '#64748b' }}>
+                  Configure seu próprio domínio para acessar o site
+                </p>
+                
+                {/* Lista de domínios personalizados */}
+                {domainInfo?.customDomains && domainInfo.customDomains.length > 0 && (
+                  <div style={{ marginBottom: '16px' }}>
+                    {domainInfo.customDomains.map((domain: any, index: number) => (
+                      <div key={index} style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        padding: '12px',
+                        backgroundColor: '#ffffff',
+                        border: '1px solid #d1d5db',
+                        borderRadius: '6px',
+                        marginBottom: '8px'
+                      }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                          <span style={{ fontFamily: 'monospace', fontSize: '14px' }}>{domain.domain}</span>
+                          {domain.verified ? (
+                            <FiCheck style={{ color: '#10b981' }} title="Verificado" />
+                          ) : (
+                            <FiX style={{ color: '#ef4444' }} title="Não verificado" />
+                          )}
+                        </div>
+                        <div style={{ display: 'flex', gap: '8px' }}>
+                          {!domain.verified && (
+                            <Button
+                              onClick={() => verifyDomain(domain.domain)}
+                              disabled={verifying}
+                              style={{ 
+                                padding: '4px 8px', 
+                                fontSize: '12px',
+                                backgroundColor: '#3b82f6',
+                                color: 'white'
+                              }}
+                            >
+                              {verifying ? 'Verificando...' : 'Verificar'}
+                            </Button>
+                          )}
+                          <Button
+                            onClick={() => removeCustomDomain(domain.domain)}
+                            disabled={domainLoading}
+                            style={{ 
+                              padding: '4px 8px', 
+                              fontSize: '12px',
+                              backgroundColor: '#ef4444',
+                              color: 'white'
+                            }}
+                          >
+                            Remover
+                          </Button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+                
+                {/* Adicionar novo domínio */}
+                <div style={{ display: 'flex', gap: '8px', marginBottom: '12px' }}>
+                  <Input
+                    value={customDomain}
+                    onChange={(e) => setCustomDomain(e.target.value)}
+                    placeholder="Ex: www.minhaImobiliaria.com.br"
+                    style={{ flex: 1 }}
+                  />
+                  <Button
+                    onClick={addCustomDomain}
+                    disabled={domainLoading || !customDomain.trim()}
+                    style={{ 
+                      backgroundColor: '#10b981',
+                      color: 'white',
+                      whiteSpace: 'nowrap'
+                    }}
+                  >
+                    {domainLoading ? 'Adicionando...' : 'Adicionar'}
+                  </Button>
+                </div>
+                
+                {/* Mensagens */}
+                {domainMessage && (
+                  <div style={{
+                    padding: '8px 12px',
+                    borderRadius: '6px',
+                    fontSize: '13px',
+                    backgroundColor: domainMessage.type === 'success' ? '#dcfce7' : '#fef2f2',
+                    color: domainMessage.type === 'success' ? '#166534' : '#dc2626',
+                    border: `1px solid ${domainMessage.type === 'success' ? '#bbf7d0' : '#fecaca'}`,
+                    marginBottom: '12px'
+                  }}>
+                    {domainMessage.text}
+                  </div>
+                )}
+                
+                <small style={{ color: '#6c757d', fontSize: '12px' }}>
+                  Após adicionar um domínio personalizado, você precisará configurar os registros DNS.
+                </small>
+              </div>
+            </div>
+
+            {/* Outras configurações */}
             <FormGroup>
               <Label>Pixel do Facebook</Label>
               <Input

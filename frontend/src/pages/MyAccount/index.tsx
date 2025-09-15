@@ -14,7 +14,7 @@ import { ErrorBoundary } from 'react-error-boundary';
 import { deleteUserTenant, findAllUserTenant } from '../../services/resources/userTenant';
 import { Tenant } from '../../types/tenant';
 import Loading from '../../components/Loading';
-import CustomDomainManager from '../../components/CustomDomainManager';
+import DomainManager from '../../components/DomainManager';
 
 
 
@@ -289,7 +289,7 @@ let perfilAccount=user?.perfis ? Object.values(user.perfis).some(obj => obj === 
         
         {/* Custom Domain Manager - Only for Account users */}
         {perfilAccount && user?.id && (
-          <CustomDomainManager accountId={user.id} />
+          <DomainManager accountId={Number(user.id)} />
         )}
         
         {perfilAccount  &&

@@ -64,7 +64,7 @@ const SignIn = () => {
         navigate('/dashboard')
       }
         else{
-          navigate('/')
+          navigate('/login')
           setLoading(false)
         }
       

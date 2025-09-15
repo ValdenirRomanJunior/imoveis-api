@@ -24,6 +24,7 @@ import PageNotFound from "../components/PageNotFound";
 import React from "react";
 import LoadingLogin from "../components/LoadingLogin";
 import LoadingPage from "../pages/Site/LoadingPage";
+import SubdomainRouter from "../components/SubdomainRouter";
 const LazyHome = React.lazy(() => import('../pages/Home'));
 const LazyDashboard = React.lazy(() => import('../pages/Dashboard'));
 const LazyProperties = React.lazy(() => import('../pages/Properties'));
@@ -59,8 +60,8 @@ export const Router = () => {
     return (
              
         <BrowserRouter>
-
-            <Routes>
+            <SubdomainRouter>
+                <Routes>
            
                 <Route path="/"  element={<React.Suspense fallback={<div>Carregando...</div>}><LazyHome/></React.Suspense>} />
                 <Route path="/login"  element={<SignIn />} />
@@ -91,8 +92,8 @@ export const Router = () => {
                 <Route path="/site/:companyName/imoveis"  element={<React.Suspense fallback={<div>Carregando...</div>}><LazyImoveis/></React.Suspense>} />
                  <Route path="/site/:companyName/detail/:propertyId"  element={<React.Suspense fallback={<LoadingPage/>}> <LazyDetail /> </React.Suspense>} /> 
                 <Route path='*' element={<PageNotFound/>}/>
-            </Routes>
-          
+                </Routes>
+            </SubdomainRouter>
         </BrowserRouter>
               
     )

@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import {
   HomeContainer,
   Header,
@@ -51,7 +52,7 @@ const Home: React.FC = () => {
             <NavLink href="#recursos">Recursos</NavLink>
             <NavLink href="#clientes">Clientes</NavLink>
             <NavLink href="#suporte">Suporte</NavLink>
-            <LoginButton href="https://app.standi.com.br/login">
+            <LoginButton as={Link} to="/login">
               Fazer Login
             </LoginButton>
           </NavLinks>
@@ -68,7 +69,7 @@ const Home: React.FC = () => {
             O sistema imobiliário que simplifica sua gestão. Centralize CRM, gestão de aluguéis, 
             gestão de vendas e site em um só lugar, impulsionando suas vendas.
           </p>
-          <CTAButton href="https://app.standi.com.br/login">
+          <CTAButton as={Link} to="/login">
             Começar Agora
           </CTAButton>
         </HeroContent>
