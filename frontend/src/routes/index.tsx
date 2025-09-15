@@ -24,6 +24,7 @@ import PageNotFound from "../components/PageNotFound";
 import React from "react";
 import LoadingLogin from "../components/LoadingLogin";
 import LoadingPage from "../pages/Site/LoadingPage";
+const LazyHome = React.lazy(() => import('../pages/Home'));
 const LazyDashboard = React.lazy(() => import('../pages/Dashboard'));
 const LazyProperties = React.lazy(() => import('../pages/Properties'));
 const LazyRegistration = React.lazy(() => import('../pages/Registration'));
@@ -61,7 +62,8 @@ export const Router = () => {
 
             <Routes>
            
-                <Route path="/"  element={<SignIn />} />
+                <Route path="/"  element={<React.Suspense fallback={<div>Carregando...</div>}><LazyHome/></React.Suspense>} />
+                <Route path="/login"  element={<SignIn />} />
                 <Route path="/dashboard"  element={<React.Suspense fallback={<LoadingLogin/>}><LazyDashboard/></React.Suspense>} />                            
                 <Route path="/properties"  element={<React.Suspense fallback={<LoadingLogin/>}><LazyProperties/></React.Suspense>} />
                 <Route path="/registration"  element={<React.Suspense fallback={<LoadingLogin/>}><LazyRegistration/></React.Suspense>} />

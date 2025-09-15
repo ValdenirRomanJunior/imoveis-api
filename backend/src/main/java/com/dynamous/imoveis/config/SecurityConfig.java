@@ -124,15 +124,16 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		configuration.addAllowedOrigin("http://localhost:3000");
 		configuration.addAllowedOrigin("https://localhost:3000");
 		
+		// Allow main domain
+		configuration.addAllowedOrigin("https://standi.com.br");
+		configuration.addAllowedOrigin("http://standi.com.br");
+		
+		// Allow app subdomain for login
+		configuration.addAllowedOrigin("https://app.standi.com.br");
+		configuration.addAllowedOrigin("http://app.standi.com.br");
+		
 		// Allow Netlify domains
 		configuration.addAllowedOriginPattern("https://*.netlify.app");
-		
-		// Allow subdomains for custom domains
-		configuration.addAllowedOriginPattern("https://*.app.standi.com.br");
-		configuration.addAllowedOriginPattern("http://*.app.standi.com.br");
-		
-		// Allow any HTTPS domain for custom domains (will be validated by our API)
-		configuration.addAllowedOriginPattern("https://*");
 		
 	        configuration.addAllowedHeader("*");
 	        configuration.addAllowedMethod("*");

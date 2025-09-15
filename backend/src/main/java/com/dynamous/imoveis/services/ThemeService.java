@@ -27,8 +27,7 @@ public class ThemeService {
     @Autowired
     private AccountService accountService;
     
-    @Autowired
-    private NetlifyService netlifyService;
+
 
     @Transactional
     public ThemeDTO findByTenantId(Long tenantId) {
@@ -105,17 +104,8 @@ public class ThemeService {
         theme.setPrivacyPolicy(themeDTO.getPrivacyPolicy());
         theme.setAboutUs(themeDTO.getAboutUs());
         
-        // Handle custom domain integration with Netlify
-        String oldCustomDomain = theme.getCustomDomain();
-        String newCustomDomain = themeDTO.getCustomDomain();
-        
-        theme.setCustomDomain(newCustomDomain);
+        theme.setCustomDomain(themeDTO.getCustomDomain());
         theme = themeRepository.save(theme);
-        
-        // Integrate with Netlify if custom domain changed
-        if (!java.util.Objects.equals(oldCustomDomain, newCustomDomain)) {
-            handleCustomDomainChange(tenant.getId(), newCustomDomain, oldCustomDomain);
-        }
         
         return new ThemeDTO(theme);
     }
@@ -160,89 +150,5 @@ public class ThemeService {
         return new ThemeDTO(theme);
     }
     
-    /**
-     * Handles custom domain changes and integrates with Netlify
-     */
-    private void handleCustomDomainChange(Long tenantId, String newCustomDomain, String oldCustomDomain) {
-        try {
-            // Find tenant and its associated account
-            Optional<Tenant> tenantOpt = tenantRepository.findById(tenantId);
-            if (!tenantOpt.isPresent()) {
-                System.err.println("Tenant não encontrado: " + tenantId);
-                return;
-            }
-            
-            Tenant tenant = tenantOpt.get();
-            Account account = tenant.getAccount();
-            
-            if (account == null) {
-                System.err.println("Account não encontrada para o tenant: " + tenantId);
-                return;
-            }
-            
-            // Only proceed if Netlify is configured
-            if (!netlifyService.isConfigured()) {
-                System.out.println("Netlify not configured, skipping domain integration");
-                // Still update the account's custom domain for future use
-                account.setCustomDomain(newCustomDomain);
-                accountService.update(account);
-                return;
-            }
-            
-            // Remove old domain if it exists
-            if (oldCustomDomain != null && !oldCustomDomain.trim().isEmpty()) {
-                String siteId = account.getNetlifySiteId();
-                if (siteId != null && !siteId.isEmpty()) {
-                    try {
-                        netlifyService.removeDomain(siteId, oldCustomDomain);
-                        System.out.println("Removed old domain: " + oldCustomDomain);
-                    } catch (Exception e) {
-                        System.err.println("Error removing old domain: " + e.getMessage());
-                    }
-                }
-            }
-            
-            // Add new domain if it exists
-            if (newCustomDomain != null && !newCustomDomain.trim().isEmpty()) {
-                String siteId = account.getNetlifySiteId();
-                
-                // Create site if it doesn't exist
-                if (siteId == null || siteId.isEmpty()) {
-                    try {
-                        Map<String, Object> siteResponse = netlifyService.createSite(
-                            account.getCompanyName() + "-site", 
-                            newCustomDomain
-                        );
-                        siteId = siteResponse.get("id").toString();
-                        account.setNetlifySiteId(siteId);
-                        System.out.println("Created new Netlify site: " + siteId);
-                    } catch (Exception e) {
-                        System.err.println("Error creating Netlify site: " + e.getMessage());
-                        return;
-                    }
-                }
-                
-                // Add custom domain
-                try {
-                    netlifyService.addCustomDomain(siteId, newCustomDomain);
-                    System.out.println("Added custom domain: " + newCustomDomain);
-                    
-                    // Activate SSL
-                    netlifyService.activateSSL(siteId, newCustomDomain);
-                    System.out.println("SSL activated for domain: " + newCustomDomain);
-                    
-                } catch (Exception e) {
-                    System.err.println("Error configuring custom domain: " + e.getMessage());
-                }
-            }
-            
-            // Update account with new custom domain
-            account.setCustomDomain(newCustomDomain);
-            accountService.update(account);
-            
-        } catch (Exception e) {
-            System.err.println("Error in handleCustomDomainChange: " + e.getMessage());
-            e.printStackTrace();
-        }
-    }
+
 }

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { FiSave } from 'react-icons/fi';
+import { FiSave, FiExternalLink } from 'react-icons/fi';
+import useAuth from '../../hooks/useAuth';
 import {
   AiOutlineHome,
   AiOutlineUser,
@@ -89,6 +90,7 @@ interface ThemeConfig {
 }
 
 const TemaEdit: React.FC = () => {
+  const { user } = useAuth();
   const [activeTab, setActiveTab] = useState('header');
   const [saving, setSaving] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -877,10 +879,26 @@ const TemaEdit: React.FC = () => {
 
         {renderTabContent()}
 
-        <SaveButton onClick={handleSave} disabled={saving}>
-          <FiSave size={16} />
-          {saving ? 'Salvando...' : 'Salvar'}
-        </SaveButton>
+        <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+          <SaveButton onClick={handleSave} disabled={saving}>
+            <FiSave size={16} />
+            {saving ? 'Salvando...' : 'Salvar'}
+          </SaveButton>
+          
+          <SaveButton 
+            onClick={() => window.open(`/site/${user?.slug}`, '_blank')}
+            style={{ 
+              backgroundColor: '#10b981', 
+              border: 'none',
+              cursor: 'pointer'
+            }}
+            onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#059669'}
+            onMouseOut={(e) => e.currentTarget.style.backgroundColor = '#10b981'}
+          >
+            <FiExternalLink size={16} />
+            Ver Meu Site
+          </SaveButton>
+        </div>
       </EditorPanel>
 
       <PreviewPanel>

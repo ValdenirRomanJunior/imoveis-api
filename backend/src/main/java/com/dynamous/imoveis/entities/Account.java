@@ -163,6 +163,14 @@ public class Account implements Serializable {
 	public void setProprietario(String proprietario) {
 		this.proprietario = proprietario;
 	}
+
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
     
     	
     

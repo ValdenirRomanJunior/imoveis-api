@@ -163,34 +163,12 @@ const Site: React.FC = () => {
   const [aboutModalOpen, setAboutModalOpen] = useState(false);
   const [clientSlug, setClientSlug] = useState<string | null>(null);
 
-  // Detect hostname and extract slug
+  // Set client slug from URL parameter
   useEffect(() => {
-    const hostname = window.location.hostname;
-    
-    // Check if it's a subdomain (e.g., cliente1.app.standi.com.br)
-    if (hostname.includes('.app.standi.com.br')) {
-      const slug = hostname.split('.')[0];
-      setClientSlug(slug);
-    }
-    // Check if it's a custom domain - we'll need to call API to resolve
-    else if (hostname !== 'localhost' && !hostname.includes('netlify.app')) {
-      // For custom domains, we need to call backend to resolve the slug
-      resolveCustomDomain(hostname);
-    }
-    // Fallback for development (localhost:3000/site/<companyName>)
-    else if (companyName) {
+    if (companyName) {
       setClientSlug(companyName);
     }
   }, [companyName]);
-
-  const resolveCustomDomain = async (domain: string) => {
-    try {
-      const response = await api.get(`/api/accounts/resolve-domain/${domain}`);
-      setClientSlug(response.data.slug);
-    } catch (error) {
-      console.error('Error resolving custom domain:', error);
-    }
-  };
 
   useEffect(() => {
     if (clientSlug) {

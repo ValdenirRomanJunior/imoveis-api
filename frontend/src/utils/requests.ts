@@ -22,7 +22,7 @@ export const tokenAux= localStorage.getItem('token') || '';
              'Authorization':`${tokenString}`,
              'Content-Type': 'application/json; charset=utf-8',           
              'Access-Control-Allow-Headers': 'Content-Type',
-             "Access-Control-Allow-Origin": "https://app.standi.com.br/",
+             "Access-Control-Allow-Origin": "https://standi.com.br/",
              "Access-Control-Allow-Methods": "OPTIONS,POST,GET"
 
         
