@@ -189,6 +189,19 @@ const TemaEdit: React.FC = () => {
     }
   };
 
+  // Função para gerar URL do subdomínio
+  const getSubdomainUrl = (companySlug: string) => {
+    const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+    
+    if (isLocalhost) {
+      // Em desenvolvimento, usar parâmetro de query
+      return `${window.location.origin}/?subdomain=${companySlug}`;
+    } else {
+      // Em produção, usar subdomínio
+      return `https://${companySlug}.standi.com.br`;
+    }
+  };
+
   // Funções para gerenciamento de domínio
   const loadDomainInfo = async () => {
     if (!user?.id) return;
@@ -862,7 +875,7 @@ const TemaEdit: React.FC = () => {
                   {domainInfo?.subdomain || `${user?.slug || 'seu-slug'}.standi.com.br`}
                   <FiExternalLink 
                     style={{ cursor: 'pointer', color: '#3b82f6' }}
-                    onClick={() => window.open(`https://${domainInfo?.subdomain || `${user?.slug}.standi.com.br`}`, '_blank')}
+                    onClick={() => window.open(getSubdomainUrl(user?.slug || ''), '_blank')}
                   />
                 </div>
               </div>
@@ -1126,7 +1139,7 @@ const TemaEdit: React.FC = () => {
           </SaveButton>
           
           <SaveButton 
-            onClick={() => window.open(`/site/${user?.slug}`, '_blank')}
+            onClick={() => window.open(getSubdomainUrl(user?.slug || ''), '_blank')}
             style={{ 
               backgroundColor: '#10b981', 
               border: 'none',
@@ -1152,7 +1165,7 @@ const TemaEdit: React.FC = () => {
         }}>
           <iframe
             key={previewKey}
-            src="/site/imobiliariaTeste"
+            src={`/site/${user?.slug || 'imobiliariaTeste'}`}
             style={{
               width: '100%',
               height: '100%',
@@ -1167,7 +1180,7 @@ const TemaEdit: React.FC = () => {
           justifyContent: 'center'
         }}>
           <button
-            onClick={() => window.open('/site/imobiliariaTeste', '_blank')}
+            onClick={() => window.open(getSubdomainUrl(user?.slug || 'imobiliariaTeste'), '_blank')}
             style={{
               padding: '8px 16px',
               backgroundColor: '#2563eb',
