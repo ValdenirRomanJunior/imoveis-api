@@ -28,7 +28,7 @@ const SubdomainRouter: React.FC<SubdomainRouterProps> = ({ children }) => {
           setIsSubdomain(true);
           setCompanyName(subdomain);
           
-          // Redirecionar para o template do site se não estiver já na rota correta
+          // Redirecionar para o template do site se não estiver já na rosta correta
           if (!location.pathname.startsWith('/site/')) {
             const targetPath = location.pathname === '/' ? `/site/${subdomain}` : `/site/${subdomain}${location.pathname}`;
             navigate(`${targetPath}${location.search}`);
