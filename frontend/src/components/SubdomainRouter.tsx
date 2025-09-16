@@ -112,7 +112,7 @@ const SubdomainRouter: React.FC<SubdomainRouterProps> = ({ children }) => {
       const pathname = location.pathname;
       
       // Determinar qual componente renderizar baseado na URL
-       if (pathname === '/' || pathname === '') {
+       if (pathname === '/site' || pathname === '') {
          return (
            <SubdomainContext.Provider value={{ companyName }}>
              <div className="subdomain-site">
@@ -159,13 +159,13 @@ const SubdomainRouter: React.FC<SubdomainRouterProps> = ({ children }) => {
     // Em localhost ou rotas /site/, usar o sistema de rotas normal
     return (
       <div className="subdomain-site">
-       "login""
+        {children}
       </div>
     );
   }
 
   // Caso contrário, renderizar normalmente (aplicação principal)
-  return <>"{"/login"}"</>;
+  return <>{children}</>;
 };
 
 export default SubdomainRouter;
