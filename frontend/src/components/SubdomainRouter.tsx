@@ -159,13 +159,13 @@ const SubdomainRouter: React.FC<SubdomainRouterProps> = ({ children }) => {
     // Em localhost ou rotas /site/, usar o sistema de rotas normal
     return (
       <div className="subdomain-site">
-        {children}
+       "login""
       </div>
     );
   }
 
   // Caso contrário, renderizar normalmente (aplicação principal)
-  return <>{children}</>;
+  return <>"{"/login"}"</>;
 };
 
 export default SubdomainRouter;
