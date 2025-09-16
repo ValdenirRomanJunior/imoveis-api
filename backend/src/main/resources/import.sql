@@ -1,5 +1,5 @@
-INSERT INTO account ( logo,domain, company_name, cnpj, creci) VALUES ('nenhuma1','localhost1','imobiliariaTeste','434434343','3243-F');
-INSERT INTO account ( logo,domain, company_name, cnpj, creci) VALUES ('nenhuma2','localhost','imobiliariaTeste','434434343','3243-F');
+INSERT INTO account ( logo,domain, company_name, cnpj, creci) VALUES ('nenhuma1','localhost1','corretor1','434434343','3243-F');
+INSERT INTO account ( logo,domain, company_name, cnpj, creci) VALUES ('nenhuma2','localhost','corretor3','434434343','3243-F');
 
 
 INSERT INTO TENANT ( slug, email, password, status,last_name,verification, domain,account_id) VALUES ('corretor1','vromanjunior@outlook.com','$2a$10$SlOVSeeJSFR07DXoDdvZ..chnzSwkJXW0IZlL6K1CwbAX9eKd5XYa',1,'valdenir',1,'localhost3',1);

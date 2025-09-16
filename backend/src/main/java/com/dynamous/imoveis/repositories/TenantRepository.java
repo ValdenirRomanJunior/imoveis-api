@@ -34,6 +34,9 @@ public interface TenantRepository extends JpaRepository <Tenant,Long> {
     @Transactional(readOnly = true)
 	Optional<Tenant> findByDomain(String domain);
 
+	@Transactional(readOnly = true)
+	Optional<Tenant> findBySlug(String slug);
+
 	Page<Tenant> findAllByPerfis(PageRequest pageRequest, int perfil);
 
 	//@Query("SELECT t FROM Tenant t LEFT JOIN t.perfis p WHERE t.account = :account")

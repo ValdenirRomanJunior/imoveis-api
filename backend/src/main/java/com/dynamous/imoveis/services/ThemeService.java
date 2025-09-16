@@ -27,6 +27,11 @@ public class ThemeService {
     @Autowired
     private AccountService accountService;
     
+    public Tenant findTenantBySlug(String slug) {
+        Optional<Tenant> tenant = tenantRepository.findBySlug(slug);
+        return tenant.orElseThrow(() -> new EntityNotFoundException("Tenant not found with slug: " + slug));
+    }
+    
 
 
     @Transactional

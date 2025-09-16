@@ -5,6 +5,7 @@ import com.dynamous.imoveis.services.ThemeService;
 import com.dynamous.imoveis.services.FileManagerService;
 import com.dynamous.imoveis.services.AccountService;
 import com.dynamous.imoveis.entities.Account;
+import com.dynamous.imoveis.entities.Tenant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -54,6 +55,38 @@ public class ThemeController {
             return ResponseEntity.ok(theme);
         } catch (Exception e) {
             System.err.println("Error in getThemeByCompanyName: " + e.getMessage());
+            e.printStackTrace();
+            throw e;
+        }
+    }
+
+    @GetMapping("/slug/{tenantSlug}")
+    public ResponseEntity<ThemeDTO> getThemeByTenantSlug(@PathVariable String tenantSlug) {
+        try {
+            System.out.println("Searching for tenant with slug: " + tenantSlug);
+            
+            // Find tenant by slug, then get its account's companyName
+            Tenant tenant = themeService.findTenantBySlug(tenantSlug);
+            System.out.println("Tenant found: " + tenant.getId());
+            
+            Account account = tenant.getAccount();
+            System.out.println("Account found: " + account.getId() + ", companyName: " + account.getCompanyName());
+            
+            // Now search by the account's companyName
+            if (account.getTenants().isEmpty()) {
+                System.out.println("No tenants found for account: " + account.getCompanyName());
+                throw new RuntimeException("No tenant found for account: " + account.getCompanyName());
+            }
+            
+            Long tenantId = account.getTenants().get(0).getId();
+            System.out.println("Using tenant ID: " + tenantId);
+            
+            ThemeDTO theme = themeService.findByTenantId(tenantId);
+            System.out.println("Theme found: " + theme.getName());
+            
+            return ResponseEntity.ok(theme);
+        } catch (Exception e) {
+            System.err.println("Error in getThemeByTenantSlug: " + e.getMessage());
             e.printStackTrace();
             throw e;
         }
