@@ -1,5 +1,16 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, createContext, useContext } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+
+// Contexto para compartilhar o companyName
+const SubdomainContext = createContext<{ companyName: string | null }>({ companyName: null });
+
+// Hook para usar o contexto
+export const useSubdomain = () => useContext(SubdomainContext);
+
+// Lazy load do componente Site
+const LazySite = React.lazy(() => import('../pages/Site'));
+const LazyImoveis = React.lazy(() => import('../pages/Site/Properties'));
+const LazyDetail = React.lazy(() => import('../pages/Site/Detail'));
 
 interface SubdomainRouterProps {
   children: React.ReactNode;
@@ -24,20 +35,7 @@ const SubdomainRouter: React.FC<SubdomainRouterProps> = ({ children }) => {
       fullUrl: window.location.href
     });
     
-    // Verificar se estamos em uma rota /site/ (tanto em localhost quanto em produção)
-    if (location.pathname.startsWith('/site/')) {
-      const pathParts = location.pathname.split('/');
-      if (pathParts.length >= 3 && pathParts[1] === 'site') {
-        const companySlug = pathParts[2];
-        console.log('SubdomainRouter - Site route detected:', companySlug);
-        setIsSubdomain(true);
-        setCompanyName(companySlug);
-        setIsInitialized(true);
-        return;
-      }
-    }
-    
-    // Detectar se é um subdomínio real (apenas em produção)
+    // Em produção, detectar subdomínio primeiro
     if (!isLocalhost) {
       const parts = hostname.split('.');
       console.log('SubdomainRouter - Hostname parts:', parts);
@@ -48,25 +46,36 @@ const SubdomainRouter: React.FC<SubdomainRouterProps> = ({ children }) => {
         console.log('SubdomainRouter - Detected subdomain:', subdomain);
         
         // Verificar se não é 'www' ou outros subdomínios do sistema
-        if (subdomain !== 'www' && subdomain !== 'api' && subdomain !== 'admin') {
-          console.log('SubdomainRouter - Valid subdomain, redirecting to site route');
+        if (subdomain !== 'www' && subdomain !== 'api' && subdomain !== 'admin' && subdomain !== 'app') {
+          console.log('SubdomainRouter - Valid client subdomain detected:', subdomain);
           setIsSubdomain(true);
           setCompanyName(subdomain);
-          
-          // Redirecionar para a rota /site/ se não estiver já nela
-          if (!location.pathname.startsWith('/site/')) {
-            const targetPath = location.pathname === '/' ? `/site/${subdomain}` : `/site/${subdomain}${location.pathname}`;
-            console.log('SubdomainRouter - Navigating to:', targetPath);
-            navigate(`${targetPath}${location.search}`);
-          }
+          setIsInitialized(true);
+          return; // Não redirecionar, apenas definir o estado
         } else {
           console.log('SubdomainRouter - System subdomain, ignoring:', subdomain);
         }
       } else {
         console.log('SubdomainRouter - Not a standi.com.br subdomain');
       }
-    } else {
-      // Em localhost, verificar parâmetro de subdomínio
+    }
+    
+    // Em localhost, verificar rota /site/ ou parâmetro subdomain
+    if (isLocalhost) {
+      // Primeiro verificar se estamos em uma rota /site/
+      if (location.pathname.startsWith('/site/')) {
+        const pathParts = location.pathname.split('/');
+        if (pathParts.length >= 3 && pathParts[1] === 'site') {
+          const companySlug = pathParts[2];
+          console.log('SubdomainRouter - Site route detected in localhost:', companySlug);
+          setIsSubdomain(true);
+          setCompanyName(companySlug);
+          setIsInitialized(true);
+          return;
+        }
+      }
+      
+      // Verificar parâmetro de subdomínio
       const urlParams = new URLSearchParams(window.location.search);
       const subdomainParam = urlParams.get('subdomain');
       console.log('SubdomainRouter - Localhost subdomain param:', subdomainParam);
@@ -80,6 +89,8 @@ const SubdomainRouter: React.FC<SubdomainRouterProps> = ({ children }) => {
           console.log('SubdomainRouter - Localhost navigating to:', targetPath);
           navigate(targetPath);
         }
+        setIsInitialized(true);
+        return;
       }
     }
     
@@ -91,8 +102,61 @@ const SubdomainRouter: React.FC<SubdomainRouterProps> = ({ children }) => {
     return <div>Carregando...</div>;
   }
 
-  // Se for um subdomínio ou rota /site/, renderizar o conteúdo do site
+  // Se for um subdomínio em produção, renderizar diretamente o componente Site
   if (isSubdomain && companyName) {
+    const hostname = window.location.hostname;
+    const isLocalhost = hostname === 'localhost' || hostname === '127.0.0.1';
+    
+    // Em produção (subdomínio real), renderizar Site diretamente baseado na URL
+    if (!isLocalhost && !location.pathname.startsWith('/site/')) {
+      const pathname = location.pathname;
+      
+      // Determinar qual componente renderizar baseado na URL
+       if (pathname === '/' || pathname === '') {
+         return (
+           <SubdomainContext.Provider value={{ companyName }}>
+             <div className="subdomain-site">
+               <React.Suspense fallback={<div>Carregando...</div>}>
+                 <LazySite />
+               </React.Suspense>
+             </div>
+           </SubdomainContext.Provider>
+         );
+       } else if (pathname === '/imoveis' || pathname.startsWith('/imoveis')) {
+         return (
+           <SubdomainContext.Provider value={{ companyName }}>
+             <div className="subdomain-site">
+               <React.Suspense fallback={<div>Carregando...</div>}>
+                 <LazyImoveis />
+               </React.Suspense>
+             </div>
+           </SubdomainContext.Provider>
+         );
+       } else if (pathname.startsWith('/detail/')) {
+         return (
+           <SubdomainContext.Provider value={{ companyName }}>
+             <div className="subdomain-site">
+               <React.Suspense fallback={<div>Carregando...</div>}>
+                 <LazyDetail />
+               </React.Suspense>
+             </div>
+           </SubdomainContext.Provider>
+         );
+       } else {
+         // Para outras rotas, renderizar Site como fallback
+         return (
+           <SubdomainContext.Provider value={{ companyName }}>
+             <div className="subdomain-site">
+               <React.Suspense fallback={<div>Carregando...</div>}>
+                 <LazySite />
+               </React.Suspense>
+             </div>
+           </SubdomainContext.Provider>
+         );
+       }
+    }
+    
+    // Em localhost ou rotas /site/, usar o sistema de rotas normal
     return (
       <div className="subdomain-site">
         {children}

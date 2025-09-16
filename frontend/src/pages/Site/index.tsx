@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { ThemeProvider } from 'styled-components';
 import { useParams } from 'react-router-dom';
+import { useSubdomain } from '../../components/SubdomainRouter';
 import bgPrincipal from '../../assets/images/bg-principal.png';
 import corretorPadrao from './assets/corretor-padrao.jpg';
 import {
@@ -154,6 +155,7 @@ interface ThemeConfig {
 
 const Site: React.FC = () => {
   const { companyName } = useParams<{ companyName: string }>();
+  const { companyName: subdomainCompanyName } = useSubdomain();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [featuredProperties, setFeaturedProperties] = useState<Property[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
@@ -163,12 +165,14 @@ const Site: React.FC = () => {
   const [aboutModalOpen, setAboutModalOpen] = useState(false);
   const [clientSlug, setClientSlug] = useState<string | null>(null);
 
-  // Set client slug from URL parameter
+  // Set client slug from subdomain context or URL parameter
   useEffect(() => {
-    if (companyName) {
-      setClientSlug(companyName);
+    const detectedSlug = subdomainCompanyName || companyName;
+    if (detectedSlug) {
+      setClientSlug(detectedSlug);
+      console.log('Site - Using client slug:', detectedSlug, 'from', subdomainCompanyName ? 'subdomain' : 'URL params');
     }
-  }, [companyName]);
+  }, [subdomainCompanyName, companyName]);
 
   useEffect(() => {
     if (clientSlug) {
