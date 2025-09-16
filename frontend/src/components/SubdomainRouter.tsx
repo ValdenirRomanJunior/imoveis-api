@@ -35,28 +35,49 @@ const SubdomainRouter: React.FC<SubdomainRouterProps> = ({ children }) => {
       fullUrl: window.location.href
     });
     
+    // Simulação para teste: se tiver parâmetro ?simulate=production, simular produção
+    const urlParams = new URLSearchParams(window.location.search);
+    const simulateProduction = urlParams.get('simulate') === 'production';
+    const simulatedSubdomain = urlParams.get('subdomain');
+    
+    if (simulateProduction && simulatedSubdomain) {
+      console.log('SubdomainRouter - SIMULATION MODE: Simulating production with subdomain:', simulatedSubdomain);
+      setIsSubdomain(true);
+      setCompanyName(simulatedSubdomain);
+      setIsInitialized(true);
+      return;
+    }
+    
     // Em produção, detectar subdomínio primeiro
     if (!isLocalhost) {
       const parts = hostname.split('.');
       console.log('SubdomainRouter - Hostname parts:', parts);
       
-      // Verificar se é um subdomínio do standi.com.br
-      if (parts.length >= 3 && parts[parts.length - 2] === 'standi' && parts[parts.length - 1] === 'br') {
+      // Verificar se é um subdomínio do standi.com.br (formato: corretor1.standi.com.br)
+      if (parts.length >= 3) {
         const subdomain = parts[0];
-        console.log('SubdomainRouter - Detected subdomain:', subdomain);
+        const domain = parts.slice(1).join('.');
+        console.log('SubdomainRouter - Checking subdomain:', subdomain, 'domain:', domain);
         
-        // Verificar se não é 'www' ou outros subdomínios do sistema
-        if (subdomain !== 'www' && subdomain !== 'api' && subdomain !== 'admin' && subdomain !== 'app') {
-          console.log('SubdomainRouter - Valid client subdomain detected:', subdomain);
-          setIsSubdomain(true);
-          setCompanyName(subdomain);
-          setIsInitialized(true);
-          return; // Não redirecionar, apenas definir o estado
+        // Verificar se o domínio é standi.com.br
+        if (domain === 'standi.com.br') {
+          console.log('SubdomainRouter - Detected standi.com.br subdomain:', subdomain);
+          
+          // Verificar se não é 'www' ou outros subdomínios do sistema
+          if (subdomain !== 'www' && subdomain !== 'api' && subdomain !== 'admin' && subdomain !== 'app') {
+            console.log('SubdomainRouter - Valid client subdomain detected:', subdomain);
+            setIsSubdomain(true);
+            setCompanyName(subdomain);
+            setIsInitialized(true);
+            return; // Não redirecionar, apenas definir o estado
+          } else {
+            console.log('SubdomainRouter - System subdomain, ignoring:', subdomain);
+          }
         } else {
-          console.log('SubdomainRouter - System subdomain, ignoring:', subdomain);
+          console.log('SubdomainRouter - Not a standi.com.br domain:', domain);
         }
       } else {
-        console.log('SubdomainRouter - Not a standi.com.br subdomain');
+        console.log('SubdomainRouter - Not enough hostname parts for subdomain');
       }
     }
     
@@ -102,17 +123,24 @@ const SubdomainRouter: React.FC<SubdomainRouterProps> = ({ children }) => {
     return <div>Carregando...</div>;
   }
 
-  // Se for um subdomínio em produção, renderizar diretamente o componente Site
+  // Se for um subdomínio válido, renderizar diretamente o componente Site
   if (isSubdomain && companyName) {
     const hostname = window.location.hostname;
     const isLocalhost = hostname === 'localhost' || hostname === '127.0.0.1';
     
+    console.log('SubdomainRouter - Rendering subdomain content:', {
+      isSubdomain,
+      companyName,
+      isLocalhost,
+      pathname: location.pathname
+    });
+    
     // Em produção (subdomínio real), renderizar Site diretamente baseado na URL
-    if (!isLocalhost && !location.pathname.startsWith('/site/')) {
+    if (!isLocalhost) {
       const pathname = location.pathname;
       
       // Determinar qual componente renderizar baseado na URL
-       if (pathname === '/site' || pathname === '') {
+       if (pathname === '/' || pathname === '') {
          return (
            <SubdomainContext.Provider value={{ companyName }}>
              <div className="subdomain-site">
