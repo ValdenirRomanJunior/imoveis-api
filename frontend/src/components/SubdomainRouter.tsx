@@ -10,6 +10,7 @@ const SubdomainRouter: React.FC<SubdomainRouterProps> = ({ children }) => {
   const location = useLocation();
   const [isSubdomain, setIsSubdomain] = useState(false);
   const [companyName, setCompanyName] = useState<string | null>(null);
+  const [isInitialized, setIsInitialized] = useState(false);
 
   useEffect(() => {
     const hostname = window.location.hostname;
@@ -23,7 +24,20 @@ const SubdomainRouter: React.FC<SubdomainRouterProps> = ({ children }) => {
       fullUrl: window.location.href
     });
     
-    // Detectar se é um subdomínio
+    // Verificar se estamos em uma rota /site/ (tanto em localhost quanto em produção)
+    if (location.pathname.startsWith('/site/')) {
+      const pathParts = location.pathname.split('/');
+      if (pathParts.length >= 3 && pathParts[1] === 'site') {
+        const companySlug = pathParts[2];
+        console.log('SubdomainRouter - Site route detected:', companySlug);
+        setIsSubdomain(true);
+        setCompanyName(companySlug);
+        setIsInitialized(true);
+        return;
+      }
+    }
+    
+    // Detectar se é um subdomínio real (apenas em produção)
     if (!isLocalhost) {
       const parts = hostname.split('.');
       console.log('SubdomainRouter - Hostname parts:', parts);
@@ -35,17 +49,15 @@ const SubdomainRouter: React.FC<SubdomainRouterProps> = ({ children }) => {
         
         // Verificar se não é 'www' ou outros subdomínios do sistema
         if (subdomain !== 'www' && subdomain !== 'api' && subdomain !== 'admin') {
-          console.log('SubdomainRouter - Valid subdomain, setting state');
+          console.log('SubdomainRouter - Valid subdomain, redirecting to site route');
           setIsSubdomain(true);
           setCompanyName(subdomain);
           
-          // Redirecionar para o template do site se não estiver já na rosta correta
+          // Redirecionar para a rota /site/ se não estiver já nela
           if (!location.pathname.startsWith('/site/')) {
             const targetPath = location.pathname === '/' ? `/site/${subdomain}` : `/site/${subdomain}${location.pathname}`;
             console.log('SubdomainRouter - Navigating to:', targetPath);
             navigate(`${targetPath}${location.search}`);
-          } else {
-            console.log('SubdomainRouter - Already on correct path:', location.pathname);
           }
         } else {
           console.log('SubdomainRouter - System subdomain, ignoring:', subdomain);
@@ -54,7 +66,7 @@ const SubdomainRouter: React.FC<SubdomainRouterProps> = ({ children }) => {
         console.log('SubdomainRouter - Not a standi.com.br subdomain');
       }
     } else {
-      // Em localhost, verificar se há parâmetro de subdomínio na URL
+      // Em localhost, verificar parâmetro de subdomínio
       const urlParams = new URLSearchParams(window.location.search);
       const subdomainParam = urlParams.get('subdomain');
       console.log('SubdomainRouter - Localhost subdomain param:', subdomainParam);
@@ -70,9 +82,16 @@ const SubdomainRouter: React.FC<SubdomainRouterProps> = ({ children }) => {
         }
       }
     }
+    
+    setIsInitialized(true);
   }, [navigate, location]);
 
-  // Se for um subdomínio, renderizar apenas o conteúdo do site
+  // Aguardar inicialização
+  if (!isInitialized) {
+    return <div>Carregando...</div>;
+  }
+
+  // Se for um subdomínio ou rota /site/, renderizar o conteúdo do site
   if (isSubdomain && companyName) {
     return (
       <div className="subdomain-site">
@@ -81,7 +100,7 @@ const SubdomainRouter: React.FC<SubdomainRouterProps> = ({ children }) => {
     );
   }
 
-  // Caso contrário, renderizar normalmente
+  // Caso contrário, renderizar normalmente (aplicação principal)
   return <>{children}</>;
 };
 
