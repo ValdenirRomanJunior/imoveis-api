@@ -65,13 +65,19 @@ export const PseudoSearchContainer = styled.div`
     }
 
    @media screen and (min-width:1000px){
-        width: 55%;
+
+        width: 100%;
+        min-width: 700px;
         height:3rem;
 
         button{
             display:none;
         }
 
+        ul{
+        margin-bottom: 0;
+        padding-left:0;
+        }
         .input-rent-sale-wrapper-desktop{
             position: relative;
             font-family: "Outfit", sans-serif;
@@ -142,10 +148,12 @@ export const PseudoSearchContainer = styled.div`
             .rent-span{
                cursor: pointer;
                 font-size: 12px;
+                color: gray;
                 }
                 .sale-span{
                     cursor: pointer;
                     font-size: 12px;
+                    color: gray;
                 }
                 .select-half{
                     cursor: pointer;
@@ -199,6 +207,10 @@ export const PseudoSearchContainer = styled.div`
             left:50%;
             z-index:1;
             width:300px;
+
+            h2{
+            margin-bottom:0;
+            }
           
         }
         .result-list-wrapper-desktop ul{
@@ -246,7 +258,7 @@ export const PseudoSearchContainer = styled.div`
    }
 
    @media screen and (min-width:1300px){
-    width: 55%;
+    width: 100%;
     height:3rem;
 
     button{
@@ -396,7 +408,7 @@ export const PseudoSearchContainer = styled.div`
 }
 
 @media screen and (min-width:1400px){
-    width: 50%;
+    width: 100%;
     height:3rem;
 
     button{

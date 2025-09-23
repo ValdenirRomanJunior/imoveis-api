@@ -11,8 +11,8 @@ export const newLead = (name:string, email: string, phone:string, message:string
                                                 });
 }
 
-export const newLeadHome = (name:string, email: string, phone:string, message:string, url:string) => {
-    return api.post('/opportunities/saveLeadHome',{name, email,phone,message,url})
+export const newLeadHome = (name:string, email: string, phone:string, message:string, companyName:string) => {
+    return api.post('/opportunities/saveLeadHome',{name, email,phone,message,companyName})
                                                  .then(response =>{
                                                   return response
                                                     

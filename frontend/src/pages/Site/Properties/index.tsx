@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { ThemeProvider } from 'styled-components';
 import { useParams } from 'react-router-dom';
 import api from '../../../utils/requests';
@@ -25,6 +25,8 @@ import Modal from 'react-modal';
 import WhatsappButton from '../WhatsappButton';
 import { ErrorBoundary } from 'react-error-boundary';
 import PageNotFound from '../PageNotFound';
+import corretorPadrao from '../assets/corretor-padrao.jpg';
+import bannerPadrao from '../../../assets/images/bg-principal.png';
 
 interface ThemeConfig {
   name: string;
@@ -42,6 +44,7 @@ interface ThemeConfig {
   contactImage: string;
   agentPhoto: string;
   agentQuote: string;
+  agentName?: string;
   footerLogo: string;
   socialLinks: {
     facebook: string;
@@ -58,6 +61,12 @@ interface ThemeConfig {
   bannerTitleSize?: number;
   h2Color?: string;
   h3Color?: string;
+  footerText?: string;
+  privacyPolicy?: string;
+  aboutUs?: string;
+  tenantId?: number;
+  bannerColor?: string;
+  menuLinks?: any[];
 }
 
 
@@ -67,6 +76,7 @@ const Properties = ()=>{
     const navigate = useNavigate();
     const { companyName } = useParams<{ companyName: string }>();
     const [goal,setGoal]= useState('');
+    const [loading, setLoading] = useState(true);
     const [themeConfig, setThemeConfig] = useState<ThemeConfig>({
       name: '',
       logo: '',
@@ -87,6 +97,7 @@ const Properties = ()=>{
       }
     });
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+    const clientSlug = companyName;
 
     useEffect(() => {
       if (companyName) {
@@ -94,48 +105,82 @@ const Properties = ()=>{
       }
     }, [companyName]);
 
-    const loadThemeConfig = async () => {
+    const loadThemeConfig = useCallback(async () => {
       try {
-        // Carregar configurações reais do tema da API usando companyName
-        const response = await api.get(`/api/themes/account/${companyName}`);
-        const data = response.data;
+        // Verificar se existe configuração de preview no localStorage
+        const previewData = localStorage.getItem(`theme-preview-${clientSlug}`);
         
-        // Parse JSON strings do backend
-        const parsedData = {
-          ...data,
-          menuLinks: typeof data.menuLinks === 'string' ? JSON.parse(data.menuLinks || '[]') : data.menuLinks || [],
-          services: typeof data.services === 'string' ? JSON.parse(data.services || '[]') : data.services || [],
-          socialLinks: typeof data.socialLinks === 'string' ? JSON.parse(data.socialLinks || '{}') : data.socialLinks || {}
-        };
-        
-        setThemeConfig(parsedData);
+        if (previewData) {
+          try {
+            const parsedPreview = JSON.parse(previewData);
+            // Verificar se o preview não é muito antigo (5 minutos)
+            const isRecentPreview = Date.now() - parsedPreview.timestamp < 5 * 60 * 1000;
+            
+            if (parsedPreview.isPreview && isRecentPreview) {
+              console.log('Usando configuração de preview do localStorage');
+              // Parse JSON strings do preview
+              const previewConfig = {
+                ...parsedPreview,
+                menuLinks: typeof parsedPreview.menuLinks === 'string' ? JSON.parse(parsedPreview.menuLinks || '[]') : parsedPreview.menuLinks || [],
+                services: typeof parsedPreview.services === 'string' ? JSON.parse(parsedPreview.services || '[]') : parsedPreview.services || [],
+                socialLinks: typeof parsedPreview.socialLinks === 'string' ? JSON.parse(parsedPreview.socialLinks || '{}') : parsedPreview.socialLinks || {}
+              };
+              setThemeConfig(previewConfig);
+              setLoading(false);
+              return;
+            } else {
+              // Preview expirado, remover do localStorage
+              localStorage.removeItem(`theme-preview-${clientSlug}`);
+            }
+          } catch (previewError) {
+            console.error('Erro ao processar preview:', previewError);
+            localStorage.removeItem(`theme-preview-${clientSlug}`);
+          }
+        }
+    
+        // Use clientSlug to get theme config
+        const response = await api.get(`/theme-config/${clientSlug}`);
+        if (response.data) {
+          setThemeConfig(response.data);
+        }
       } catch (error) {
-        console.error('Error loading theme config:', error);
-        // Fallback para configuração padrão em caso de erro
-        const defaultConfig = {
-          name: 'Imóveis',
+        console.error('Erro ao carregar configuração do tema:', error);
+        // Fallback para configuração padrão se não encontrar
+        setThemeConfig({
+          name: 'Site Padrão',
           logo: '',
           logoSize: 'medium',
           phone: '',
-          bannerImage: '',
-          bannerTitle: 'Encontre seu imóvel ideal',
-          textColor: '#333',
-          buttonColor: '#007bff',
+          bannerImage: bannerPadrao,
+          bannerTitle: 'Para cada imóvel uma nova história se levanta',
+          bannerTitleColor: '#ffffff',
+          bannerTitleSize: 48,
+          bannerColor: '#2563eb',
           services: [],
-          contactTitle: 'Contato',
+          contactTitle: 'Entre em contato',
           contactImage: '',
-          agentPhoto: '',
-          agentQuote: '',
+          agentPhoto: corretorPadrao,
+          agentQuote: 'Estou aqui para ajudar você a encontrar o imóvel perfeito.',
+          agentName: 'Corretor',
           footerLogo: '',
           socialLinks: {
             facebook: '',
             instagram: '',
             whatsapp: ''
-          }
-        };
-        setThemeConfig(defaultConfig);
+          },
+          footerText: 'Todos os direitos reservados.',
+          footerBackgroundColor: '#1f2937',
+          textColor: '#1f2937',
+          buttonColor: '#2563eb',
+          h2Color: '#1f2937',
+          privacyPolicy: '',
+          aboutUs: '',
+          tenantId: 0
+        });
+      } finally {
+        setLoading(false);
       }
-    };
+    }, [clientSlug]);
 
     const getParamHeader = (goal:string) => {
       setGoal(goal);
@@ -214,7 +259,7 @@ const Properties = ()=>{
         <CardProperty goal={goal}/>
        </BodyPropertiesContainer>
     </PropertiesBackground>
-    <WhatsappButton/>  
+    <WhatsappButton whatsappNumber={themeConfig.phone} />  
     </div>
     </ThemeProvider>
    

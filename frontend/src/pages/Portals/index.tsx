@@ -76,9 +76,12 @@ const Portals = () => {
     },[])
 
     const [status,setStatus]=useState(false)
+
+        let perfilTenant=Object.values(user.perfis).some(obj => obj === 'TENANT');
+
     return(
         <>
-        {user?.perfis?.[0] === 'TENANT'? 
+        {perfilTenant? 
         <ErrorBoundary FallbackComponent={ErrorHandler}>
         <div>
         

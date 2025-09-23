@@ -1,9 +1,50 @@
-import React, { useState, useEffect } from 'react';
-import { ThemeProvider } from 'styled-components';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
+import { ThemeProvider } from 'styled-components';
 import { useSubdomain } from '../../components/SubdomainRouter';
-import bgPrincipal from '../../assets/images/bg-principal.png';
-import corretorPadrao from './assets/corretor-padrao.jpg';
+import { phone } from "./masks";
+import { 
+  AiOutlineHome, 
+  AiOutlineUser, 
+  AiOutlinePhone, 
+  AiOutlineKey, 
+  AiOutlineCalculator,
+  AiOutlineHeart,
+  AiOutlineSearch,
+  AiOutlineFileText,
+  AiOutlineDollar,
+  AiOutlineBank,
+  AiOutlineShop,
+  AiOutlineCar,
+  AiOutlineGift
+} from 'react-icons/ai';
+import { 
+  FaKey, 
+  FaCalculator, 
+  FaHandshake, 
+  FaBuilding, 
+  FaMapMarkerAlt,
+  FaFacebook,
+  FaInstagram,
+  FaWhatsapp
+} from 'react-icons/fa';
+import { 
+  HiHome, 
+  HiKey, 
+  HiCalculator, 
+  HiHeart, 
+  HiSearch, 
+  HiDocumentText,
+  HiMenu,
+  HiX
+} from 'react-icons/hi';
+import { 
+  MdRealEstateAgent, 
+  MdAttachMoney, 
+  MdBusiness, 
+  MdLocationOn, 
+  MdSecurity 
+} from 'react-icons/md';
 import {
   SiteContainer,
   Header,
@@ -15,9 +56,6 @@ import {
   Banner,
   BannerContent,
   BannerTitle,
-  SearchBar,
-  SearchInput,
-  SearchButton,
   Section,
   SectionTitle,
   ServicesGrid,
@@ -35,14 +73,6 @@ import {
   AgentSection,
   AgentPhoto,
   AgentQuote,
-  PropertyCard,
-  PropertyImage,
-  PropertyInfo,
-  PropertyPrice,
-  PropertyTitle,
-  PropertyLocation,
-  NavigationSection,
-  NavigationLink,
   Footer,
   FooterLogo,
   SocialLinks,
@@ -53,37 +83,27 @@ import {
   ModalHeader,
   ModalTitle,
   ModalCloseButton,
-  ModalBody
+  ModalBody,
+  NavigationSection,
+  NavigationLink
 } from './styles';
-import {
-  AiOutlineHome,
-  AiOutlineUser,
-  AiOutlinePhone,
-  AiFillFacebook,
-  AiFillInstagram,
-  AiOutlineKey,
-  AiOutlineCalculator,
-  AiOutlineHeart,
-  AiOutlineSearch,
-  AiOutlineFileText,
-  AiOutlineDollar,
-  AiOutlineBank,
-  AiOutlineShop,
-  AiOutlineCar,
-  AiOutlineGift
-} from 'react-icons/ai';
-import { FaFacebook, FaInstagram, FaWhatsapp, FaKey, FaCalculator, FaHandshake, FaBuilding, FaMapMarkerAlt } from 'react-icons/fa';
-import { HiMenu, HiX, HiHome, HiKey, HiCalculator, HiHeart, HiSearch, HiDocumentText } from 'react-icons/hi';
-import { MdRealEstateAgent, MdAttachMoney, MdBusiness, MdLocationOn, MdSecurity } from 'react-icons/md';
-import { propertiesFeatured } from '../../services/resources/property';
-import api from '../../utils/requests';
 import PseudoSearch from './PseudoSearch';
 import WhatsappButton from './WhatsappButton';
+import api from '../../utils/requests';
+import corretorPadrao from './assets/corretor-padrao.jpg';
+import bannerPadrao from '../../assets/images/bg-principal.png';
+import FeaturedPropertyCard from './components/FeaturedPropertyCard';
+import houseimage from '../../assets/house-image.png';
+import { newLeadHome } from './Services/lead';
 
 interface Property {
   id: number;
   name: string;
   price: string;
+  goal: string;
+  numberRooms: string;
+  bathRooms: string;
+  area: string;
   address: {
     id: number;
     street: string;
@@ -164,7 +184,23 @@ const Site: React.FC = () => {
   const [privacyModalOpen, setPrivacyModalOpen] = useState(false);
   const [aboutModalOpen, setAboutModalOpen] = useState(false);
   const [clientSlug, setClientSlug] = useState<string | null>(null);
+   const [url,setUrl]= useState((window.location.hostname));
 
+       const [errorsLead, setErrorsLead] = useState<Error[]>([]);
+    const [otherError, setOtherError] = useState(false);
+ 
+    const [emptyValue,setEmptyValue]= useState(false);
+    const [successMessage, setSuccessMessage] = useState(false); 
+    const [loadingAddLead, setLoadingAddLead]=useState(false);
+
+              //lead service
+  const [form,setForm]=useState<any>({
+    name:'',
+    email:'',
+    phone:'',
+    message:''
+    
+});
   // Set client slug from subdomain context or URL parameter
   useEffect(() => {
     const detectedSlug = subdomainCompanyName || companyName;
@@ -174,79 +210,114 @@ const Site: React.FC = () => {
     }
   }, [subdomainCompanyName, companyName]);
 
-  useEffect(() => {
-    if (clientSlug) {
-      loadThemeConfig();
-      loadFeaturedProperties();
-    }
-  }, [clientSlug]);
-
-  const loadThemeConfig = async () => {
+  const loadThemeConfig = useCallback(async () => {
     try {
+      // Verificar se existe configuração de preview no localStorage
+      const previewData = localStorage.getItem(`theme-preview-${clientSlug}`);
+      
+      if (previewData) {
+        try {
+          const parsedPreview = JSON.parse(previewData);
+          // Verificar se o preview não é muito antigo (5 minutos)
+          const isRecentPreview = Date.now() - parsedPreview.timestamp < 5 * 60 * 1000;
+          
+          if (parsedPreview.isPreview && isRecentPreview) {
+            console.log('Usando configuração de preview do localStorage');
+            // Parse JSON strings do preview
+            const previewConfig = {
+              ...parsedPreview,
+              menuLinks: typeof parsedPreview.menuLinks === 'string' ? JSON.parse(parsedPreview.menuLinks || '[]') : parsedPreview.menuLinks || [],
+              services: typeof parsedPreview.services === 'string' ? JSON.parse(parsedPreview.services || '[]') : parsedPreview.services || [],
+              socialLinks: typeof parsedPreview.socialLinks === 'string' ? JSON.parse(parsedPreview.socialLinks || '{}') : parsedPreview.socialLinks || {}
+            };
+            setThemeConfig(previewConfig);
+            setLoading(false);
+            return;
+          } else {
+            // Preview expirado, remover do localStorage
+            localStorage.removeItem(`theme-preview-${clientSlug}`);
+          }
+        } catch (previewError) {
+          console.error('Erro ao processar preview:', previewError);
+          localStorage.removeItem(`theme-preview-${clientSlug}`);
+        }
+      }
+
       // Use clientSlug to get theme config
-      const response = await api.get(`/api/themes/account/${clientSlug}`);
-      const data = response.data;
-      
-      // Parse JSON strings from backend
-      const parsedData = {
-        ...data,
-        menuLinks: typeof data.menuLinks === 'string' ? JSON.parse(data.menuLinks || '[]') : data.menuLinks || [],
-        services: typeof data.services === 'string' ? JSON.parse(data.services || '[]') : data.services || [],
-        socialLinks: typeof data.socialLinks === 'string' ? JSON.parse(data.socialLinks || '{}') : data.socialLinks || {}
-      };
-      
-      setThemeConfig(parsedData);
+      const response = await api.get(`/theme-config/${clientSlug}`);
+      if (response.data) {
+        console.log('Site - ThemeConfig carregado do backend:', response.data);
+        console.log('Site - socialLinks raw:', response.data.socialLinks);
+        
+        // Parse JSON strings from backend if needed
+        const themeData = {
+          ...response.data,
+          menuLinks: typeof response.data.menuLinks === 'string' ? JSON.parse(response.data.menuLinks || '[]') : response.data.menuLinks || [],
+          services: typeof response.data.services === 'string' ? JSON.parse(response.data.services || '[]') : response.data.services || [],
+          socialLinks: typeof response.data.socialLinks === 'string' ? JSON.parse(response.data.socialLinks || '{}') : response.data.socialLinks || {}
+        };
+        
+        console.log('Site - socialLinks após parsing:', themeData.socialLinks);
+        console.log('Site - socialLinks.whatsapp final:', themeData.socialLinks?.whatsapp);
+        setThemeConfig(themeData);
+      }
     } catch (error) {
-      console.error('Error loading theme config:', error);
-      // Fallback default config
-      const defaultConfig: ThemeConfig = {
-        name: 'Tema Padrão',
+      console.error('Erro ao carregar configuração do tema:', error);
+      // Fallback para configuração padrão se não encontrar
+      setThemeConfig({
+        name: 'Site Padrão',
         logo: '',
         logoSize: 'medium',
-        menuLinks: [{ label: 'Início', url: `/site/${clientSlug}` }, { label: 'Imóveis', url: `/site/${clientSlug}/imoveis` }],
-        phone: '(00) 0000-0000',
-        bannerImage: '',
-        bannerTitle: 'Encontre o imóvel dos seus sonhos',
+        menuLinks: [],
+        phone: '',
+        bannerImage: bannerPadrao,
+        bannerTitle: 'Para cada imóvel uma nova história se levanta',
         bannerTitleColor: '#ffffff',
         bannerTitleSize: 48,
-        bannerColor: '#f8fafc',
-        services: [
-          { icon: 'home', title: 'Venda de Imóveis', description: 'Encontre o imóvel perfeito para você', active: true },
-          { icon: 'key', title: 'Locação', description: 'Alugue com segurança e praticidade', active: true },
-          { icon: 'calculator', title: 'Financiamento', description: 'Facilitamos seu financiamento imobiliário', active: true }
-        ],
+        bannerColor: '#2563eb',
+        services: [],
         contactTitle: 'Entre em contato',
         contactImage: '',
         agentPhoto: corretorPadrao,
-        agentQuote: 'Mais de 10 anos ajudando pessoas a encontrar o lar dos seus sonhos.',
-        agentName: 'João Silva',
+        agentQuote: 'Estou aqui para ajudar você a encontrar o imóvel perfeito.',
+        agentName: 'Corretor',
         footerLogo: '',
-        socialLinks: { facebook: '#', instagram: '#', whatsapp: '#' },
-        footerText: '© 2024 Imobiliária. Todos os direitos reservados.',
+        socialLinks: {
+          facebook: '',
+          instagram: '',
+          whatsapp: ''
+        },
+        footerText: 'Todos os direitos reservados.',
         footerBackgroundColor: '#1f2937',
-        textColor: '#2563eb',
-        buttonColor: '#64748b',
+        textColor: '#1f2937',
+        buttonColor: '#2563eb',
         h2Color: '#1f2937',
-        privacyPolicy: 'Política de privacidade padrão.',
-        aboutUs: 'Sobre nós padrão.',
-        tenantId: 1
-      };
-      setThemeConfig(defaultConfig);
+        privacyPolicy: '',
+        aboutUs: '',
+        tenantId: 0
+      });
     } finally {
       setLoading(false);
     }
-  };
+  }, [clientSlug]);
 
-  const loadFeaturedProperties = async () => {
+  const loadFeaturedProperties = useCallback(async () => {
     try {
-      const response = await api.get(`/properties/findAll/${clientSlug}`);
+      const response = await api.get(`/properties/findAllFeatures`);
       if (response.data) {
         setFeaturedProperties(response.data.slice(0, 6)); // Mostrar apenas 6 propriedades
       }
     } catch (error) {
       console.error('Erro ao carregar propriedades em destaque:', error);
     }
-  };
+  }, [clientSlug]);
+
+  useEffect(() => {
+    if (clientSlug) {
+      loadThemeConfig();
+      loadFeaturedProperties();
+    }
+  }, [clientSlug, loadThemeConfig, loadFeaturedProperties]);
 
   const handleSearch = () => {
     // Implementar busca de imóveis
@@ -306,6 +377,111 @@ const Site: React.FC = () => {
     }
   };
 
+  type Error = {
+    fieldName:string;
+    message:string;
+}
+
+
+
+
+
+
+function handleChange(e: any): void {
+    const field= e.target.getAttribute('name');
+    const value= e.target.value
+    setForm({ ...form,
+        [field]:value,
+    });
+
+}
+
+      const cleanForm = () =>{
+        Array.from(document.querySelectorAll("input")).forEach(
+            input => (input.value = "")
+          ); 
+          Array.from(document.querySelectorAll("textarea")).forEach(
+            textarea => (textarea.value = "")
+          ); 
+        setForm({ ...form,
+            name:'',
+            email:'',
+            phone:'',
+            message:''
+            
+        });
+        }
+        
+        const handleKeyUp = (e: React.FormEvent<HTMLInputElement | any>) =>{      
+            if(e.currentTarget.name === 'phone'){  
+               phone(e);
+              
+            }        
+        
+        }
+     
+       //submete fortmulario do lead
+  const handleSubmitLead = async (e:any) =>{   
+    e.preventDefault()
+    
+    let emptyValues=Object.values(form).some(obj => obj === '');
+    setEmptyValue(emptyValues);
+  
+    
+    if(!emptyValues){
+    setLoadingAddLead(true);
+    
+    // Detectar se é subdomínio ou domínio personalizado
+    const hostname = window.location.hostname;
+    const isLocalhost = hostname === 'localhost' || hostname === '127.0.0.1';
+    let identifier = '';
+    
+    if (isLocalhost) {
+      // Em localhost, usar o clientSlug (que vem da URL /site/companyName)
+      identifier = clientSlug || companyName || '';
+    } else {
+      // Em produção, verificar se é subdomínio do standi.com.br ou domínio personalizado
+      const parts = hostname.split('.');
+      
+      if (parts.length >= 3 && parts.slice(1).join('.') === 'standi.com.br') {
+        // É um subdomínio (ex: corretor1.standi.com.br)
+        identifier = parts[0];
+      } else {
+        // É um domínio personalizado (ex: www.minhaImobiliaria.com.br)
+        identifier = hostname;
+      }
+    }
+       
+     const data = await newLeadHome(form['name'],form['email'],form['phone'],form['message'], identifier); 
+      if(data.status === 201){
+        cleanForm()         
+        setSuccessMessage(true)
+        setTimeout(()=> {
+            setSuccessMessage(false)
+        },3000)
+        setLoadingAddLead(false)
+ 
+      }
+        if(data.response.data.errors){              
+            setErrorsLead(data.response.data.errors);
+            setSuccessMessage(false)
+            setLoadingAddLead(false)
+                                                                           
+        } 
+        else if(data.response.status === 404 || data.response.status === 403 || data.response.status === 400){
+               
+            setOtherError(true)
+            setSuccessMessage(false)
+            setLoadingAddLead(false)
+           
+            setTimeout(()=>{
+                setOtherError(false)
+            },2000)
+        }
+
+    }                                               
+}
+
   return (
     <ThemeProvider theme={dynamicTheme}>
       <SiteContainer>
@@ -324,7 +500,7 @@ const Site: React.FC = () => {
         <Nav>
           <NavLink href={`/site/${companyName}`}>Início</NavLink>
           <NavLink href={`/site/${companyName}/imoveis/?goal=&type=&name=`}>Imóveis</NavLink>
-          <NavLink href={`tel:${themeConfig.phone}`}>{themeConfig.phone}</NavLink>
+          <NavLink href={`tel:${themeConfig.phone}`}>{themeConfig.phone || '(85) 99999-9999'}</NavLink>
         </Nav>
         <MobileMenuButton onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
           {mobileMenuOpen ? <HiX /> : <HiMenu />}
@@ -337,18 +513,15 @@ const Site: React.FC = () => {
           </MobileMenu>
         )}
       </Header>
-      <WhatsappButton/>
+      <WhatsappButton whatsappNumber={themeConfig?.phone} />
 
       {/* Bloco 2 - Banner */}
-      <Banner id="inicio" bannerImage={themeConfig.bannerImage} defaultBanner={bgPrincipal}>
+      <Banner id="inicio" bannerImage={themeConfig.bannerImage} defaultBanner={bannerPadrao}>
         <BannerContent>
-          <BannerTitle titleColor={themeConfig.bannerTitleColor} titleSize={themeConfig.bannerTitleSize}>{themeConfig.bannerTitle}</BannerTitle>
-                 
-            <PseudoSearch/>
-
-          
-         
+          <BannerTitle titleColor={themeConfig.bannerTitleColor} titleSize={themeConfig.bannerTitleSize}>{themeConfig.bannerTitle || 'Encontre o imóvel dos seus sonhos'}</BannerTitle>
+          <PseudoSearch/> 
         </BannerContent>
+          
       </Banner>
 
       {/* Bloco 3 - Como podemos te ajudar */}
@@ -406,41 +579,35 @@ const Site: React.FC = () => {
 
       {/* Bloco 4 - Imóveis em destaque */}
       <Section id="imoveis">
-        <SectionTitle textColor={themeConfig.h2Color || themeConfig.textColor}>Imóveis em destaque</SectionTitle>
-        <ServicesGrid>
-          {featuredProperties.map((property) => (
-            <PropertyCard key={property.id}>
-              <PropertyImage 
-                src={property.images?.[0]?.url || '/assets/images/no-pictures.png'} 
-                alt={property.name}
-              />
-              <PropertyInfo>
-                <PropertyPrice>R$ {property.price}</PropertyPrice>
-                <PropertyTitle textColor={themeConfig.textColor}>{property.name}</PropertyTitle>
-                <PropertyLocation textColor={themeConfig.textColor}>{property.address?.city?.name}, {property.address?.city?.state?.name}</PropertyLocation>
-              </PropertyInfo>
-            </PropertyCard>
-          ))}
-        </ServicesGrid>
+        
+      <SectionTitle textColor={themeConfig.h2Color || themeConfig.textColor}>Imóveis em destaque</SectionTitle>
+      
+          {clientSlug && <FeaturedPropertyCard url={clientSlug} properties={featuredProperties} buttonColor={themeConfig.buttonColor} />}
       </Section>
 
       {/* Bloco 5 - Contato */}
       <ContactSection id="contato">
         <ContactContent>
-          <ContactImage>
-            {themeConfig.contactImage ? (
-              <img src={themeConfig.contactImage} alt="Contato" style={{ width: '80px', height: '80px' }} />
-            ) : (
-              <AiOutlineHome size={80} />
-            )}
+          <ContactImage>         
+              <img src={houseimage} alt="Contato" style={{ width: '320px', height: '320px', objectFit:'cover' }} />      
           </ContactImage>
-          <ContactForm>
-            <h2 style={{color: themeConfig.h2Color || themeConfig.textColor}}>{themeConfig.contactTitle}</h2>
-            <ContactInput type="text" placeholder="Seu nome" />
-            <ContactInput type="email" placeholder="Seu email" />
-            <ContactInput type="tel" placeholder="Seu telefone" />
-            <ContactTextarea placeholder="Sua mensagem" rows={4} />
-            <ContactSubmitButton buttonColor={themeConfig.buttonColor}>Enviar mensagem</ContactSubmitButton>
+          <ContactForm onSubmit={(e) => handleSubmitLead(e)}>
+            <h2 style={{color: themeConfig.h2Color || themeConfig.textColor}}>{themeConfig.contactTitle || 'Entre em Contato'}</h2>
+            <ContactInput type="text" placeholder="Seu nome" id="name" name="name" onChange={(e) => handleChange(e)} maxLength={41} onKeyUp={handleKeyUp}/>
+              {errorsLead.map(x => { if(x.fieldName === 'name') return  <p className=' formField__error error-name'>{x.message}</p>})}
+                    { emptyValue && form['name'] === '' ? <span className='formField__error error-name'>Este campo é requerido</span>: ''}
+            <ContactInput type="email" placeholder="Seu email" id="email" name="email" onChange={(e) => handleChange(e)}  maxLength={40} onKeyUp={handleKeyUp}/>
+               {errorsLead.map(x => { if(x.fieldName === 'email') return  <p className=' formField__error'>{x.message}</p>})}
+                    { emptyValue && form['email'] === '' ? <span className='formField__error'>Este campo é requerido</span>: ''}
+            <ContactInput type="tel" placeholder="Seu telefone" id="phone" name="phone" onChange={(e) => handleChange(e)} onKeyUp={handleKeyUp}/>
+               {errorsLead.map(x => { if(x.fieldName === 'phone') return  <p className=' formField__error error-phone'>{x.message}</p>})}
+                    { emptyValue && form['phone'] === '' ? <span className='formField__error error-phone'>Este campo é requerido</span>: ''}
+                    { form['phone'].length >1 && form['phone'].length <14 &&  <span className='formField__error error-phone'>Formato de telefone errado</span>}
+                
+            <ContactTextarea placeholder="Sua mensagem" rows={4} id="message" name="message" onChange={(e) => handleChange(e)} onKeyUp={handleKeyUp} />
+                  {errorsLead.map(x => { if(x.fieldName === 'message') return  <p className=' formField__error textarea-class' textarea-class>{x.message}</p>})}
+                    { emptyValue && form['message'] === '' ? <span className='formField__error textarea-class'>Este campo é requerido</span>: ''}
+            <ContactSubmitButton buttonColor={themeConfig.buttonColor} type='submit'>Enviar mensagem</ContactSubmitButton>
           </ContactForm>
         </ContactContent>
       </ContactSection>

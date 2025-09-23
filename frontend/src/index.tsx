@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import 'bootstrap/dist/css/bootstrap.css';
+import './globals.css';
 import App from './App';
 import { ErrorBoundary} from 'react-error-boundary';
 import PageNotFound from './components/PageNotFound';

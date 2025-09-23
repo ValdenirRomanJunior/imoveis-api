@@ -78,8 +78,9 @@ export const HeroSection = styled.section`
   align-items: center;
   justify-content: center;
   text-align: center;
-  padding: 8rem 2rem 4rem;
+  padding: 0 2rem 4rem;
   position: relative;
+  overflow: hidden;
   
   &::before {
     content: '';
@@ -90,6 +91,7 @@ export const HeroSection = styled.section`
     bottom: 0;
     background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="%233b82f6" stroke-width="0.5" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
     opacity: 0.3;
+    
   }
 `;
 
@@ -146,9 +148,9 @@ export const CTAButton = styled.a`
 
 // Products Section
 export const ProductsSection = styled.section`
-  padding: 6rem 2rem;
-  background: rgba(30, 58, 138, 0.1);
-  backdrop-filter: blur(10px);
+  padding: 10rem 2rem 4rem;
+  background: white;
+  margin-top: 200px; /* Espaço para os mockups */
 `;
 
 export const SectionTitle = styled.h2`
@@ -156,7 +158,7 @@ export const SectionTitle = styled.h2`
   font-weight: 800;
   text-align: center;
   margin-bottom: 1rem;
-  color: white;
+  color: #333;
   
   @media (max-width: 768px) {
     font-size: 2rem;
@@ -172,56 +174,78 @@ export const ProductsGrid = styled.div`
 `;
 
 export const ProductCard = styled.div`
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(59, 130, 246, 0.2);
-  border-radius: 16px;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 15px;
   padding: 2rem;
   text-align: center;
   transition: all 0.3s ease;
-  
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  flex-direction: column;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+
   &:hover {
-    transform: translateY(-5px);
-    border-color: rgba(59, 130, 246, 0.5);
-    box-shadow: 0 20px 40px rgba(59, 130, 246, 0.2);
+    transform: translateY(-8px);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
   }
 `;
 
 export const ProductIcon = styled.div`
-  font-size: 3rem;
-  margin-bottom: 1rem;
+  position: relative;
+  color: #6b7280;
+    width: 34px;
+    height: 34px;
+ 
+`;
+
+export const ProductContent = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  width: 100%;
+  margin-top: 1rem;
 `;
 
 export const ProductTitle = styled.h3`
-  font-size: 1.5rem;
-  font-weight: 700;
+  font-size: 1.25rem;
   margin-bottom: 1rem;
-  color: #3b82f6;
+  color: #6b7280;
+  font-weight: 600;
+  line-height: 1.4;
 `;
 
 export const ProductDescription = styled.p`
-  font-size: 1rem;
+  font-size: 0.95rem;
   line-height: 1.6;
   margin-bottom: 1.5rem;
-  opacity: 0.9;
+  color: #9ca3af;
 `;
 
 export const ProductFeatures = styled.ul`
   list-style: none;
   padding: 0;
-  text-align: left;
-  
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  width: 100%;
+
   li {
     padding: 0.5rem 0;
+    font-size: 0.9rem;
+    color: #9ca3af;
+    text-align: center;
     position: relative;
-    padding-left: 1.5rem;
     
     &::before {
-      content: '✓';
-      position: absolute;
-      left: 0;
-      color: #3b82f6;
+      content: "✓";
+      color: #10b981;
       font-weight: bold;
+      margin-right: 0.5rem;
     }
   }
 `;
@@ -229,7 +253,7 @@ export const ProductFeatures = styled.ul`
 // Stats Section
 export const StatsSection = styled.section`
   padding: 6rem 2rem;
-  background: rgba(10, 22, 40, 0.8);
+  background: white;
 `;
 
 export const StatsGrid = styled.div`
@@ -257,7 +281,7 @@ export const StatNumber = styled.div`
 
 export const StatLabel = styled.div`
   font-size: 1rem;
-  opacity: 0.8;
+  color: #666;
   text-transform: uppercase;
   letter-spacing: 1px;
 `;
@@ -265,21 +289,80 @@ export const StatLabel = styled.div`
 // Testimonials Section
 export const TestimonialsSection = styled.section`
   padding: 6rem 2rem;
-  background: rgba(30, 58, 138, 0.1);
+  background: white;
+`;
+
+export const TestimonialsContainer = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+
+  @media (max-width: 768px) {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    gap: 1rem;
+    padding: 0 1rem;
+    margin: 0 -1rem;
+    
+    &::-webkit-scrollbar {
+      height: 8px;
+    }
+    
+    &::-webkit-scrollbar-track {
+      background: rgba(59, 130, 246, 0.1);
+      border-radius: 4px;
+    }
+    
+    &::-webkit-scrollbar-thumb {
+      background: rgba(59, 130, 246, 0.3);
+      border-radius: 4px;
+    }
+    
+    &::-webkit-scrollbar-thumb:hover {
+      background: rgba(59, 130, 246, 0.5);
+    }
+  }
 `;
 
 export const TestimonialCard = styled.div`
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(10px);
+  background: rgba(59, 130, 246, 0.05);
   border: 1px solid rgba(59, 130, 246, 0.2);
   border-radius: 16px;
   padding: 2rem;
   text-align: center;
   transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   
   &:hover {
     transform: translateY(-5px);
     border-color: rgba(59, 130, 246, 0.5);
+  }
+
+  @media (max-width: 768px) {
+    padding: 1.5rem;
+    min-width: 300px;
+    flex-shrink: 0;
+    scroll-snap-align: center;
+  }
+`;
+
+export const TestimonialAvatar = styled.img`
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-bottom: 1.5rem;
+  border: 3px solid rgba(59, 130, 246, 0.2);
+  transition: all 0.3s ease;
+
+  &:hover {
+    border-color: rgba(59, 130, 246, 0.5);
+    transform: scale(1.05);
   }
 `;
 
@@ -288,7 +371,7 @@ export const TestimonialText = styled.p`
   line-height: 1.6;
   margin-bottom: 1.5rem;
   font-style: italic;
-  opacity: 0.9;
+  color: #666;
 `;
 
 export const TestimonialAuthor = styled.div`
@@ -299,7 +382,7 @@ export const TestimonialAuthor = styled.div`
 
 export const TestimonialCompany = styled.div`
   font-size: 0.9rem;
-  opacity: 0.7;
+  color: #999;
 `;
 
 // Footer
@@ -358,18 +441,6 @@ export const Copyright = styled.p`
 `;
 
 // Legacy styles for compatibility
-export const FeatureSection = styled.section`
-  padding: 4rem 2rem;
-  text-align: center;
-  
-  .features-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 2rem;
-    max-width: 1200px;
-    margin: 2rem auto 0;
-  }
-`;
 
 export const FeatureCard = styled.div`
   background: rgba(255, 255, 255, 0.05);
@@ -394,4 +465,104 @@ export const CTASection = styled.section`
   padding: 4rem 2rem;
   text-align: center;
   background: rgba(30, 58, 138, 0.1);
+`;
+
+// FAQ Section
+export const FAQSection = styled.section`
+  padding: 6rem 2rem;
+  background: #f8fafc;
+`;
+
+export const FAQContainer = styled.div`
+  max-width: 800px;
+  margin: 0 auto;
+`;
+
+export const FAQTitle = styled.h2`
+  font-size: 2.5rem;
+  font-weight: 800;
+  text-align: left;
+  margin-bottom: 3rem;
+  color: #1e293b;
+  
+  &::before {
+    content: "FAQ";
+    display: block;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #3b82f6;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 0.5rem;
+  }
+`;
+
+export const FAQItem = styled.div`
+  background: white;
+  border-radius: 12px;
+  margin-bottom: 1rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+  transition: all 0.3s ease;
+
+  &:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+`;
+
+export const FAQQuestion = styled.button`
+  width: 100%;
+  padding: 1.5rem 2rem;
+  background: none;
+  border: none;
+  text-align: left;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #1e293b;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: all 0.3s ease;
+
+  &:hover {
+    background: #f8fafc;
+  }
+
+  &::after {
+    content: "▼";
+    font-size: 0.8rem;
+    color: #64748b;
+    transition: transform 0.3s ease;
+    flex-shrink: 0;
+    margin-left: 1rem;
+  }
+
+  &.active::after {
+    transform: rotate(180deg);
+  }
+`;
+
+export const FAQAnswer = styled.div`
+  padding: 0 2rem 1.5rem;
+  color: #64748b;
+  line-height: 1.6;
+  font-size: 1rem;
+  display: none;
+
+  &.active {
+    display: block;
+    animation: fadeIn 0.3s ease;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
 `;

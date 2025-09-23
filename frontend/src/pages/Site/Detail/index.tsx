@@ -36,6 +36,9 @@ import {
   MobileMenuButton,
   MobileMenu
 } from '../styles';
+// Importar imagens padrão
+import corretorPadrao from '../../../assets/images/user-image.jpeg';
+import bannerPadrao from '../../../assets/images/bg-principal.png';
 
 interface ThemeConfig {
   name?: string;
@@ -53,7 +56,9 @@ interface ThemeConfig {
   contactImage?: string;
   agentPhoto?: string;
   agentQuote?: string;
+  agentName?: string;
   footerLogo?: string;
+  footerText?: string;
   socialLinks?: {
     facebook?: string;
     instagram?: string;
@@ -74,6 +79,9 @@ interface ThemeConfig {
   whatsapp?: string;
   email?: string;
   address?: string;
+  privacyPolicy?: string;
+  aboutUs?: string;
+  tenantId?: number;
 }
 
 
@@ -87,12 +95,14 @@ const Detail  = () => {
  
     const params = useParams();
     const { companyName } = useParams<{ companyName: string }>();
+    const clientSlug = companyName;
     
     const [openModalContact,setOpenModalContact]=useState(true);
     const [property, setProperty]= useState<Property>();
     const [errors,setErrors]=useState();
     const [errorsLead, setErrorsLead] = useState<Error[]>([]);
     const [otherError, setOtherError] = useState(false);
+    const [loading, setLoading] = useState(true);
  
     const [emptyValue,setEmptyValue]= useState(false);
     const [successMessage, setSuccessMessage] = useState(false); 
@@ -112,49 +122,90 @@ const Detail  = () => {
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     
     // Carrega configuração do tema
-    const loadThemeConfig = async () => {
+    const loadThemeConfig = useCallback(async () => {
         try {
-            // Carregar configurações reais do tema da API usando companyName
-            const response = await api.get(`/api/themes/account/${companyName}`);
-            const data = response.data;
+            // Verificar se existe configuração de preview no localStorage
+            const previewData = localStorage.getItem(`theme-preview-${clientSlug}`);
             
-            // Parse JSON strings do backend
-            const parsedData = {
-                ...data,
-                menuLinks: typeof data.menuLinks === 'string' ? JSON.parse(data.menuLinks || '[]') : data.menuLinks || [],
-                services: typeof data.services === 'string' ? JSON.parse(data.services || '[]') : data.services || [],
-                socialLinks: typeof data.socialLinks === 'string' ? JSON.parse(data.socialLinks || '{}') : data.socialLinks || {}
-            };
-            
-            setThemeConfig(parsedData);
+            if (previewData) {
+                try {
+                    const parsedPreview = JSON.parse(previewData);
+                    // Verificar se o preview não é muito antigo (5 minutos)
+                    const isRecentPreview = Date.now() - parsedPreview.timestamp < 5 * 60 * 1000;
+                    
+                    if (parsedPreview.isPreview && isRecentPreview) {
+                        console.log('Usando configuração de preview do localStorage');
+                        // Parse JSON strings do preview
+                        const previewConfig = {
+                            ...parsedPreview,
+                            menuLinks: typeof parsedPreview.menuLinks === 'string' ? JSON.parse(parsedPreview.menuLinks || '[]') : parsedPreview.menuLinks || [],
+                            services: typeof parsedPreview.services === 'string' ? JSON.parse(parsedPreview.services || '[]') : parsedPreview.services || [],
+                            socialLinks: typeof parsedPreview.socialLinks === 'string' ? JSON.parse(parsedPreview.socialLinks || '{}') : parsedPreview.socialLinks || {}
+                        };
+                        setThemeConfig(previewConfig);
+                        setLoading(false);
+                        return;
+                    } else {
+                        // Preview expirado, remover do localStorage
+                        localStorage.removeItem(`theme-preview-${clientSlug}`);
+                    }
+                } catch (previewError) {
+                    console.error('Erro ao processar preview:', previewError);
+                    localStorage.removeItem(`theme-preview-${clientSlug}`);
+                }
+            }
+
+            const response = await api.get(`/theme-config/${clientSlug}`);
+            if (response.data) {
+                // Parse JSON strings from backend
+                const themeData = {
+                    ...response.data,
+                    menuLinks: typeof response.data.menuLinks === 'string' ? JSON.parse(response.data.menuLinks || '[]') : response.data.menuLinks || [],
+                    services: typeof response.data.services === 'string' ? JSON.parse(response.data.services || '[]') : response.data.services || [],
+                    socialLinks: typeof response.data.socialLinks === 'string' ? JSON.parse(response.data.socialLinks || '{}') : response.data.socialLinks || {}
+                };
+                setThemeConfig(themeData);
+            }
         } catch (error) {
-            console.error('Error loading theme config:', error);
-            // Fallback para configuração padrão em caso de erro
-            const defaultConfig = {
-                name: 'Imóveis',
+            console.error('Erro ao carregar configuração do tema:', error);
+            // Fallback para configuração padrão se não encontrar
+            setThemeConfig({
+                name: 'Site Padrão',
                 logo: '',
                 logoSize: 'medium',
+                menuLinks: [],
                 phone: '',
-                bannerImage: '',
-                bannerTitle: 'Encontre seu imóvel ideal',
-                textColor: '#333',
-                buttonColor: '#007bff',
+                bannerImage: bannerPadrao,
+                bannerTitle: 'Encontre o imóvel dos seus sonhos',
+                bannerTitleColor: '#ffffff',
+                bannerTitleSize: 48,
+                bannerColor: '#2563eb',
                 services: [],
-                contactTitle: 'Contato',
+                contactTitle: 'Entre em contato',
                 contactImage: '',
-                agentPhoto: '',
-                agentQuote: '',
+                agentPhoto: corretorPadrao,
+                agentQuote: 'Estou aqui para ajudar você a encontrar o imóvel perfeito.',
+                agentName: 'Corretor',
                 footerLogo: '',
                 socialLinks: {
                     facebook: '',
                     instagram: '',
                     whatsapp: ''
-                }
-            };
-            setThemeConfig(defaultConfig);
+                },
+                footerText: 'Todos os direitos reservados.',
+                footerBackgroundColor: '#1f2937',
+                textColor: '#1f2937',
+                buttonColor: '#2563eb',
+                h2Color: '#1f2937',
+                privacyPolicy: '',
+                aboutUs: '',
+                tenantId: 0
+            });
+        } finally {
+            setLoading(false);
         }
-    };
-    
+    }, [clientSlug]);
+
     useEffect(() => {
         if (companyName) {
             loadThemeConfig();
@@ -473,7 +524,7 @@ console.log(property?.id)
            
           </ContactDetailrapper> 
         
-            <WhatsappButton/>   
+            <WhatsappButton whatsappNumber={themeConfig.phone} />   
             </div>
 
             <div className='modal-desktop-container'>

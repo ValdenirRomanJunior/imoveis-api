@@ -187,11 +187,19 @@ public class OpportunityService {
     public Opportunity fromDTOHomeSite(OpportunityNewHomeSiteDTO objDto){ 
     	
     	SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");		
-		String newDate= sdf.format(new Date());
-		
-	
+		String newDate= sdf.format(new Date());	
 		 Opportunity opportunity = new Opportunity(null,newDate);
-		 Account account= accountService.findByDomain(objDto.getUrl()); 
+
+		 Account account = new Account();
+		 if(objDto.getCompanyName() == null || objDto.getCompanyName().isEmpty()) {
+			  account= accountService.findByDomain(objDto.getDomain());
+			  if(account == null) {
+				 throw new DataIntegrityException("Empresa não encontrada");
+			  }
+		 } else {
+			 account= accountService.findByCompanyName(objDto.getCompanyName());
+		 }
+		
 		 opportunity.setAccount(account); 
 		 Step firtsStep= stepRepository.findFirstByAccount(account);
  		if(firtsStep != null ) {

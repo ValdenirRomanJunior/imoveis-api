@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { FiSave, FiExternalLink, FiGlobe, FiCheck, FiX } from 'react-icons/fi';
 import useAuth from '../../hooks/useAuth';
+import { phone } from '../Site/masks';
 import {
   AiOutlineHome,
   AiOutlineUser,
@@ -147,16 +148,39 @@ const TemaEdit: React.FC = () => {
     loadThemeConfig();
   }, []);
 
-  // Update preview when theme config changes
+  // Função para salvar preview temporário
+  const savePreviewConfig = async () => {
+    try {
+      // Salvar configurações temporárias no localStorage para preview
+      const previewData = {
+        ...themeConfig,
+        menuLinks: JSON.stringify(themeConfig.menuLinks),
+        services: JSON.stringify(themeConfig.services),
+        socialLinks: JSON.stringify(themeConfig.socialLinks),
+        isPreview: true,
+        timestamp: Date.now()
+      };
+      
+      localStorage.setItem(`theme-preview-${user?.slug || 'default'}`, JSON.stringify(previewData));
+      
+      // Forçar atualização do iframe
+      setPreviewKey(prev => prev + 1);
+    } catch (error) {
+      console.error('Error saving preview config:', error);
+    }
+  };
+
+  // Atualizar preview em tempo real quando themeConfig mudar
   useEffect(() => {
     if (!loading) {
+      // Debounce para evitar muitas atualizações
       const timeoutId = setTimeout(() => {
-        setPreviewKey(prev => prev + 1);
-      }, 500); // Debounce para evitar muitas atualizações
-      
+        savePreviewConfig();
+      }, 500); // Aguarda 500ms após a última mudança
+
       return () => clearTimeout(timeoutId);
     }
-  }, [themeConfig, loading]);
+  }, [themeConfig, loading, user?.slug]);
 
   const loadThemeConfig = async () => {
     try {
@@ -410,6 +434,9 @@ const TemaEdit: React.FC = () => {
   const handleSave = async () => {
     try {
       setSaving(true);
+      console.log('Iniciando salvamento do tema...');
+      console.log('ThemeConfig atual:', themeConfig);
+      console.log('socialLinks.whatsapp antes do salvamento:', themeConfig.socialLinks.whatsapp);
       
       // Convert arrays and objects to JSON strings for backend
       const dataToSave = {
@@ -419,19 +446,28 @@ const TemaEdit: React.FC = () => {
         socialLinks: JSON.stringify(themeConfig.socialLinks)
       };
       
+      console.log('Dados a serem salvos:', dataToSave);
+      console.log('socialLinks JSON string:', dataToSave.socialLinks);
+      
       if (themeConfig.id) {
         // Update existing theme
-        await api.put(`/api/themes/${themeConfig.id}`, dataToSave);
+        console.log('Atualizando tema existente com ID:', themeConfig.id);
+        const response = await api.put(`/api/themes/${themeConfig.id}`, dataToSave);
+        console.log('Resposta do PUT:', response.data);
       } else {
         // Create new theme
-        await api.post('/api/themes', dataToSave);
+        console.log('Criando novo tema...');
+        const response = await api.post('/api/themes', dataToSave);
+        console.log('Resposta do POST:', response.data);
       }
       
       // Update preview after saving
       setPreviewKey(prev => prev + 1);
       alert('Tema salvo com sucesso!');
+      console.log('Tema salvo com sucesso!');
     } catch (error) {
       console.error('Error saving theme:', error);
+   
       alert('Erro ao salvar tema. Tente novamente.');
     } finally {
       setSaving(false);
@@ -496,6 +532,7 @@ const TemaEdit: React.FC = () => {
               <Input
                 value={themeConfig.phone}
                 onChange={(e) => handleDirectChange('phone', e.target.value)}
+                onKeyUp={(e) => phone(e)}
                 placeholder="Telefone"
               />
             </FormGroup>
@@ -520,6 +557,7 @@ const TemaEdit: React.FC = () => {
                 value={themeConfig.bannerTitle}
                 onChange={(e) => handleDirectChange('bannerTitle', e.target.value)}
                 placeholder="Título do banner"
+                maxLength={50}
               />
             </FormGroup>
             <FormGroup>
@@ -797,13 +835,13 @@ const TemaEdit: React.FC = () => {
         return (
           <TabContent>
             <FormGroup>
-                  <Label>Cor Principal</Label>
-                  <ColorInput
-                    type="color"
-                    value={themeConfig.mainColor}
-                    onChange={(e) => handleDirectChange('mainColor', e.target.value)}
-                  />
-                </FormGroup>
+              <Label>Cor Principal</Label>
+              <ColorInput
+                type="color"
+                value={themeConfig.mainColor}
+                onChange={(e) => handleDirectChange('mainColor', e.target.value)}
+              />
+            </FormGroup>
             <FormGroup>
                   <Label>Cor de Texto Geral</Label>
                   <ColorInput

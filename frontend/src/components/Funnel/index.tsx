@@ -4,7 +4,7 @@ import { FunnelContainer } from './styles';
 import Funnel from "react-apexcharts";
 import { Step } from '../../types/opportunity';
 import { countstepsName, stepsName, stepsOpportunity } from '../../services/resources/lead';
-import { steps } from 'framer-motion';
+
 import useAuth from '../../hooks/useAuth';
 import PageNotFoundDashboard from '../PageNotFoundDashboard';
 

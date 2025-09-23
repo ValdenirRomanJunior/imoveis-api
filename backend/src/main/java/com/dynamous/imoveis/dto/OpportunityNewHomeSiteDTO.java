@@ -34,7 +34,9 @@ public class OpportunityNewHomeSiteDTO implements Serializable {
       
     private Long leadId;
     
-    private String url;
+    private String companyName;
+
+     private String domain;
 
     public OpportunityNewHomeSiteDTO(){
 
@@ -86,16 +88,21 @@ public class OpportunityNewHomeSiteDTO implements Serializable {
 	}
 
 
-	public String getUrl() {
-		return url;
+	public String getCompanyName() {
+		return companyName;
 	}
 
-
-	public void setUrl(String url) {
-		this.url = url;
+	public void setCompanyName(String companyName) {
+		this.companyName = companyName;
 	}
-
 	
+     public String getDomain() {
+		return domain;
+	}
+
+	public void setDomain(String domain) {
+		this.domain = domain;
+	}
 	
     
 }

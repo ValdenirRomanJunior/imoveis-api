@@ -16,6 +16,8 @@ import { NavLink } from "react-router-dom";
 import React from 'react';
 import { number } from '../../pages/Registration/masks';
 import { MdDesignServices } from 'react-icons/md';
+import { GrIntegration } from "react-icons/gr";
+import { FiExternalLink } from 'react-icons/fi';
 
 const Header = () =>{
 
@@ -81,7 +83,19 @@ const Header = () =>{
     let perfilTenant=user?.perfis ? Object.values(user.perfis).some(obj => obj === 'TENANT') : false;
     let perfilAdmin=user?.perfis ? Object.values(user.perfis).some(obj => obj === 'ADMIN') : false;
 
+    const [domainInfo, setDomainInfo] = useState<any>(null);
 
+      const getSubdomainUrl = (companySlug: string) => {
+    const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+    
+    if (isLocalhost) {
+      // Em desenvolvimento, usar parâmetro de query
+      return `${window.location.origin}/?subdomain=${companySlug}`;
+    } else {
+      // Em produção, usar subdomínio
+      return `https://${companySlug}.standi.com.br`;
+    }
+  };
     return(
         <HeaderContainer>
             <HeaderWrapper>
@@ -113,7 +127,15 @@ const Header = () =>{
                 <SideBarTop >
                     <NavIcon to="#" onClick={ (event) => event.preventDefault() }>
                         <IoIosArrowForward  className='icon-sidebar'/>
-                      {user?.domain ?  <p className='text-sidebar-top'><a href={`/site/${user.domain}`} target='_blank'><span className='site-link'>{user.domain}</span></a></p>: <p className='text-sidebar-top'><a href=''><Link className='site-link' to={''}>site ainda não publicado</Link></a></p>} 
+                        <div style={{ cursor: 'pointer', color: '#3b82f6',position: 'relative', top: '-2px', left: '46px'}}
+                        >
+                         {domainInfo?.subdomain || `${user?.slug || 'seu-slug'}.standi.com.br`}
+                  <FiExternalLink  
+                    style={{ cursor: 'pointer', color: '#3b82f6',position: 'relative', top: '-2px', left: '12px'}}
+                    onClick={() => window.open(getSubdomainUrl(user?.slug || ''), '_blank')}
+                  />
+             </div>
+             
                     </NavIcon>
                     
                 </SideBarTop>
@@ -148,7 +170,8 @@ const Header = () =>{
             <MdDesignServices className='icon-sidebar'/>
             <p className='description-icon'>Editor de Tema</p>
             </NavIcon>
-                               
+
+              
             </>
     }
             {perfilAdmin &&
@@ -159,7 +182,7 @@ const Header = () =>{
         }
 
           <SidebarFooter className='footer-sidebar'>
-            <p>Dynamob</p>
+            <p>Standi</p>
             <p>Termos de Uso</p>
             <p>Política de privacidade</p>
           </SidebarFooter>
