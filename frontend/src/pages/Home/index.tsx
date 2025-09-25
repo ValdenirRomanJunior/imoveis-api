@@ -1,11 +1,18 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { HiHome, HiUsers, HiChartBar, HiClock } from 'react-icons/hi';
+import { HiHome, HiUsers, HiChartBar, HiClock, HiStar, HiKey } from 'react-icons/hi';
+import { HiRocketLaunch } from 'react-icons/hi2';
+import { FaGlobe, FaUsers, FaPlug, FaImage } from 'react-icons/fa';
+import { useCountUp } from '../../hooks/useCountUp';
 import tela1 from '../../assets/images/tela-1.png';
 import tela2 from '../../assets/images/tela-2.png';
 import google from '../../assets/images/google.png'
 import gpt from '../../assets/images/gpt.webp'
 import standi from '../../assets/images/logo-sem fundo.png'
+import Whats from '../../assets/images/whatsapp.png'
+import userImage from '../../assets/images/user-image.jpeg'
+import imagem1 from '../../assets/images/imagem-1-recursos.png'
+import imagem2 from '../../assets/images/banner-recursos-3.png'
 import {
   HomeContainer,
   Header,
@@ -28,11 +35,29 @@ import {
   ProductTitle,
   ProductDescription,
   ProductFeatures,
+  ResourcesSection,
+  ResourcesContainer,
+  ResourcesTitle,
+  ResourcesSubtitle,
+  ResourcesContent,
+  ResourcesNavigation,
+  ResourceNavItem,
+  ResourceNavIcon,
+  ResourceMockupArea,
+  ResourceMockupHeader,
+  ResourceMockupTitle,
+  ResourceMockupSubtitle,
+  ResourceMockupImage,
+  ResourceMockupPlaceholder,
   StatsSection,
   StatsGrid,
   StatCard,
   StatNumber,
   StatLabel,
+  AnimatedCirclesContainer,
+  AnimatedCircle,
+  CircleImage,
+  TestFreeButton,
   TestimonialsSection,
   TestimonialsContainer,
   TestimonialCard,
@@ -40,12 +65,36 @@ import {
   TestimonialText,
   TestimonialAuthor,
   TestimonialCompany,
+  PricingSection,
+  PricingContainer,
+  PricingGrid,
+  PricingCard,
+  PricingIcon,
+  PricingPlanName,
+  PricingDescription,
+  PricingPrice,
+  PricingCurrency,
+  PricingAmount,
+  PricingPeriod,
+  PricingNote,
+  PricingButton,
+  PricingFeatures,
+  PricingFeature,
   FAQSection,
   FAQContainer,
   FAQTitle,
   FAQItem,
   FAQQuestion,
   FAQAnswer,
+  CallToActionBanner,
+  CTALeftSide,
+  CTARightSide,
+  CTAText,
+  CTAButton as CTABannerButton,
+  WhatsAppIcon,
+  WhatsAppText,
+  CTABannerButtonBottom,
+  PersonImage,
   Footer,
   FooterContent,
   FooterSection,
@@ -53,16 +102,13 @@ import {
   FooterLinks,
   FooterLink,
   FooterBottom,
-  Copyright,
-
-
-
+  Copyright
 } from './styles';
 
   const styles = `
     .container-main-mockup {
       position: absolute;
-      top: calc(60% + 40px);
+      top: calc(55% + 40px);
       left: 50%;
       transform: translateX(-50%);
       width: 70%;
@@ -138,7 +184,36 @@ import {
 
 
 const Home: React.FC = () => {
+  const [activeResource, setActiveResource] = React.useState('site');
+  
+  const resources = {
+    site: {
+      title: 'Site',
+      image: imagem1,
+      description: 'Mockup do site'
+    },
+    crm: {
+      title: 'CRM',
+      image: imagem2,
+      description: 'Mockup do CRM'
+    },
+    integracao: {
+      title: 'Integração',
+      image: tela1,
+      description: 'Mockup da Integração'
+    }
+  };
+
+  const handleResourceClick = (resourceKey: string) => {
+    setActiveResource(resourceKey);
+  };
+
   const [openFAQ, setOpenFAQ] = React.useState<number | null>(null);
+
+  // Hooks para animação dos contadores
+  const yearsCount = useCountUp({ end: 5, duration: 2000, suffix: '+' });
+  const usersCount = useCountUp({ end: 2000, duration: 2500, suffix: '+' });
+  const clientsCount = useCountUp({ end: 500, duration: 2200, suffix: '+' });
 
   const toggleFAQ = (index: number) => {
     setOpenFAQ(openFAQ === index ? null : index);
@@ -391,67 +466,213 @@ const Home: React.FC = () => {
             </ProductContent>
           </ProductCard>
         </ProductsGrid>
+        
+        <TestFreeButton>Testar Grátis Agora</TestFreeButton>
       </ProductsSection>
 
+      <ResourcesSection id="recursos">
+        <ResourcesContainer>
+          <ResourcesTitle>Estes são os recursos que você pode aproveitar:</ResourcesTitle>
+          <ResourcesSubtitle>Além do Google você já percebeu que as pessoas também usam o chatGpt para buscar imoveis certo?<br/>
+             Nosso site imobiliário é preparado para estas buscas modernas</ResourcesSubtitle>
+          
+          <ResourcesContent>
+            <ResourcesNavigation>
+              <ResourceNavItem 
+                className={activeResource === 'site' ? 'active' : ''}
+                onClick={() => handleResourceClick('site')}
+              >
+                <ResourceNavIcon>
+                  <FaGlobe />
+                </ResourceNavIcon>
+                Site
+              </ResourceNavItem>
+              
+              <ResourceNavItem 
+                className={activeResource === 'crm' ? 'active' : ''}
+                onClick={() => handleResourceClick('crm')}
+              >
+                <ResourceNavIcon>
+                  <FaUsers />
+                </ResourceNavIcon>
+                CRM
+              </ResourceNavItem>
+              
+              <ResourceNavItem 
+                className={activeResource === 'integracao' ? 'active' : ''}
+                onClick={() => handleResourceClick('integracao')}
+              >
+                <ResourceNavIcon>
+                  <FaPlug />
+                </ResourceNavIcon>
+                Editor do seu site
+              </ResourceNavItem>
+            </ResourcesNavigation>
+            
+            <ResourceMockupArea>
+              {resources[activeResource as keyof typeof resources] ? (
+                <>
+                  <ResourceMockupHeader>
+                    <ResourceMockupTitle>
+                      {activeResource === 'site' && 'Site Imobiliário'}
+                      {activeResource === 'crm' && 'CRM Completo'}
+                      {activeResource === 'integracao' && 'Editor Visual'}
+                    </ResourceMockupTitle>
+                    <ResourceMockupSubtitle>
+                      {activeResource === 'site' && 'Tenha seu site profissional pronto em minutos'}
+                      {activeResource === 'crm' && 'Gerencie leads, clientes e vendas em um só lugar'}
+                      {activeResource === 'integracao' && 'Edite seu site facilmente com nosso editor visual'}
+                    </ResourceMockupSubtitle>
+                  </ResourceMockupHeader>
+                  <ResourceMockupImage 
+                    src={resources[activeResource as keyof typeof resources].image}
+                    alt={resources[activeResource as keyof typeof resources].description}
+                  />
+                </>
+              ) : (
+                <ResourceMockupPlaceholder>
+                  <FaImage size={48} />
+                  <p>Selecione um recurso para ver o mockup</p>
+                </ResourceMockupPlaceholder>
+              )}
+            </ResourceMockupArea>
+          </ResourcesContent>
+        </ResourcesContainer>
+        
 
+      </ResourcesSection>
 
       <StatsSection>
-        <SectionTitle>Milhares de usuários confiam na Standi diariamente</SectionTitle>
+        <AnimatedCirclesContainer>
+          {/* Círculos da esquerda para direita */}
+          <AnimatedCircle className="left-to-right" style={{ top: '10%', animationDelay: '0s' }}>
+            <CircleImage src="https://randomuser.me/api/portraits/men/32.jpg" alt="Pessoa 1" />
+          </AnimatedCircle>
+          <AnimatedCircle className="left-to-right" style={{ top: '30%', animationDelay: '3s' }}>
+            <CircleImage src="https://randomuser.me/api/portraits/women/44.jpg" alt="Pessoa 2" />
+          </AnimatedCircle>
+          <AnimatedCircle className="left-to-right" style={{ top: '50%', animationDelay: '6s' }}>
+            <CircleImage src="https://randomuser.me/api/portraits/men/65.jpg" alt="Pessoa 3" />
+          </AnimatedCircle>
+          <AnimatedCircle className="left-to-right" style={{ top: '70%', animationDelay: '9s' }}>
+            <CircleImage src="https://randomuser.me/api/portraits/women/68.jpg" alt="Pessoa 4" />
+          </AnimatedCircle>
+          <AnimatedCircle className="left-to-right" style={{ top: '20%', animationDelay: '12s' }}>
+            <CircleImage src="https://randomuser.me/api/portraits/men/78.jpg" alt="Pessoa 5" />
+          </AnimatedCircle>
+          <AnimatedCircle className="left-to-right" style={{ top: '60%', animationDelay: '15s' }}>
+            <CircleImage src="https://randomuser.me/api/portraits/women/25.jpg" alt="Pessoa 6" />
+          </AnimatedCircle>
+
+          {/* Círculos da direita para esquerda */}
+          <AnimatedCircle className="right-to-left" style={{ top: '15%', animationDelay: '2s' }}>
+            <CircleImage src="https://randomuser.me/api/portraits/men/45.jpg" alt="Pessoa 7" />
+          </AnimatedCircle>
+          <AnimatedCircle className="right-to-left" style={{ top: '35%', animationDelay: '5s' }}>
+            <CircleImage src="https://randomuser.me/api/portraits/women/32.jpg" alt="Pessoa 8" />
+          </AnimatedCircle>
+          <AnimatedCircle className="right-to-left" style={{ top: '55%', animationDelay: '8s' }}>
+            <CircleImage src="https://randomuser.me/api/portraits/men/23.jpg" alt="Pessoa 9" />
+          </AnimatedCircle>
+          <AnimatedCircle className="right-to-left" style={{ top: '75%', animationDelay: '11s' }}>
+            <CircleImage src="https://randomuser.me/api/portraits/women/56.jpg" alt="Pessoa 10" />
+          </AnimatedCircle>
+          <AnimatedCircle className="right-to-left" style={{ top: '25%', animationDelay: '14s' }}>
+            <CircleImage src="https://randomuser.me/api/portraits/men/89.jpg" alt="Pessoa 11" />
+          </AnimatedCircle>
+          <AnimatedCircle className="right-to-left" style={{ top: '65%', animationDelay: '17s' }}>
+            <CircleImage src="https://randomuser.me/api/portraits/women/73.jpg" alt="Pessoa 12" />
+          </AnimatedCircle>
+        </AnimatedCirclesContainer>
+
+       
         <p style={{ textAlign: 'center', marginBottom: '3rem', opacity: 0.8 }}>
           Com anos de experiência no mercado, a Standi atende centenas de empresas do mercado imobiliário.
         </p>
         
         <StatsGrid>
           <StatCard>
-            <StatNumber>5+</StatNumber>
+            <StatNumber ref={yearsCount.ref}>{yearsCount.value}</StatNumber>
             <StatLabel>anos de mercado</StatLabel>
           </StatCard>
           <StatCard>
-            <StatNumber>2K+</StatNumber>
+            <StatNumber ref={usersCount.ref}>{usersCount.value}</StatNumber>
             <StatLabel>usuários ativos</StatLabel>
           </StatCard>
           <StatCard>
-            <StatNumber>500+</StatNumber>
+            <StatNumber ref={clientsCount.ref}>{clientsCount.value}</StatNumber>
             <StatLabel>clientes ativos</StatLabel>
           </StatCard>
         </StatsGrid>
+        
+        <TestFreeButton>Testar Grátis Agora</TestFreeButton>
       </StatsSection>
 
-      <TestimonialsSection>
-        <SectionTitle>Quem conhece recomenda!</SectionTitle>
-        <p style={{ textAlign: 'center', marginBottom: '3rem', opacity: 0.8 }}>
-          São vários os cases de sucesso entre nossos usuários. Conheça o que nossos clientes têm a dizer:
-        </p>
+  
+
+      {/* Seção de Planos */}
+      <PricingSection>
+        <PricingContainer>
+          <SectionTitle>Nossos Planos</SectionTitle>
+          <PricingGrid>
+            {/* Plano Lite */}
+            <PricingCard>
+              <PricingIcon>
+                <HiHome />
+              </PricingIcon>
+              <PricingPlanName>Lite</PricingPlanName>
+              <PricingDescription>
+                CRM para acompanhar negócios e mais possibilidades de integrações.
+              </PricingDescription>
+                <PricingPrice>
+                <PricingCurrency>R$</PricingCurrency>
+                <PricingAmount>99</PricingAmount>
+                <PricingPeriod>/mês</PricingPeriod>
+              </PricingPrice>
+              <PricingFeatures>
+                <PricingFeature>1 usuário</PricingFeature>
+                <PricingFeature>Site profissional e personalizável</PricingFeature>
+                <PricingFeature>Gestão de imóveis e clientes</PricingFeature>
+                <PricingFeature>Editor do site</PricingFeature>
+                <PricingFeature>Site seguro com SSL</PricingFeature>
+                <PricingFeature>Whatsapp integrado</PricingFeature>
+                <PricingFeature>Até 200 imóveis</PricingFeature>
+              </PricingFeatures>
+            
+              <PricingNote>Para testar, não precisa de cartão</PricingNote>
+              <PricingButton>Teste Grátis</PricingButton>
+            </PricingCard>
+
+            {/* Plano Pro */}
+            <PricingCard className="popular">
+              <PricingIcon>
+                <HiRocketLaunch />
+              </PricingIcon>
+              <PricingPlanName>Pro</PricingPlanName>
+              <PricingDescription>
+                Para gerenciar negócios e equipes de maneira profissional e escalável.
+              </PricingDescription>
+              <PricingPrice>
+                <PricingCurrency>R$</PricingCurrency>
+                <PricingAmount>239</PricingAmount>
+                <PricingPeriod>/mês</PricingPeriod>
+              </PricingPrice>
+              <PricingFeatures>
+               <PricingFeature style={{fontWeight:'bold'}}>3 usuários</PricingFeature>
+                <PricingFeature>Site profissional e personalizável</PricingFeature>
+                <PricingFeature>Gestão de imóveis e clientes</PricingFeature>
+                <PricingFeature>Editor do site</PricingFeature>
+                <PricingFeature>Site seguro com SSL</PricingFeature>
+                <PricingFeature>Whatsapp integrado</PricingFeature>
+                <PricingFeature style={{fontWeight:'bold'}}>Imóveis ilimitados</PricingFeature>
+              </PricingFeatures>
         
-        <TestimonialsContainer>
-          <TestimonialCard>
-            <TestimonialAvatar src="https://randomuser.me/api/portraits/men/32.jpg" alt="João Silva" />
-            <TestimonialText>
-              "O sistema é muito inteligente e objetivo. Além de hoje ele entregar todas as ferramentas principais para o mercado imobiliário."
-            </TestimonialText>
-            <TestimonialAuthor>João Silva</TestimonialAuthor>
-            <TestimonialCompany>Diretor da Silva Imóveis</TestimonialCompany>
-          </TestimonialCard>
-
-          <TestimonialCard>
-            <TestimonialAvatar src="https://randomuser.me/api/portraits/women/44.jpg" alt="Maria Santos" />
-            <TestimonialText>
-              "A utilização da ferramenta facilita o dia a dia tanto da empresa como dos corretores. Os resultados vêm naturalmente."
-            </TestimonialText>
-            <TestimonialAuthor>Maria Santos</TestimonialAuthor>
-            <TestimonialCompany>Gerente da Santos Negócios</TestimonialCompany>
-          </TestimonialCard>
-
-          <TestimonialCard>
-            <TestimonialAvatar src="https://randomuser.me/api/portraits/men/56.jpg" alt="Carlos Oliveira" />
-            <TestimonialText>
-              "Standi é garantia de qualidade. Hoje eu tenho um sistema que eu realmente posso confiar, e isso é bem raro no mercado."
-            </TestimonialText>
-            <TestimonialAuthor>Carlos Oliveira</TestimonialAuthor>
-            <TestimonialCompany>CEO da Oliveira Incorporações</TestimonialCompany>
-          </TestimonialCard>
-        </TestimonialsContainer>
-      </TestimonialsSection>
+              <PricingNote>Para testar, não precisa de cartão</PricingNote>
+              <PricingButton className="primary">Teste Grátis</PricingButton>
+            </PricingCard>
+          </PricingGrid>
+        </PricingContainer>
+      </PricingSection>
 
       <FAQSection>
         <FAQContainer>
@@ -471,6 +692,20 @@ const Home: React.FC = () => {
           ))}
         </FAQContainer>
       </FAQSection>
+
+      <CallToActionBanner>
+        <CTALeftSide>
+          <CTAText>Transforme sua imobiliária hoje mesmo!</CTAText>
+          <CTABannerButtonBottom>Testar grátis agora</CTABannerButtonBottom>
+        </CTALeftSide>
+        <CTARightSide>
+          <PersonImage src={userImage} alt="Atendente" />
+          <div>
+            <WhatsAppIcon><img src={Whats} alt="WhatsApp" /></WhatsAppIcon>
+            <WhatsAppText>Dúvidas,clique aqui e fale conosco</WhatsAppText>
+          </div>
+        </CTARightSide>
+      </CallToActionBanner>
 
       <Footer>
         <FooterContent>

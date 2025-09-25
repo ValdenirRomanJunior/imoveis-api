@@ -2,7 +2,7 @@ import styled from 'styled-components';
 
 export const HomeContainer = styled.div`
   min-height: 100vh;
-  background: linear-gradient(135deg, #0a1628 0%, #1e3a8a 50%, #3b82f6 100%);
+  background: white;
   color: white;
 `;
 
@@ -81,7 +81,8 @@ export const HeroSection = styled.section`
   padding: 0 2rem 4rem;
   position: relative;
   overflow: hidden;
-  
+  background: linear-gradient(135deg, #0a1628 0%, #1e3a8a 50%, #3b82f6 100%);
+
   &::before {
     content: '';
     position: absolute;
@@ -91,7 +92,6 @@ export const HeroSection = styled.section`
     bottom: 0;
     background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="%233b82f6" stroke-width="0.5" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
     opacity: 0.3;
-    
   }
 `;
 
@@ -252,38 +252,134 @@ export const ProductFeatures = styled.ul`
 
 // Stats Section
 export const StatsSection = styled.section`
-  padding: 6rem 2rem;
+  padding: 1rem 2rem;
   background: white;
+  position: relative;
+  overflow: hidden;
 `;
 
 export const StatsGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: 2rem;
-  max-width: 800px;
+  width: 80%;
   margin: 0 auto;
+  background: linear-gradient(135deg, #0a1628 0%, #1e3a8a 50%, #3b82f6 100%);
+  border-radius: 15px;
+  padding: 2rem;
+  color: white;
+  position: relative;
+  z-index: 2;
 `;
 
 export const StatCard = styled.div`
   text-align: center;
   padding: 2rem;
-  background: rgba(59, 130, 246, 0.1);
+  background: rgba(255, 255, 255, 0.1);
   border-radius: 12px;
-  border: 1px solid rgba(59, 130, 246, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+  
+  &:hover {
+    transform: translateY(-5px);
+    background: rgba(255, 255, 255, 0.15);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  }
 `;
 
 export const StatNumber = styled.div`
   font-size: 3rem;
   font-weight: 900;
-  color: #3b82f6;
+  color: white;
   margin-bottom: 0.5rem;
 `;
 
 export const StatLabel = styled.div`
   font-size: 1rem;
-  color: #666;
+  color: rgba(255, 255, 255, 0.8);
   text-transform: uppercase;
   letter-spacing: 1px;
+`;
+
+// Estilos para os círculos animados com imagens de pessoas
+export const AnimatedCirclesContainer = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  z-index: 1;
+`;
+
+export const AnimatedCircle = styled.div`
+  position: absolute;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 2px solid rgba(59, 130, 246, 0.3);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  
+  &.left-to-right {
+    animation: moveLeftToRight 15s linear infinite;
+  }
+  
+  &.right-to-left {
+    animation: moveRightToLeft 15s linear infinite;
+  }
+  
+  @keyframes moveLeftToRight {
+    0% {
+      transform: translateX(-100px);
+    }
+    100% {
+      transform: translateX(calc(100vw + 100px));
+    }
+  }
+  
+  @keyframes moveRightToLeft {
+    0% {
+      transform: translateX(calc(100vw + 100px));
+    }
+    100% {
+      transform: translateX(-100px);
+    }
+  }
+`;
+
+export const CircleImage = styled.img`
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+`;
+
+// Botão "Testar Grátis Agora" para as seções
+export const TestFreeButton = styled.button`
+  display: block;
+  margin: 6rem auto 0;
+  padding: 1rem 2rem;
+  background: linear-gradient(135deg, #0a1628 0%, #1e3a8a 50%, #3b82f6 100%);
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-size: 1rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(59, 130, 246, 0.4);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
 `;
 
 // Testimonials Section
@@ -474,7 +570,7 @@ export const FAQSection = styled.section`
 `;
 
 export const FAQContainer = styled.div`
-  max-width: 800px;
+  max-width: 80%;
   margin: 0 auto;
 `;
 
@@ -564,5 +660,506 @@ export const FAQAnswer = styled.div`
       opacity: 1;
       transform: translateY(0);
     }
+  }
+`;
+
+// Pricing Section Styles
+export const PricingSection = styled.section`
+  padding: 6rem 2rem;
+  background: #f8fafc;
+`;
+
+export const PricingContainer = styled.div`
+  max-width: 1200px;
+  margin: 0 auto;
+`;
+
+export const PricingGrid = styled.div`
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  margin-top: 3rem;
+  flex-wrap: wrap;
+  
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+  }
+`;
+
+export const PricingCard = styled.div`
+  background: white;
+  border-radius: 16px;
+  padding: 1.5rem 1.25rem;
+  text-align: center;
+  position: relative;
+  border: 2px solid #e5e7eb;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  width: 350px;
+  height: auto;
+  min-height: 480px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+
+  &:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.15);
+    border-color: #3b82f6;
+  }
+
+  &.popular {
+    border-color: #3b82f6;
+    transform: scale(1.02);
+    
+    &::before {
+      content: "✨ MAIS POPULAR";
+      position: absolute;
+      top: -12px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+      color: white;
+      padding: 0.4rem 1rem;
+      border-radius: 20px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+    }
+    
+    &:hover {
+      transform: translateY(-8px) scale(1.02);
+    }
+  }
+`;
+
+export const PricingIcon = styled.div`
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 1.5rem;
+
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  color: #1e3a8a;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+  transition: all 0.3s ease;
+  
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(59, 130, 246, 0.4);
+  }
+`;
+
+export const PricingPlanName = styled.h3`
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #1e293b;
+  margin-bottom: 0.75rem;
+`;
+
+export const PricingDescription = styled.p`
+  color: #64748b;
+  font-size: 0.9rem;
+  line-height: 1.4;
+  margin-bottom: 1rem;
+  flex-grow: 1;
+`;
+
+export const PricingPrice = styled.div`
+  margin-bottom: 1rem;
+`;
+
+export const PricingCurrency = styled.span`
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #3b82f6;
+  vertical-align: top;
+`;
+
+export const PricingAmount = styled.span`
+  font-size: 2.5rem;
+  font-weight: 900;
+  color: #3b82f6;
+  line-height: 1;
+`;
+
+export const PricingPeriod = styled.span`
+  font-size: 1rem;
+  color: #64748b;
+  font-weight: 500;
+`;
+
+export const PricingNote = styled.p`
+  font-size: 0.8rem;
+  color: #9ca3af;
+  font-style: italic;
+  margin-bottom: 1rem;
+`;
+
+export const PricingButton = styled.button`
+  width: 100%;
+  background: linear-gradient(135deg, #0a1628 0%, #1e3a8a 50%, #3b82f6 100%);
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 5px;
+  font-size: 1rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: auto;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+  
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(59, 130, 246, 0.4);
+  }
+  
+  &:active {
+    transform: translateY(0);
+  }
+  
+  &.outline {
+    background: transparent;
+    color: #3b82f6;
+    border: 2px solid #3b82f6;
+    text-transform: uppercase;
+    
+    &:hover {
+      background: linear-gradient(135deg, #0a1628 0%, #1e3a8a 50%, #3b82f6 100%);
+      color: white;
+      border-color: transparent;
+    }
+  }
+`;
+
+export const PricingFeatures = styled.ul`
+  list-style: none;
+  padding: 0;
+  margin: 1.5rem 0;
+  text-align: left;
+`;
+
+export const PricingFeature = styled.li`
+  display: flex;
+  align-items: center;
+  padding: 0.5rem 0;
+  font-size: 0.9rem;
+  color: #6b7280;
+  
+  &::before {
+    content: "✓";
+    color: #6b7280;
+    font-weight: bold;
+    margin-right: 0.75rem;
+    font-size: 1rem;
+    flex-shrink: 0;
+  }
+  
+  &.highlight {
+    color: #1e293b;
+    font-weight: 600;
+  }
+`;
+
+// Call to Action Banner
+export const CallToActionBanner = styled.section`
+  height: 170px;
+  display: flex;
+  position: relative;
+  overflow: hidden;
+  margin: 0 auto 50px;
+  width: 80%;
+  
+    border: 1px solid #e5e7eb;
+  border-radius: 15px;
+
+`;
+
+export const CTALeftSide = styled.div`
+  flex: 1;
+  background: linear-gradient(135deg, #0a1628 0%, #1e3a8a 50%, #3b82f6 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.9rem;
+  position: relative;
+
+  
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-width: 70px 30px 0 0;
+    border-color: transparent transparent transparent transparent;
+  }
+`;
+
+export const CTARightSide = styled.div`
+  flex: 1;
+  background: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+
+  background: #34c5070d;
+  position: relative;
+
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-width: 0 0 70px 30px;
+    border-color: transparent transparent transparent transparent;
+  }
+`;
+
+export const CTAText = styled.span`
+  color: white;
+  font-size: 1.2rem;
+  font-weight: 600;
+  
+  @media (max-width: 768px) {
+    font-size: 0.9rem;
+  }
+`;
+
+export const CTABannerButtonBottom = styled.button`
+  background: white !important;
+  color: #3b82f6;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  font-size: 0.7rem !important;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+  
+  @media (max-width: 768px) {
+    padding: 0.4rem 0.8rem;
+    font-size: 3rem !important;
+  }
+`;
+
+export const WhatsAppIcon = styled.div`
+  width: 40px;
+  height: 40px;
+  background: rgba(37, 211, 102, 0.1);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #25d366;
+  font-size: 1.5rem;
+`;
+
+export const WhatsAppText = styled.span`
+  color: #333;
+  font-size: 1rem;
+  font-weight: 600;
+  
+  @media (max-width: 768px) {
+    font-size: 0.9rem;
+  }
+`;
+
+export const PersonImage = styled.img`
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #e5e7eb;
+  transition: all 0.3s ease;
+
+  &:hover {
+    border-color: #3b82f6;
+    transform: scale(1.05);
+  }
+`;
+
+// Seção Recursos
+export const ResourcesSection = styled.section`
+  padding: 3rem 2rem 0 2rem;
+  background: white;
+`;
+
+export const ResourcesContainer = styled.div`
+  max-width: 1200px;
+  margin: 0 auto;
+`;
+
+export const ResourcesTitle = styled.h2`
+  font-size: 2.5rem;
+  font-weight: 800;
+  text-align: center;
+  margin-bottom: 1rem;
+  color: #333;
+  
+  @media (max-width: 768px) {
+    font-size: 2rem;
+  }
+`;
+
+export const ResourcesSubtitle = styled.p`
+  font-size: 1.2rem;
+  text-align: center;
+  color: #666;
+  margin-bottom: 4rem;
+  
+  @media (max-width: 768px) {
+    font-size: 1rem;
+    margin-bottom: 3rem;
+  }
+`;
+
+export const ResourcesContent = styled.div`
+  background: #f8fafc;
+  border-radius: 20px;
+  padding: 3rem;
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 3rem;
+  min-height: 500px;
+  
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+    padding: 2rem;
+    gap: 2rem;
+    min-height: auto;
+  }
+`;
+
+export const ResourcesNavigation = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+`;
+
+export const ResourceNavItem = styled.button`
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.5rem;
+  background: white;
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-align: left;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #333;
+  
+  &:hover {
+    border-color: #3b82f6;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+  }
+  
+  &.active {
+    border-color: #3b82f6;
+    background: rgba(59, 130, 246, 0.05);
+    color: #3b82f6;
+  }
+`;
+
+export const ResourceNavIcon = styled.div`
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  background: rgba(59, 130, 246, 0.1);
+  color: #3b82f6;
+  flex-shrink: 0;
+`;
+
+export const ResourceMockupArea = styled.div`
+  background: white;
+  border-radius: 16px;
+  padding: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid #e5e7eb;
+  position: relative;
+  overflow: hidden;
+`;
+
+export const ResourceMockupHeader = styled.div`
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  z-index: 10;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  padding: 1rem 1.5rem;
+  border-radius: 12px;
+  border: 1px solid rgba(59, 130, 246, 0.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  max-width: 350px;
+`;
+
+export const ResourceMockupTitle = styled.h3`
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0 0 0.5rem 0;
+  line-height: 1.2;
+`;
+
+export const ResourceMockupSubtitle = styled.p`
+  font-size: 0.9rem;
+  color: #64748b;
+  margin: 0;
+  max-width: 300px;
+  line-height: 1.4;
+`;
+
+export const ResourceMockupImage = styled.img`
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+`;
+
+export const ResourceMockupPlaceholder = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #9ca3af;
+  font-size: 1.1rem;
+  text-align: center;
+  
+  svg {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    opacity: 0.5;
   }
 `;
