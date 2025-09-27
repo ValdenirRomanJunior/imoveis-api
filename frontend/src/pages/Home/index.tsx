@@ -1,18 +1,20 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { HiHome, HiUsers, HiChartBar, HiClock, HiStar, HiKey } from 'react-icons/hi';
 import { HiRocketLaunch } from 'react-icons/hi2';
-import { FaGlobe, FaUsers, FaPlug, FaImage } from 'react-icons/fa';
+import { FaGlobe, FaUsers, FaPlug, FaImage, FaBars, FaTimes } from 'react-icons/fa';
 import { useCountUp } from '../../hooks/useCountUp';
 import tela1 from '../../assets/images/tela-1.png';
 import tela2 from '../../assets/images/tela-2.png';
+import tela3 from '../../assets/images/foto-1.png';
 import google from '../../assets/images/google.png'
 import gpt from '../../assets/images/gpt.webp'
-import standi from '../../assets/images/logo-sem fundo.png'
+import standi from '../../assets/images/logo.png'
 import Whats from '../../assets/images/whatsapp.png'
 import userImage from '../../assets/images/user-image.jpeg'
-import imagem1 from '../../assets/images/imagem-1-recursos.png'
+import imagem1 from '../../assets/images/imagem-1-recursos-1.png'
 import imagem2 from '../../assets/images/banner-recursos-3.png'
+import imagem3 from '../../assets/images/banner-recursos-2.png'
 import {
   HomeContainer,
   Header,
@@ -21,6 +23,15 @@ import {
   NavLinks,
   NavLink,
   LoginButton,
+  MobileMenuButton,
+  MobileSidebar,
+  MobileSidebarOverlay,
+  MobileSidebarHeader,
+  MobileSidebarLogo,
+  MobileSidebarCloseButton,
+  MobileSidebarNav,
+  MobileSidebarNavLink,
+  MobileSidebarLoginButton,
   HeroSection,
   HeroContent,
   Title,
@@ -107,6 +118,25 @@ import {
 
   const styles = `
     .container-main-mockup {
+
+
+      position: absolute;
+      top: calc(70% + 40px);
+      left: 50%;
+      transform: translateX(-50%);
+      width: 90%;
+  
+      z-index: 10;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+      background-color: transparent;
+      color: #f3f4f6; /* gray-100 */
+      font-family: 'Inter', sans-serif;
+
+      @media screen and (min-width: 1000px) {
       position: absolute;
       top: calc(55% + 40px);
       left: 50%;
@@ -121,13 +151,15 @@ import {
       background-color: transparent;
       color: #f3f4f6; /* gray-100 */
       font-family: 'Inter', sans-serif;
+
+}
     }
     
     .mockup-section {
       position: relative;
       width: 100%;
       max-width: 80rem; /* w-full max-w-5xl, equivalente a 1024px */
-      height: 31.25rem; /* h-[500px] */
+      height: 300px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -141,6 +173,19 @@ import {
 
     .monitor-mockup {
       position: absolute;
+      width: 90%;
+      height: 75%;
+      background-color:rgba(98, 98, 98, 0.31); /* gray-800 */
+      border-radius: 1.5rem; /* rounded-3xl */
+      box-shadow: 0 -27px 50px -12px rgba(59, 130, 246, 0.4); /* shadow-1xl azul apenas na parte superior */
+      overflow: hidden;
+
+       display: flex;
+       align-items: center;
+       justify-content: center;
+
+       @media screen and (min-width: 1000px) {
+      position: absolute;
       width: 80%;
       height: 80%;
       background-color:rgba(98, 98, 98, 0.31); /* gray-800 */
@@ -151,17 +196,30 @@ import {
        display: flex;
        align-items: center;
        justify-content: center;
+       }
     }
 
     .monitor-mockup img {
       width: 100%;
       height: 90%;
       object-fit: cover;
-
+    
      
     }
 
     .phone-mockup {
+      position: absolute;
+      right: 10rem;
+      width: 6rem; /* w-40 */
+      height: 11rem; /* h-80 */
+      background-color:rgba(92, 92, 92, 0.23); /* gray-900 */
+      border-radius: 1.9rem;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); /* shadow-2xl */
+      border: 1px solid #374151; /* border-4 border-gray-700 */
+      overflow: hidden;
+      transform: translateX(11rem) translateY(-1rem); /* translate-x-40 -translate-y-8 */
+      
+      @media screen and (min-width: 1000px) {
       position: absolute;
       right: 10rem;
       width: 9rem; /* w-40 */
@@ -172,6 +230,8 @@ import {
       border: 1px solid #374151; /* border-4 border-gray-700 */
       overflow: hidden;
       transform: translateX(10rem) translateY(-2rem); /* translate-x-40 -translate-y-8 */
+      }
+      
     }
     
     .phone-mockup img {
@@ -185,6 +245,7 @@ import {
 
 const Home: React.FC = () => {
   const [activeResource, setActiveResource] = React.useState('site');
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   
   const resources = {
     site: {
@@ -199,7 +260,7 @@ const Home: React.FC = () => {
     },
     integracao: {
       title: 'Integração',
-      image: tela1,
+      image: imagem3,
       description: 'Mockup da Integração'
     }
   };
@@ -207,6 +268,38 @@ const Home: React.FC = () => {
   const handleResourceClick = (resourceKey: string) => {
     setActiveResource(resourceKey);
   };
+
+  const toggleMobileMenu = () => {
+    setIsMobileMenuOpen(!isMobileMenuOpen);
+  };
+
+  const closeMobileMenu = () => {
+    setIsMobileMenuOpen(false);
+  };
+
+  // Fechar menu ao clicar fora
+  React.useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const sidebar = document.querySelector('[data-mobile-sidebar]');
+      const menuButton = document.querySelector('[data-mobile-menu-button]');
+      
+      if (isMobileMenuOpen && 
+          sidebar && 
+          !sidebar.contains(event.target as Node) &&
+          menuButton &&
+          !menuButton.contains(event.target as Node)) {
+        closeMobileMenu();
+      }
+    };
+
+    if (isMobileMenuOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isMobileMenuOpen]);
 
   const [openFAQ, setOpenFAQ] = React.useState<number | null>(null);
 
@@ -245,7 +338,9 @@ const Home: React.FC = () => {
     <HomeContainer>
       <Header>
         <Nav>
-          <Logo>Standi</Logo>
+          <Logo>
+            <img src={standi} alt="Standi" />
+          </Logo>
           <NavLinks>
             <NavLink href="#produtos">Produtos</NavLink>
             <NavLink href="#recursos">Recursos</NavLink>
@@ -255,7 +350,50 @@ const Home: React.FC = () => {
               Fazer Login
             </LoginButton>
           </NavLinks>
+          
+          {/* Botão hambúrguer mobile */}
+          <MobileMenuButton 
+            data-mobile-menu-button
+            onClick={toggleMobileMenu}
+          >
+            <FaBars />
+          </MobileMenuButton>
         </Nav>
+        
+        {/* Sidebar mobile */}
+        {isMobileMenuOpen && (
+          <>
+            <MobileSidebarOverlay isOpen={isMobileMenuOpen} onClick={closeMobileMenu} />
+            <MobileSidebar isOpen={isMobileMenuOpen} data-mobile-sidebar>
+              <MobileSidebarHeader>
+                <MobileSidebarLogo>
+                  <img src={standi} alt="Standi" />
+                </MobileSidebarLogo>
+                <MobileSidebarCloseButton onClick={closeMobileMenu}>
+                  <FaTimes />
+                </MobileSidebarCloseButton>
+              </MobileSidebarHeader>
+              
+              <MobileSidebarNav>
+                <MobileSidebarNavLink href="#produtos" onClick={closeMobileMenu}>
+                  Produtos
+                </MobileSidebarNavLink>
+                <MobileSidebarNavLink href="#recursos" onClick={closeMobileMenu}>
+                  Recursos
+                </MobileSidebarNavLink>
+                <MobileSidebarNavLink href="#planos" onClick={closeMobileMenu}>
+                  Planos
+                </MobileSidebarNavLink>
+                <MobileSidebarNavLink href="#suporte" onClick={closeMobileMenu}>
+                  Suporte
+                </MobileSidebarNavLink>
+                <MobileSidebarLoginButton as={Link} to="/login" onClick={closeMobileMenu}>
+                  Fazer Login
+                </MobileSidebarLoginButton>
+              </MobileSidebarNav>
+            </MobileSidebar>
+          </>
+        )}
       </Header>
 
       <HeroSection>
@@ -309,7 +447,7 @@ const Home: React.FC = () => {
       <div className="container-main-mockup">
 
         {/* Frase manuscrita e seta do lado esquerdo dos mockups */}
-        <div className="absolute left-[-70px] top-20 transform -translate-y-1/2">
+        <div className="absolute left-[-70px] top-20 transform -translate-y-1/2 hidden md:block">
           <div className="font-handwriting text-green-300 text-lg transform rotate-5 whitespace-nowrap mb-2">
             Edite seu site como quiser
           </div>
@@ -346,8 +484,8 @@ const Home: React.FC = () => {
           </svg>
         </div>
         
-    {/* Frase manuscrita e seta do lado esquerdo dos mockups */}
-        <div className="absolute right-[-90px] top-20 transform -translate-y-1/2">
+    {/* Frase manuscrita e seta do lado direito dos mockups */}
+        <div className="absolute right-[-90px] top-20 transform -translate-y-1/2 hidden md:block">
           <div className="font-handwriting text-green-300 text-lg transform rotate-5 whitespace-nowrap mb-2">
             Edite seu site como quiser
           </div>
@@ -394,7 +532,7 @@ const Home: React.FC = () => {
               <div className="w-3 h-3 rounded-full bg-blue-500"></div>
             </div>
             <img
-              src={tela1}
+              src={tela3}
               alt="Tela do Dashboard Standi"
             />
           </div>
@@ -410,9 +548,10 @@ const Home: React.FC = () => {
       </div>
     
       <ProductsSection id="produtos">
-        <SectionTitle>Porque eu deveria ter um site com Standi?</SectionTitle>
-        <p style={{ textAlign: 'center', marginBottom: '3rem', fontSize: '1.1rem', color: '#666' }}>
-          Soluções completas para o seu negócio imobiliário
+        <SectionTitle>Porque eu deveria ter um site com a Standi?</SectionTitle>
+        <p style={{ textAlign: 'center', marginBottom: '3rem', fontSize: '1.1rem', color: '#666', padding:'0 1rem' }}>
+          Além do Google você já percebeu que as pessoas também usam o chatGpt para buscar imoveis certo?<br/>
+             Nosso site imobiliário é projetado para estas buscas modernas
         </p>
         
         <ProductsGrid>
@@ -426,7 +565,7 @@ const Home: React.FC = () => {
             <ProductContent>
               <ProductTitle>Site otimizado para GEO (busca por I.A) e SEO do Google</ProductTitle>
               <ProductDescription>
-                Seu site será encontrado facilmente pelos clientes através de buscas inteligentes e otimização para mecanismos de busca.
+                Seu site será encontrado facilmente pelos clientes através de buscas inteligentes e otimização para.
               </ProductDescription>
            
             </ProductContent>
@@ -473,8 +612,8 @@ const Home: React.FC = () => {
       <ResourcesSection id="recursos">
         <ResourcesContainer>
           <ResourcesTitle>Estes são os recursos que você pode aproveitar:</ResourcesTitle>
-          <ResourcesSubtitle>Além do Google você já percebeu que as pessoas também usam o chatGpt para buscar imoveis certo?<br/>
-             Nosso site imobiliário é preparado para estas buscas modernas</ResourcesSubtitle>
+          <ResourcesSubtitle>Além de um site moderno preparado para SEO e GEO também você tem a liberdade de editar seu site, <br/>
+             adicionar o pixel, fazer a gestão dos imóveis e seus clientes</ResourcesSubtitle>
           
           <ResourcesContent>
             <ResourcesNavigation>
@@ -586,9 +725,7 @@ const Home: React.FC = () => {
         </AnimatedCirclesContainer>
 
        
-        <p style={{ textAlign: 'center', marginBottom: '3rem', opacity: 0.8 }}>
-          Com anos de experiência no mercado, a Standi atende centenas de empresas do mercado imobiliário.
-        </p>
+   
         
         <StatsGrid>
           <StatCard>

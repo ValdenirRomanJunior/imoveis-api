@@ -28,11 +28,16 @@ export const Nav = styled.nav`
   align-items: center;
 `;
 
-export const Logo = styled.h1`
+export const Logo = styled.div`
   font-size: 2rem;
   font-weight: bold;
   color: #3b82f6;
   margin: 0;
+
+  img {
+  
+    height: 40px;
+  }
 `;
 
 export const NavLinks = styled.div`
@@ -63,6 +68,137 @@ export const LoginButton = styled.a`
   border-radius: 8px;
   text-decoration: none;
   font-weight: 600;
+  transition: all 0.3s ease;
+  
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(59, 130, 246, 0.3);
+  }
+`;
+
+// Mobile Menu Styles
+export const MobileMenuButton = styled.button`
+  display: none;
+  background: none;
+  border: none;
+  color: white;
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 4px;
+  transition: all 0.3s ease;
+  
+  &:hover {
+    background: rgba(255, 255, 255, 0.1);
+  }
+  
+  @media (max-width: 768px) {
+    display: block;
+  }
+`;
+
+export const MobileSidebar = styled.div<{ isOpen: boolean }>`
+  position: fixed;
+  top: 0;
+  left: ${props => props.isOpen ? '0' : '-300px'};
+  width: 300px;
+  height: 100vh;
+  background: rgba(10, 22, 40, 0.98);
+  backdrop-filter: blur(20px);
+  z-index: 2000;
+  transition: left 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  padding: 2rem 0;
+  border-right: 1px solid rgba(59, 130, 246, 0.2);
+  
+  @media (min-width: 769px) {
+    display: none;
+  }
+`;
+
+export const MobileSidebarOverlay = styled.div<{ isOpen: boolean }>`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1500;
+  opacity: ${props => props.isOpen ? '1' : '0'};
+  visibility: ${props => props.isOpen ? 'visible' : 'hidden'};
+  transition: all 0.3s ease;
+  
+  @media (min-width: 769px) {
+    display: none;
+  }
+`;
+
+export const MobileSidebarHeader = styled.div`
+  padding: 0 2rem 2rem;
+  border-bottom: 1px solid rgba(59, 130, 246, 0.2);
+  margin-bottom: 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+`;
+
+export const MobileSidebarLogo = styled.div`
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #3b82f6;
+  
+  img {
+    height: 32px;
+  }
+`;
+
+export const MobileSidebarCloseButton = styled.button`
+  background: none;
+  border: none;
+  color: white;
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 4px;
+  transition: all 0.3s ease;
+  
+  &:hover {
+    background: rgba(255, 255, 255, 0.1);
+  }
+`;
+
+export const MobileSidebarNav = styled.nav`
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0 2rem;
+  flex: 1;
+`;
+
+export const MobileSidebarNavLink = styled.a`
+  color: white;
+  text-decoration: none;
+  font-weight: 500;
+  padding: 1rem 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.3s ease;
+  
+  &:hover {
+    color: #3b82f6;
+    padding-left: 1rem;
+  }
+`;
+
+export const MobileSidebarLoginButton = styled.a`
+  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+  color: white;
+  padding: 1rem 2rem;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 600;
+  text-align: center;
+  margin: 2rem;
   transition: all 0.3s ease;
   
   &:hover {
@@ -148,9 +284,14 @@ export const CTAButton = styled.a`
 
 // Products Section
 export const ProductsSection = styled.section`
-  padding: 10rem 2rem 4rem;
+  padding: 1rem 0.5rem 3rem 0.5rem;
   background: white;
-  margin-top: 200px; /* Espaço para os mockups */
+  margin-top: 170px; /* Espaço para os mockups */
+
+  @media (min-width: 768px) {
+  padding: 10rem 2rem 4rem;
+  }
+
 `;
 
 export const SectionTitle = styled.h2`
@@ -159,18 +300,27 @@ export const SectionTitle = styled.h2`
   text-align: center;
   margin-bottom: 1rem;
   color: #333;
+
   
   @media (max-width: 768px) {
     font-size: 2rem;
   }
 `;
 
+
+
 export const ProductsGrid = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 2rem;
   max-width: 1200px;
   margin: 0 auto;
+  
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+    padding: 0 1rem;
+  }
 `;
 
 export const ProductCard = styled.div`
@@ -178,6 +328,7 @@ export const ProductCard = styled.div`
   border: 1px solid #e5e7eb;
   border-radius: 15px;
   padding: 2rem;
+  height: 250px;
   text-align: center;
   transition: all 0.3s ease;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
@@ -221,7 +372,6 @@ export const ProductTitle = styled.h3`
 export const ProductDescription = styled.p`
   font-size: 0.95rem;
   line-height: 1.6;
-  margin-bottom: 1.5rem;
   color: #9ca3af;
 `;
 
@@ -252,7 +402,7 @@ export const ProductFeatures = styled.ul`
 
 // Stats Section
 export const StatsSection = styled.section`
-  padding: 1rem 2rem;
+  padding: 1rem 1rem;
   background: white;
   position: relative;
   overflow: hidden;
@@ -266,10 +416,24 @@ export const StatsGrid = styled.div`
   margin: 0 auto;
   background: linear-gradient(135deg, #0a1628 0%, #1e3a8a 50%, #3b82f6 100%);
   border-radius: 15px;
+  padding: 1rem;
+  color: white;
+  position: relative;
+  z-index: 2;
+
+  @media (min-width: 768px) {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 2rem;
+  width: 80%;
+  margin: 0 auto;
+  background: linear-gradient(135deg, #0a1628 0%, #1e3a8a 50%, #3b82f6 100%);
+  border-radius: 15px;
   padding: 2rem;
   color: white;
   position: relative;
   z-index: 2;
+  }
 `;
 
 export const StatCard = styled.div`
@@ -289,17 +453,25 @@ export const StatCard = styled.div`
 `;
 
 export const StatNumber = styled.div`
-  font-size: 3rem;
+  font-size: 2rem;
   font-weight: 900;
   color: white;
   margin-bottom: 0.5rem;
+
+  @media (min-width: 768px) {
+    font-size: 3rem;
+  }
 `;
 
 export const StatLabel = styled.div`
-  font-size: 1rem;
+  font-size: 0.8rem;
   color: rgba(255, 255, 255, 0.8);
   text-transform: uppercase;
   letter-spacing: 1px;
+
+  @media (min-width: 768px) {
+    font-size: 1rem;
+  }
 `;
 
 // Estilos para os círculos animados com imagens de pessoas
@@ -565,13 +737,22 @@ export const CTASection = styled.section`
 
 // FAQ Section
 export const FAQSection = styled.section`
-  padding: 6rem 2rem;
+  padding: 6rem 1rem;
   background: #f8fafc;
+
+  @media screen and(min-width:768px){
+    padding: 6rem 2rem;
+  background: #f8fafc;
+  }
 `;
 
 export const FAQContainer = styled.div`
-  max-width: 80%;
+  width: 100%;
   margin: 0 auto;
+
+ @media (min-width:768px){
+  width: 80% !important;
+ }
 `;
 
 export const FAQTitle = styled.h2`
@@ -665,7 +846,7 @@ export const FAQAnswer = styled.div`
 
 // Pricing Section Styles
 export const PricingSection = styled.section`
-  padding: 6rem 2rem;
+  padding: 6rem 1.2rem;
   background: #f8fafc;
 `;
 
@@ -680,6 +861,11 @@ export const PricingGrid = styled.div`
   gap: 2rem;
   margin-top: 3rem;
   flex-wrap: wrap;
+  
+  @media (min-width: 678px) {
+    justify-content: center;
+    align-items: flex-start;
+  }
   
   @media (max-width: 768px) {
     flex-direction: column;
@@ -697,12 +883,16 @@ export const PricingCard = styled.div`
   border: 2px solid #e5e7eb;
   transition: all 0.3s ease;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-  width: 350px;
+  width: 100%;
   height: auto;
   min-height: 480px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+
+  @media (min-width: 678px) {
+    width: 350px;
+  }
 
   &:hover {
     transform: translateY(-8px);
@@ -733,12 +923,14 @@ export const PricingCard = styled.div`
       transform: translateY(-8px) scale(1.02);
     }
   }
+
+
 `;
 
 export const PricingIcon = styled.div`
-  width: 80px;
-  height: 80px;
-  margin: 0 auto 1.5rem;
+  width: 70px;
+  height: 70px;
+  margin: 0 auto 1.2rem;
 
   border-radius: 50%;
   display: flex;
@@ -756,7 +948,7 @@ export const PricingIcon = styled.div`
 `;
 
 export const PricingPlanName = styled.h3`
-  font-size: 1.5rem;
+  font-size: 1.4rem;
   font-weight: 800;
   color: #1e293b;
   margin-bottom: 0.75rem;
@@ -771,7 +963,7 @@ export const PricingDescription = styled.p`
 `;
 
 export const PricingPrice = styled.div`
-  margin-bottom: 1rem;
+  margin-bottom: 0.5rem;
 `;
 
 export const PricingCurrency = styled.span`
@@ -842,7 +1034,7 @@ export const PricingButton = styled.button`
 export const PricingFeatures = styled.ul`
   list-style: none;
   padding: 0;
-  margin: 1.5rem 0;
+  margin: 1rem 0;
   text-align: left;
 `;
 
@@ -870,6 +1062,18 @@ export const PricingFeature = styled.li`
 
 // Call to Action Banner
 export const CallToActionBanner = styled.section`
+  height: 340px;
+  display: flex;
+  flex-direction: column;
+
+  overflow: hidden;
+  margin: 0 auto 50px;
+  width: 90%; 
+  border: 1px solid #e5e7eb;
+  border-radius: 15px;
+
+  @media (min-width: 768px) {
+  flex-direction: row;
   height: 170px;
   display: flex;
   position: relative;
@@ -879,6 +1083,8 @@ export const CallToActionBanner = styled.section`
   
     border: 1px solid #e5e7eb;
   border-radius: 15px;
+  }
+
 
 `;
 
@@ -947,7 +1153,7 @@ export const CTABannerButtonBottom = styled.button`
   border: none;
   padding: 0.5rem 1rem;
   border-radius: 6px;
-  font-size: 0.7rem !important;
+  font-size: 0.2rem !important;
   font-weight: 700;
   cursor: pointer;
   transition: all 0.3s ease;
@@ -957,8 +1163,8 @@ export const CTABannerButtonBottom = styled.button`
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   }
   
-  @media (max-width: 768px) {
-    padding: 0.4rem 0.8rem;
+  @media (min-width: 768px) {
+    padding : 0.4rem 0.8rem;
     font-size: 3rem !important;
   }
 `;
@@ -1001,7 +1207,7 @@ export const PersonImage = styled.img`
 
 // Seção Recursos
 export const ResourcesSection = styled.section`
-  padding: 3rem 2rem 0 2rem;
+  padding: 2rem 1rem 2rem 1rem;
   background: white;
 `;
 
@@ -1045,7 +1251,7 @@ export const ResourcesContent = styled.div`
   
   @media (max-width: 768px) {
     grid-template-columns: 1fr;
-    padding: 2rem;
+    padding: 1rem;
     gap: 2rem;
     min-height: auto;
   }
@@ -1107,11 +1313,34 @@ export const ResourceMockupArea = styled.div`
   justify-content: center;
   border: 2px solid #e5e7eb;
   position: relative;
-  overflow: hidden;
+
 `;
 
 export const ResourceMockupHeader = styled.div`
   position: absolute;
+  top: -25px;
+  left: 0px;
+  z-index: 10;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  padding: 0.7rem 1.2rem;
+  border-radius: 12px;
+  border: 1px solid rgba(59, 130, 246, 0.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  width: 250px;
+
+  h3 {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #1e293b;
+  }	
+
+  p{
+  font-size:0.8rem;
+  }
+
+  @media screen and (min-width: 768px) {
+   position: absolute;
   top: 20px;
   left: 20px;
   z-index: 10;
@@ -1121,7 +1350,8 @@ export const ResourceMockupHeader = styled.div`
   border-radius: 12px;
   border: 1px solid rgba(59, 130, 246, 0.1);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  max-width: 350px;
+  width: 350px;
+  }
 `;
 
 export const ResourceMockupTitle = styled.h3`
