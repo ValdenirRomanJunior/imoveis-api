@@ -87,13 +87,15 @@ const Header = () =>{
 
       const getSubdomainUrl = (companySlug: string) => {
     const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+    const accountId = user?.accountId || user?.id || '';
+    const subdomain = accountId ? `${companySlug}-${accountId}` : companySlug;
     
     if (isLocalhost) {
       // Em desenvolvimento, usar parâmetro de query
-      return `${window.location.origin}/?subdomain=${companySlug}`;
+      return `${window.location.origin}/?subdomain=${subdomain}`;
     } else {
       // Em produção, usar subdomínio
-      return `https://${companySlug}.standi.com.br`;
+      return `https://${subdomain}.standi.com.br`;
     }
   };
     return(
@@ -129,7 +131,7 @@ const Header = () =>{
                         <IoIosArrowForward  className='icon-sidebar'/>
                         <div style={{ cursor: 'pointer', color: '#3b82f6',position: 'relative', top: '-2px', left: '46px'}}
                         >
-                         {domainInfo?.subdomain || `${user?.slug || 'seu-slug'}.standi.com.br`}
+                         {domainInfo?.subdomain || `${user?.slug || 'seu-slug'}${user?.accountId ? `-${user.accountId}` : user?.id ? `-${user.id}` : ''}.standi.com.br`}
                   <FiExternalLink  
                     style={{ cursor: 'pointer', color: '#3b82f6',position: 'relative', top: '-2px', left: '12px'}}
                     onClick={() => window.open(getSubdomainUrl(user?.slug || ''), '_blank')}

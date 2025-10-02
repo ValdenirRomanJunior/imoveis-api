@@ -9,6 +9,7 @@ INSERT INTO TENANT ( slug, email, password, status,last_name,verification, domai
 INSERT INTO user_admin ( slug, email, password, status,last_name) VALUES ('Admin','admin@outlook.com','$2a$10$SlOVSeeJSFR07DXoDdvZ..chnzSwkJXW0IZlL6K1CwbAX9eKd5XYa',1,'valdenir');
 
 INSERT INTO perfis (tenant_id, perfis) VALUES (1,2);
+INSERT INTO perfis (tenant_id, perfis) VALUES (1,4);
 INSERT INTO perfis (tenant_id, perfis) VALUES (2,2);
 INSERT INTO perfis (tenant_id, perfis) VALUES (3,2);
 INSERT INTO perfis (tenant_id, perfis) VALUES (3,4);

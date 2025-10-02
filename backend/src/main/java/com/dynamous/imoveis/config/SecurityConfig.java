@@ -62,6 +62,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 			"/properties/findAllDistricts/**",
 			"/themes/**",
 			"/api/themes/**",
+			"/tenants/register",
+			"/api/tenants/register",
+			"/plans/available",
+			"/api/plans/available"
 		
 			
 			
@@ -123,6 +127,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		// Allow localhost for development
 		configuration.addAllowedOrigin("http://localhost:3000");
 		configuration.addAllowedOrigin("https://localhost:3000");
+		configuration.addAllowedOrigin("http://localhost:3001");
+		configuration.addAllowedOrigin("https://localhost:3001");
 		
 		// Allow main domain
 		configuration.addAllowedOrigin("https://standi.com.br");

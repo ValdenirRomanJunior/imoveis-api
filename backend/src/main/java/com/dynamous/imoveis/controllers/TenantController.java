@@ -1,8 +1,8 @@
 package com.dynamous.imoveis.controllers;
 
 import com.dynamous.imoveis.dto.TenantDTO;
-
 import com.dynamous.imoveis.dto.TenantNewDTO;
+import com.dynamous.imoveis.dto.TenantRegistrationResponseDTO;
 import com.dynamous.imoveis.dto.TenantUpdateDTO;
 import com.dynamous.imoveis.entities.Tenant;
 import com.dynamous.imoveis.enums.Status;
@@ -52,6 +52,16 @@ public class TenantController {
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").
                   buildAndExpand(obj.getId()).toUri();
         return ResponseEntity.created(uri).build();
+    }
+
+    @PostMapping(value="/register", produces = {MediaType.APPLICATION_JSON_VALUE})
+    public ResponseEntity<TenantRegistrationResponseDTO> register(@Valid @RequestBody TenantNewDTO objDto) throws UnknownHostException{
+        String plainPassword = objDto.getPassword(); // Armazenar a senha em texto plano antes da criptografia
+        Tenant obj = service.fromDTO(objDto);
+        Tenant savedTenant = service.insert(obj);
+        
+        TenantRegistrationResponseDTO response = new TenantRegistrationResponseDTO(savedTenant, plainPassword);
+        return ResponseEntity.ok(response);
     }
    
     @PreAuthorize("hasAnyRole('ADMIN')")

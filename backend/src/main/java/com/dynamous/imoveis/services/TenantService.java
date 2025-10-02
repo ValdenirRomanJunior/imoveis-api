@@ -8,6 +8,7 @@ import com.dynamous.imoveis.entities.Account;
 import com.dynamous.imoveis.entities.Property;
 import com.dynamous.imoveis.entities.Tenant;
 import com.dynamous.imoveis.enums.Perfil;
+import com.dynamous.imoveis.enums.PlanType;
 import com.dynamous.imoveis.enums.Status;
 import com.dynamous.imoveis.enums.Verification;
 import com.dynamous.imoveis.repositories.AccountRepository;
@@ -28,6 +29,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.net.URISyntaxException;
 import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -105,11 +107,21 @@ public class TenantService {
          obj.addPerfil(Perfil.ACCOUNT);
          Account account = new Account(null,null,obj.getDomain(),obj.getSlug(),null,obj.getCreci(),obj.getProprietario());
          
-         // Criar subdomínio automaticamente na Vercel
+         // Definir plano de teste automaticamente para novas contas
+         account.setPlanType(PlanType.TESTE);
+         account.setPlanStartDate(LocalDateTime.now());
+         account.setPlanEndDate(LocalDateTime.now().plusDays(7)); // 7 dias de teste
+         account.setIsTrialActive(true);
+         
+         // Salvar a Account primeiro para obter o ID
+         accountRepo.save(account);
+         
+         // Criar subdomínio automaticamente na Vercel usando companyName + accountId
          try {
-             boolean subdomainCreated = vercelDomainService.createSubdomain(obj.getSlug());
-             if (subdomainCreated) {
-                 account.setDomain(obj.getSlug() + ".standi.com.br");
+             String createdSubdomain = vercelDomainService.createSubdomain(obj.getSlug(), account.getId());
+             if (createdSubdomain != null) {
+                 account.setDomain(createdSubdomain);
+                 accountRepo.save(account); // Atualizar com o domínio criado
                  System.out.println("Subdomínio criado com sucesso: " + account.getDomain());
              } else {
                  System.err.println("Falha ao criar subdomínio para: " + obj.getSlug());
@@ -118,7 +130,6 @@ public class TenantService {
              System.err.println("Erro ao criar subdomínio: " + e.getMessage());
          }
          
-         accountRepo.save(account);
          obj.setAccount(account);
         tenantRepository.save(obj);   
         return obj;
@@ -205,6 +216,7 @@ public class TenantService {
     		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");   		
     		String newDate= sdf.format(new Date()); 
     		Tenant tenant = new Tenant(null, objDto.getSlug(), objDto.getEmail(),pe.encode(objDto.getPassword()), Status.ATIVO,objDto.getLastName(),Verification.VERIFICADO,objDto.getCreci(),newDate,null,null,null,objDto.getProprietario());  		
+            tenant.setPhone(objDto.getPhone());
             tenant.addPerfil(Perfil.TENANT);
             return tenant;
     		

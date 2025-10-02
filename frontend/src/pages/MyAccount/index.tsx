@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react'
 import BarTop from '../../components/Bartop';
 import Header from '../../components/Header';
 import {MdPhotoCamera} from 'react-icons/md';
+import api from '../../utils/requests';
 
 import {MyAccountBackground,BodyMyAccountContainer,TitleWrapper, CardAccount} from './styles';
 import {  getImageIfExist, refreshToken, uploadProfileImage } from '../../services/resources/user';
@@ -31,6 +32,10 @@ const MyAccount = ()=>{
 
     const [imageUser,setImageUser]= useState<string>("");
 
+    // Estados para informações do plano
+    const [planInfo, setPlanInfo] = useState<any>(null);
+    const [loadingPlan, setLoadingPlan] = useState(false);
+
     const {user, getCurrentUser} = useAuth();
 
     const [initials, setInitials]= useState(() => {
@@ -43,7 +48,24 @@ const MyAccount = ()=>{
     });
    
 
-    const refreshTokenUser = async ()=>{
+  // Função para formatar data de forma segura
+  const formatDate = (dateString: string) => {
+    if (!dateString) return 'Data não disponível';
+    
+    try {
+      const date = new Date(dateString);
+      if (isNaN(date.getTime())) {
+        console.error('Data inválida recebida:', dateString);
+        return 'Data inválida';
+      }
+      return date.toLocaleDateString('pt-BR');
+    } catch (error) {
+      console.error('Erro ao formatar data:', error);
+      return 'Erro na data';
+    }
+  };
+
+  const refreshTokenUser = async ()=>{
         const  resp = await refreshToken();    
         if(resp === 204){  
           navigate('/account')
@@ -64,6 +86,9 @@ const MyAccount = ()=>{
 
    
     const getUserPerfil= () => {
+        if (!user || !user.perfis || user.perfis.length === 0) {
+            return null;
+        }
         const userPerfil= user.perfis[0]; 
         return userPerfil;
     }
@@ -141,13 +166,17 @@ useEffect(() => {
       
       
       const getUrl = async() =>{
-        const data=  await getImageIfExist(user.id,getUserPerfil());
-            if(data !=null){
-               // const url=`${BASE_URL_FROM_BUCKET}cp${user.id}.jpg`;
-                setImageUser(data as unknown as string);
-                return data
-            }
+        const userPerfil = getUserPerfil();
+        if (!user?.id || !userPerfil) {
+            return null;
+        }
         
+        const data = await getImageIfExist(user.id, userPerfil);
+        if(data != null){
+           // const url=`${BASE_URL_FROM_BUCKET}cp${user.id}.jpg`;
+            setImageUser(data as unknown as string);
+            return data
+        }
     
       }  
     
@@ -155,6 +184,28 @@ useEffect(() => {
         getUrl()
          
         }, [user.id]);
+
+    // Função para buscar informações do plano atual
+    const fetchPlanInfo = async () => {
+        if (!user?.id) return;
+        
+        setLoadingPlan(true);
+        try {
+            const response = await api.get(`/plans/current`);
+            console.log('Resposta da API /plans/current:', response.data);
+            setPlanInfo(response.data);
+        } catch (error) {
+            console.error('Erro ao buscar informações do plano:', error);
+        } finally {
+            setLoadingPlan(false);
+        }
+    };
+
+    useEffect(() => {
+        if (user?.id) {
+            fetchPlanInfo();
+        }
+    }, [user?.id]);
 
  
         const ErrorHandler = () => {
@@ -188,9 +239,9 @@ useEffect(() => {
            console.log(selectedUsers)
          
     
-            let perfilTenant=user?.perfis ? Object.values(user.perfis).some(obj => obj === 'TENANT') : false;
-let perfilAdmin=user?.perfis ? Object.values(user.perfis).some(obj => obj === 'ADMIN') : false;
-let perfilAccount=user?.perfis ? Object.values(user.perfis).some(obj => obj === 'ACCOUNT') : false;
+            let perfilTenant=user?.perfis ? user.perfis.includes('TENANT') : false;
+let perfilAdmin=user?.perfis ? user.perfis.includes('ADMIN') : false;
+let perfilAccount=user?.perfis ? user.perfis.includes('ACCOUNT') : false;
 
             const [initialsUser, setInitialsUser]= useState(() => {
                 if(user){
@@ -286,6 +337,63 @@ let perfilAccount=user?.perfis ? Object.values(user.perfis).some(obj => obj === 
             </div>
          
         </CardAccount>
+        
+        {/* Plan Information Card - Only for Account users */}
+        {perfilAccount && (
+          <CardAccount status='ACTIVE'>
+            <div className='card-account-wrapper'>
+              <h2>Plano Atual</h2>
+              
+              {loadingPlan ? (
+                <div style={{textAlign: 'center', padding: '20px'}}>
+                  <Loading />
+                </div>
+              ) : planInfo ? (
+                <>
+                  <div className='card-account-wrapper-name'>
+                    <label>Plano</label>
+                    <p>{planInfo.planType}</p>
+                  </div>
+                  
+                  <div className='card-account-wrapper-email'>
+                    <label>Status</label>
+                    <p style={{color: planInfo.isActive ? '#28a745' : '#dc3545'}}>
+                      {planInfo.isActive ? 'Ativo' : 'Inativo'}
+                    </p>
+                  </div>
+                  
+                  {planInfo.isTrialActive && (
+                    <div className='card-account-wrapper-status'>
+                      <label>Período de Teste</label>
+                      <p style={{color: '#ffc107'}}>
+                        Expira em: {formatDate(planInfo.planEndDate)}
+                      </p>
+                    </div>
+                  )}
+                  
+                  {!planInfo.isTrialActive && (
+                    <div className='card-account-wrapper-status'>
+                      <label>Válido até</label>
+                      <p>{formatDate(planInfo.planEndDate)}</p>
+                    </div>
+                  )}
+                  
+                  <div className='card-account-wrapper-email'>
+                    <label>Ações</label>
+                    <Link to="/plans" style={{color: '#007bff', textDecoration: 'none'}}>
+                      Ver todos os planos
+                    </Link>
+                  </div>
+                </>
+              ) : (
+                <div className='card-account-wrapper-email'>
+                  <label>Plano</label>
+                  <p>Erro ao carregar informações do plano</p>
+                </div>
+              )}
+            </div>
+          </CardAccount>
+        )}
         
         {/* Custom Domain Manager - Only for Account users */}
         {perfilAccount && user?.id && (

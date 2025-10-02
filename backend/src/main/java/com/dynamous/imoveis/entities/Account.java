@@ -1,12 +1,15 @@
 package com.dynamous.imoveis.entities;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -16,6 +19,7 @@ import javax.persistence.OneToMany;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
+import com.dynamous.imoveis.enums.PlanType;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
@@ -27,6 +31,7 @@ public class Account implements Serializable {
     private Long id;
     
     private String logo;
+    
     private String companyName;
     private String cnpj;
     private String creci;
@@ -54,6 +59,14 @@ public class Account implements Serializable {
     private String street;
     private String number;
     private String cep;
+    
+    // Campos relacionados aos planos
+    @Enumerated(EnumType.ORDINAL)
+    private PlanType planType;
+    
+    private LocalDateTime planStartDate;
+    private LocalDateTime planEndDate;
+    private Boolean isTrialActive;
     
     
     @JsonIgnore
@@ -170,6 +183,52 @@ public class Account implements Serializable {
 
 	public void setEmail(String email) {
 		this.email = email;
+	}
+
+	// Getters e Setters para os campos de planos
+	public PlanType getPlanType() {
+		return planType;
+	}
+
+	public void setPlanType(PlanType planType) {
+		this.planType = planType;
+	}
+
+	public LocalDateTime getPlanStartDate() {
+		return planStartDate;
+	}
+
+	public void setPlanStartDate(LocalDateTime planStartDate) {
+		this.planStartDate = planStartDate;
+	}
+
+	public LocalDateTime getPlanEndDate() {
+		return planEndDate;
+	}
+
+	public void setPlanEndDate(LocalDateTime planEndDate) {
+		this.planEndDate = planEndDate;
+	}
+
+	public Boolean getIsTrialActive() {
+		return isTrialActive;
+	}
+
+	public void setIsTrialActive(Boolean isTrialActive) {
+		this.isTrialActive = isTrialActive;
+	}
+
+	// Método utilitário para verificar se o plano está ativo
+	public Boolean isPlanActive() {
+		if (planEndDate == null) {
+			return false;
+		}
+		return LocalDateTime.now().isBefore(planEndDate);
+	}
+
+	// Método utilitário para verificar se está no período de teste
+	public Boolean isInTrialPeriod() {
+		return isTrialActive != null && isTrialActive && isPlanActive();
 	}
     
     	

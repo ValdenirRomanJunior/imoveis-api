@@ -216,13 +216,15 @@ const TemaEdit: React.FC = () => {
   // Função para gerar URL do subdomínio
   const getSubdomainUrl = (companySlug: string) => {
     const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+    const accountId = user?.accountId || user?.id || '';
+    const subdomain = accountId ? `${companySlug}-${accountId}` : companySlug;
     
     if (isLocalhost) {
       // Em desenvolvimento, usar parâmetro de query
-      return `${window.location.origin}/?subdomain=${companySlug}`;
+      return `${window.location.origin}/?subdomain=${subdomain}`;
     } else {
       // Em produção, usar subdomínio
-      return `https://${companySlug}.standi.com.br`;
+      return `https://${subdomain}.standi.com.br`;
     }
   };
 
@@ -232,7 +234,7 @@ const TemaEdit: React.FC = () => {
     
     try {
       setDomainLoading(true);
-      const response = await axios.get(`/api/domain/info/${user.id}`);
+      const response = await axios.get(`/api/domain/info/${user?.accountId || user?.id}`);
       setDomainInfo(response.data);
     } catch (error) {
       console.error('Erro ao carregar informações de domínio:', error);
@@ -242,14 +244,14 @@ const TemaEdit: React.FC = () => {
   };
 
   const addCustomDomain = async () => {
-    if (!customDomain.trim() || !user?.id) return;
+    if (!customDomain.trim() || !user?.accountId && !user?.id) return;
     
     try {
       setDomainLoading(true);
       setDomainMessage(null);
       
       const response = await axios.post('/api/domain/custom', {
-        accountId: user.id,
+        accountId: user?.accountId || user?.id,
         domain: customDomain.trim()
       });
       
@@ -274,7 +276,7 @@ const TemaEdit: React.FC = () => {
       setDomainMessage(null);
       
       const response = await axios.post('/api/domain/verify', {
-        accountId: user.id,
+        accountId: user?.accountId || user?.id,
         domain
       });
       
@@ -304,7 +306,7 @@ const TemaEdit: React.FC = () => {
       setDomainMessage(null);
       
       await axios.delete('/api/domain/custom', {
-        data: { accountId: user.id, domain }
+        data: { accountId: user?.accountId || user?.id, domain }
       });
       
       setDomainMessage({ type: 'success', text: 'Domínio personalizado removido com sucesso!' });
@@ -910,7 +912,7 @@ const TemaEdit: React.FC = () => {
                   fontSize: '14px',
                   fontFamily: 'monospace'
                 }}>
-                  {domainInfo?.subdomain || `${user?.slug || 'seu-slug'}.standi.com.br`}
+                  {domainInfo?.subdomain || `${user?.slug || 'seu-slug'}${user?.accountId ? `-${user.accountId}` : user?.id ? `-${user.id}` : ''}.standi.com.br`}
                   <FiExternalLink 
                     style={{ cursor: 'pointer', color: '#3b82f6' }}
                     onClick={() => window.open(getSubdomainUrl(user?.slug || ''), '_blank')}

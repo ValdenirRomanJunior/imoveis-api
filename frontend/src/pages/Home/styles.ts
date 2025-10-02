@@ -62,9 +62,25 @@ export const NavLink = styled.a`
 `;
 
 export const LoginButton = styled.a`
+  background: transparent;
+  color: white !important;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  border: 1px solid gray;
+  
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(59, 130, 246, 0.3);
+  }
+`;
+
+export const RegisterButton = styled.a`
   background: linear-gradient(135deg, #3b82f6, #1d4ed8);
   color: white;
-  padding: 0.75rem 1.5rem;
+  padding: 0.75rem 1.7rem;
   border-radius: 8px;
   text-decoration: none;
   font-weight: 600;
@@ -191,6 +207,24 @@ export const MobileSidebarNavLink = styled.a`
 `;
 
 export const MobileSidebarLoginButton = styled.a`
+  background: transparent;
+  color: white;
+  padding: 1rem 2rem;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 600;
+  text-align: center;
+  margin: 2rem;
+  transition: all 0.3s ease;
+  border: 1px solid gray;
+  
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(59, 130, 246, 0.3);
+  }
+`;
+
+export const MobileSidebarRegisterButton = styled.a`
   background: linear-gradient(135deg, #3b82f6, #1d4ed8);
   color: white;
   padding: 1rem 2rem;
@@ -275,6 +309,9 @@ export const CTAButton = styled.a`
   margin-top: 2rem;
   transition: all 0.3s ease;
   box-shadow: 0 8px 25px rgba(59, 130, 246, 0.3);
+  z-index:1000;
+  cursor:pointer;
+  position: relative;
   
   &:hover {
     transform: translateY(-3px);
@@ -855,6 +892,90 @@ export const PricingContainer = styled.div`
   margin: 0 auto;
 `;
 
+export const PricingToggleContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 2rem 0;
+  position: relative;
+`;
+
+export const PricingToggle = styled.div`
+  display: flex;
+  background: #e5e7eb;
+  border-radius: 50px;
+  padding: 4px;
+  position: relative;
+`;
+
+export const PricingToggleButton = styled.button<{ active: boolean }>`
+  padding: 12px 24px;
+  border: none;
+  border-radius: 46px;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  z-index: 2;
+  min-width: 100px;
+  
+  ${props => props.active ? `
+    background: #3b82f6;
+    color: white;
+    box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+  ` : `
+    background: transparent;
+    color: #6b7280;
+  `}
+  
+  &:hover {
+    ${props => !props.active && `
+      color: #374151;
+    `}
+  }
+`;
+
+export const EconomyBadge = styled.div`
+  position: absolute;
+  top: 65px;
+  left: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #3b82f6;
+  font-weight: 600;
+  font-size: 0.7rem;
+  
+  @media (min-width: 768px) {
+  position: absolute;
+  top: 65px;
+  left: 400px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #3b82f6;
+  font-weight: 600;
+  font-size: 0.9rem;
+
+
+  }
+`;
+
+export const EconomyArrow = styled.div`
+  width: 0;
+  height: 0;
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-top: 12px solid #3b82f6;
+  transform: rotate(-45deg);
+  
+  @media (min-width: 768px) {
+    transform: rotate(-30deg);
+
+  }
+`;
+
 export const PricingGrid = styled.div`
   display: flex;
   justify-content: center;
@@ -1062,7 +1183,7 @@ export const PricingFeature = styled.li`
 
 // Call to Action Banner
 export const CallToActionBanner = styled.section`
-  height: 340px;
+  height: 300px;
   display: flex;
   flex-direction: column;
 
@@ -1148,15 +1269,17 @@ export const CTAText = styled.span`
 `;
 
 export const CTABannerButtonBottom = styled.button`
-  background: white !important;
-  color: #3b82f6;
+  background:#3b82f6;
+  color: #fff;
   border: none;
   padding: 0.5rem 1rem;
   border-radius: 6px;
-  font-size: 0.2rem !important;
+  
   font-weight: 700;
   cursor: pointer;
   transition: all 0.3s ease;
+  font-size:1rem !important;
+  margin-top: 1rem;
   
   &:hover {
     transform: translateY(-1px);
@@ -1165,7 +1288,7 @@ export const CTABannerButtonBottom = styled.button`
   
   @media (min-width: 768px) {
     padding : 0.4rem 0.8rem;
-    font-size: 3rem !important;
+    font-size: 1.2rem !important;
   }
 `;
 

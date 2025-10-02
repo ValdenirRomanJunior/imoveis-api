@@ -13,6 +13,8 @@ interface UserDto{
     
     token: string;
     id: string;
+    userId?: string;
+    accountId?: string;
     slug: string;
     email: string;
     password: string;
@@ -72,7 +74,7 @@ export const AuthProvider:React.FC = ({children}) => {
         } catch (tokenUser) {
                let userData= await getCurrentUser();
                setUser(userData);
-               localStorage.setItem('user',JSON.stringify(user));
+               localStorage.setItem('user',JSON.stringify(userData));
             return data;
        
         }          

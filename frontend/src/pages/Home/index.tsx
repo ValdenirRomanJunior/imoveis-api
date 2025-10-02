@@ -4,12 +4,15 @@ import { HiHome, HiUsers, HiChartBar, HiClock, HiStar, HiKey } from 'react-icons
 import { HiRocketLaunch } from 'react-icons/hi2';
 import { FaGlobe, FaUsers, FaPlug, FaImage, FaBars, FaTimes } from 'react-icons/fa';
 import { useCountUp } from '../../hooks/useCountUp';
+import RegisterModal from '../../components/RegisterModal';
+import RegisterSuccess from '../../components/RegisterSuccess';
 import tela1 from '../../assets/images/tela-1.png';
 import tela2 from '../../assets/images/tela-2.png';
 import tela3 from '../../assets/images/foto-1.png';
 import google from '../../assets/images/google.png'
 import gpt from '../../assets/images/gpt.webp'
 import standi from '../../assets/images/logo.png'
+import standilogo from '../../assets/images/logo-sem fundo.png'
 import Whats from '../../assets/images/whatsapp.png'
 import userImage from '../../assets/images/user-image.jpeg'
 import imagem1 from '../../assets/images/imagem-1-recursos-1.png'
@@ -78,6 +81,11 @@ import {
   TestimonialCompany,
   PricingSection,
   PricingContainer,
+  PricingToggleContainer,
+  PricingToggle,
+  PricingToggleButton,
+  EconomyBadge,
+  EconomyArrow,
   PricingGrid,
   PricingCard,
   PricingIcon,
@@ -113,7 +121,9 @@ import {
   FooterLinks,
   FooterLink,
   FooterBottom,
-  Copyright
+  Copyright,
+  RegisterButton,
+  MobileSidebarRegisterButton
 } from './styles';
 
   const styles = `
@@ -126,7 +136,7 @@ import {
       transform: translateX(-50%);
       width: 90%;
   
-      z-index: 10;
+      z-index: 0;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -138,11 +148,11 @@ import {
 
       @media screen and (min-width: 1000px) {
       position: absolute;
-      top: calc(55% + 40px);
+      top: calc(57% + 40px);
       left: 50%;
       transform: translateX(-50%);
       width: 70%;
-      z-index: 10;
+      z-index: 0;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -246,6 +256,22 @@ import {
 const Home: React.FC = () => {
   const [activeResource, setActiveResource] = React.useState('site');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [pricingPlan, setPricingPlan] = useState<'monthly' | 'annual'>('monthly');
+  const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false);
+  const [showSuccessPage, setShowSuccessPage] = useState(false);
+  const [registeredUser, setRegisteredUser] = useState<any>(null);
+  
+  // Preços dos planos
+  const planPrices = {
+    lite: {
+      monthly: 99,
+      annual: 89 // 10% de desconto
+    },
+    pro: {
+      monthly: 239,
+      annual: 215 // 10% de desconto
+    }
+  };
   
   const resources = {
     site: {
@@ -277,6 +303,25 @@ const Home: React.FC = () => {
     setIsMobileMenuOpen(false);
   };
 
+  const handleOpenRegisterModal = () => {
+    setIsRegisterModalOpen(true);
+  };
+
+  const handleCloseRegisterModal = () => {
+    setIsRegisterModalOpen(false);
+  };
+
+  const handleRegisterSuccess = (userData: any) => {
+    setRegisteredUser(userData);
+    setIsRegisterModalOpen(false);
+    setShowSuccessPage(true);
+  };
+
+  const handleBackToHome = () => {
+    setShowSuccessPage(false);
+    setRegisteredUser(null);
+  };
+
   // Fechar menu ao clicar fora
   React.useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -304,9 +349,9 @@ const Home: React.FC = () => {
   const [openFAQ, setOpenFAQ] = React.useState<number | null>(null);
 
   // Hooks para animação dos contadores
-  const yearsCount = useCountUp({ end: 5, duration: 2000, suffix: '+' });
-  const usersCount = useCountUp({ end: 2000, duration: 2500, suffix: '+' });
-  const clientsCount = useCountUp({ end: 500, duration: 2200, suffix: '+' });
+  const yearsCount = useCountUp({ end: 3, duration: 2000, suffix: '+' });
+  const usersCount = useCountUp({ end: 500, duration: 2500, suffix: '+' });
+  const clientsCount = useCountUp({ end: 290, duration: 2200, suffix: '+' });
 
   const toggleFAQ = (index: number) => {
     setOpenFAQ(openFAQ === index ? null : index);
@@ -314,24 +359,24 @@ const Home: React.FC = () => {
 
   const faqData = [
     {
-      question: "É possível gerenciar mais de uma filial em um único sistema imobiliário?",
-      answer: "Sim, nosso sistema permite o gerenciamento de múltiplas filiais em uma única plataforma. Você pode controlar diferentes unidades, equipes e relatórios de forma centralizada, mantendo a organização e eficiência operacional."
+      question: "Como a plataforma ajuda na geração de clientes?",
+      answer: "O site vem equipado para captar clientes, chat de WhatsApp integrado, guiando o visitante até encontrar o imóvel certo e aumentando as chances de gerar uma venda."
     },
     {
-      question: "Como funciona a integração com portais?",
-      answer: "Nossa plataforma oferece integração automática com os principais portais imobiliários do mercado, como Viva Real, ZAP Imóveis e OLX. Os anúncios são sincronizados automaticamente, evitando trabalho manual e garantindo que suas propriedades estejam sempre atualizadas."
+      question: "Posso personalizar o design do meu site?",
+      answer: "Sim, você pode editar cores, textos, imagens e logotipo, pode usar seu próprio domínio, mantendo a identidade da sua imobiliária ou marca pessoal."
     },
     {
-      question: "É necessário conhecimento avançado para utilizar o sistema Jetimob?",
-      answer: "Não, o sistema foi desenvolvido com foco na usabilidade. Oferecemos uma interface intuitiva e treinamento completo para sua equipe. Além disso, nosso suporte técnico está sempre disponível para auxiliar em qualquer dúvida."
+      question: "O site é rápido e otimizado para SEO do Google e para buscas por I.A?",
+      answer: "Sim, a Standi entrega um “site rápido e profissional”, com estrutura leve e responsiva, o que melhora a pontuação e ajuda a ranquear melhor no Google e nas buscas por I.A."
     },
     {
-      question: "É possível gerar relatórios no sistema Jetimob?",
-      answer: "Sim, o sistema possui um módulo completo de relatórios gerenciais. Você pode gerar relatórios de vendas, comissões, performance de corretores, análise de mercado e muito mais, com dados em tempo real e exportação para diversos formatos."
+      question: "Terei suporte quando surgir alguma dúvida?",
+      answer: "Sim, você conta com um suporte Standi que “não te deixa na mão”, atendendo via WhatsApp nos horários comerciais e com plantões de urgência para casos críticos."
     },
     {
-      question: "O que analisar antes de contratar um sistema imobiliário?",
-      answer: "Antes de contratar, avalie: facilidade de uso, integrações disponíveis, suporte técnico, segurança dos dados, escalabilidade, custo-benefício e se atende às necessidades específicas do seu negócio. Também é importante verificar referências de outros clientes."
+      question: "Quais são as formas de pagamento aceitas?",
+      answer: "Aceitamos pix, a vista ou parcelado no cartão."
     }
   ];
   return (
@@ -342,13 +387,18 @@ const Home: React.FC = () => {
             <img src={standi} alt="Standi" />
           </Logo>
           <NavLinks>
-            <NavLink href="#produtos">Produtos</NavLink>
+            
             <NavLink href="#recursos">Recursos</NavLink>
             <NavLink href="#planos">Planos</NavLink>
-            <NavLink href="#suporte">Suporte</NavLink>
-            <LoginButton as={Link} to="/login">
-              Fazer Login
+            <NavLink href="#contato">Contato</NavLink>
+           
+              <LoginButton as={Link} to="/login">
+              Acessar
             </LoginButton>
+             <RegisterButton as={Link} to="/register">
+              Teste Grátis
+            </RegisterButton>
+      
           </NavLinks>
           
           {/* Botão hambúrguer mobile */}
@@ -375,21 +425,22 @@ const Home: React.FC = () => {
               </MobileSidebarHeader>
               
               <MobileSidebarNav>
-                <MobileSidebarNavLink href="#produtos" onClick={closeMobileMenu}>
-                  Produtos
-                </MobileSidebarNavLink>
+           
                 <MobileSidebarNavLink href="#recursos" onClick={closeMobileMenu}>
                   Recursos
                 </MobileSidebarNavLink>
                 <MobileSidebarNavLink href="#planos" onClick={closeMobileMenu}>
                   Planos
                 </MobileSidebarNavLink>
-                <MobileSidebarNavLink href="#suporte" onClick={closeMobileMenu}>
-                  Suporte
+                <MobileSidebarNavLink href="#contato" onClick={closeMobileMenu}>
+                  Contato
                 </MobileSidebarNavLink>
                 <MobileSidebarLoginButton as={Link} to="/login" onClick={closeMobileMenu}>
                   Fazer Login
                 </MobileSidebarLoginButton>
+                <MobileSidebarRegisterButton as={Link} to="/register" onClick={closeMobileMenu}>
+                  Teste Grátis
+                </MobileSidebarRegisterButton> 
               </MobileSidebarNav>
             </MobileSidebar>
           </>
@@ -424,16 +475,16 @@ const Home: React.FC = () => {
               </svg>
               Site otimizado para buscas I.A
             </div>
-            <Title>CRM IMOBILIÁRIO</Title>
+            <Title>SITE IMOBILIÁRIO</Title>
             <Subtitle>
-              PARA IMOBILIÁRIAS E CONSTRUTORAS
+              PARA IMOBILIÁRIAS E CORRETORES AUTÔNOMOS
             </Subtitle>
             <p>
-              O sistema imobiliário que simplifica sua gestão. Centralize CRM, gestão de aluguéis, 
-              gestão de vendas e site em um só lugar, impulsionando suas vendas.
+              O site imobiliário que aparece nas buscas por I.A e do Google. Gestão de imóveis, gestão de clientes, 
+              editor do site em um só lugar, impulsionando suas vendas.
             </p>
-            <CTAButton as={Link} to="/login">
-              Começar Agora
+            <CTAButton onClick={handleOpenRegisterModal}>
+              Testar grátis Agora
             </CTAButton>
          
           
@@ -449,12 +500,12 @@ const Home: React.FC = () => {
         {/* Frase manuscrita e seta do lado esquerdo dos mockups */}
         <div className="absolute left-[-70px] top-20 transform -translate-y-1/2 hidden md:block">
           <div className="font-handwriting text-green-300 text-lg transform rotate-5 whitespace-nowrap mb-2">
-            Edite seu site como quiser
+             Posiciona sua imobiliária
           </div>
           <svg 
             width="120" 
             height="80" 
-            viewBox="0 0 120 80" 
+            viewBox="0 0 130 80" 
             fill="none" 
             xmlns="http://www.w3.org/2000/svg"
             className="text-green-300 transform rotate-12"
@@ -487,7 +538,7 @@ const Home: React.FC = () => {
     {/* Frase manuscrita e seta do lado direito dos mockups */}
         <div className="absolute right-[-90px] top-20 transform -translate-y-1/2 hidden md:block">
           <div className="font-handwriting text-green-300 text-lg transform rotate-5 whitespace-nowrap mb-2">
-            Edite seu site como quiser
+            Gestão do seu negócio
           </div>
           <svg 
             width="120" 
@@ -550,7 +601,7 @@ const Home: React.FC = () => {
       <ProductsSection id="produtos">
         <SectionTitle>Porque eu deveria ter um site com a Standi?</SectionTitle>
         <p style={{ textAlign: 'center', marginBottom: '3rem', fontSize: '1.1rem', color: '#666', padding:'0 1rem' }}>
-          Além do Google você já percebeu que as pessoas também usam o chatGpt para buscar imoveis certo?<br/>
+          Além do Google você já percebeu que as pessoas também usam o chatGpt para buscar imóveis certo?<br/>
              Nosso site imobiliário é projetado para estas buscas modernas
         </p>
         
@@ -563,7 +614,7 @@ const Home: React.FC = () => {
             <span style={{color:'#000',fontSize:'1.2rem', fontWeight:'600', marginLeft:'10px'}}>Google</span>
             </div>
             <ProductContent>
-              <ProductTitle>Site otimizado para GEO (busca por I.A) e SEO do Google</ProductTitle>
+              <ProductTitle>Site otimizado para buscas do Google (SEO)</ProductTitle>
               <ProductDescription>
                 Seu site será encontrado facilmente pelos clientes através de buscas inteligentes e otimização para.
               </ProductDescription>
@@ -577,12 +628,12 @@ const Home: React.FC = () => {
             <ProductIcon>
            <img src={gpt} alt="Google" />
             </ProductIcon>
-            <span style={{color:'#000',fontSize:'1.2rem', fontWeight:'600', marginLeft:'10px'}}>Google</span>
+            <span style={{color:'#000',fontSize:'1.2rem', fontWeight:'600', marginLeft:'10px'}}>Chat GPT</span>
             </div>
             <ProductContent>
-              <ProductTitle>Fácil de editar, sem código e sem programador</ProductTitle>
+              <ProductTitle>Site otimizado para buscas por I.A (GEO)</ProductTitle>
               <ProductDescription>
-                Edite seu site de forma intuitiva, sem conhecimento técnico. Tudo na palma da sua mão.
+                O jogo no digital mudou e você precisa ter um site que apareça nas buscas por Inteligência Artificial.
               </ProductDescription>
            
             </ProductContent>
@@ -592,21 +643,21 @@ const Home: React.FC = () => {
           <div style={{ display: 'flex', alignItems: 'flex-start' ,justifyContent:'left', width:'100%'}}>
 
             <ProductIcon>
-             <img src={standi} alt="Google" />
+             <img src={standilogo} alt="Google" />
             </ProductIcon>
-            <span style={{color:'#000',fontSize:'1.2rem', fontWeight:'600', marginLeft:'10px'}}>Google</span>
+            <span style={{color:'#000',fontSize:'1.2rem', fontWeight:'600', marginLeft:'10px'}}>Pronto em 5 minutos!</span>
             </div>
             <ProductContent>
-              <ProductTitle>Site Pronto assim que cria a conta</ProductTitle>
+              <ProductTitle>Site Pronto assim que faz o seu cadastro</ProductTitle>
               <ProductDescription>
-                Seu site fica disponível instantaneamente após o cadastro. Comece a vender imediatamente.
+                Seu site pode ter domínio personalizado, editado de forma simples e ter um pixel de conversão.
               </ProductDescription>
             
             </ProductContent>
           </ProductCard>
         </ProductsGrid>
         
-        <TestFreeButton>Testar Grátis Agora</TestFreeButton>
+        <TestFreeButton onClick={handleOpenRegisterModal}>Testar Grátis Agora</TestFreeButton>
       </ProductsSection>
 
       <ResourcesSection id="recursos">
@@ -742,15 +793,39 @@ const Home: React.FC = () => {
           </StatCard>
         </StatsGrid>
         
-        <TestFreeButton>Testar Grátis Agora</TestFreeButton>
+        <TestFreeButton onClick={handleOpenRegisterModal}>Testar Grátis Agora</TestFreeButton>
       </StatsSection>
 
   
 
       {/* Seção de Planos */}
-      <PricingSection>
+      <PricingSection id='planos'>
         <PricingContainer>
           <SectionTitle>Nossos Planos</SectionTitle>
+          
+          {/* Toggle de Preços */}
+          <PricingToggleContainer>
+            <PricingToggle>
+              <PricingToggleButton 
+                active={pricingPlan === 'annual'} 
+                onClick={() => setPricingPlan('annual')}
+              >
+                Anual
+              </PricingToggleButton>
+              <PricingToggleButton 
+                active={pricingPlan === 'monthly'} 
+                onClick={() => setPricingPlan('monthly')}
+              >
+                Mensal
+              </PricingToggleButton>
+            </PricingToggle>
+            <EconomyBadge>
+              
+              Economize até 10%
+              <EconomyArrow />
+            </EconomyBadge>
+          </PricingToggleContainer>
+          
           <PricingGrid>
             {/* Plano Lite */}
             <PricingCard>
@@ -763,7 +838,7 @@ const Home: React.FC = () => {
               </PricingDescription>
                 <PricingPrice>
                 <PricingCurrency>R$</PricingCurrency>
-                <PricingAmount>99</PricingAmount>
+                <PricingAmount>{planPrices.lite[pricingPlan]}</PricingAmount>
                 <PricingPeriod>/mês</PricingPeriod>
               </PricingPrice>
               <PricingFeatures>
@@ -777,7 +852,7 @@ const Home: React.FC = () => {
               </PricingFeatures>
             
               <PricingNote>Para testar, não precisa de cartão</PricingNote>
-              <PricingButton>Teste Grátis</PricingButton>
+              <PricingButton onClick={handleOpenRegisterModal}>Teste Grátis</PricingButton>
             </PricingCard>
 
             {/* Plano Pro */}
@@ -791,7 +866,7 @@ const Home: React.FC = () => {
               </PricingDescription>
               <PricingPrice>
                 <PricingCurrency>R$</PricingCurrency>
-                <PricingAmount>239</PricingAmount>
+                <PricingAmount>{planPrices.pro[pricingPlan]}</PricingAmount>
                 <PricingPeriod>/mês</PricingPeriod>
               </PricingPrice>
               <PricingFeatures>
@@ -805,7 +880,7 @@ const Home: React.FC = () => {
               </PricingFeatures>
         
               <PricingNote>Para testar, não precisa de cartão</PricingNote>
-              <PricingButton className="primary">Teste Grátis</PricingButton>
+              <PricingButton className="primary" onClick={handleOpenRegisterModal}>Teste Grátis</PricingButton>
             </PricingCard>
           </PricingGrid>
         </PricingContainer>
@@ -830,7 +905,7 @@ const Home: React.FC = () => {
         </FAQContainer>
       </FAQSection>
 
-      <CallToActionBanner>
+      <CallToActionBanner id='contato'>
         <CTALeftSide>
           <CTAText>Transforme sua imobiliária hoje mesmo!</CTAText>
           <CTABannerButtonBottom>Testar grátis agora</CTABannerButtonBottom>
@@ -888,6 +963,23 @@ const Home: React.FC = () => {
           </Copyright>
         </FooterBottom>
       </Footer>
+
+      {/* Modal de Cadastro */}
+      {isRegisterModalOpen && (
+        <RegisterModal
+          isOpen={isRegisterModalOpen}
+          onClose={handleCloseRegisterModal}
+          onSuccess={handleRegisterSuccess}
+        />
+      )}
+
+      {/* Página de Sucesso */}
+      {showSuccessPage && registeredUser && (
+        <RegisterSuccess
+          userData={registeredUser}
+          onBackToHome={handleBackToHome}
+        />
+      )}
     </HomeContainer>
   );
 };

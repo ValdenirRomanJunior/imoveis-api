@@ -32,7 +32,7 @@ public class Tenant implements Serializable {
 
     @Column(unique = true)
     private String email;
-    @JsonIgnore
+   
     private String password;
     private Integer status;
     private String lastName; 
