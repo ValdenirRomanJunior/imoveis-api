@@ -171,7 +171,7 @@ public class UserTenantService {
         Account accountaux = accountService.find(tenantAux.getAccount().getId());
     		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");   		
     		String newDate= sdf.format(new Date()); 
-    		Tenant tenant = new Tenant(null, objDto.getSlug(), objDto.getEmail(),pe.encode(objDto.getPassword()), Status.ATIVO,null,Verification.VERIFICADO,objDto.getCreci(),newDate,null,null,accountaux.getDomain(),null);  		
+    		Tenant tenant = new Tenant(null, objDto.getSlug(), objDto.getEmail(),pe.encode(objDto.getPassword()), Status.ATIVO,null,Verification.VERIFICADO,objDto.getCreci(),null,newDate,null,null,accountaux.getDomain(),null);  		
             tenant.addPerfil(Perfil.TENANT);
             return tenant;
     		
@@ -190,7 +190,7 @@ public class UserTenantService {
         accountRepo.save(account);
         tenantAux.setAccount(account);
     	
-		tenant = new Tenant(objDto.getId(), objDto.getSlug(), objDto.getEmail(),pe.encode(objDto.getPassword()), Status.ATIVO,null,Verification.VERIFICADO,objDto.getCreci(),ten.getStart(),ten.getRenovation(),ten.getEndDate(),newObj.getDomain(),null);
+		tenant = new Tenant(objDto.getId(), objDto.getSlug(), objDto.getEmail(),pe.encode(objDto.getPassword()), Status.ATIVO,null,Verification.VERIFICADO,objDto.getCreci(),null,ten.getStart(),ten.getRenovation(),ten.getEndDate(),newObj.getDomain(),null);
         tenant.addPerfil(Perfil.TENANT);
        
         
@@ -201,7 +201,7 @@ public class UserTenantService {
 
 
     public Tenant fromDTO(TenantDTO objDto) { 
-    		Tenant tenant = new Tenant(objDto.getId(), objDto.getSlug(), objDto.getEmail(), pe.encode(objDto.getPassword()), Status.toEnum(objDto.getStatus().getCod()),objDto.getLastName(),Verification.toEnum(objDto.getVerification().getCod()),objDto.getCreci(),objDto.getStart(),objDto.getRenovation(),objDto.getEndDate(),null,null);
+    		Tenant tenant = new Tenant(objDto.getId(), objDto.getSlug(), objDto.getEmail(), pe.encode(objDto.getPassword()), Status.toEnum(objDto.getStatus().getCod()),objDto.getLastName(),Verification.toEnum(objDto.getVerification().getCod()),objDto.getCreci(),null,objDto.getStart(),objDto.getRenovation(),objDto.getEndDate(),null,null);
             tenant.addPerfil(Perfil.TENANT);
             return tenant;
     		  	

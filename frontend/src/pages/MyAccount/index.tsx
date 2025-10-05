@@ -16,6 +16,7 @@ import { deleteUserTenant, findAllUserTenant } from '../../services/resources/us
 import { Tenant } from '../../types/tenant';
 import Loading from '../../components/Loading';
 import DomainManager from '../../components/DomainManager';
+import CancelSubscriptionModal from '../../components/CancelSubscriptionModal';
 
 
 
@@ -35,6 +36,14 @@ const MyAccount = ()=>{
     // Estados para informações do plano
     const [planInfo, setPlanInfo] = useState<any>(null);
     const [loadingPlan, setLoadingPlan] = useState(false);
+
+    // Estados para informações de pagamento
+    const [paymentInfo, setPaymentInfo] = useState<any>(null);
+    const [loadingPayment, setLoadingPayment] = useState(false);
+
+    // Estados para o modal de cancelamento
+    const [showCancelModal, setShowCancelModal] = useState(false);
+    const [selectedSubscription, setSelectedSubscription] = useState<any>(null);
 
     const {user, getCurrentUser} = useAuth();
 
@@ -201,9 +210,43 @@ useEffect(() => {
         }
     };
 
+    // Função para buscar informações de pagamento
+    const fetchPaymentInfo = async () => {
+        if (!user?.id) return;
+        
+        setLoadingPayment(true);
+        try {
+            const response = await api.get(`/asaas/payment-info`);
+            console.log('Resposta da API /asaas/payment-info:', response.data);
+            setPaymentInfo(response.data);
+        } catch (error) {
+            console.error('Erro ao buscar informações de pagamento:', error);
+        } finally {
+            setLoadingPayment(false);
+        }
+    };
+
+    // Função para abrir o modal de cancelamento
+    const handleCancelSubscription = (subscription: any) => {
+        setSelectedSubscription(subscription);
+        setShowCancelModal(true);
+    };
+
+    // Função para fechar o modal de cancelamento
+    const handleCloseCancelModal = () => {
+        setShowCancelModal(false);
+        setSelectedSubscription(null);
+    };
+
+    // Função para lidar com o sucesso do cancelamento
+    const handleCancelSuccess = () => {
+        fetchPaymentInfo(); // Recarrega as informações de pagamento
+    };
+
     useEffect(() => {
         if (user?.id) {
             fetchPlanInfo();
+            fetchPaymentInfo();
         }
     }, [user?.id]);
 
@@ -394,6 +437,111 @@ let perfilAccount=user?.perfis ? user.perfis.includes('ACCOUNT') : false;
             </div>
           </CardAccount>
         )}
+
+        {/* Payment Information Card - Only for Account users */}
+        {perfilAccount && (
+          <CardAccount status='ACTIVE'>
+            <div className='card-account-wrapper'>
+              <h2>Informações de Pagamento</h2>
+              
+              {loadingPayment ? (
+                <div style={{textAlign: 'center', padding: '20px'}}>
+                  <Loading />
+                </div>
+              ) : paymentInfo && paymentInfo.success ? (
+                paymentInfo.hasPaymentInfo ? (
+                  <>
+                    <div className='card-account-wrapper-name'>
+                      <label>Cliente</label>
+                      <p>{paymentInfo.customerInfo.name}</p>
+                    </div>
+                    
+                    <div className='card-account-wrapper-email'>
+                      <label>Email de Cobrança</label>
+                      <p>{paymentInfo.customerInfo.email}</p>
+                    </div>
+                    
+                    <div className='card-account-wrapper-status'>
+                      <label>CPF/CNPJ</label>
+                      <p>{paymentInfo.customerInfo.cpfCnpj}</p>
+                    </div>
+                    
+                    {paymentInfo.customerInfo.mobilePhone && (
+                      <div className='card-account-wrapper-email'>
+                        <label>Telefone</label>
+                        <p>{paymentInfo.customerInfo.mobilePhone}</p>
+                      </div>
+                    )}
+                    
+                        {paymentInfo.activeSubscriptions && paymentInfo.activeSubscriptions.length > 0 && (
+                          <div className='card-account-wrapper-status'>
+                            <label>Assinaturas Ativas</label>
+                            <div style={{marginTop: '10px'}}>
+                              {paymentInfo.activeSubscriptions.map((subscription: any, index: number) => (
+                                <div key={index} style={{
+                                  padding: '10px', 
+                                  border: '1px solid #e0e0e0', 
+                                  borderRadius: '5px', 
+                                  marginBottom: '10px',
+                                  backgroundColor: '#f9f9f9'
+                                }}>
+                                  <p><strong>Valor:</strong> R$ {subscription.value}</p>
+                                  <p><strong>Ciclo:</strong> {subscription.cycle}</p>
+                                  <p><strong>Próximo Vencimento:</strong> {formatDate(subscription.nextDueDate)}</p>
+                                  <p><strong>Status:</strong> 
+                                    <span style={{color: '#28a745', marginLeft: '5px'}}>
+                                      {subscription.status}
+                                    </span>
+                                  </p>
+                                  <div style={{marginTop: '10px', display: 'flex', gap: '10px'}}>
+                                    <button
+                                      onClick={() => handleCancelSubscription(subscription)}
+                                      style={{
+                                        backgroundColor: '#dc3545',
+                                        color: 'white',
+                                        border: 'none',
+                                        padding: '6px 12px',
+                                        borderRadius: '4px',
+                                        cursor: 'pointer',
+                                        fontSize: '12px'
+                                      }}
+                                    >
+                                      Cancelar Assinatura
+                                    </button>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                    
+                    <div className='card-account-wrapper-email'>
+                      <label>Ações</label>
+                      <div style={{display: 'flex', gap: '10px', flexWrap: 'wrap'}}>
+                        <Link to="/plans" style={{color: '#007bff', textDecoration: 'none'}}>
+                          Alterar Plano
+                        </Link>
+                      </div>
+                    </div>
+                  </>
+                ) : (
+                  <div className='card-account-wrapper-email'>
+                    <label>Status</label>
+                    <p>Nenhuma informação de pagamento encontrada</p>
+                    <Link to="/plans" style={{color: '#007bff', textDecoration: 'none', marginTop: '10px', display: 'block'}}>
+                      Assinar um plano
+                    </Link>
+                  </div>
+                )
+              ) : (
+                <div className='card-account-wrapper-email'>
+                  <label>Pagamento</label>
+                  <p>Erro ao carregar informações de pagamento</p>
+                </div>
+              )}
+            </div>
+          </CardAccount>
+        )}
         
         {/* Custom Domain Manager - Only for Account users */}
         {perfilAccount && user?.id && (
@@ -441,6 +589,16 @@ let perfilAccount=user?.perfis ? user.perfis.includes('ACCOUNT') : false;
       </div>
       </ErrorBoundary>
       : <PageNotFound/>}
+
+      {/* Modal de cancelamento de assinatura */}
+      {showCancelModal && selectedSubscription && (
+        <CancelSubscriptionModal
+          isOpen={showCancelModal}
+          onClose={handleCloseCancelModal}
+          onSuccess={handleCancelSuccess}
+          subscription={selectedSubscription}
+        />
+      )}
    
       </>
     )

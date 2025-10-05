@@ -33,7 +33,7 @@ public class Account implements Serializable {
     private String logo;
     
     private String companyName;
-    private String cnpj;
+    private String cpf;
     private String creci;
     private String proprietario;
      
@@ -79,12 +79,12 @@ public class Account implements Serializable {
     	
     }
     
-	public Account(Long id, String logo,String domain, String companyName, String cnpj, String creci, String proprietario) {
+	public Account(Long id, String logo,String domain, String companyName, String cpf, String creci, String proprietario) {
 		this.id = id;
 		this.logo = logo;
 		this.domain=domain;
 		this.companyName = companyName;
-		this.cnpj = cnpj;
+		this.cpf = cpf;
 		this.creci = creci;
 		this.proprietario=proprietario;
 	}
@@ -113,12 +113,12 @@ public class Account implements Serializable {
 		this.companyName = companyName;
 	}
 
-	public String getCnpj() {
-		return cnpj;
+	public String getCpf() {
+		return cpf;
 	}
 
-	public void setCnpj(String cnpj) {
-		this.cnpj = cnpj;
+	public void setCpf(String cpf) {
+		this.cpf = cpf;
 	}
 
 	public String getCreci() {
@@ -183,6 +183,142 @@ public class Account implements Serializable {
 
 	public void setEmail(String email) {
 		this.email = email;
+	}
+
+	public String getSlug() {
+		return slug;
+	}
+
+	public void setSlug(String slug) {
+		this.slug = slug;
+	}
+
+	public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
+	}
+
+	public Integer getStatus() {
+		return status;
+	}
+
+	public void setStatus(Integer status) {
+		this.status = status;
+	}
+
+	public String getLastName() {
+		return lastName;
+	}
+
+	public void setLastName(String lastName) {
+		this.lastName = lastName;
+	}
+
+	public Integer getVerification() {
+		return verification;
+	}
+
+	public void setVerification(Integer verification) {
+		this.verification = verification;
+	}
+
+	public String getStart() {
+		return start;
+	}
+
+	public void setStart(String start) {
+		this.start = start;
+	}
+
+	public String getEndDate() {
+		return endDate;
+	}
+
+	public void setEndDate(String endDate) {
+		this.endDate = endDate;
+	}
+
+	public String getRenovation() {
+		return renovation;
+	}
+
+	public void setRenovation(String renovation) {
+		this.renovation = renovation;
+	}
+
+	public String getOfficeName() {
+		return officeName;
+	}
+
+	public void setOfficeName(String officeName) {
+		this.officeName = officeName;
+	}
+
+	public String getPhone() {
+		return phone;
+	}
+
+	public void setPhone(String phone) {
+		this.phone = phone;
+	}
+
+	public String getCountry() {
+		return country;
+	}
+
+	public void setCountry(String country) {
+		this.country = country;
+	}
+
+	public String getState() {
+		return state;
+	}
+
+	public void setState(String state) {
+		this.state = state;
+	}
+
+	public String getCity() {
+		return city;
+	}
+
+	public void setCity(String city) {
+		this.city = city;
+	}
+
+	public String getNeighborhood() {
+		return neighborhood;
+	}
+
+	public void setNeighborhood(String neighborhood) {
+		this.neighborhood = neighborhood;
+	}
+
+	public String getStreet() {
+		return street;
+	}
+
+	public void setStreet(String street) {
+		this.street = street;
+	}
+
+	public String getNumber() {
+		return number;
+	}
+
+	public void setNumber(String number) {
+		this.number = number;
+	}
+
+	public String getCep() {
+		return cep;
+	}
+
+	public void setCep(String cep) {
+		this.cep = cep;
 	}
 
 	// Getters e Setters para os campos de planos

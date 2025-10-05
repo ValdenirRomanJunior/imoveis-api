@@ -20,7 +20,7 @@ public class UserDetailsDTO implements Serializable {
     // Account information (for tenants)
     private Long accountId;
     private String companyName;
-    private String cnpj;
+    private String cpf;
     private String domain;
     private String customDomain;
     private String proprietario;
@@ -149,12 +149,12 @@ public class UserDetailsDTO implements Serializable {
         this.companyName = companyName;
     }
     
-    public String getCnpj() {
-        return cnpj;
+    public String getCpf() {
+        return cpf;
     }
     
-    public void setCnpj(String cnpj) {
-        this.cnpj = cnpj;
+    public void setCpf(String cpf) {
+        this.cpf = cpf;
     }
     
     public String getDomain() {

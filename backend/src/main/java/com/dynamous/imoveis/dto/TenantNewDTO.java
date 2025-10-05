@@ -38,6 +38,10 @@ public class TenantNewDTO implements Serializable {
     @Length(min=12, max=12, message = "O tamanho deve ser entre 12 e 12 caracteres")
     private String phone;
     
+    @NotEmpty(message = "Preenchimento obrigatório")
+    @Length(min=11, max=14, message = "O CPF deve ter entre 11 e 14 caracteres")
+    private String cpf;
+    
     private String proprietario;
  
 
@@ -99,6 +103,14 @@ public class TenantNewDTO implements Serializable {
 
 	public void setPhone(String phone) {
 		this.phone = phone;
+	}
+
+	public String getCpf() {
+		return cpf;
+	}
+
+	public void setCpf(String cpf) {
+		this.cpf = cpf;
 	}
 
 	

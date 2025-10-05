@@ -106,6 +106,8 @@ public class TenantService {
 	
          obj.addPerfil(Perfil.ACCOUNT);
          Account account = new Account(null,null,obj.getDomain(),obj.getSlug(),null,obj.getCreci(),obj.getProprietario());
+         account.setEmail(obj.getEmail()); // Copiar o email do tenant para a account
+         account.setCpf(obj.getCpf()); // Copiar o CPF do tenant para a account
          
          // Definir plano de teste automaticamente para novas contas
          account.setPlanType(PlanType.TESTE);
@@ -215,7 +217,7 @@ public class TenantService {
     		
     		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");   		
     		String newDate= sdf.format(new Date()); 
-    		Tenant tenant = new Tenant(null, objDto.getSlug(), objDto.getEmail(),pe.encode(objDto.getPassword()), Status.ATIVO,objDto.getLastName(),Verification.VERIFICADO,objDto.getCreci(),newDate,null,null,null,objDto.getProprietario());  		
+    		Tenant tenant = new Tenant(null, objDto.getSlug(), objDto.getEmail(),pe.encode(objDto.getPassword()), Status.ATIVO,objDto.getLastName(),Verification.VERIFICADO,objDto.getCreci(),objDto.getCpf(),newDate,null,null,null,objDto.getProprietario());  		
             tenant.setPhone(objDto.getPhone());
             tenant.addPerfil(Perfil.TENANT);
             return tenant;
@@ -233,7 +235,7 @@ public class TenantService {
     	if(objDto.getSignedDays() != null) {
     	  			
     		String endDate= generateEndDate(new Date(),objDto.getSignedDays());
-    		tenant = new Tenant(objDto.getId(), objDto.getSlug(), objDto.getEmail(),pe.encode(objDto.getPassword()), Status.toEnum(objDto.getStatus()),objDto.getLastName(),Verification.toEnum(objDto.getVerification()),objDto.getCreci(),ten.getStart(),renovation,endDate,objDto.getDomain(),objDto.getProprietario());
+    		tenant = new Tenant(objDto.getId(), objDto.getSlug(), objDto.getEmail(),pe.encode(objDto.getPassword()), Status.toEnum(objDto.getStatus()),objDto.getLastName(),Verification.toEnum(objDto.getVerification()),objDto.getCreci(),null,ten.getStart(),renovation,endDate,objDto.getDomain(),objDto.getProprietario());
     	    tenant.addPerfil(Perfil.TENANT);
     	    tenant.addPerfil(Perfil.ACCOUNT);
            
@@ -246,7 +248,7 @@ public class TenantService {
         accountRepo.save(account);
         tenantAux.setAccount(account);
     	
-		tenant = new Tenant(objDto.getId(), objDto.getSlug(), objDto.getEmail(),pe.encode(objDto.getPassword()), Status.toEnum(objDto.getStatus()),objDto.getLastName(),Verification.toEnum(objDto.getVerification()),objDto.getCreci(),ten.getStart(),ten.getRenovation(),ten.getEndDate(),objDto.getDomain(),objDto.getProprietario());
+		tenant = new Tenant(objDto.getId(), objDto.getSlug(), objDto.getEmail(),pe.encode(objDto.getPassword()), Status.toEnum(objDto.getStatus()),objDto.getLastName(),Verification.toEnum(objDto.getVerification()),objDto.getCreci(),null,ten.getStart(),ten.getRenovation(),ten.getEndDate(),objDto.getDomain(),objDto.getProprietario());
         tenant.addPerfil(Perfil.TENANT);
         tenant.addPerfil(Perfil.ACCOUNT);
         
@@ -257,7 +259,7 @@ public class TenantService {
 
 
     public Tenant fromDTO(TenantDTO objDto) { 
-    		Tenant tenant = new Tenant(objDto.getId(), objDto.getSlug(), objDto.getEmail(), pe.encode(objDto.getPassword()), Status.toEnum(objDto.getStatus().getCod()),objDto.getLastName(),Verification.toEnum(objDto.getVerification().getCod()),objDto.getCreci(),objDto.getStart(),objDto.getRenovation(),objDto.getEndDate(),null,null);
+    		Tenant tenant = new Tenant(objDto.getId(), objDto.getSlug(), objDto.getEmail(), pe.encode(objDto.getPassword()), Status.toEnum(objDto.getStatus().getCod()),objDto.getLastName(),Verification.toEnum(objDto.getVerification().getCod()),objDto.getCreci(),null,objDto.getStart(),objDto.getRenovation(),objDto.getEndDate(),null,null);
             tenant.addPerfil(Perfil.TENANT);
             return tenant;
     		  	

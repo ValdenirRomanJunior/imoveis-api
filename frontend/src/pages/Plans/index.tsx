@@ -7,6 +7,7 @@ import useAuth from '../../hooks/useAuth';
 import Loading from '../../components/Loading';
 import Header from '../../components/Header';
 import BarTop from '../../components/Bartop';
+import CheckoutModal from '../../components/CheckoutModal';
 import {
   PlansContainer,
   PlansBackground,
@@ -50,6 +51,8 @@ const Plans: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [pricingPlan, setPricingPlan] = useState<'monthly' | 'annual'>('monthly');
+  const [checkoutModalOpen, setCheckoutModalOpen] = useState(false);
+  const [selectedPlan, setSelectedPlan] = useState<Plan | null>(null);
   const { user } = useAuth();
 
   // Preços dos planos
@@ -93,9 +96,17 @@ const Plans: React.FC = () => {
   };
 
   const handleSelectPlan = (planCode: string) => {
-    // TODO: Implementar lógica de seleção de plano
-    // Por enquanto, apenas mostra um alerta
-    alert(`Plano ${planCode} selecionado! Integração com ASAAS será implementada em breve.`);
+    const plan = plans.find(p => p.code === planCode);
+    if (plan && !plan.isTrial) {
+      setSelectedPlan(plan);
+      setCheckoutModalOpen(true);
+    }
+  };
+
+  const handleCheckoutSuccess = () => {
+    // Recarregar planos ou redirecionar para página de sucesso
+    fetchPlans();
+    alert('Assinatura realizada com sucesso!');
   };
 
   const getPlanIcon = (planCode: string) => {
@@ -250,6 +261,13 @@ const Plans: React.FC = () => {
           </PricingCard>
         ))}
       </PricingGrid>
+      
+      <CheckoutModal
+        isOpen={checkoutModalOpen}
+        onClose={() => setCheckoutModalOpen(false)}
+        plan={selectedPlan}
+        onSuccess={handleCheckoutSuccess}
+      />
       </PlansContainer>
     </PlansBackground>
   );

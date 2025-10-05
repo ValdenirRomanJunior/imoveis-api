@@ -38,6 +38,7 @@ public class Tenant implements Serializable {
     private String lastName; 
     private Integer verification;
     private String creci;
+    private String cpf;
     private String start;
     private String endDate;
     private String domain;
@@ -65,7 +66,7 @@ public class Tenant implements Serializable {
         addPerfil(Perfil.TENANT);
     }
 
-    public Tenant(Long id, String slug, String email, String password, Status status, String lastName, Verification verification,String creci,String start, String renovation,String endDate,String domain,String proprietario) {
+    public Tenant(Long id, String slug, String email, String password, Status status, String lastName, Verification verification,String creci,String cpf,String start, String renovation,String endDate,String domain,String proprietario) {
         this.id = id;
         this.slug = slug;
         this.email = email;
@@ -74,6 +75,7 @@ public class Tenant implements Serializable {
         this.lastName=lastName;
         this.verification=(verification == null) ? null : verification.getCod();
         this.creci=creci;
+        this.cpf=cpf;
         this.start=start;
         this.renovation=renovation;
         this.endDate=endDate;
@@ -148,6 +150,14 @@ public class Tenant implements Serializable {
 
 	public void setCreci(String creci) {
 		this.creci = creci;
+	}
+
+	public String getCpf() {
+		return cpf;
+	}
+
+	public void setCpf(String cpf) {
+		this.cpf = cpf;
 	}
 
 	public String getStart() {
