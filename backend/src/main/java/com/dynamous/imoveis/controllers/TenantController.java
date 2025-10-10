@@ -10,6 +10,7 @@ import com.dynamous.imoveis.enums.Verification;
 import com.dynamous.imoveis.repositories.TenantRepository;
 import com.dynamous.imoveis.services.EmailService;
 import com.dynamous.imoveis.services.TenantService;
+import com.dynamous.imoveis.services.NotificationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
@@ -33,6 +34,9 @@ public class TenantController {
 
     @Autowired
     private TenantService service;
+    
+    @Autowired
+    private NotificationService notificationService;
 
    
    // @PreAuthorize("hasAnyRole('ADMIN')")
@@ -59,6 +63,13 @@ public class TenantController {
         String plainPassword = objDto.getPassword(); // Armazenar a senha em texto plano antes da criptografia
         Tenant obj = service.fromDTO(objDto);
         Tenant savedTenant = service.insert(obj);
+        
+        // Criar notificação para novo usuário cadastrado
+        notificationService.createNewUserNotification(
+            savedTenant.getId(), 
+            savedTenant.getSlug(), 
+            savedTenant.getEmail()
+        );
         
         TenantRegistrationResponseDTO response = new TenantRegistrationResponseDTO(savedTenant, plainPassword);
         return ResponseEntity.ok(response);

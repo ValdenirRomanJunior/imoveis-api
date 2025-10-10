@@ -1,5 +1,6 @@
 package com.dynamous.imoveis.services;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -67,7 +68,38 @@ public class AdminStatsService {
             userStats.setEmail(user.getEmail());
             userStats.setPhone(user.getPhone() != null ? user.getPhone() : "N/A");
             userStats.setCpf(user.getCreci()); // Using CRECI as identifier
-            userStats.setCreatedAt(null); // Tenant doesn't have createdAt field
+            userStats.setCreatedAt(null); // Campo createdAt não existe na entidade Tenant
+            
+            // Contar propriedades do usuário
+            Long propertiesCount = propertyRepository.countByAccount(user.getAccount());
+            userStats.setPropertiesCount(propertiesCount);
+            
+            // Contar leads do usuário
+            Long leadsCount = leadRepository.countByAccount(user.getAccount());
+            userStats.setLeadsCount(leadsCount);
+            
+            // Propriedades publicadas
+            Long publishedCount = propertyRepository.countByAccountAndStatusProperty(user.getAccount(), 1);
+            userStats.setPublishedPropertiesCount(publishedCount);
+            
+            return userStats;
+        });
+    }
+    
+    public Page<UserStatsDTO> getRecentUsersStats(Integer page, Integer linesPerPage) {
+         // Como a entidade Tenant não possui campo createdAt, vamos buscar os últimos tenants por ID
+         PageRequest pageRequest = PageRequest.of(page, linesPerPage, Direction.DESC, "id");
+         Page<Tenant> recentUsers = tenantRepository.findAllByOrderByIdDesc(pageRequest);
+        
+        return recentUsers.map(user -> {
+            UserStatsDTO userStats = new UserStatsDTO();
+            userStats.setId(user.getId());
+            userStats.setSlug(user.getSlug());
+            userStats.setLastName(user.getLastName());
+            userStats.setEmail(user.getEmail());
+            userStats.setPhone(user.getPhone() != null ? user.getPhone() : "N/A");
+            userStats.setCpf(user.getCreci()); // Using CRECI as identifier
+            userStats.setCreatedAt(null); // Campo createdAt não existe na entidade Tenant
             
             // Contar propriedades do usuário
             Long propertiesCount = propertyRepository.countByAccount(user.getAccount());

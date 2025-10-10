@@ -60,6 +60,7 @@ useEffect(() =>{
             email:"",
             password:"",
             creci:"",
+            phone:"",
           
         })
         
@@ -74,6 +75,7 @@ useEffect(() =>{
                 email:"",
                 password:"",
                 creci:"",
+                phone:"",
                                
             });
             
@@ -84,7 +86,13 @@ useEffect(() =>{
             const handleChange = (e:any) =>{
               
                 const field= e.target.getAttribute('name');
-                const value= e.target.value
+                let value= e.target.value;
+                
+                // Validação especial para o campo phone - apenas números e máximo 11 caracteres
+                if (field === 'phone') {
+                    value = value.replace(/\D/g, '').slice(0, 11);
+                }
+                
                 setForm({ ...form,
                     [field]:value,
                 }); 
@@ -123,15 +131,18 @@ useEffect(() =>{
                 let creci: any;            
                 for (var prop4 in form) {if(prop4 === 'creci'){ creci=form[prop4];  }}
 
+                let phone: any;            
+                for (var prop5 in form) {if(prop5 === 'phone'){ phone=form[prop5];  }}
+
                 let signedDays: any;            
-                for (var prop5 in form) {if(prop5 === 'signedDays'){ signedDays=form[prop5];  }}
+                for (var prop6 in form) {if(prop6 === 'signedDays'){ signedDays=form[prop6];  }}
 
    
                 if(!emptyValues){
                     setLoadingTenant(true)
 
                                       
-                const data = await newUserTenant(slug,email,password,creci)
+                const data = await newUserTenant(slug,email,password,creci,phone)
                 console.log(data.response)
                     
                 if(data.status === 201){
@@ -164,8 +175,12 @@ useEffect(() =>{
         }                     
       }
 
-      let perfilTenant=Object.values(user.perfis).some(obj => obj === 'TENANT');
-      let perfilAdmin=Object.values(user.perfis).some(obj => obj === 'ADMIN');
+      let perfilTenant=user?.perfis ? Object.values(user.perfis).some(obj => 
+           obj === 'TENANT' 
+       ) : false;
+      let perfilAdmin=user?.perfis ? Object.values(user.perfis).some(obj => 
+    obj === 'ADMIN'
+) : false;
       let perfilAccount=Object.values(user.perfis).some(obj => obj === 'ACCOUNT');
  
             
@@ -207,6 +222,11 @@ useEffect(() =>{
                 <Input id="creci" name="creci"   onChange={(e) => handleChange(e)} onKeyUp={handleKeyUp} maxLength={15}/>
                 {errors.map(x => { if(x.fieldName === 'creci') return  <p className=' formField__error'>{x.message}</p>})}
                 { emptyValue && form['creci'] === '' ?<span className='formField__error'>Este campo é requerido</span>: ''}
+
+                <label>Telefone</label>
+                <Input id="phone" name="phone" onChange={(e) => handleChange(e)} onKeyUp={handleKeyUp} maxLength={11} placeholder="Digite apenas números"/>
+                {errors.map(x => { if(x.fieldName === 'phone') return  <p className=' formField__error'>{x.message}</p>})}
+                { emptyValue && form['phone'] === '' ?<span className='formField__error'>Este campo é requerido</span>: ''}
 
            
       

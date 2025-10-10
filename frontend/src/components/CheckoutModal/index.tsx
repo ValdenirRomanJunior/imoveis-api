@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { loadStripe } from '@stripe/stripe-js';
+import { Elements, useStripe, useElements } from '@stripe/react-stripe-js';
 import { 
   ModalOverlay, 
   ModalContainer, 
@@ -12,16 +14,44 @@ import {
   FormGroup, 
   Label, 
   Select,
-  RadioGroup,
-  RadioOption,
-  RadioInput,
-  RadioLabel,
   SubmitButton, 
   ErrorMessage,
   SuccessMessage,
   LoadingSpinner
 } from './styles';
 import api from '../../utils/requests';
+
+// Inicializar Stripe com a chave pública de produção
+const stripePromise = loadStripe('pk_live_51SEuVEJlRuVndWwzHix67RZKcXoKQJYbfKPXQc6W2igaZpz6Cna3xEThwVEBE2KhkWbawYUny8BW9lfoJEVOgwID00CSE8Tn8L');
+
+// Valores reais dos planos (alinhados com o backend)
+const realPlanPrices: { [key: string]: number } = {
+  'Lite': 99.00,
+  'Pro': 239.00,
+  'LITE': 99.00,
+  'PRO': 239.00
+};
+
+// Função para obter o preço real do plano
+const getRealPlanPrice = (planName: string, fallbackPrice?: number): number => {
+  return realPlanPrices[planName] || fallbackPrice || 0;
+};
+
+const getCyclePrice = (basePrice: number, cycleValue: string) => {
+  switch (cycleValue) {
+    case 'YEARLY':
+      return basePrice * 12 * 0.90; // 10% desconto anual
+    default:
+      return basePrice;
+  }
+};
+
+const formatPrice = (price: number) => {
+  return price.toLocaleString('pt-BR', {
+    style: 'currency',
+    currency: 'BRL'
+  });
+};
 
 interface Plan {
   code: string;
@@ -39,47 +69,51 @@ interface CheckoutModalProps {
   onSuccess: () => void;
 }
 
-const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, plan, onSuccess }) => {
-  const [billingType, setBillingType] = useState<string>('CREDIT_CARD');
-  const [cycle, setCycle] = useState<string>('MONTHLY');
+// Componente interno do formulário de checkout
+const CheckoutForm: React.FC<{
+  plan: Plan;
+  cycle: string;
+  onSuccess: () => void;
+  onClose: () => void;
+}> = ({ plan, cycle, onSuccess, onClose }) => {
+  const stripe = useStripe();
+  const elements = useElements();
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string>('');
   const [success, setSuccess] = useState<string>('');
 
-  const billingTypes = [
-    { value: 'CREDIT_CARD', label: 'Cartão de Crédito' },
-    { value: 'BOLETO', label: 'Boleto Bancário' },
-    { value: 'PIX', label: 'PIX' }
-  ];
-
-  const cycles = [
-    { value: 'MONTHLY', label: 'Mensal' },
-    { value: 'QUARTERLY', label: 'Trimestral' },
-    { value: 'SEMIANNUALLY', label: 'Semestral' },
-    { value: 'YEARLY', label: 'Anual' }
-  ];
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!plan) return;
+    if (!stripe || !elements) {
+      setError('Stripe não foi carregado corretamente.');
+      return;
+    }
 
     setLoading(true);
     setError('');
     setSuccess('');
 
     try {
-      const response = await api.post('/asaas/checkout', {
+      // Criar sessão de checkout no backend
+      const checkoutResponse = await api.post('/stripe/create-checkout-session', {
         planCode: plan.code,
-        billingType,
-        cycle
+        cycle: cycle
       });
 
-      if (response.data.success) {
-        // Redirecionar para o checkout pronto do ASAAS
-        window.location.href = response.data.checkoutUrl;
+      if (checkoutResponse.data.success && checkoutResponse.data.url) {
+        // Redirecionar para a URL do Stripe Checkout
+        setSuccess('Redirecionando para o checkout...');
+        window.location.href = checkoutResponse.data.url;
+        onClose(); // Fechar o modal após redirecionar
+      } else if (checkoutResponse.data.sessionId) {
+        // Fallback: usar sessionId se disponível
+        const checkoutUrl = `https://checkout.stripe.com/pay/${checkoutResponse.data.sessionId}`;
+        setSuccess('Redirecionando para o checkout...');
+        window.location.href = checkoutUrl;
+        onClose();
       } else {
-        setError(response.data.message || 'Erro ao criar checkout');
+        setError(checkoutResponse.data.message || 'Erro ao criar sessão de checkout.');
       }
     } catch (error: any) {
       console.error('Erro ao criar checkout:', error);
@@ -92,25 +126,43 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, plan, on
     }
   };
 
-  const getCyclePrice = (basePrice: number, cycleValue: string) => {
-    switch (cycleValue) {
-      case 'QUARTERLY':
-        return basePrice * 3 * 0.95; // 5% desconto
-      case 'SEMIANNUALLY':
-        return basePrice * 6 * 0.90; // 10% desconto
-      case 'YEARLY':
-        return basePrice * 12 * 0.85; // 15% desconto
-      default:
-        return basePrice;
-    }
-  };
+  return (
+    <>
+      <PlanInfo>
+        <PlanName>{plan.name}</PlanName>
+        <PlanPrice>
+          {formatPrice(getCyclePrice(getRealPlanPrice(plan.name, plan.price), cycle))}
+          {cycle === 'MONTHLY' && '/mês'}
+          {cycle === 'YEARLY' && '/ano'}
+        </PlanPrice>
+      </PlanInfo>
 
-  const formatPrice = (price: number) => {
-    return price.toLocaleString('pt-BR', {
-      style: 'currency',
-      currency: 'BRL'
-    });
-  };
+      {error && <ErrorMessage>{error}</ErrorMessage>}
+      {success && <SuccessMessage>{success}</SuccessMessage>}
+
+      <form onSubmit={handleSubmit}>
+        <SubmitButton type="submit" disabled={loading || !stripe}>
+          {loading ? (
+            <>
+              <LoadingSpinner />
+              Processando...
+            </>
+          ) : (
+            `Pagar com Stripe - ${formatPrice(getCyclePrice(getRealPlanPrice(plan.name, plan.price), cycle))}`
+          )}
+        </SubmitButton>
+      </form>
+    </>
+  );
+};
+
+const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, plan, onSuccess }) => {
+  const [cycle, setCycle] = useState<string>('MONTHLY');
+
+  const cycles = [
+    { value: 'MONTHLY', label: 'Mensal' },
+    { value: 'YEARLY', label: 'Anual' }
+  ];
 
   if (!isOpen || !plan) return null;
 
@@ -123,69 +175,29 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, plan, on
         </ModalHeader>
 
         <ModalBody>
-          <PlanInfo>
-            <PlanName>{plan.name}</PlanName>
-            <PlanPrice>
-              {formatPrice(getCyclePrice(plan.price, cycle))}
-              {cycle === 'MONTHLY' && '/mês'}
-              {cycle === 'QUARTERLY' && '/trimestre'}
-              {cycle === 'SEMIANNUALLY' && '/semestre'}
-              {cycle === 'YEARLY' && '/ano'}
-            </PlanPrice>
-          </PlanInfo>
+          <FormGroup>
+            <Label>Ciclo de Cobrança</Label>
+            <Select 
+              value={cycle} 
+              onChange={(e) => setCycle(e.target.value)}
+            >
+              {cycles.map((cycleOption) => (
+                <option key={cycleOption.value} value={cycleOption.value}>
+                  {cycleOption.label}
+                  {cycleOption.value === 'YEARLY' && ' (10% desconto)'}
+                </option>
+              ))}
+            </Select>
+          </FormGroup>
 
-          {error && <ErrorMessage>{error}</ErrorMessage>}
-          {success && <SuccessMessage>{success}</SuccessMessage>}
-
-          <form onSubmit={handleSubmit}>
-            <FormGroup>
-              <Label>Ciclo de Cobrança</Label>
-              <Select 
-                value={cycle} 
-                onChange={(e) => setCycle(e.target.value)}
-                disabled={loading}
-              >
-                {cycles.map((cycleOption) => (
-                  <option key={cycleOption.value} value={cycleOption.value}>
-                    {cycleOption.label}
-                    {cycleOption.value === 'QUARTERLY' && ' (5% desconto)'}
-                    {cycleOption.value === 'SEMIANNUALLY' && ' (10% desconto)'}
-                    {cycleOption.value === 'YEARLY' && ' (15% desconto)'}
-                  </option>
-                ))}
-              </Select>
-            </FormGroup>
-
-            <FormGroup>
-              <Label>Forma de Pagamento</Label>
-              <RadioGroup>
-                {billingTypes.map((type) => (
-                  <RadioOption key={type.value}>
-                    <RadioInput
-                      type="radio"
-                      name="billingType"
-                      value={type.value}
-                      checked={billingType === type.value}
-                      onChange={(e) => setBillingType(e.target.value)}
-                      disabled={loading}
-                    />
-                    <RadioLabel>{type.label}</RadioLabel>
-                  </RadioOption>
-                ))}
-              </RadioGroup>
-            </FormGroup>
-
-            <SubmitButton type="submit" disabled={loading}>
-              {loading ? (
-                <>
-                  <LoadingSpinner />
-                  Processando...
-                </>
-              ) : (
-                `Assinar por ${formatPrice(getCyclePrice(plan.price, cycle))}`
-              )}
-            </SubmitButton>
-          </form>
+          <Elements stripe={stripePromise}>
+            <CheckoutForm 
+              plan={plan} 
+              cycle={cycle} 
+              onSuccess={onSuccess} 
+              onClose={onClose} 
+            />
+          </Elements>
         </ModalBody>
       </ModalContainer>
     </ModalOverlay>

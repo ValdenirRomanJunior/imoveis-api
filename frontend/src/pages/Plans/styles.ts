@@ -192,6 +192,30 @@ export const PricingCard = styled.div`
       transform: scale(1.02) translateY(-5px);
     }
   }
+
+  &.current-plan {
+    border: 2px solid #28a745;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    
+    &::before {
+      content: 'Seu Plano Atual';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      background: #28a745;
+      color: white;
+      text-align: center;
+      padding: 0.5rem;
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+    
+    &:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 20px rgba(40, 167, 69, 0.2);
+    }
+  }
 `;
 
 export const PricingIcon = styled.div`

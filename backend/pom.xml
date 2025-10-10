@@ -128,6 +128,13 @@
   <groupId>org.springframework.boot</groupId>            
   <artifactId>spring-boot-starter-websocket</artifactId>
 </dependency>
+
+<!-- Stripe Java SDK -->
+<dependency>
+    <groupId>com.stripe</groupId>
+    <artifactId>stripe-java</artifactId>
+    <version>24.16.0</version>
+</dependency>
 	
 
 		

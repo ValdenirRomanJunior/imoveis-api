@@ -123,8 +123,12 @@ function Funil(){
               
     };
    
-    let perfilTenant=user?.perfis ? Object.values(user.perfis).some(obj => obj === 'TENANT') : false;
-let perfilAdmin=user?.perfis ? Object.values(user.perfis).some(obj => obj === 'ADMIN') : false;
+    let perfilTenant=user?.perfis ? Object.values(user.perfis).some(obj => 
+         obj === 'TENANT'
+     ) : false;
+let perfilAdmin=user?.perfis ? Object.values(user.perfis).some(obj => 
+    obj === 'ADMIN' 
+) : false;
     return(
         <>
         { perfilTenant ? 

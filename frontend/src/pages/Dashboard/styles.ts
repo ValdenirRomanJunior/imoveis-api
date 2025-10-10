@@ -50,20 +50,41 @@ export const BodyContainer = styled.main`
             border: 1px solid #e6e9ed;
             background: ${({theme}) => theme.colors.background};
 
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+
             button{
                 width: auto;
                 height:40px;
                 padding: 5px 30px;
                 font-family:'Nunito Sans', sans-serif;
+                display: flex;
+                align-items: center;
+                margin-top:10px;
+               
             }
 
             p{
                 font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans",Helvetica,Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji";
                 color:#59636e;
                 font-size:14px;
+                
                
                 
                }
+
+                .opportunities-link{
+                    font-size:13px;
+                    display: flex;
+                   
+
+                 
+                    }
+                    .eye-icon{
+                        margin-right: 5px;
+                    }
         }     
 
         .cards-left-side-title{
@@ -250,16 +271,16 @@ export const BodyContainer = styled.main`
          
         .left-side{
             
-
             width: 60%;
             margin: 0 25px 0 60px;
     
     
             .card-wrapper-top{
                 padding:33px 40px;
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
+                  display: flex;
+            flex-direction: column;
+            align-items: left;
+            justify-content: left;
 
                .button-top{
                 width:auto;

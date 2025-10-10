@@ -23,8 +23,8 @@ export const tenantsPageable = (pageNumber: number) => {
 
 
 
-export const newUserTenant = (slug:string, email: string, password:string,creci:string) => {
-    return api.post('/usertenants/save',{slug,email,password,creci})
+export const newUserTenant = (slug:string, email: string, password:string,creci:string, phone:string) => {
+    return api.post('/usertenants/save',{slug,email,password,creci,phone})
                                                  .then(response =>{
                                                     return response
                                                  }).catch((error) =>{

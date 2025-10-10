@@ -1,11 +1,20 @@
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import useAuth from '../../hooks/useAuth';
 import { CheckCircle } from 'lucide-react';
 
 const PaymentSuccess: React.FC = () => {
   const navigate = useNavigate();
+  const { getCurrentUser } = useAuth();
 
   useEffect(() => {
+    try {
+      localStorage.removeItem('trial_force_expired');
+    } catch {}
+
+    // Atualiza dados do usuário para refletir plano ativo
+    getCurrentUser?.();
+
     // Redirecionar para o dashboard após 5 segundos
     const timer = setTimeout(() => {
       navigate('/dashboard');

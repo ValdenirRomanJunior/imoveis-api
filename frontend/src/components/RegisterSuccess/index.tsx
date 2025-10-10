@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import useAuth from '../../hooks/useAuth';
 import {
   Container,
   SuccessCard,
@@ -32,9 +34,11 @@ interface RegisterSuccessProps {
 const RegisterSuccess: React.FC<RegisterSuccessProps> = ({ userData, onBackToHome }) => {
   const [copiedField, setCopiedField] = useState<string | null>(null);
   const [isRedirecting, setIsRedirecting] = useState(false);
+  const { userSignIn, getCurrentUser } = useAuth();
+  const navigate = useNavigate();
 
   const subdomainUrl = `https://${userData.domain}`;
-  const systemUrl = `${subdomainUrl}/admin`;
+  const systemUrl = `https://standi.com.br/dashboard`; // Mudança: redirecionar para o dashboard principal
 
   const copyToClipboard = (text: string, field: string) => {
     navigator.clipboard.writeText(text);
@@ -42,14 +46,48 @@ const RegisterSuccess: React.FC<RegisterSuccessProps> = ({ userData, onBackToHom
     setTimeout(() => setCopiedField(null), 2000);
   };
 
-  const handleGoToSystem = () => {
+  const handleGoToSystem = async () => {
     setIsRedirecting(true);
-    // Redireciona para o sistema em uma nova aba
-    window.open(systemUrl, '_blank');
-    setTimeout(() => {
+    
+    try {
+      // Fazer login automático com os dados do usuário
+      const loginData = {
+        email: userData.email,
+        password: userData.password
+      };
+      
+      const loginResult = await userSignIn(loginData);
+      console.log('Login result:', loginResult);
+      
+      // Verificar se o login foi bem-sucedido
+      // O userSignIn retorna uma string como "200VERIFICADO" quando bem-sucedido
+      if (loginResult && typeof loginResult === 'string') {
+        const statusCode = loginResult.substring(0, 3);
+        const verification = loginResult.substring(3);
+        
+        if (statusCode === '200' && verification === 'VERIFICADO') {
+          // Login bem-sucedido, buscar dados do usuário para atualizar o contexto
+          console.log('Login automático bem-sucedido, atualizando contexto do usuário');
+          await getCurrentUser();
+          
+          // Navegar para o dashboard
+          console.log('Redirecionando para dashboard');
+          navigate('/dashboard');
+          return;
+        }
+      }
+      
+      // Se chegou aqui, o login não foi bem-sucedido
+      console.log('Login automático falhou, redirecionando para página de login');
+      window.location.href = 'https://standi.com.br/login';
+      
+    } catch (error) {
+      console.error('Erro ao fazer login automático:', error);
+      // Em caso de erro, redirecionar para a página de login externa
+      window.location.href = 'https://standi.com.br/login';
+    } finally {
       setIsRedirecting(false);
-      onBackToHome();
-    }, 1000);
+    }
   };
 
   return (
@@ -109,9 +147,9 @@ const RegisterSuccess: React.FC<RegisterSuccessProps> = ({ userData, onBackToHom
 
           <InfoItem>
             <InfoLabel>link de Acesso ao Sistema</InfoLabel>
-            <InfoValue>https://standi.com.br/login</InfoValue>
+            <InfoValue>https://standi.com.br/dashboard</InfoValue>
             <CopyButton 
-              onClick={() => copyToClipboard(systemUrl, 'system')}
+              onClick={() => copyToClipboard('https://standi.com.br/dashboard', 'system')}
               copied={copiedField === 'system'}
             >
               {copiedField === 'system' ? 'Copiado!' : 'Copiar'}

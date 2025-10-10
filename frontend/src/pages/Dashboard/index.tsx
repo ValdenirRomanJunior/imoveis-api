@@ -21,6 +21,13 @@ import { RiDoorLockLine } from 'react-icons/ri';
 import Funil from '../../components/Funnel';
 import { AiOutlineHome, AiOutlineUser } from 'react-icons/ai';
 import AdminStats from '../../components/AdminStats';
+import { useSidebar } from '../../context/SidebarContext';
+import TrialMessage from '../../components/TrialMessage';
+import useTrialStatus from '../../hooks/useTrialStatus';
+import TrialWarningBanner from '../../components/TrialWarningBanner';
+import TrialExpiredModal from '../../components/TrialExpiredModal';
+// Helper para testes de trial (apenas desenvolvimento)
+import '../../utils/trialTestHelper';
 
 
 
@@ -37,6 +44,10 @@ const Dashboard = ()=>{
     const [errorMessage,setErrorMessage]= useState("");
     const [errorMessageTotalLeads,setErrorMessageTotalLeads]= useState("");
     
+    const {user, getCurrentUser} = useAuth();
+    const { sidebar, setSidebar } = useSidebar();
+    const trialStatus = useTrialStatus();
+    
     const refreshTokenUser = async ()=>{
    
         const  resp = await refreshToken();    
@@ -52,7 +63,6 @@ const Dashboard = ()=>{
   refreshTokenUser()
 },[])
 
-    const {user, getCurrentUser} = useAuth();
     useEffect(() =>{
         
         getCurrentUser()
@@ -142,13 +152,19 @@ const Dashboard = ()=>{
  
               
     
-            let perfilTenant=user?.perfis ? Object.values(user.perfis).some(obj => obj === 'TENANT') : false;
+          let perfilTenant=user?.perfis ? Object.values(user.perfis).some(obj => obj === 'TENANT') : false;
             let perfilAdmin=user?.perfis ? Object.values(user.perfis).some(obj => obj === 'ADMIN') : false;
+     
     
     return(
         <>
-
-        { perfilTenant ||  perfilAdmin ? 
+        
+        {/* Modal de Trial Expirado - Bloqueia completamente o acesso */}
+        {trialStatus.isExpired && (
+          <TrialExpiredModal 
+            onViewPlans={() => navigate('/plans')}
+          />
+        )}
           
         <div>
        
@@ -158,9 +174,22 @@ const Dashboard = ()=>{
                  
         <Header />     
         <BarTop />
-     <AdminStats isVisible={user?.perfis?.includes('ADMIN')} />
+
+      <AdminStats isVisible={user?.perfis?.includes('ADMIN')} />
+      
+      {/* Banner de Aviso do Trial - Apenas durante o período ativo */}
+      {trialStatus.isActive && !trialStatus.isExpired && (
+        <TrialWarningBanner 
+          daysRemaining={trialStatus.daysRemaining}
+          onViewPlans={() => navigate('/plans')}
+        />
+      )}
+      
+        <p className='left-side-message-user welcome-message'>Olá, <strong>{user.slug}</strong>, o que temos pra hoje?</p>
         
-        <p className='left-side-message-user'>Olá, <strong>{user.slug}</strong>, o que temos pra hoje?</p>
+        <TrialMessage />
+        
+       { perfilTenant ? 
         <BodyContainer>
         
                   
@@ -170,7 +199,7 @@ const Dashboard = ()=>{
               
                   <div className='card-wrapper-top'>             
                      <p>Ver todas as minhas oportunidades</p>
-                     <Link to='/oportunidades'> <button  className="button-top"><IoEyeOutline /> Ver Oportunidades</button> </Link>
+                     <Link to='/oportunidades' className='opportunities-link'> <button  className="button-top"><IoEyeOutline className='eye-icon'/> Ver Oportunidades</button> </Link>
                  </div>
             </div>
 
@@ -178,21 +207,21 @@ const Dashboard = ()=>{
             <div className='cards-left-side'>
             <p className='cards-left-side-title'>O que já temos com sua conta</p>  
                 <div className='cards-wrapper'>          
-             <div className='card-wrapper-left'>
+             <div className='card-wrapper-left properties-card'>
                    <div className='card-lef-inside'>
                      <div className='title-card-left-wrapper'><div className='icon-card-left-wrapper'><AiOutlineHome className='icon-card-left first-card' /></div><p>Imóveis Cadastrados</p></div>
 
                      <span className='number-card-dashboard'>{totalProperties && totalProperties}</span>
                    </div>
                    </div>
-                            <div className='card-wrapper-left'>
+                            <div className='card-wrapper-left leads-card'>
                             <div className='card-lef-inside'>
                                 <div className='title-card-left-wrapper'><div className='icon-card-left-wrapper'><AiOutlineUser className='icon-card-left second-card'/></div><p className='second-title'>Leads</p></div>
                                 <span className='number-card-dashboard'>{totalLeads && totalLeads}</span>
                             </div>
                             </div>
                           
-                            <div className='card-wrapper-left'>
+                            <div className='card-wrapper-left published-properties'>
                     <div className='card-lef-inside'>
                         <div className='title-card-left-wrapper'><div className='icon-card-left-wrapper'><IoCloudUploadOutline className='icon-card-left'/></div><p>Imóveis Publicados</p></div>
                         <span className='number-card-dashboard'>{publishedProperties && publishedProperties}</span>
@@ -210,13 +239,13 @@ const Dashboard = ()=>{
 
             <div className='right-side'>
 
-            <div  className='card-right-bottom'>    
+            <div  className='card-right-bottom funnel-section'>    
                 <h2 ><RiDoorLockLine className='icon-portais'/>Oportunidades</h2>
                 <Funil/>              
             </div>
             
 
-            <Card width='100%' height='100%' noShadow={true} border='1px solid #e6e9ed' borderRadius='2px' >
+            <Card width='100%' height='100%' noShadow={true} border='1px solid #e6e9ed' borderRadius='2px'>
             <h2 className='title-perfil-card'><RiDoorLockLine className='icon-portais'/>Corretor</h2>
                 <UserInfo>
                     <div className='user-image-wrapper-dashboard'>
@@ -237,13 +266,14 @@ const Dashboard = ()=>{
            
             
         </BodyContainer>
-  
+    : ''}
+
         </DashboardBackground> 
         : <Dashboard/>}  
         </ErrorBoundary>
       
         </div>
-      : <PageNotFoundDashboard/>}
+     
       </>
     )
 }

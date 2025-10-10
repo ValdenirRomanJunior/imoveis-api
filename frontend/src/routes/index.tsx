@@ -2,9 +2,10 @@ import {
     BrowserRouter,
     Routes,
     Route,
-   
     Link,
     Navigate,
+    useNavigate,
+    useLocation,
 } from "react-router-dom";
 
 //import Dashboard from "../pages/Dashboard";
@@ -25,6 +26,8 @@ import React from "react";
 import LoadingLogin from "../components/LoadingLogin";
 import LoadingPage from "../pages/Site/LoadingPage";
 import SubdomainRouter from "../components/SubdomainRouter";
+import useTrialStatus from '../hooks/useTrialStatus';
+import TrialExpiredModal from '../components/TrialExpiredModal';
 const LazyHome = React.lazy(() => import('../pages/Home'));
 const LazyDashboard = React.lazy(() => import('../pages/Dashboard'));
 const LazyProperties = React.lazy(() => import('../pages/Properties'));
@@ -55,17 +58,27 @@ const LazyPaymentExpired = React.lazy(() => import('../pages/PaymentExpired'));
 const LazySite = React.lazy(() => import('../pages/Site'));
 const LazyImoveis = React.lazy(() => import('../pages/Site/Properties'));
 const LazyDetail = React.lazy(() => import('../pages/Site/Detail'));
+const LazyUsersList = React.lazy(() => import('../components/UsersList'));
+const LazyGuide = React.lazy(() => import('../pages/Guide'));
 
 
 
 
-export const Router = () => {
+// Componente guard para exibir modal de trial expirado globalmente
+const TrialGuard: React.FC = () => {
+    const trialStatus = useTrialStatus();
+    const navigate = useNavigate();
+    const location = useLocation();
+
+    // Não exibir modal no fluxo de assinatura de planos
+    const isSubscriptionFlow = location.pathname === '/plans' || location.pathname.startsWith('/payment');
 
     return (
-             
-        <BrowserRouter>
-            <SubdomainRouter>
-                <Routes>
+        <>
+            {trialStatus.isExpired && !isSubscriptionFlow && (
+                <TrialExpiredModal onViewPlans={() => navigate('/plans')} />
+            )}
+            <Routes>
            
                 <Route path="/"  element={<React.Suspense fallback={<div>Carregando...</div>}><LazyHome/></React.Suspense>} />
                 <Route path="/login"  element={<SignIn />} />
@@ -78,6 +91,7 @@ export const Router = () => {
                 <Route path="/account"  element={<React.Suspense fallback={<LoadingLogin/>}><LazyAccount/></React.Suspense>} />
                 <Route path="/accountRegistration"  element={<React.Suspense fallback={<LoadingLogin/>}><LazyAccountRegistration /></React.Suspense>} />
                 <Route path="/accounts"  element={<React.Suspense fallback={<LoadingLogin/>}><LazyTenants/></React.Suspense>} />
+                <Route path="/users"  element={<React.Suspense fallback={<LoadingLogin/>}><LazyUsersList/></React.Suspense>} />
                 <Route path="/edittenant/:tenantId" element={<React.Suspense fallback={<LoadingLogin/>}><LazyEditTenant/></React.Suspense>} />
                 <Route path="/verification/:tenantEmail" element={<React.Suspense fallback={<LoadingLogin/>}><LazyConfirmationPage/></React.Suspense>} />
                 <Route path="/leadDetail/:leadId"  element={<React.Suspense fallback={<LoadingLogin/>}><LazyLeadDetail/></React.Suspense>} />
@@ -94,17 +108,26 @@ export const Router = () => {
                 <Route path="/payment/success"  element={<React.Suspense fallback={<LoadingLogin/>}><LazyPaymentSuccess/></React.Suspense>} />
                 <Route path="/payment/cancel"  element={<React.Suspense fallback={<LoadingLogin/>}><LazyPaymentCancel/></React.Suspense>} />
                 <Route path="/payment/expired"  element={<React.Suspense fallback={<LoadingLogin/>}><LazyPaymentExpired/></React.Suspense>} />
+                <Route path="/guide"  element={<React.Suspense fallback={<LoadingLogin/>}><LazyGuide/></React.Suspense>} />
 
                 <Route path="/temaEdit"  element={<React.Suspense fallback={<div>Carregando...</div>}><LazyTemaEdit/></React.Suspense>} />
                 <Route path="/site/:companyName"  element={<React.Suspense fallback={<div>Carregando...</div>}><LazySite/></React.Suspense>} />
                 <Route path="/site/:companyName/imoveis"  element={<React.Suspense fallback={<div>Carregando...</div>}><LazyImoveis/></React.Suspense>} />
                  <Route path="/site/:companyName/detail/:propertyId"  element={<React.Suspense fallback={<LoadingPage/>}> <LazyDetail /> </React.Suspense>} /> 
                 <Route path='*' element={<PageNotFound/>}/>
-                </Routes>
+            </Routes>
+        </>
+    );
+};
+
+export const Router = () => {
+    return (
+        <BrowserRouter>
+            <SubdomainRouter>
+                <TrialGuard />
             </SubdomainRouter>
         </BrowserRouter>
-              
-    )
+    );
 }
 
 export default Router

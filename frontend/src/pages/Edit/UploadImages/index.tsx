@@ -30,7 +30,17 @@ const UploadImages = (props:PropImages) =>{
     const [deleteIds,setDeleteIds]= useState<any[]>([]);
 
     const WIDTH = 700;
+    const MAX_IMAGES = 20;
+    
     function convertFile(files:any){
+        // Validação: verificar se o total de imagens não excede 20
+        const currentTotalImages = imagesSelected.length + fileBase64.length;
+        const newFilesCount = files ? files.length : 0;
+        
+        if(currentTotalImages + newFilesCount > MAX_IMAGES) {
+            alert(`É permitido no máximo ${MAX_IMAGES} fotos por imóvel. Você já tem ${currentTotalImages} fotos e está tentando adicionar ${newFilesCount} novas fotos.`);
+            return;
+        }
        
         setImagesSelected([...imagesSelected])
         
@@ -137,7 +147,7 @@ const removePhoto =(url:string) => {
         <ImagesContainer>
             <h3 className='title-photos'>Fotos</h3>
     
-            <p>Adicione até <strong>10 fotos</strong></p>
+            <p>Adicione até <strong>20 fotos</strong></p>
             <div>
             <UploadImage  >
                 <MdPhotoCamera className='icon-photo'/>

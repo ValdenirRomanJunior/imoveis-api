@@ -211,7 +211,7 @@ export const SideBarContainer = styled.div<{ sidebar: boolean}>`
     left: ${({sidebar}) => (sidebar ? '0' : '-100%')};
     box-shadow: ${({sidebar}) => (sidebar ? '0 30px 50px 0 rgb(0 0 0 / 30%)' : 'none' )};
   
-       z-index: 1;
+       z-index: 999;
    
     
 
@@ -262,7 +262,9 @@ export const SideBarTop = styled.div`
     
     @media screen and (min-width: 1000px){
       
-        
+        .domain-info{
+       left: 47px !important;
+        }
 
 
         p{

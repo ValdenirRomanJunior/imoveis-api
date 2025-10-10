@@ -97,11 +97,20 @@ public class TenantService {
     @Transactional
     public Tenant insert(Tenant obj) throws UnknownHostException{
         obj.setId(null);
-       // try {
-        	//emailService.sendVerificationHtmlEmail(obj);
-       // }catch (UnknownHostException e) {
-			//throw new UnknownHostException("falha ao enviar email");
-		//}
+        
+        // Tentar enviar email de registro
+        boolean emailSent = false;
+        try {
+            emailService.sendRegistrationHtmlEmail(obj);
+            emailSent = true;
+            System.out.println("Email de registro enviado com sucesso para: " + obj.getEmail());
+        } catch (UnknownHostException e) {
+            System.err.println("Falha ao enviar email de registro (UnknownHostException): " + e.getMessage());
+            // Continua com o cadastro mesmo se o email falhar
+        } catch (Exception e) {
+            System.err.println("Falha ao enviar email de registro: " + e.getMessage());
+            // Continua com o cadastro mesmo se o email falhar
+        }
 
 	
          obj.addPerfil(Perfil.ACCOUNT);

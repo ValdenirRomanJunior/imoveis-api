@@ -904,7 +904,7 @@ const cleanForm = () =>{
                 {errors.map(x => { if(x.fieldName === 'cep') return  <p className=' formField__error'>{x.message}</p>})}
                 { emptyValue && form['cep'] === '' ?<span className='formField__error'>Este campo é requerido</span>: ''}
                 {fileSize &&
-                   <p style={{color:'red',fontSize:'14px'}}>É permitido no máximo 15 imagens</p>
+                   <p style={{color:'red',fontSize:'14px'}}>É permitido no máximo 20 imagens</p>
                    }  
                 <UploadImages images={property.property.images as unknown as ImageItem[]}  handleResult={getImagesUrls}/>
                

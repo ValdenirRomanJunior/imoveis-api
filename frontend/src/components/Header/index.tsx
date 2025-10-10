@@ -18,6 +18,9 @@ import { number } from '../../pages/Registration/masks';
 import { MdDesignServices } from 'react-icons/md';
 import { GrIntegration } from "react-icons/gr";
 import { FiExternalLink } from 'react-icons/fi';
+import { NotificationDropdown } from '../NotificationDropdown';
+import { FaQuestionCircle } from 'react-icons/fa';
+import { useSidebar } from '../../context/SidebarContext';
 
 const Header = () =>{
 
@@ -77,11 +80,19 @@ const Header = () =>{
     const showLinksModal = () => setLinksModal(!linksModal);
 
     // eslint-disable-next-line react-hooks/rules-of-hooks
-    const [sidebar, setSidebar] =useState(false);
-    const showSidebar = () => setSidebar(!sidebar);
+    const { sidebar, showSidebar } = useSidebar();
 
-    let perfilTenant=user?.perfis ? Object.values(user.perfis).some(obj => obj === 'TENANT') : false;
-    let perfilAdmin=user?.perfis ? Object.values(user.perfis).some(obj => obj === 'ADMIN') : false;
+    let perfilTenant=user?.perfis ? Object.values(user.perfis).some(obj => 
+        obj === 'TENANT' 
+    ) : false;
+    let perfilAdmin=user?.perfis ? Object.values(user.perfis).some(obj => 
+        obj === 'ADMIN'
+    ) : false;
+
+    // Debug: verificar perfis do usuário
+    console.log('Header - User perfis:', user?.perfis);
+    console.log('Header - perfilAdmin:', perfilAdmin);
+    console.log('Header - perfilTenant:', perfilTenant);
 
     const [domainInfo, setDomainInfo] = useState<any>(null);
 
@@ -110,6 +121,9 @@ const Header = () =>{
                 <img src={logo} className="logo"  alt='logo dynamous' />
                 </MenuLogoWrapper>
                <a href='https://standi.com.br/' target="_blank"> <VscComment  fontSize={22} color="gray" className="message-icon"/></a>
+               
+               {/* Sistema de notificações - apenas para Admin */}
+               {perfilAdmin && <NotificationDropdown />}
 
                 <UserInfo onClick={showLinksModal}>                           
                    <div className='user-image-wrapper'>
@@ -129,11 +143,11 @@ const Header = () =>{
                 <SideBarTop >
                     <NavIcon to="#" onClick={ (event) => event.preventDefault() }>
                         <IoIosArrowForward  className='icon-sidebar'/>
-                        <div style={{ cursor: 'pointer', color: '#3b82f6',position: 'relative', top: '-2px', left: '46px'}}
+                        <div className='domain-info' style={{ cursor: 'pointer', color: '#3b82f6',position: 'relative', top: '0px', left: '20px' , fontSize: '15px', display: 'flex'}}
                         >
                          {domainInfo?.subdomain || `${user?.slug || 'seu-slug'}${user?.accountId ? `-${user.accountId}` : user?.id ? `-${user.id}` : ''}.standi.com.br`}
                   <FiExternalLink  
-                    style={{ cursor: 'pointer', color: '#3b82f6',position: 'relative', top: '-2px', left: '12px'}}
+                    style={{ cursor: 'pointer', color: '#3b82f6',position: 'relative', top: '2px', left: '12px'}}
                     onClick={() => window.open(getSubdomainUrl(user?.slug || ''), '_blank')}
                   />
              </div>
@@ -177,16 +191,25 @@ const Header = () =>{
             </>
     }
             {perfilAdmin &&
+            <>
             <NavIcon to="/accounts" >
             <IoSettingsOutline className='icon-sidebar'/>
             <p className='description-icon'>Configurações</p>
-            </NavIcon> 
+            </NavIcon>
+            
+            <NavIcon to="/users" >
+            <AiOutlineUser className='icon-sidebar'/>
+            <p className='description-icon'>Usuários</p>
+            </NavIcon>
+            </>
         }
 
           <SidebarFooter className='footer-sidebar'>
-            <p>Standi</p>
-            <p>Termos de Uso</p>
-            <p>Política de privacidade</p>
+            <NavIcon to="/guide" style={{display: 'flex', alignItems: 'center'}}>
+              <FaQuestionCircle className='icon-sidebar'/>
+              <p className='description-icon' style={{marginLeft: '5px'}}>Guia de Ajuda</p>
+            </NavIcon>
+        
           </SidebarFooter>
         </SideBarContainer>
        

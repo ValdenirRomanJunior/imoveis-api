@@ -30,15 +30,13 @@ public class TenantNewDTO implements Serializable {
     @Length(min=8, max=20, message = "O tamanho deve ser entre 8 e 20 caracteres")
     private String password;
     
-    @NotEmpty(message = "Preenchimento obrigatório")
     @Length( max=20, message = "O tamanho deve ser no máximo 15 caracteres")
     private String creci;
     
     @NotEmpty(message = "Preenchimento obrigatório")
-    @Length(min=12, max=12, message = "O tamanho deve ser entre 12 e 12 caracteres")
+    @Length(min=11, max=11, message = "O tamanho deve ser entre 11 e 11 caracteres")
     private String phone;
     
-    @NotEmpty(message = "Preenchimento obrigatório")
     @Length(min=11, max=14, message = "O CPF deve ter entre 11 e 14 caracteres")
     private String cpf;
     

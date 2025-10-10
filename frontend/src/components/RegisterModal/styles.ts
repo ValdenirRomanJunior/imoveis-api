@@ -123,6 +123,10 @@ export const SubmitButton = styled.button`
   cursor: pointer;
   transition: all 0.2s;
   margin-top: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
 
   &:hover:not(:disabled) {
     background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
@@ -156,4 +160,34 @@ export const SuccessMessage = styled.div`
   border-radius: 8px;
   font-size: 0.875rem;
   margin-bottom: 16px;
+`;
+
+export const PasswordInputContainer = styled.div`
+  position: relative;
+  display: flex;
+  align-items: center;
+`;
+
+export const EyeIcon = styled.button<{ $isVisible: boolean }>`
+  position: absolute;
+  right: 12px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.2rem;
+  color: ${props => props.$isVisible ? '#3b82f6' : '#6b7280'};
+  padding: 4px;
+  border-radius: 4px;
+  transition: all 0.2s;
+  z-index: 1;
+
+  &:hover {
+    background-color: #f3f4f6;
+    color: #374151;
+  }
+
+  &:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+  }
 `;

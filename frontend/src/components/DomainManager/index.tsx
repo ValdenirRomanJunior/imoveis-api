@@ -139,8 +139,13 @@ const DomainManager: React.FC<DomainManagerProps> = ({ accountId }) => {
   if (!domainInfo) {
     return (
       <DomainContainer>
-        <div className="loading-container">
-          <div className="spinner-border"></div>
+        <div className="domain-card">
+          <div className="domain-header">
+            <h4><FiGlobe />Gerenciar Domínios</h4>
+          </div>
+          <div className="alert alert-info">
+            <p>Carregando informações do domínio...</p>
+          </div>
         </div>
       </DomainContainer>
     );

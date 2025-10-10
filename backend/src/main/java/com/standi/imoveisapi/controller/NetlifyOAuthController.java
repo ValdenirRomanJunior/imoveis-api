@@ -79,21 +79,27 @@ public class NetlifyOAuthController {
             
             // Salvar token na conta
             Account account = accountService.find(accountId);
-            if (account != null) {
-                account.setNetlifyToken(accessToken);
-                accountService.update(account);
-                
-                logger.info("Token OAuth2 obtido com sucesso para account ID: {}", accountId);
-                
-                Map<String, Object> response = new HashMap<>();
-                response.put("success", true);
-                response.put("message", "Autorização concluída com sucesso");
-                response.put("accountId", accountId);
-                
-                return ResponseEntity.ok(response);
-            } else {
-                return ResponseEntity.badRequest().body(Map.of("error", "Conta não encontrada"));
+            if (account == null) {
+                logger.error("Conta não encontrada para account ID: {}", accountId);
+                Map<String, Object> errorResponse = new HashMap<>();
+                errorResponse.put("success", false);
+                errorResponse.put("error", "Conta não encontrada");
+                errorResponse.put("message", "A conta especificada não existe no sistema");
+                errorResponse.put("accountId", accountId);
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
             }
+            
+            account.setNetlifyToken(accessToken);
+            accountService.update(account);
+            
+            logger.info("Token OAuth2 obtido com sucesso para account ID: {}", accountId);
+            
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", true);
+            response.put("message", "Autorização concluída com sucesso");
+            response.put("accountId", accountId);
+            
+            return ResponseEntity.ok(response);
             
         } catch (Exception e) {
             logger.error("Erro ao processar callback OAuth2: ", e);
@@ -141,20 +147,29 @@ public class NetlifyOAuthController {
         try {
             Account account = accountService.find(accountId);
             if (account == null) {
-                return ResponseEntity.badRequest().body(Map.of("error", "Conta não encontrada"));
+                logger.error("Conta não encontrada para verificação de status, account ID: {}", accountId);
+                Map<String, Object> errorResponse = new HashMap<>();
+                errorResponse.put("success", false);
+                errorResponse.put("error", "Conta não encontrada");
+                errorResponse.put("message", "A conta especificada não existe no sistema");
+                errorResponse.put("accountId", accountId);
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
             }
 
             Map<String, Object> response = new HashMap<>();
+            response.put("success", true);
             response.put("accountId", accountId);
-            // response.put("authorized", account.getNetlifyToken() != null);
             response.put("authorized", account.getNetlifyToken() != null);
             
             return ResponseEntity.ok(response);
             
         } catch (Exception e) {
             logger.error("Erro ao verificar status de autorização: ", e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Map.of("error", "Erro interno do servidor"));
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("success", false);
+            errorResponse.put("error", "Erro interno do servidor");
+            errorResponse.put("message", "Ocorreu um erro interno ao verificar o status de autorização");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
         }
     }
 }

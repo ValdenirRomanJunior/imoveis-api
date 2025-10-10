@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { TailSpin } from 'react-loader-spinner';
 import { 
   ModalOverlay, 
   ModalContainer, 
@@ -11,7 +12,9 @@ import {
   Input, 
   SubmitButton, 
   ErrorMessage,
-  SuccessMessage 
+  SuccessMessage,
+  PasswordInputContainer,
+  EyeIcon
 } from './styles';
 
 interface RegisterModalProps {
@@ -27,7 +30,6 @@ interface FormData {
   email: string;
   password: string;
   confirmPassword: string;
-  creci: string;
   phone: string;
 }
 
@@ -43,20 +45,21 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose, onSucces
     email: '',
     password: '',
     confirmPassword: '',
-    creci: '',
     phone: ''
   });
 
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
   const [generalError, setGeneralError] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
+  const [showPassword, setShowPassword] = useState<boolean>(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState<boolean>(false);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     
-    // Validação especial para o campo phone - apenas números
+    // Validação especial para o campo phone - apenas números e máximo 11 caracteres
     if (name === 'phone') {
-      const numericValue = value.replace(/\D/g, '');
+      const numericValue = value.replace(/\D/g, '').slice(0, 11);
       setFormData(prev => ({
         ...prev,
         [name]: numericValue
@@ -97,9 +100,6 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose, onSucces
     }
     if (formData.password !== formData.confirmPassword) {
       newErrors.confirmPassword = 'Senhas não coincidem';
-    }
-    if (!formData.creci) {
-      newErrors.creci = 'CRECI é obrigatório';
     }
     if (!formData.phone || formData.phone.length < 10) {
       newErrors.phone = 'Telefone deve ter pelo menos 10 dígitos';
@@ -159,7 +159,6 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose, onSucces
           lastName: formData.lastName,
           email: formData.email,
           password: formData.password,
-          creci: formData.creci,
           phone: formData.phone
         }),
       });
@@ -249,44 +248,46 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose, onSucces
 
             <FormGroup>
               <Label>Senha *</Label>
-              <Input
-                type="password"
-                name="password"
-                value={formData.password}
-                onChange={handleInputChange}
-                placeholder="Digite sua senha (mín. 8 caracteres)"
-                required
-                maxLength={20}
-              />
+              <PasswordInputContainer>
+                <Input
+                  type={showPassword ? "text" : "password"}
+                  name="password"
+                  value={formData.password}
+                  onChange={handleInputChange}
+                  placeholder="Digite sua senha (mín. 8 caracteres)"
+                  required
+                  maxLength={20}
+                />
+                <EyeIcon 
+                  onClick={() => setShowPassword(!showPassword)}
+                  $isVisible={showPassword}
+                >
+                  {showPassword ? '👁️' : '👁️‍🗨️'}
+                </EyeIcon>
+              </PasswordInputContainer>
               {fieldErrors.password && <ErrorMessage>{fieldErrors.password}</ErrorMessage>}
             </FormGroup>
 
             <FormGroup>
               <Label>Confirmar Senha *</Label>
-              <Input
-                type="password"
-                name="confirmPassword"
-                value={formData.confirmPassword}
-                onChange={handleInputChange}
-                placeholder="Confirme sua senha"
-                required
-                maxLength={20}
-              />
+              <PasswordInputContainer>
+                <Input
+                  type={showConfirmPassword ? "text" : "password"}
+                  name="confirmPassword"
+                  value={formData.confirmPassword}
+                  onChange={handleInputChange}
+                  placeholder="Confirme sua senha"
+                  required
+                  maxLength={20}
+                />
+                <EyeIcon 
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  $isVisible={showConfirmPassword}
+                >
+                  {showConfirmPassword ? '👁️' : '👁️‍🗨️'}
+                </EyeIcon>
+              </PasswordInputContainer>
               {fieldErrors.confirmPassword && <ErrorMessage>{fieldErrors.confirmPassword}</ErrorMessage>}
-            </FormGroup>
-
-            <FormGroup>
-              <Label>CRECI *</Label>
-              <Input
-                type="text"
-                name="creci"
-                value={formData.creci}
-                onChange={handleInputChange}
-                placeholder="Digite seu CRECI"
-                required
-                maxLength={15}
-              />
-              {fieldErrors.creci && <ErrorMessage>{fieldErrors.creci}</ErrorMessage>}
             </FormGroup>
 
             <FormGroup>
@@ -298,7 +299,7 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose, onSucces
                 onChange={handleInputChange}
                 placeholder="Digite seu telefone (apenas números)"
                 required
-                maxLength={15}
+                maxLength={11}
               />
               {fieldErrors.phone && <ErrorMessage>{fieldErrors.phone}</ErrorMessage>}
             </FormGroup>
@@ -306,7 +307,14 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose, onSucces
             {generalError && <ErrorMessage>{generalError}</ErrorMessage>}
 
             <SubmitButton type="submit" disabled={loading}>
-              {loading ? 'Criando conta...' : 'Criar Conta Grátis'}
+              {loading ? (
+                <>
+                  <TailSpin height="20" width="20" color="#ffffff" />
+                  Criando conta...
+                </>
+              ) : (
+                'Criar Conta Grátis'
+              )}
             </SubmitButton>
           </form>
         </ModalBody>

@@ -41,5 +41,10 @@ public interface TenantRepository extends JpaRepository <Tenant,Long> {
 
 	//@Query("SELECT t FROM Tenant t LEFT JOIN t.perfis p WHERE t.account = :account")
 	List<Tenant> findAllByAccount(Account account);
+
+	// Métodos para buscar tenants recentes por ID (já que não temos createdAt)
+	List<Tenant> findTop10ByOrderByIdDesc();
+	
+	Page<Tenant> findAllByOrderByIdDesc(org.springframework.data.domain.Pageable pageable);
     
 	}

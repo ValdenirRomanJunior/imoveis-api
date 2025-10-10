@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Chart from 'react-apexcharts';
 import { ApexOptions } from 'apexcharts';
-import { getSystemOverview, getUsersStats, AdminStatsDTO, UsersStatsResponse } from '../../services/resources/adminStats';
+import { getSystemOverview, getUsersStats, getRecentUsersStats, getAccessMetrics, AdminStatsDTO, UsersStatsResponse, AccessMetricsDTO } from '../../services/resources/adminStats';
 import {
   AdminStatsContainer,
   StatsGrid,
@@ -15,9 +15,9 @@ import {
   ModalContent,
   CloseButton
 } from './styles';
-import { AiOutlineHome, AiOutlineUser } from 'react-icons/ai';
+import { AiOutlineHome, AiOutlineUser, AiOutlineEye } from 'react-icons/ai';
 import { IoCloudUploadOutline } from 'react-icons/io5';
-import { RiUserLine } from 'react-icons/ri';
+import { RiUserLine, RiMouseLine } from 'react-icons/ri';
 
 interface AdminStatsProps {
   isVisible: boolean;
@@ -26,6 +26,8 @@ interface AdminStatsProps {
 const AdminStats: React.FC<AdminStatsProps> = ({ isVisible }) => {
   const [stats, setStats] = useState<AdminStatsDTO | null>(null);
   const [usersStats, setUsersStats] = useState<UsersStatsResponse | null>(null);
+  const [recentUsersStats, setRecentUsersStats] = useState<UsersStatsResponse | null>(null);
+  const [accessMetrics, setAccessMetrics] = useState<AccessMetricsDTO | null>(null);
   const [selectedUser, setSelectedUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -34,6 +36,8 @@ const AdminStats: React.FC<AdminStatsProps> = ({ isVisible }) => {
     if (isVisible) {
       loadAdminStats();
       loadUsersStats();
+      loadRecentUsersStats();
+      loadAccessMetrics();
     }
   }, [isVisible]);
 
@@ -62,6 +66,32 @@ const AdminStats: React.FC<AdminStatsProps> = ({ isVisible }) => {
       setError('Erro ao carregar estatísticas de usuários');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const loadRecentUsersStats = async () => {
+    try {
+      const response = await getRecentUsersStats(0, 5);
+      if (response.status === 200) {
+        setRecentUsersStats(response.data);
+      } else {
+        setError('Erro ao carregar usuários recentes');
+      }
+    } catch (err) {
+      setError('Erro ao carregar usuários recentes');
+    }
+  };
+
+  const loadAccessMetrics = async () => {
+    try {
+      const response = await getAccessMetrics();
+      if (response.status === 200) {
+        setAccessMetrics(response.data);
+      } else {
+        setError('Erro ao carregar métricas de acesso');
+      }
+    } catch (err) {
+      setError('Erro ao carregar métricas de acesso');
     }
   };
 
@@ -172,104 +202,79 @@ const AdminStats: React.FC<AdminStatsProps> = ({ isVisible }) => {
             <span className='stat-number'>{stats?.totalLeads || 0}</span>
           </div>
         </StatCard>
+
+        <StatCard>
+          <div className='stat-icon'>
+            <AiOutlineEye />
+          </div>
+          <div className='stat-info'>
+            <h3>Acessos à Home</h3>
+            <span className='stat-number'>{accessMetrics?.total?.homeAccesses || 0}</span>
+            <small>Últimas 24h: {accessMetrics?.last24Hours?.homeAccesses || 0}</small>
+          </div>
+        </StatCard>
+
+        <StatCard>
+          <div className='stat-icon'>
+            <RiMouseLine />
+          </div>
+          <div className='stat-info'>
+            <h3>Cliques "Testar Agora"</h3>
+            <span className='stat-number'>{accessMetrics?.total?.testButtonClicks || 0}</span>
+            <small>Taxa de conversão: {accessMetrics?.conversionRate?.toFixed(1) || 0}%</small>
+          </div>
+        </StatCard>
       </StatsGrid>
 
-      <ChartsGrid>
-        <ChartContainer>
-          <h3>📈 Distribuição de Propriedades</h3>
-          <Chart
-            options={{
-               chart: {
-                 type: 'donut'
-               },
-               labels: ['Publicadas', 'Não Publicadas'],
-               colors: ['#28a745', '#ffc107'],
-               legend: {
-                 position: 'bottom'
-               },
-               responsive: [{
-                breakpoint: 480,
-                options: {
-                  chart: {
-                    width: 280
-                  },
-                  legend: {
-                    position: 'bottom'
-                  }
-                }
-              }]
-            }}
-            series={propertiesChartSeries}
-            type="donut"
-            height={300}
-          />
-        </ChartContainer>
 
-        <ChartContainer>
-          <h3>👥 Atividade de Usuários</h3>
-          <Chart
-            options={{
-               ...usersActivityChartOptions,
-               responsive: [{
-                breakpoint: 480,
-                options: {
-                  chart: {
-                    width: 280
-                  },
-                  plotOptions: {
-                    bar: {
-                      horizontal: false,
-                      columnWidth: '55%',
-                      endingShape: 'rounded'
-                    }
-                  }
-                }
-              }]
-            }}
-            series={usersActivitySeries}
-            type="bar"
-            height={300}
-          />
-        </ChartContainer>
-      </ChartsGrid>
 
       <TableContainer>
-        <h3>👤 Usuários Recentes</h3>
+        <h3>👤 Usuários Recentes (Últimas 24h)</h3>
         <UsersTable>
           <thead>
             <tr>
               <th>Nome</th>
               <th>Email</th>
+              <th>Data de Cadastro</th>
               <th>Propriedades</th>
               <th>Leads</th>
               <th>Ações</th>
             </tr>
           </thead>
           <tbody>
-            {usersStats?.content.slice(0, 5).map(user => (
-              <UserRow key={user.id}>
-                <td>{user.slug}</td>
-                <td>{user.email}</td>
-                <td>{user.propertiesCount}</td>
-                <td>{user.leadsCount}</td>
-                <td>
-                  <button 
-                    onClick={() => setSelectedUser(user)}
-                    style={{
-                      background: '#007bff',
-                      color: 'white',
-                      border: 'none',
-                      padding: '5px 10px',
-                      borderRadius: '4px',
-                      cursor: 'pointer',
-                      fontSize: '12px'
-                    }}
-                  >
-                    Ver Detalhes
-                  </button>
+            {recentUsersStats?.content && recentUsersStats.content.length > 0 ? (
+              recentUsersStats.content.map(user => (
+                <UserRow key={user.id}>
+                  <td>{user.slug}</td>
+                  <td>{user.email}</td>
+                  <td>{user.createdAt ? new Date(user.createdAt).toLocaleDateString('pt-BR') : 'N/A'}</td>
+                  <td>{user.propertiesCount}</td>
+                  <td>{user.leadsCount}</td>
+                  <td>
+                    <button 
+                      onClick={() => setSelectedUser(user)}
+                      style={{
+                        background: '#007bff',
+                        color: 'white',
+                        border: 'none',
+                        padding: '5px 10px',
+                        borderRadius: '4px',
+                        cursor: 'pointer',
+                        fontSize: '12px'
+                      }}
+                    >
+                      Ver Detalhes
+                    </button>
+                  </td>
+                </UserRow>
+              ))
+            ) : (
+              <UserRow>
+                <td colSpan={6} style={{ textAlign: 'center', color: '#666' }}>
+                  Nenhum usuário cadastrado nas últimas 24 horas
                 </td>
               </UserRow>
-            ))}
+            )}
           </tbody>
         </UsersTable>
       </TableContainer>

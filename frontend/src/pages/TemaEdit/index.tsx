@@ -37,7 +37,12 @@ import {
   SaveButton,
   TabContainer,
   Tab,
-  TabContent
+  TabContent,
+  DomainSection,
+  DomainCard,
+  DomainInputContainer,
+  DomainInput,
+  DomainButton
 } from './styles';
 import Header from '../../components/Header';
 
@@ -884,19 +889,13 @@ const TemaEdit: React.FC = () => {
         return (
           <TabContent>
             {/* Seção de Domínio */}
-            <div style={{ marginBottom: '32px' }}>
+            <DomainSection>
               <SectionTitle style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
                 <FiGlobe /> Configuração de Domínio
               </SectionTitle>
               
               {/* Subdomínio Automático */}
-              <div style={{ 
-                backgroundColor: '#f8fafc', 
-                padding: '16px', 
-                borderRadius: '8px', 
-                marginBottom: '16px',
-                border: '1px solid #e2e8f0'
-              }}>
+              <DomainCard style={{ marginBottom: '16px' }}>
                 <h4 style={{ margin: '0 0 8px 0', fontSize: '14px', fontWeight: '600' }}>Subdomínio Automático</h4>
                 <p style={{ margin: '0 0 8px 0', fontSize: '13px', color: '#64748b' }}>
                   Seu site está disponível automaticamente em:
@@ -918,15 +917,10 @@ const TemaEdit: React.FC = () => {
                     onClick={() => window.open(getSubdomainUrl(user?.slug || ''), '_blank')}
                   />
                 </div>
-              </div>
+              </DomainCard>
 
               {/* Domínio Personalizado */}
-              <div style={{ 
-                backgroundColor: '#f8fafc', 
-                padding: '16px', 
-                borderRadius: '8px', 
-                border: '1px solid #e2e8f0'
-              }}>
+              <DomainCard>
                 <h4 style={{ margin: '0 0 8px 0', fontSize: '14px', fontWeight: '600' }}>Domínio Personalizado</h4>
                 <p style={{ margin: '0 0 12px 0', fontSize: '13px', color: '#64748b' }}>
                   Configure seu próprio domínio para acessar o site
@@ -948,11 +942,15 @@ const TemaEdit: React.FC = () => {
                       }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                           <span style={{ fontFamily: 'monospace', fontSize: '14px' }}>{domain.domain}</span>
-                          {domain.verified ? (
-                            <FiCheck style={{ color: '#10b981' }} title="Verificado" />
-                          ) : (
-                            <FiX style={{ color: '#ef4444' }} title="Não verificado" />
-                          )}
+                          <span style={{
+                            padding: '2px 6px',
+                            fontSize: '11px',
+                            borderRadius: '4px',
+                            backgroundColor: domain.verified ? '#dcfce7' : '#fef3c7',
+                            color: domain.verified ? '#166534' : '#92400e'
+                          }}>
+                            {domain.verified ? 'Verificado' : 'Pendente'}
+                          </span>
                         </div>
                         <div style={{ display: 'flex', gap: '8px' }}>
                           {!domain.verified && (
@@ -988,25 +986,19 @@ const TemaEdit: React.FC = () => {
                 )}
                 
                 {/* Adicionar novo domínio */}
-                <div style={{ display: 'flex', gap: '8px', marginBottom: '12px' }}>
-                  <Input
+                <DomainInputContainer>
+                  <DomainInput
                     value={customDomain}
                     onChange={(e) => setCustomDomain(e.target.value)}
                     placeholder="Ex: www.minhaImobiliaria.com.br"
-                    style={{ flex: 1 }}
                   />
-                  <Button
+                  <DomainButton
                     onClick={addCustomDomain}
                     disabled={domainLoading || !customDomain.trim()}
-                    style={{ 
-                      backgroundColor: '#10b981',
-                      color: 'white',
-                      whiteSpace: 'nowrap'
-                    }}
                   >
                     {domainLoading ? 'Adicionando...' : 'Adicionar'}
-                  </Button>
-                </div>
+                  </DomainButton>
+                </DomainInputContainer>
                 
                 {/* Mensagens */}
                 {domainMessage && (
@@ -1026,8 +1018,8 @@ const TemaEdit: React.FC = () => {
                 <small style={{ color: '#6c757d', fontSize: '12px' }}>
                   Após adicionar um domínio personalizado, você precisará configurar os registros DNS.
                 </small>
-              </div>
-            </div>
+              </DomainCard>
+            </DomainSection>
 
             {/* Outras configurações */}
             <FormGroup>

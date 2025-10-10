@@ -1,9 +1,10 @@
-import  api  from '../../utils/requests';
+import api from '../../utils/requests';
 
 export interface AdminStatsDTO {
   totalUsers: number;
   totalProperties: number;
   totalLeads: number;
+  totalOpportunities: number;
   publishedProperties: number;
   activeUsers: number;
 }
@@ -11,14 +12,10 @@ export interface AdminStatsDTO {
 export interface UserStatsDTO {
   id: number;
   slug: string;
-  lastName: string;
   email: string;
-  phone: string;
-  cpf: string;
-  createdAt: string;
   propertiesCount: number;
   leadsCount: number;
-  publishedPropertiesCount: number;
+  createdAt?: string;
 }
 
 export interface UsersStatsResponse {
@@ -29,24 +26,46 @@ export interface UsersStatsResponse {
   number: number;
 }
 
+export interface AccessMetricsDTO {
+  total: {
+    homeAccesses: number;
+    testButtonClicks: number;
+    uniqueHomeAccesses: number;
+  };
+  last24Hours: {
+    homeAccesses: number;
+    testButtonClicks: number;
+    uniqueHomeAccesses: number;
+  };
+  lastWeek: {
+    homeAccesses: number;
+    testButtonClicks: number;
+  };
+  lastMonth: {
+    homeAccesses: number;
+    testButtonClicks: number;
+  };
+  conversionRate: number;
+}
+
 export const getSystemOverview = () => {
-  return api.get<AdminStatsDTO>('/admin/stats/overview')
-    .then(response => {
-      return response;
-    })
-    .catch((error) => {
-      return error;
-    });
+  return api.get('/admin/stats/overview');
 };
 
-export const getUsersStats = (page = 0, linesPerPage = 24, orderBy = 'slug', direction = 'ASC') => {
-  return api.get<UsersStatsResponse>(`/admin/stats/users?page=${page}&linesPerPage=${linesPerPage}&orderBy=${orderBy}&direction=${direction}`)
-    .then(response => {
-      return response;
-    })
-    .catch((error) => {
-      return error;
-    });
+export const getUsersStats = (page: number, size: number) => {
+  return api.get(`/admin/stats/users?page=${page}&size=${size}`);
+};
+
+export const getRecentUsersStats = (page: number, size: number) => {
+  return api.get(`/admin/stats/users/recent?page=${page}&size=${size}`);
+};
+
+export const getAccessMetrics = () => {
+  return api.get('/admin/stats/access-metrics');
+};
+
+export const trackAccess = (page: string) => {
+  return api.post('/admin/stats/track-access', { page });
 };
 
 export const getUserDetailedStats = (userId: number) => {

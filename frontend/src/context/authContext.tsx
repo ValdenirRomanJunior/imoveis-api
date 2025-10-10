@@ -27,6 +27,7 @@ interface UserDto{
     endDate?:string;
     imageUrl?:string;
     domain?:string;
+    phone?:string;
     
 }
 
@@ -82,12 +83,17 @@ export const AuthProvider:React.FC = ({children}) => {
     
 
     const getCurrentUser = async () =>{
-      // if user voltar nulo ou erro ir para login
-      localStorage.removeItem('user')  
-        const {data}= await me() ;
-        setUser(data as UserDto)
-           localStorage.setItem('user', JSON.stringify(data))
-        return data as UserDto;
+        try {
+            const {data} = await me();
+            setUser(data as UserDto);
+            localStorage.setItem('user', JSON.stringify(data));
+            return data as UserDto;
+        } catch (error) {
+            console.error('Erro ao buscar dados do usuário:', error);
+            // Só remove o localStorage em caso de erro de autenticação
+            localStorage.removeItem('user');
+            throw error;
+        }
     }
 
 

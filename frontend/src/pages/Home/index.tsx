@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { HiHome, HiUsers, HiChartBar, HiClock, HiStar, HiKey } from 'react-icons/hi';
 import { HiRocketLaunch } from 'react-icons/hi2';
 import { FaGlobe, FaUsers, FaPlug, FaImage, FaBars, FaTimes } from 'react-icons/fa';
 import { useCountUp } from '../../hooks/useCountUp';
+import { trackAccess } from '../../services/resources/adminStats';
 import RegisterModal from '../../components/RegisterModal';
 import RegisterSuccess from '../../components/RegisterSuccess';
 import tela1 from '../../assets/images/tela-1.png';
@@ -260,16 +261,29 @@ const Home: React.FC = () => {
   const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false);
   const [showSuccessPage, setShowSuccessPage] = useState(false);
   const [registeredUser, setRegisteredUser] = useState<any>(null);
+
+  // Tracking de acesso à página Home
+  useEffect(() => {
+    const trackHomeAccess = async () => {
+      try {
+        await trackAccess('HOME_ACCESS');
+      } catch (error) {
+        console.error('Erro ao rastrear acesso à home:', error);
+      }
+    };
+
+    trackHomeAccess();
+  }, []);
   
   // Preços dos planos
   const planPrices = {
     lite: {
-      monthly: 99,
-      annual: 89 // 10% de desconto
+      monthly: 99.00,
+      annual: 89.10 // 10% de desconto
     },
     pro: {
-      monthly: 239,
-      annual: 215 // 10% de desconto
+      monthly: 239.00,
+      annual: 215.10 // 10% de desconto
     }
   };
   
@@ -303,7 +317,12 @@ const Home: React.FC = () => {
     setIsMobileMenuOpen(false);
   };
 
-  const handleOpenRegisterModal = () => {
+  const handleOpenRegisterModal = async () => {
+    try {
+      await trackAccess('TEST_BUTTON_CLICK');
+    } catch (error) {
+      console.error('Erro ao rastrear clique no botão de teste:', error);
+    }
     setIsRegisterModalOpen(true);
   };
 
@@ -394,8 +413,8 @@ const Home: React.FC = () => {
            
               <LoginButton as={Link} to="/login">
               Acessar
-            </LoginButton>
-             <RegisterButton as={Link} to="/register">
+            </LoginButton >
+             <RegisterButton onClick={handleOpenRegisterModal} style={{cursor:'pointer'}}>
               Teste Grátis
             </RegisterButton>
       
@@ -438,7 +457,7 @@ const Home: React.FC = () => {
                 <MobileSidebarLoginButton as={Link} to="/login" onClick={closeMobileMenu}>
                   Fazer Login
                 </MobileSidebarLoginButton>
-                <MobileSidebarRegisterButton as={Link} to="/register" onClick={closeMobileMenu}>
+                <MobileSidebarRegisterButton onClick={handleOpenRegisterModal}>
                   Teste Grátis
                 </MobileSidebarRegisterButton> 
               </MobileSidebarNav>
@@ -481,7 +500,7 @@ const Home: React.FC = () => {
             </Subtitle>
             <p>
               O site imobiliário que aparece nas buscas por I.A e do Google. Gestão de imóveis, gestão de clientes, 
-              editor do site em um só lugar, impulsionando suas vendas.
+              editor do site em um só lugar.
             </p>
             <CTAButton onClick={handleOpenRegisterModal}>
               Testar grátis Agora
@@ -870,7 +889,7 @@ const Home: React.FC = () => {
                 <PricingPeriod>/mês</PricingPeriod>
               </PricingPrice>
               <PricingFeatures>
-               <PricingFeature style={{fontWeight:'bold'}}>3 usuários</PricingFeature>
+               <PricingFeature style={{fontWeight:'bold'}}>1 usuário</PricingFeature>
                 <PricingFeature>Site profissional e personalizável</PricingFeature>
                 <PricingFeature>Gestão de imóveis e clientes</PricingFeature>
                 <PricingFeature>Editor do site</PricingFeature>

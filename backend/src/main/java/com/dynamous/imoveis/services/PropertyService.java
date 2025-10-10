@@ -140,12 +140,17 @@ public class PropertyService {
          
     	Account account = accountService.find(property.getAccount().getId());
     	property = propertyRepository.save(property);
-         if(files !=null) {       	       	 	
-    	for( MultipartFile file: files ) {    		    		  
-    		 URI uri=serviceFile.uploadPropertyPictures(file,account, property);
+         if(files !=null) {
+             // Validação: máximo de 20 fotos por imóvel
+             if(files.size() > 20) {
+                 throw new IllegalArgumentException("É permitido no máximo 20 fotos por imóvel");
+             }
+             
+    	     for( MultipartFile file: files ) {    		    		  
+    		     URI uri=serviceFile.uploadPropertyPictures(file,account, property);
     		
-    	}	 
-     }    	    	    	 
+    	     }	 
+         }    	    	    	 
            addressRepository.save(property.getAddress());
                     
            
@@ -363,10 +368,18 @@ public class PropertyService {
 	 s3Service.deleteAllFilesFromUpdate(listToDelete);
 	 
 
-    if(files !=null) {       	       	 	
-	for( MultipartFile file: files ) {
+    if(files !=null) {
+        // Validação: máximo de 20 fotos por imóvel (considerando fotos existentes + novas fotos)
+        int existingImagesCount = propAux.getImages() != null ? propAux.getImages().size() : 0;
+        int totalImagesAfterUpdate = existingImagesCount + files.size() - (propertyUpdateDTO.getDeletedIds() != null ? propertyUpdateDTO.getDeletedIds().size() : 0);
+        
+        if(totalImagesAfterUpdate > 20) {
+            throw new IllegalArgumentException("É permitido no máximo 20 fotos por imóvel. Atualmente há " + existingImagesCount + " fotos, você está tentando adicionar " + files.size() + " novas fotos.");
+        }
+        
+	    for( MultipartFile file: files ) {
 		    		  
-		 URI uri= serviceFile.uploadPropertyPictures(file,account,propAux);
+		     URI uri= serviceFile.uploadPropertyPictures(file,account,propAux);
 			       		
 		}	 		
 	}
