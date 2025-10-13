@@ -31,13 +31,13 @@ public class VercelDomainService {
     /**
      * Adiciona um subdomínio automaticamente para uma nova conta
      * @param companyName Nome da empresa que será usado como subdomínio
-     * @param accountId ID da conta para garantir unicidade
+     * @param accountId ID da conta
      * @return o subdomínio criado ou null se falhou
      */
     public String createSubdomain(String companyName, Long accountId) {
         try {
-            String baseSubdomain = sanitizeCompanyName(companyName) + accountId;
-            String fullSubdomain = baseSubdomain + ".standi.com.br";
+            String baseSubdomain = sanitizeCompanyName(companyName);
+            String fullSubdomain = baseSubdomain + accountId + ".standi.com.br";
             
             boolean success = addDomainToProject(fullSubdomain);
             if (success) {
@@ -46,10 +46,11 @@ public class VercelDomainService {
                 return null;
             }
         } catch (Exception e) {
-            logger.error("Erro ao criar subdomínio para empresa: " + companyName + " com ID: " + accountId, e);
+            logger.error("Erro ao criar subdomínio para empresa: " + companyName, e);
             return null;
         }
     }
+    
     
     /**
      * Adiciona um domínio personalizado ao projeto Vercel

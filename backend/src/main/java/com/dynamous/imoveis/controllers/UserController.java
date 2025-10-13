@@ -8,6 +8,7 @@ import com.dynamous.imoveis.repositories.UserAdminRepository;
 import com.dynamous.imoveis.security.UserSS;
 import com.dynamous.imoveis.services.UserService;
 import com.dynamous.imoveis.services.UserTenantService;
+import com.dynamous.imoveis.services.TenantService;
 import com.dynamous.imoveis.services.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -31,7 +32,10 @@ public class UserController {
     private UserAdminRepository userAdminRepository;
 
     @Autowired
-    private UserTenantService tenantService;
+    private UserTenantService userTenantService;
+
+    @Autowired
+    private TenantService tenantService;
 
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
@@ -90,10 +94,17 @@ public class UserController {
                     return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
                 }
                 
+                // Criar um objeto Tenant com os novos valores para usar o TenantService.update()
+                Tenant updatedTenant = new Tenant();
+                updatedTenant.setId(tenant.getId());
+                
                 // Atualizar campos do tenant
                 if (updates.containsKey("slug")) {
-                    tenant.setSlug(updates.get("slug"));
+                    updatedTenant.setSlug(updates.get("slug"));
+                } else {
+                    updatedTenant.setSlug(tenant.getSlug());
                 }
+                
                 if (updates.containsKey("email")) {
                     String newEmail = updates.get("email");
                     // Verificar se email já existe
@@ -104,22 +115,46 @@ public class UserController {
                         response.put("message", "Este email já está em uso");
                         return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
                     }
-                    tenant.setEmail(newEmail);
-                }
-                if (updates.containsKey("creci")) {
-                    tenant.setCreci(updates.get("creci"));
-                }
-                if (updates.containsKey("phone")) {
-                    tenant.setPhone(updates.get("phone"));
+                    updatedTenant.setEmail(newEmail);
+                } else {
+                    updatedTenant.setEmail(tenant.getEmail());
                 }
                 
-                tenantRepository.save(tenant);
+                if (updates.containsKey("creci")) {
+                    updatedTenant.setCreci(updates.get("creci"));
+                } else {
+                    updatedTenant.setCreci(tenant.getCreci());
+                }
+                
+                if (updates.containsKey("phone")) {
+                    updatedTenant.setPhone(updates.get("phone"));
+                } else {
+                    updatedTenant.setPhone(tenant.getPhone());
+                }
+                
+                // Copiar outros campos necessários
+                updatedTenant.setLastName(tenant.getLastName());
+                updatedTenant.setStatus(tenant.getStatus());
+                updatedTenant.setPassword(tenant.getPassword());
+                updatedTenant.setVerification(tenant.getVerification());
+                updatedTenant.setDomain(tenant.getDomain());
+                updatedTenant.setRenovation(tenant.getRenovation());
+                updatedTenant.setEndDate(tenant.getEndDate());
+                updatedTenant.setAccount(tenant.getAccount());
+                
+                // Usar TenantService.update() que contém a lógica de atualização de subdomínio
+                tenantService.update(updatedTenant);
             }
             
             response.put("success", true);
             response.put("message", "Perfil atualizado com sucesso");
             return ResponseEntity.ok(response);
             
+        } catch (IllegalArgumentException e) {
+            // Captura erros de validação (como nome duplicado)
+            response.put("success", false);
+            response.put("message", e.getMessage());
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
         } catch (Exception e) {
             response.put("success", false);
             response.put("message", "Erro interno do servidor: " + e.getMessage());

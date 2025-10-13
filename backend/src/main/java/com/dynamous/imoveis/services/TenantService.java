@@ -158,7 +158,48 @@ public class TenantService {
     
 
     private void updateData(Tenant newObj, Tenant tenant) {
-        newObj.setSlug(tenant.getSlug());
+        // Verifica se o slug foi alterado
+        String oldSlug = newObj.getSlug();
+        String newSlug = tenant.getSlug();
+        
+        if (oldSlug != null && newSlug != null && !oldSlug.equals(newSlug)) {
+            try {
+                // Constrói o subdomínio antigo no formato correto (com accountId, como foi criado)
+                String oldSanitizedSlug = sanitizeCompanyName(oldSlug);
+                Long accountId = newObj.getAccount() != null ? newObj.getAccount().getId() : null;
+                String oldSubdomain = oldSanitizedSlug + accountId + ".standi.com.br";
+                
+                // Remove o subdomínio antigo da Vercel
+                boolean removed = vercelDomainService.removeDomain(oldSubdomain);
+                System.out.println("Tentativa de remoção do subdomínio: " + oldSubdomain + " - Sucesso: " + removed);
+                
+                // Cria o novo subdomínio na Vercel (com ID, mesmo na edição)
+                String newSubdomain = vercelDomainService.createSubdomain(newSlug, accountId);
+                
+                // Verifica se a criação do novo subdomínio foi bem-sucedida
+                if (newSubdomain == null) {
+                    throw new RuntimeException("Falha ao criar novo subdomínio na Vercel");
+                }
+                
+                System.out.println("Novo subdomínio criado: " + newSubdomain);
+                System.out.println("Subdomínio atualizado na Vercel: " + oldSlug + " -> " + newSlug);
+                
+                // Se chegou até aqui, a operação na Vercel foi bem-sucedida
+                // Atualiza o slug no objeto
+                newObj.setSlug(tenant.getSlug());
+                
+            } catch (Exception e) {
+                System.err.println("Erro ao atualizar subdomínio na Vercel: " + e.getMessage());
+                e.printStackTrace();
+                // Lança exceção para interromper a atualização do nome
+                throw new RuntimeException("Não foi possível atualizar o subdomínio na Vercel. O nome da imobiliária não foi alterado.", e);
+            }
+        } else {
+            // Se o slug não foi alterado, atualiza normalmente
+            newObj.setSlug(tenant.getSlug());
+        }
+        
+        // Atualiza os outros campos (que não dependem da Vercel)
         newObj.setEmail(tenant.getEmail());
         newObj.setLastName(tenant.getLastName());
         newObj.setStatus(tenant.getStatus());
@@ -170,7 +211,22 @@ public class TenantService {
         newObj.setEndDate(tenant.getEndDate());
 
     }
-
+    
+    /**
+     * Sanitiza o nome da empresa para usar como subdomínio (mesmo método do VercelDomainService)
+     */
+    private String sanitizeCompanyName(String companyName) {
+        if (companyName == null) {
+            return "empresa";
+        }
+        
+        return companyName
+            .toLowerCase()
+            .replaceAll("[^a-z0-9-]", "-")
+            .replaceAll("-+", "-")
+            .replaceAll("^-|-$", "")
+            .substring(0, Math.min(companyName.length(), 63)); // Limite DNS
+    }
     public Tenant updateNoLogin(Tenant tenant) {
         Tenant newObj= findSite(tenant.getId());
         updateData(newObj,tenant);

@@ -111,6 +111,7 @@ const TemaEdit: React.FC = () => {
   const [verifying, setVerifying] = useState(false);
   const [domainMessage, setDomainMessage] = useState<{ type: 'success' | 'error' | 'info'; text: string } | null>(null);
   const [verificationStatus, setVerificationStatus] = useState<any>(null);
+  const [showDnsModal, setShowDnsModal] = useState(false);
   const [themeConfig, setThemeConfig] = useState<ThemeConfig>({
     name: 'Tema Padrão',
     mainColor: '#007bff',
@@ -1015,9 +1016,26 @@ const TemaEdit: React.FC = () => {
                   </div>
                 )}
                 
-                <small style={{ color: '#6c757d', fontSize: '12px' }}>
-                  Após adicionar um domínio personalizado, você precisará configurar os registros DNS.
-                </small>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <small style={{ color: '#6c757d', fontSize: '12px' }}>
+                    Após adicionar um domínio personalizado, você precisará configurar os registros DNS.
+                  </small>
+                  <button
+                    onClick={() => setShowDnsModal(true)}
+                    style={{
+                      background: 'none',
+                      border: 'none',
+                      color: '#3b82f6',
+                      fontSize: '12px',
+                      textDecoration: 'underline',
+                      cursor: 'pointer',
+                      padding: '0',
+                      margin: '0'
+                    }}
+                  >
+                    Clique Aqui
+                  </button>
+                </div>
               </DomainCard>
             </DomainSection>
 
@@ -1231,7 +1249,152 @@ const TemaEdit: React.FC = () => {
           </button>
         </div>
       </PreviewPanel>
-    </TemaEditContainer></>
+    </TemaEditContainer>
+
+    {/* Modal de Instruções DNS */}
+    {showDnsModal && (
+      <div style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        zIndex: 1000
+      }}>
+        <div style={{
+          backgroundColor: 'white',
+          borderRadius: '8px',
+          padding: '24px',
+          maxWidth: '600px',
+          width: '90%',
+          maxHeight: '80vh',
+          overflow: 'auto',
+          position: 'relative'
+        }}>
+          <div style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            marginBottom: '20px'
+          }}>
+            <h3 style={{ margin: 0, color: '#1f2937' }}>Configuração de Registros DNS</h3>
+            <button
+              onClick={() => setShowDnsModal(false)}
+              style={{
+                background: 'none',
+                border: 'none',
+                fontSize: '24px',
+                cursor: 'pointer',
+                color: '#6b7280',
+                padding: '0',
+                lineHeight: '1'
+              }}
+            >
+              ×
+            </button>
+          </div>
+
+          <div style={{ color: '#374151', lineHeight: '1.6' }}>
+            <p style={{ marginBottom: '16px' }}>
+              Para configurar seu domínio personalizado, siga estas instruções:
+            </p>
+
+            <div style={{ marginBottom: '20px' }}>
+              <h4 style={{ color: '#1f2937', marginBottom: '8px' }}>1. Acesse o painel do seu provedor de DNS</h4>
+              <p style={{ marginBottom: '0', fontSize: '14px', color: '#6b7280' }}>
+                Entre no painel de controle onde você registrou seu domínio (ex: Registro.br, GoDaddy, Hostinger, etc.)
+              </p>
+            </div>
+
+            <div style={{ marginBottom: '20px' }}>
+              <h4 style={{ color: '#1f2937', marginBottom: '8px' }}>2. Crie os seguintes registros DNS:</h4>
+              
+              <div style={{
+                backgroundColor: '#f9fafb',
+                border: '1px solid #e5e7eb',
+                borderRadius: '6px',
+                padding: '16px',
+                marginBottom: '12px'
+              }}>
+                <strong>Registro CNAME para www:</strong>
+                <div style={{ fontFamily: 'monospace', fontSize: '14px', marginTop: '8px' }}>
+                  <div>Nome/Host: <strong>www</strong></div>
+                  <div>Valor/Destino: <strong>{user?.slug || 'seu-slug'}{user?.accountId ? `-${user.accountId}` : user?.id ? `-${user.id}` : ''}.standi.com.br</strong></div>
+                  <div>TTL: <strong>3600</strong> (ou deixe o padrão)</div>
+                </div>
+              </div>
+
+              <div style={{
+                backgroundColor: '#f9fafb',
+                border: '1px solid #e5e7eb',
+                borderRadius: '6px',
+                padding: '16px'
+              }}>
+                <strong>Registro A para domínio raiz (opcional):</strong>
+                <div style={{ fontFamily: 'monospace', fontSize: '14px', marginTop: '8px' }}>
+                  <div>Nome/Host: <strong>@</strong> (ou deixe vazio)</div>
+                  <div>Valor/Destino: <strong>76.76.19.61</strong></div>
+                  <div>TTL: <strong>3600</strong> (ou deixe o padrão)</div>
+                </div>
+              </div>
+            </div>
+
+            <div style={{ marginBottom: '20px' }}>
+              <h4 style={{ color: '#1f2937', marginBottom: '8px' }}>3. Aguarde a propagação</h4>
+              <p style={{ marginBottom: '0', fontSize: '14px', color: '#6b7280' }}>
+                A propagação DNS pode levar de 15 minutos até 24 horas. Durante este período, seu domínio pode não funcionar corretamente.
+              </p>
+            </div>
+
+            <div style={{ marginBottom: '20px' }}>
+              <h4 style={{ color: '#1f2937', marginBottom: '8px' }}>4. Teste seu domínio</h4>
+              <p style={{ marginBottom: '0', fontSize: '14px', color: '#6b7280' }}>
+                Após a propagação, acesse seu domínio personalizado para verificar se está funcionando corretamente.
+              </p>
+            </div>
+
+            <div style={{
+              backgroundColor: '#fef3c7',
+              border: '1px solid #f59e0b',
+              borderRadius: '6px',
+              padding: '12px',
+              marginTop: '16px'
+            }}>
+              <strong style={{ color: '#92400e' }}>⚠️ Importante:</strong>
+              <p style={{ margin: '4px 0 0 0', fontSize: '14px', color: '#92400e' }}>
+                Certifique-se de que seu domínio esteja apontando corretamente antes de remover configurações antigas.
+              </p>
+            </div>
+          </div>
+
+          <div style={{
+            marginTop: '24px',
+            display: 'flex',
+            justifyContent: 'flex-end'
+          }}>
+            <button
+              onClick={() => setShowDnsModal(false)}
+              style={{
+                backgroundColor: '#3b82f6',
+                color: 'white',
+                border: 'none',
+                borderRadius: '6px',
+                padding: '8px 16px',
+                cursor: 'pointer',
+                fontSize: '14px'
+              }}
+            >
+              Entendi
+            </button>
+          </div>
+        </div>
+      </div>
+    )}
+    </>
   );
 };
 

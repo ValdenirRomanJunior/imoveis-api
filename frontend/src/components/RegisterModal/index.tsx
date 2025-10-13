@@ -156,8 +156,8 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose, onSucces
   if (!isOpen) return null;
 
   return (
-    <ModalOverlay onClick={onClose}>
-      <ModalContainer onClick={(e) => e.stopPropagation()}>
+    <ModalOverlay>
+      <ModalContainer>
         <ModalHeader>
           <ModalTitle>Criar Conta - Teste Grátis</ModalTitle>
           <CloseButton onClick={onClose}>&times;</CloseButton>
