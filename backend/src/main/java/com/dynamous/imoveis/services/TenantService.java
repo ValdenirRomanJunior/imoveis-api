@@ -1,19 +1,17 @@
 package com.dynamous.imoveis.services;
 
-import com.amazonaws.AmazonServiceException;
 import com.dynamous.imoveis.dto.TenantDTO;
 import com.dynamous.imoveis.dto.TenantNewDTO;
 import com.dynamous.imoveis.dto.TenantUpdateDTO;
-import com.dynamous.imoveis.entities.Account;
-import com.dynamous.imoveis.entities.Property;
 import com.dynamous.imoveis.entities.Tenant;
+import com.dynamous.imoveis.entities.Account;
 import com.dynamous.imoveis.enums.Perfil;
 import com.dynamous.imoveis.enums.PlanType;
 import com.dynamous.imoveis.enums.Status;
 import com.dynamous.imoveis.enums.Verification;
+import com.dynamous.imoveis.repositories.TenantRepository;
 import com.dynamous.imoveis.repositories.AccountRepository;
 import com.dynamous.imoveis.repositories.LeadRepository;
-import com.dynamous.imoveis.repositories.TenantRepository;
 import com.dynamous.imoveis.security.UserSS;
 import com.dynamous.imoveis.services.exceptions.AuthorizationException;
 import com.dynamous.imoveis.services.exceptions.DataIntegrityException;
@@ -23,10 +21,11 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import java.net.URISyntaxException;
+
 import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
@@ -34,6 +33,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.Random;
 
 
 @Service
@@ -67,6 +67,8 @@ public class TenantService {
 	
 	@Autowired
 	private VercelDomainService vercelDomainService;
+	
+	private Random rand = new Random();
     
    
     public Tenant find(Long id) {
@@ -114,7 +116,7 @@ public class TenantService {
 
 	
          obj.addPerfil(Perfil.ACCOUNT);
-         Account account = new Account(null,null,obj.getDomain(),obj.getSlug(),null,obj.getCreci(),obj.getProprietario());
+         Account account = new Account(null,null,obj.getDomain(),obj.getSlug(),null,obj.getCreci(),null);
          account.setEmail(obj.getEmail()); // Copiar o email do tenant para a account
          account.setCpf(obj.getCpf()); // Copiar o CPF do tenant para a account
          
@@ -225,9 +227,14 @@ public class TenantService {
     public Tenant fromDTO(TenantNewDTO objDto){
     		
     		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");   		
-    		String newDate= sdf.format(new Date()); 
-    		Tenant tenant = new Tenant(null, objDto.getSlug(), objDto.getEmail(),pe.encode(objDto.getPassword()), Status.ATIVO,objDto.getLastName(),Verification.VERIFICADO,objDto.getCreci(),objDto.getCpf(),newDate,null,null,null,objDto.getProprietario());  		
+    		String newDate= sdf.format(new Date());
+    		
+    		// Gerar senha automaticamente
+    		String generatedPassword = generateRandomPassword();
+    		
+    		Tenant tenant = new Tenant(null, objDto.getSlug(), objDto.getEmail(),pe.encode(generatedPassword), Status.ATIVO,null,Verification.VERIFICADO,null,null,newDate,null,null,null,null);  		
             tenant.setPhone(objDto.getPhone());
+            tenant.setPlainPassword(generatedPassword); // Salvar senha em texto plano
             tenant.addPerfil(Perfil.TENANT);
             return tenant;
     		
@@ -245,6 +252,7 @@ public class TenantService {
     	  			
     		String endDate= generateEndDate(new Date(),objDto.getSignedDays());
     		tenant = new Tenant(objDto.getId(), objDto.getSlug(), objDto.getEmail(),pe.encode(objDto.getPassword()), Status.toEnum(objDto.getStatus()),objDto.getLastName(),Verification.toEnum(objDto.getVerification()),objDto.getCreci(),null,ten.getStart(),renovation,endDate,objDto.getDomain(),objDto.getProprietario());
+    	    tenant.setPlainPassword(objDto.getPassword()); // Salvar senha em texto plano
     	    tenant.addPerfil(Perfil.TENANT);
     	    tenant.addPerfil(Perfil.ACCOUNT);
            
@@ -254,10 +262,13 @@ public class TenantService {
     	Tenant tenantAux = find(objDto.getId());
 		 Account  newObj =  accountService.find(tenantAux.getAccount().getId());
 	     Account account = new Account(newObj.getId(),null,objDto.getDomain(),objDto.getSlug(),null,objDto.getCreci(), objDto.getProprietario());
+	     account.setEmail(objDto.getEmail());
+	     account.setCpf(tenantAux.getCpf());
         accountRepo.save(account);
         tenantAux.setAccount(account);
     	
 		tenant = new Tenant(objDto.getId(), objDto.getSlug(), objDto.getEmail(),pe.encode(objDto.getPassword()), Status.toEnum(objDto.getStatus()),objDto.getLastName(),Verification.toEnum(objDto.getVerification()),objDto.getCreci(),null,ten.getStart(),ten.getRenovation(),ten.getEndDate(),objDto.getDomain(),objDto.getProprietario());
+        tenant.setPlainPassword(objDto.getPassword()); // Salvar senha em texto plano
         tenant.addPerfil(Perfil.TENANT);
         tenant.addPerfil(Perfil.ACCOUNT);
         
@@ -269,6 +280,7 @@ public class TenantService {
 
     public Tenant fromDTO(TenantDTO objDto) { 
     		Tenant tenant = new Tenant(objDto.getId(), objDto.getSlug(), objDto.getEmail(), pe.encode(objDto.getPassword()), Status.toEnum(objDto.getStatus().getCod()),objDto.getLastName(),Verification.toEnum(objDto.getVerification().getCod()),objDto.getCreci(),null,objDto.getStart(),objDto.getRenovation(),objDto.getEndDate(),null,null);
+            tenant.setPlainPassword(objDto.getPassword()); // Salvar senha em texto plano
             tenant.addPerfil(Perfil.TENANT);
             return tenant;
     		  	
@@ -305,5 +317,32 @@ public class TenantService {
 		        return tenant.orElseThrow(() -> new ObjectNotFoundException(
 		                "Página não encontrada! Id:" + ", Type" + Tenant.class.getName()));
 		    }
+	   
+	   /**
+	    * Gera uma senha aleatória de 8 caracteres
+	    */
+	   private String generateRandomPassword() {
+		   char[] vet = new char[8];
+		   for(int i=0; i<8; i++) {
+			   vet[i] = randomChar();
+		   }
+		   return new String(vet);
+	   }
+	   
+	   /**
+	    * Gera um caractere aleatório (dígito, letra maiúscula ou minúscula)
+	    */
+	   private char randomChar() {
+		   int opt = rand.nextInt(3);
+		   if(opt==0) {//gera um digito
+			   return (char)(rand.nextInt(10)+48);
+		   }
+		   else if(opt== 1) {//gera letra maiuscula
+			   return (char)(rand.nextInt(26) + 65);
+		   }
+		   else {//gera letra minuscula
+			   return (char)(rand.nextInt(26) + 97);
+		   }
+	   }
 	  
 }

@@ -16,6 +16,15 @@ export interface UserStatsDTO {
   propertiesCount: number;
   leadsCount: number;
   createdAt?: string;
+  // Informações de plano
+  planType?: string;
+  planName?: string;
+  planStartDate?: string;
+  planEndDate?: string;
+  planStatus?: string;
+  isTrialActive?: boolean;
+  isPlanActive?: boolean;
+  isPlanExpired?: boolean;
 }
 
 export interface UsersStatsResponse {
@@ -70,6 +79,16 @@ export const trackAccess = (page: string) => {
 
 export const getUserDetailedStats = (userId: number) => {
   return api.get<UserStatsDTO>(`/admin/stats/users/${userId}`)
+    .then(response => {
+      return response;
+    })
+    .catch((error) => {
+      return error;
+    });
+};
+
+export const getUserFullDetails = (userId: number) => {
+  return api.get<UserStatsDTO>(`/admin/stats/users/${userId}/details`)
     .then(response => {
       return response;
     })

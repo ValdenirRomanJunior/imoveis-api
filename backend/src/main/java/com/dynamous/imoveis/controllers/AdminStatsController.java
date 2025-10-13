@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -22,6 +23,7 @@ import com.dynamous.imoveis.services.AccessMetricsService;
 import com.dynamous.imoveis.services.NotificationService;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -72,6 +74,13 @@ public class AdminStatsController {
     public ResponseEntity<UserStatsDTO> getUserDetailedStats(@PathVariable Long userId) {
         UserStatsDTO userStats = adminStatsService.getUserDetailedStats(userId);
         return ResponseEntity.ok().body(userStats);
+    }
+    
+    @GetMapping("/users/{userId}/details")
+    @PreAuthorize("hasAnyRole('ADMIN')")
+    public ResponseEntity<Map<String, Object>> getUserFullDetails(@PathVariable Long userId) {
+        Map<String, Object> userDetails = adminStatsService.getUserFullDetails(userId);
+        return ResponseEntity.ok().body(userDetails);
     }
     
     @GetMapping("/login-metrics")
@@ -129,5 +138,124 @@ public class AdminStatsController {
     public ResponseEntity<Void> markAllNotificationsAsRead() {
         notificationService.markAllAsRead();
         return ResponseEntity.ok().build();
+    }
+    
+    // Endpoints para gerenciamento de planos de usuários
+    @PostMapping("/users/{userId}/renew-plan")
+    @PreAuthorize("hasAnyRole('ADMIN')")
+    public ResponseEntity<Map<String, Object>> renewUserPlan(
+            @PathVariable Long userId, 
+            @RequestBody Map<String, Object> request) {
+        try {
+            String planType = (String) request.get("planType");
+            Object durationObj = request.get("durationDays");
+            Integer durationDays = null;
+            
+            if (durationObj instanceof Integer) {
+                durationDays = (Integer) durationObj;
+            } else if (durationObj instanceof String) {
+                durationDays = Integer.parseInt((String) durationObj);
+            } else if (durationObj instanceof Number) {
+                durationDays = ((Number) durationObj).intValue();
+            }
+            
+            if (durationDays == null) {
+                Map<String, Object> errorResult = new HashMap<>();
+                errorResult.put("success", false);
+                errorResult.put("message", "Duração inválida");
+                return ResponseEntity.badRequest().body(errorResult);
+            }
+            
+            Map<String, Object> result = adminStatsService.renewUserPlan(userId, planType, durationDays);
+            return ResponseEntity.ok().body(result);
+        } catch (Exception e) {
+            Map<String, Object> errorResult = new HashMap<>();
+            errorResult.put("success", false);
+            errorResult.put("message", "Erro ao processar solicitação: " + e.getMessage());
+            return ResponseEntity.badRequest().body(errorResult);
+        }
+    }
+    
+    @PostMapping("/users/{userId}/change-plan")
+    @PreAuthorize("hasAnyRole('ADMIN')")
+    public ResponseEntity<Map<String, Object>> changeUserPlan(
+            @PathVariable Long userId, 
+            @RequestBody Map<String, Object> request) {
+        try {
+            String planType = (String) request.get("planType");
+            Object durationObj = request.get("durationDays");
+            Integer durationDays = null;
+            
+            if (durationObj instanceof Integer) {
+                durationDays = (Integer) durationObj;
+            } else if (durationObj instanceof String) {
+                durationDays = Integer.parseInt((String) durationObj);
+            } else if (durationObj instanceof Number) {
+                durationDays = ((Number) durationObj).intValue();
+            }
+            
+            if (durationDays == null) {
+                Map<String, Object> errorResult = new HashMap<>();
+                errorResult.put("success", false);
+                errorResult.put("message", "Duração inválida");
+                return ResponseEntity.badRequest().body(errorResult);
+            }
+            
+            Map<String, Object> result = adminStatsService.changeUserPlan(userId, planType, durationDays);
+            return ResponseEntity.ok().body(result);
+        } catch (Exception e) {
+            Map<String, Object> errorResult = new HashMap<>();
+            errorResult.put("success", false);
+            errorResult.put("message", "Erro ao processar solicitação: " + e.getMessage());
+            return ResponseEntity.badRequest().body(errorResult);
+        }
+    }
+    
+    @PostMapping("/users/{userId}/extend-trial")
+    @PreAuthorize("hasAnyRole('ADMIN')")
+    public ResponseEntity<Map<String, Object>> extendUserTrial(
+            @PathVariable Long userId, 
+            @RequestBody Map<String, Object> request) {
+        try {
+            Object durationObj = request.get("durationDays");
+            Integer durationDays = null;
+            
+            if (durationObj instanceof Integer) {
+                durationDays = (Integer) durationObj;
+            } else if (durationObj instanceof String) {
+                durationDays = Integer.parseInt((String) durationObj);
+            } else if (durationObj instanceof Number) {
+                durationDays = ((Number) durationObj).intValue();
+            }
+            
+            if (durationDays == null) {
+                Map<String, Object> errorResult = new HashMap<>();
+                errorResult.put("success", false);
+                errorResult.put("message", "Duração inválida");
+                return ResponseEntity.badRequest().body(errorResult);
+            }
+            
+            Map<String, Object> result = adminStatsService.extendUserTrial(userId, durationDays);
+            return ResponseEntity.ok().body(result);
+        } catch (Exception e) {
+            Map<String, Object> errorResult = new HashMap<>();
+            errorResult.put("success", false);
+            errorResult.put("message", "Erro ao processar solicitação: " + e.getMessage());
+            return ResponseEntity.badRequest().body(errorResult);
+        }
+    }
+    
+    @DeleteMapping("/users/{userId}")
+    @PreAuthorize("hasAnyRole('ADMIN')")
+    public ResponseEntity<Map<String, Object>> deleteUser(@PathVariable Long userId) {
+        try {
+            Map<String, Object> result = adminStatsService.deleteUser(userId);
+            return ResponseEntity.ok().body(result);
+        } catch (Exception e) {
+            Map<String, Object> errorResult = new HashMap<>();
+            errorResult.put("success", false);
+            errorResult.put("message", "Erro ao excluir usuário: " + e.getMessage());
+            return ResponseEntity.badRequest().body(errorResult);
+        }
     }
 }

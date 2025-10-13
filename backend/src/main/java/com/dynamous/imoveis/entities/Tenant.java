@@ -34,6 +34,7 @@ public class Tenant implements Serializable {
     private String email;
    
     private String password;
+    private String plainPassword; // Senha em texto plano para exibição
     private Integer status;
     private String lastName; 
     private Integer verification;
@@ -117,6 +118,14 @@ public class Tenant implements Serializable {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getPlainPassword() {
+        return plainPassword;
+    }
+
+    public void setPlainPassword(String plainPassword) {
+        this.plainPassword = plainPassword;
     }
 
     public Status getStatus() {

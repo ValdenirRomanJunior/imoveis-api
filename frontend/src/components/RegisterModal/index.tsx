@@ -25,11 +25,7 @@ interface RegisterModalProps {
 
 interface FormData {
   slug: string;
-  proprietario: string;
-  lastName: string;
   email: string;
-  password: string;
-  confirmPassword: string;
   phone: string;
 }
 
@@ -40,19 +36,13 @@ interface FieldErrors {
 const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose, onSuccess }) => {
   const [formData, setFormData] = useState<FormData>({
     slug: '',
-    proprietario: '',
-    lastName: '',
     email: '',
-    password: '',
-    confirmPassword: '',
     phone: ''
   });
 
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
   const [generalError, setGeneralError] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
-  const [showPassword, setShowPassword] = useState<boolean>(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState<boolean>(false);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -82,24 +72,12 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose, onSucces
 
   const validateForm = (): boolean => {
     const newErrors: FieldErrors = {};
-
+    
     if (!formData.slug || formData.slug.length < 2) {
       newErrors.slug = 'Nome da imobiliária deve ter pelo menos 2 caracteres';
     }
-    if (!formData.proprietario || formData.proprietario.length < 2) {
-      newErrors.proprietario = 'Nome do proprietário deve ter pelo menos 2 caracteres';
-    }
-    if (!formData.lastName || formData.lastName.length < 2) {
-      newErrors.lastName = 'Sobrenome deve ter pelo menos 2 caracteres';
-    }
     if (!formData.email || !/\S+@\S+\.\S+/.test(formData.email)) {
       newErrors.email = 'Email inválido';
-    }
-    if (!formData.password || formData.password.length < 8) {
-      newErrors.password = 'Senha deve ter pelo menos 8 caracteres';
-    }
-    if (formData.password !== formData.confirmPassword) {
-      newErrors.confirmPassword = 'Senhas não coincidem';
     }
     if (!formData.phone || formData.phone.length < 10) {
       newErrors.phone = 'Telefone deve ter pelo menos 10 dígitos';
@@ -155,10 +133,7 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose, onSucces
         },
         body: JSON.stringify({
           slug: formData.slug,
-          proprietario: formData.proprietario,
-          lastName: formData.lastName,
           email: formData.email,
-          password: formData.password,
           phone: formData.phone
         }),
       });
@@ -205,34 +180,6 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose, onSucces
             </FormGroup>
 
             <FormGroup>
-              <Label>Nome do Proprietário *</Label>
-              <Input
-                type="text"
-                name="proprietario"
-                value={formData.proprietario}
-                onChange={handleInputChange}
-                placeholder="Digite o nome do proprietário"
-                required
-                maxLength={35}
-              />
-              {fieldErrors.proprietario && <ErrorMessage>{fieldErrors.proprietario}</ErrorMessage>}
-            </FormGroup>
-
-            <FormGroup>
-              <Label>Sobrenome *</Label>
-              <Input
-                type="text"
-                name="lastName"
-                value={formData.lastName}
-                onChange={handleInputChange}
-                placeholder="Digite o sobrenome"
-                required
-                maxLength={35}
-              />
-              {fieldErrors.lastName && <ErrorMessage>{fieldErrors.lastName}</ErrorMessage>}
-            </FormGroup>
-
-            <FormGroup>
               <Label>Email *</Label>
               <Input
                 type="email"
@@ -244,50 +191,6 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose, onSucces
                 maxLength={45}
               />
               {fieldErrors.email && <ErrorMessage>{fieldErrors.email}</ErrorMessage>}
-            </FormGroup>
-
-            <FormGroup>
-              <Label>Senha *</Label>
-              <PasswordInputContainer>
-                <Input
-                  type={showPassword ? "text" : "password"}
-                  name="password"
-                  value={formData.password}
-                  onChange={handleInputChange}
-                  placeholder="Digite sua senha (mín. 8 caracteres)"
-                  required
-                  maxLength={20}
-                />
-                <EyeIcon 
-                  onClick={() => setShowPassword(!showPassword)}
-                  $isVisible={showPassword}
-                >
-                  {showPassword ? '👁️' : '👁️‍🗨️'}
-                </EyeIcon>
-              </PasswordInputContainer>
-              {fieldErrors.password && <ErrorMessage>{fieldErrors.password}</ErrorMessage>}
-            </FormGroup>
-
-            <FormGroup>
-              <Label>Confirmar Senha *</Label>
-              <PasswordInputContainer>
-                <Input
-                  type={showConfirmPassword ? "text" : "password"}
-                  name="confirmPassword"
-                  value={formData.confirmPassword}
-                  onChange={handleInputChange}
-                  placeholder="Confirme sua senha"
-                  required
-                  maxLength={20}
-                />
-                <EyeIcon 
-                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  $isVisible={showConfirmPassword}
-                >
-                  {showConfirmPassword ? '👁️' : '👁️‍🗨️'}
-                </EyeIcon>
-              </PasswordInputContainer>
-              {fieldErrors.confirmPassword && <ErrorMessage>{fieldErrors.confirmPassword}</ErrorMessage>}
             </FormGroup>
 
             <FormGroup>

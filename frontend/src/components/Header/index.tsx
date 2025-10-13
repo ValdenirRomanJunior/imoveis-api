@@ -20,6 +20,7 @@ import { GrIntegration } from "react-icons/gr";
 import { FiExternalLink } from 'react-icons/fi';
 import { NotificationDropdown } from '../NotificationDropdown';
 import { FaQuestionCircle } from 'react-icons/fa';
+import { MdSupportAgent } from 'react-icons/md';
 import { useSidebar } from '../../context/SidebarContext';
 
 const Header = () =>{
@@ -200,6 +201,11 @@ const Header = () =>{
             <NavIcon to="/users" >
             <AiOutlineUser className='icon-sidebar'/>
             <p className='description-icon'>Usuários</p>
+            </NavIcon>
+
+            <NavIcon to="/atendimento-standi" >
+            <MdSupportAgent className='icon-sidebar'/>
+            <p className='description-icon'>Atendimento Standi</p>
             </NavIcon>
             </>
         }

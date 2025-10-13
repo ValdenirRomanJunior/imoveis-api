@@ -60,6 +60,8 @@ const LazyImoveis = React.lazy(() => import('../pages/Site/Properties'));
 const LazyDetail = React.lazy(() => import('../pages/Site/Detail'));
 const LazyUsersList = React.lazy(() => import('../components/UsersList'));
 const LazyGuide = React.lazy(() => import('../pages/Guide'));
+const LazyAtendimentoStandi = React.lazy(() => import('../pages/AtendimentoStandi'));
+const LazyPlansPublic = React.lazy(() => import('../pages/PlansPublic'));
 
 
 
@@ -109,6 +111,18 @@ const TrialGuard: React.FC = () => {
                 <Route path="/payment/cancel"  element={<React.Suspense fallback={<LoadingLogin/>}><LazyPaymentCancel/></React.Suspense>} />
                 <Route path="/payment/expired"  element={<React.Suspense fallback={<LoadingLogin/>}><LazyPaymentExpired/></React.Suspense>} />
                 <Route path="/guide"  element={<React.Suspense fallback={<LoadingLogin/>}><LazyGuide/></React.Suspense>} />
+
+                <Route path="/atendimento-standi" element={
+                    <React.Suspense fallback={<div>Carregando...</div>}>
+                        <LazyAtendimentoStandi />
+                    </React.Suspense>
+                } />
+
+                <Route path="/plans-public" element={
+                    <React.Suspense fallback={<div>Carregando...</div>}>
+                        <LazyPlansPublic />
+                    </React.Suspense>
+                } />
 
                 <Route path="/temaEdit"  element={<React.Suspense fallback={<div>Carregando...</div>}><LazyTemaEdit/></React.Suspense>} />
                 <Route path="/site/:companyName"  element={<React.Suspense fallback={<div>Carregando...</div>}><LazySite/></React.Suspense>} />

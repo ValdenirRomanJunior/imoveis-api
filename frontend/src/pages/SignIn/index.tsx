@@ -365,7 +365,7 @@ refreshTokenUser()
       </Modal>
 
 
-      <p onClick={(e)=>e.preventDefault()} className="send-new-password">Esqueci a senha</p>
+      <p onClick={openModal} className="send-new-password">Esqueci a senha</p>
             
           
         </ButtonContainer>

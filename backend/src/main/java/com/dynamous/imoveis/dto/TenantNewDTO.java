@@ -15,32 +15,21 @@ public class TenantNewDTO implements Serializable {
     
     @NotEmpty(message = "Preenchimento obrigatório")
     @Length(min=2, max=25, message = "O tamanho deve ser entre 2 e 25 caracteres")
-    private String slug;
+    private String slug; // Nome da Imobiliária
 
     @NotEmpty(message = "Preenchimento obrigatório")
     @Length(min=2, max=45, message = "O tamanho deve ser entre 2 e 45 caracteres")
     @Email(message = "E-mail inválido")
     private String email;
     
-    @NotEmpty(message = "Preenchimento obrigatório")
-    @Length(min=2, max=35, message = "O tamanho deve ser entre 2 e 35 caracteres")
-    private String lastName;
 
-    @NotEmpty(message = "Preenchimento obrigatório")
-    @Length(min=8, max=20, message = "O tamanho deve ser entre 8 e 20 caracteres")
-    private String password;
-    
-    @Length( max=20, message = "O tamanho deve ser no máximo 15 caracteres")
-    private String creci;
     
     @NotEmpty(message = "Preenchimento obrigatório")
     @Length(min=11, max=11, message = "O tamanho deve ser entre 11 e 11 caracteres")
-    private String phone;
+    private String phone; // Telefone
     
-    @Length(min=11, max=14, message = "O CPF deve ter entre 11 e 14 caracteres")
-    private String cpf;
-    
-    private String proprietario;
+    // Campos removidos: password, lastName, creci, cpf
+    // A senha será gerada automaticamente no backend
  
 
     public TenantNewDTO(){
@@ -63,38 +52,6 @@ public class TenantNewDTO implements Serializable {
         this.email = email;
     }
 
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-	public String getLastName() {
-		return lastName;
-	}
-
-	public void setLastName(String lastName) {
-		this.lastName = lastName;
-	}
-
-	public String getCreci() {
-		return creci;
-	}
-
-	public void setCreci(String creci) {
-		this.creci = creci;
-	}
-
-	public String getProprietario() {
-		return proprietario;
-	}
-
-	public void setProprietario(String proprietario) {
-		this.proprietario = proprietario;
-	}
-
 	public String getPhone() {
 		return phone;
 	}
@@ -102,18 +59,4 @@ public class TenantNewDTO implements Serializable {
 	public void setPhone(String phone) {
 		this.phone = phone;
 	}
-
-	public String getCpf() {
-		return cpf;
-	}
-
-	public void setCpf(String cpf) {
-		this.cpf = cpf;
-	}
-
-	
-
-
-   	
-    
 }

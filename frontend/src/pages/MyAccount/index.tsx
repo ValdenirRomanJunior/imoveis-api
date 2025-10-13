@@ -58,8 +58,8 @@ const MyAccount = ()=>{
 
     // Estados para alteração de senha
     const [showPasswordModal, setShowPasswordModal] = useState(false);
+    const [passwordLoading, setPasswordLoading] = useState(false);
     const [passwordData, setPasswordData] = useState({
-        currentPassword: '',
         newPassword: '',
         confirmPassword: ''
     });
@@ -287,22 +287,36 @@ const MyAccount = ()=>{
 
     // Função para alterar senha
     const handlePasswordChange = async () => {
-        if (passwordData.newPassword !== passwordData.confirmPassword) {
+        // Validação de senha mínima de 8 caracteres
+        if (passwordData.newPassword.length < 8) {
+            setErrorMessage('A nova senha deve ter pelo menos 8 caracteres.');
             setError(true);
-            setTimeout(() => setError(false), 3000);
+            setTimeout(() => {
+                setError(false);
+                setErrorMessage('');
+            }, 3000);
             return;
         }
 
+        if (passwordData.newPassword !== passwordData.confirmPassword) {
+            setErrorMessage('As senhas não coincidem.');
+            setError(true);
+            setTimeout(() => {
+                setError(false);
+                setErrorMessage('');
+            }, 3000);
+            return;
+        }
+
+        setPasswordLoading(true);
         try {
             const response = await api.put('/user/change-password', {
-                currentPassword: passwordData.currentPassword,
                 newPassword: passwordData.newPassword
             });
 
             if (response.data.success) {
                 setShowPasswordModal(false);
                 setPasswordData({
-                    currentPassword: '',
                     newPassword: '',
                     confirmPassword: ''
                 });
@@ -311,8 +325,14 @@ const MyAccount = ()=>{
             }
         } catch (error) {
             console.error('Erro ao alterar senha:', error);
+            setErrorMessage('Erro ao alterar senha.');
             setError(true);
-            setTimeout(() => setError(false), 3000);
+            setTimeout(() => {
+                setError(false);
+                setErrorMessage('');
+            }, 3000);
+        } finally {
+            setPasswordLoading(false);
         }
     };
 
@@ -421,9 +441,10 @@ const MyAccount = ()=>{
             <div>
                 {user.id ? (
                     <MyAccountBackground>
+                       <Header />
                         <BarTop />
                         <BodyMyAccountContainer>
-                            <Header />
+                           
                             <TitleWrapper>
                                 <h1>Minha Conta</h1>
                             </TitleWrapper>
@@ -787,89 +808,7 @@ const MyAccount = ()=>{
                                     </CardAccount>
                                 )}
 
-                                {/* Tenants Card - Only for Account users */}
-                                {perfilAccount && (
-                                    <CardAccount status='ACTIVE'>
-                                        <div className='card-account-wrapper'>
-                                            <h2>Meus Sites</h2>
-                                            
-                                            {loadingTenants ? (
-                                                <div style={{textAlign: 'center', padding: '20px'}}>
-                                                    <Loading />
-                                                </div>
-                                            ) : tenants.length > 0 ? (
-                                                <ul style={{listStyle: 'none', padding: 0}}>
-                                                    {tenants.map((tenant) => (
-                                                        <li key={tenant.id} style={{
-                                                            padding: '15px',
-                                                            margin: '10px 0',
-                                                            background: '#f8f9fa',
-                                                            borderRadius: '8px',
-                                                            border: '1px solid #dee2e6',
-                                                            display: 'flex',
-                                                            justifyContent: 'space-between',
-                                                            alignItems: 'center'
-                                                        }}>
-                                                            <div>
-                                                                <strong>{tenant.slug}</strong><br/>
-                                                                <small style={{color: '#666'}}>
-                                                                    {tenant.domain}.{process.env.REACT_APP_DOMAIN || 'localhost'}
-                                                                </small>
-                                                            </div>
-                                                            <div style={{display: 'flex', gap: '10px'}}>
-                                                                <Link 
-                                                                    to={`/admin/tenant/${tenant.id}`}
-                                                                    style={{
-                                                                        background: '#007bff',
-                                                                        color: 'white',
-                                                                        padding: '5px 10px',
-                                                                        borderRadius: '4px',
-                                                                        textDecoration: 'none',
-                                                                        fontSize: '12px'
-                                                                    }}
-                                                                >
-                                                                    Gerenciar
-                                                                </Link>
-                                                                <button
-                                                                    onClick={() => handleDeleteTenant(tenant.id)}
-                                                                    style={{
-                                                                        background: '#dc3545',
-                                                                        color: 'white',
-                                                                        border: 'none',
-                                                                        padding: '5px 10px',
-                                                                        borderRadius: '4px',
-                                                                        cursor: 'pointer',
-                                                                        fontSize: '12px'
-                                                                    }}
-                                                                >
-                                                                    Excluir
-                                                                </button>
-                                                            </div>
-                                                        </li>
-                                                    ))}
-                                                </ul>
-                                            ) : (
-                                                <div style={{textAlign: 'center', padding: '20px', color: '#666'}}>
-                                                    <p>Você ainda não possui sites criados.</p>
-                                                    <Link 
-                                                        to="/create-site"
-                                                        style={{
-                                                            background: '#007bff',
-                                                            color: 'white',
-                                                            padding: '10px 20px',
-                                                            borderRadius: '5px',
-                                                            textDecoration: 'none',
-                                                            display: 'inline-block',
-                                                            marginTop: '10px'
-                                                        }}
-                                                    >
-                                                        Criar Primeiro Site
-                                                    </Link>
-                                                </div>
-                                            )}
-                                        </div>
-                                    </CardAccount>
-                                )}
+                             
                             </CardsContainer>
                         </BodyMyAccountContainer>
                     </MyAccountBackground>
@@ -931,24 +870,6 @@ const MyAccount = ()=>{
                             
                             <div style={{ marginBottom: '15px' }}>
                                 <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
-                                    Senha Atual
-                                </label>
-                                <input
-                                    type="password"
-                                    value={passwordData.currentPassword}
-                                    onChange={(e) => setPasswordData(prev => ({ ...prev, currentPassword: e.target.value }))}
-                                    style={{
-                                        width: '100%',
-                                        padding: '10px',
-                                        border: '1px solid #ddd',
-                                        borderRadius: '4px',
-                                        fontSize: '14px'
-                                    }}
-                                />
-                            </div>
-                            
-                            <div style={{ marginBottom: '15px' }}>
-                                <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
                                     Nova Senha
                                 </label>
                                 <input
@@ -958,11 +879,23 @@ const MyAccount = ()=>{
                                     style={{
                                         width: '100%',
                                         padding: '10px',
-                                        border: '1px solid #ddd',
+                                        border: passwordData.newPassword.length > 0 && passwordData.newPassword.length < 8 
+                                            ? '1px solid #dc3545' 
+                                            : '1px solid #ddd',
                                         borderRadius: '4px',
                                         fontSize: '14px'
                                     }}
                                 />
+                                <small style={{ 
+                                    color: passwordData.newPassword.length > 0 && passwordData.newPassword.length < 8 
+                                        ? '#dc3545' 
+                                        : '#6c757d',
+                                    fontSize: '12px',
+                                    marginTop: '5px',
+                                    display: 'block'
+                                }}>
+                                    Mínimo de 8 caracteres
+                                </small>
                             </div>
                             
                             <div style={{ marginBottom: '20px' }}>
@@ -988,7 +921,6 @@ const MyAccount = ()=>{
                                     onClick={() => {
                                         setShowPasswordModal(false);
                                         setPasswordData({
-                                            currentPassword: '',
                                             newPassword: '',
                                             confirmPassword: ''
                                         });
@@ -1007,17 +939,33 @@ const MyAccount = ()=>{
                                 </button>
                                 <button
                                     onClick={handlePasswordChange}
+                                    disabled={passwordLoading}
                                     style={{
-                                        background: '#28a745',
+                                        background: passwordLoading ? '#6c757d' : '#28a745',
                                         color: 'white',
                                         border: 'none',
                                         padding: '10px 20px',
                                         borderRadius: '4px',
-                                        cursor: 'pointer',
-                                        fontSize: '14px'
+                                        cursor: passwordLoading ? 'not-allowed' : 'pointer',
+                                        fontSize: '14px',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '8px'
                                     }}
                                 >
-                                    Salvar
+                                    {passwordLoading && (
+                                        <div
+                                            style={{
+                                                width: '16px',
+                                                height: '16px',
+                                                border: '2px solid #ffffff',
+                                                borderTop: '2px solid transparent',
+                                                borderRadius: '50%',
+                                                animation: 'spin 1s linear infinite'
+                                            }}
+                                        />
+                                    )}
+                                    {passwordLoading ? 'Salvando...' : 'Salvar'}
                                 </button>
                             </div>
                         </div>

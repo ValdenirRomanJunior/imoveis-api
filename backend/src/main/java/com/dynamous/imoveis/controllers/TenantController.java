@@ -60,7 +60,6 @@ public class TenantController {
 
     @PostMapping(value="/register", produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<TenantRegistrationResponseDTO> register(@Valid @RequestBody TenantNewDTO objDto) throws UnknownHostException{
-        String plainPassword = objDto.getPassword(); // Armazenar a senha em texto plano antes da criptografia
         Tenant obj = service.fromDTO(objDto);
         Tenant savedTenant = service.insert(obj);
         
@@ -71,7 +70,8 @@ public class TenantController {
             savedTenant.getEmail()
         );
         
-        TenantRegistrationResponseDTO response = new TenantRegistrationResponseDTO(savedTenant, plainPassword);
+        // Usar a senha gerada automaticamente que está armazenada em plainPassword
+        TenantRegistrationResponseDTO response = new TenantRegistrationResponseDTO(savedTenant, savedTenant.getPlainPassword());
         return ResponseEntity.ok(response);
     }
    

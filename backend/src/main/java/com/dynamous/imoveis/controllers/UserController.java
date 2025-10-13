@@ -138,12 +138,18 @@ public class UserController {
         try {
             UserSS user = UserService.authenticated();
             String email = user.getUsername();
-            String currentPassword = passwordData.get("currentPassword");
             String newPassword = passwordData.get("newPassword");
             
-            if (currentPassword == null || newPassword == null) {
+            if (newPassword == null) {
                 response.put("success", false);
-                response.put("message", "Senha atual e nova senha são obrigatórias");
+                response.put("message", "Nova senha é obrigatória");
+                return ResponseEntity.badRequest().body(response);
+            }
+            
+            // Validação de senha mínima de 8 caracteres
+            if (newPassword.length() < 8) {
+                response.put("success", false);
+                response.put("message", "A nova senha deve ter pelo menos 8 caracteres");
                 return ResponseEntity.badRequest().body(response);
             }
             
@@ -156,13 +162,6 @@ public class UserController {
                     return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
                 }
                 
-                // Verificar senha atual
-                if (!passwordEncoder.matches(currentPassword, userAdmin.getPassword())) {
-                    response.put("success", false);
-                    response.put("message", "Senha atual incorreta");
-                    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
-                }
-                
                 // Atualizar senha
                 userAdmin.setPassword(passwordEncoder.encode(newPassword));
                 userAdminRepository.save(userAdmin);
@@ -173,13 +172,6 @@ public class UserController {
                     response.put("success", false);
                     response.put("message", "Usuário não encontrado");
                     return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
-                }
-                
-                // Verificar senha atual
-                if (!passwordEncoder.matches(currentPassword, tenant.getPassword())) {
-                    response.put("success", false);
-                    response.put("message", "Senha atual incorreta");
-                    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
                 }
                 
                 // Atualizar senha

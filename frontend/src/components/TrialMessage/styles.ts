@@ -3,7 +3,12 @@ import styled from 'styled-components';
 export const TrialMessageContainer = styled.div`
   width: 100%;
   margin: 1rem 0;
-  padding: 0 1rem;
+  padding: 0 2rem ;
+
+   @media (min-width: 1000px){
+    width: 95%;
+    padding: 0 1rem 0 4.5rem;
+  }
 `;
 
 export const TrialMessageContent = styled.div`

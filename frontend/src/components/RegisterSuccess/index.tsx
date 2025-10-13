@@ -149,7 +149,7 @@ const RegisterSuccess: React.FC<RegisterSuccessProps> = ({ userData, onBackToHom
             <InfoLabel>link de Acesso ao Sistema</InfoLabel>
             <InfoValue>https://standi.com.br/dashboard</InfoValue>
             <CopyButton 
-              onClick={() => copyToClipboard('https://standi.com.br/dashboard', 'system')}
+              onClick={() => copyToClipboard('https://standi.com.br/login', 'system')}
               copied={copiedField === 'system'}
             >
               {copiedField === 'system' ? 'Copiado!' : 'Copiar'}
