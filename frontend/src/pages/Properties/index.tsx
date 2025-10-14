@@ -84,6 +84,7 @@ useEffect(() =>{
     const handleToFeatured = ()=>{
         navigate("/featured")
     }
+
     let perfilTenant=Object.values(user.perfis).some(obj => obj === 'TENANT');
 
  
@@ -106,8 +107,8 @@ useEffect(() =>{
         
       
         <Search param={paramToCloseModal} onChange={getParamsToSearch} />
-        <Link to="/registration"> <button className="button-add-lead" >
-        <VscHome className="icon-add-lead"/> <IoIosAdd className='icon-add-lead-positive'/></button> </Link>
+        <Link to="/registration" className="button-add-lead">
+        <VscHome className="icon-add-lead"/> <IoIosAdd className='icon-add-lead-positive'/></Link>
         <SearchDesktop param={paramToCloseModal}  onChange={getParamsToSearch}/>
        
         </TitleWrapper>

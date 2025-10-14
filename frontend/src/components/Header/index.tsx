@@ -81,7 +81,31 @@ const Header = () =>{
     const showLinksModal = () => setLinksModal(!linksModal);
 
     // eslint-disable-next-line react-hooks/rules-of-hooks
-    const { sidebar, showSidebar } = useSidebar();
+    const { sidebar, showSidebar, setSidebar } = useSidebar();
+
+    // Fechar sidebar ao clicar fora
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            const sidebarElement = document.querySelector('.sidebar-container');
+            const hamburgerButton = document.querySelector('.hambuguer-button');
+            
+            if (sidebar && 
+                sidebarElement && 
+                !sidebarElement.contains(event.target as Node) &&
+                hamburgerButton &&
+                !hamburgerButton.contains(event.target as Node)) {
+                setSidebar(false);
+            }
+        };
+
+        if (sidebar) {
+            document.addEventListener('mousedown', handleClickOutside);
+        }
+
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, [sidebar, setSidebar]);
 
     let perfilTenant=user?.perfis ? Object.values(user.perfis).some(obj => 
         obj === 'TENANT' 
@@ -114,7 +138,7 @@ const Header = () =>{
         <HeaderContainer>
             <HeaderWrapper>
                 <MenuLogoWrapper>
-                <Hambuguer onClick={showSidebar}>
+                <Hambuguer onClick={showSidebar} className="hambuguer-button">
                     <span></span>
                     <span></span>
                     <span></span>
@@ -158,23 +182,23 @@ const Header = () =>{
                 </SideBarTop>
                 {perfilTenant &&
                 <>
-            <NavIcon to="/dashboard">
+            <NavIcon to="/dashboard" onClick={() => setSidebar(false)}>
             <VscDashboard className='icon-sidebar'/>
             <p className='description-icon' >Painel</p>
             </NavIcon>
    
 
-            <NavIcon to="/properties" >
+            <NavIcon to="/properties" onClick={() => setSidebar(false)}>
             <AiOutlineHome className='icon-sidebar'/>
             <p className='description-icon'>Imóveis</p>
             </NavIcon>
 
-            <NavIcon to="/leads" >
+            <NavIcon to="/leads" onClick={() => setSidebar(false)}>
             <AiOutlineUser className='icon-sidebar'/>
             <p className='description-icosn'>Leads</p>
             </NavIcon>
 
-            <NavIcon to="/oportunidades">
+            <NavIcon to="/oportunidades" onClick={() => setSidebar(false)}>
             <div className='icon-wrapper-pulse'>
             <div className='pulse'>
             <BiFilterAlt className='icon-pulse'/>
@@ -183,7 +207,7 @@ const Header = () =>{
             <p className='description-icon-op '>Oportunidades</p>
             </NavIcon>
 
-            <NavIcon to="/temaEdit">
+            <NavIcon to="/temaEdit" onClick={() => setSidebar(false)}>
             <MdDesignServices className='icon-sidebar'/>
             <p className='description-icon'>Editor de Tema</p>
             </NavIcon>
@@ -193,17 +217,17 @@ const Header = () =>{
     }
             {perfilAdmin &&
             <>
-            <NavIcon to="/accounts" >
+            <NavIcon to="/accounts" onClick={() => setSidebar(false)}>
             <IoSettingsOutline className='icon-sidebar'/>
             <p className='description-icon'>Configurações</p>
             </NavIcon>
             
-            <NavIcon to="/users" >
+            <NavIcon to="/users" onClick={() => setSidebar(false)}>
             <AiOutlineUser className='icon-sidebar'/>
             <p className='description-icon'>Usuários</p>
             </NavIcon>
 
-            <NavIcon to="/atendimento-standi" >
+            <NavIcon to="/atendimento-standi" onClick={() => setSidebar(false)}>
             <MdSupportAgent className='icon-sidebar'/>
             <p className='description-icon'>Atendimento Standi</p>
             </NavIcon>
@@ -211,7 +235,7 @@ const Header = () =>{
         }
 
           <SidebarFooter className='footer-sidebar'>
-            <NavIcon to="/guide" style={{display: 'flex', alignItems: 'center'}}>
+            <NavIcon to="/guide" style={{display: 'flex', alignItems: 'center'}} onClick={() => setSidebar(false)}>
               <FaQuestionCircle className='icon-sidebar'/>
               <p className='description-icon' style={{marginLeft: '5px'}}>Guia de Ajuda</p>
             </NavIcon>

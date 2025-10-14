@@ -393,7 +393,7 @@ const CardProperty = ({id,state,city,goal,type,onChange,paramToGetAll}:Props)=>{
      }
        
         getProperties(); 
-    },[pageNumber,state, city, goal, type, id, onChange])
+    },[pageNumber,state, city, goal, type, id])
 
    
 

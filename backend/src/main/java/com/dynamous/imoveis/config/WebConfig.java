@@ -5,6 +5,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
@@ -15,6 +16,7 @@ import org.springframework.web.accept.ContentNegotiationManager;
 import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.config.annotation.ContentNegotiationConfigurer;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.ViewResolverRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
@@ -27,6 +29,17 @@ import org.springframework.web.servlet.view.ViewResolverComposite;
 @Configuration
 @EnableWebMvc
 public class WebConfig extends WebMvcConfigurerAdapter {
+
+ @Autowired
+ private RateLimitingInterceptor rateLimitingInterceptor;
+
+ @Override
+ public void addInterceptors(InterceptorRegistry registry) {
+     registry.addInterceptor(rateLimitingInterceptor)
+             .addPathPatterns("/**") // Aplica a todos os endpoints
+             .excludePathPatterns("/webjars/**", "/resources/**", "/static/**", "/images/**", "/css/**", "/js/**"); // Exclui recursos estáticos
+ }
+
  @Override
  public void addResourceHandlers(ResourceHandlerRegistry registry) {
 registry.addResourceHandler("/webjars/**", "/resources/**", "/static/**", "/images/**", "/css/**", "/js/**",
