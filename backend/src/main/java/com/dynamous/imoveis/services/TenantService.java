@@ -207,6 +207,7 @@ public class TenantService {
         newObj.setVerification(tenant.getVerification());
         newObj.setDomain(tenant.getDomain());
         newObj.setCreci(tenant.getCreci());
+        newObj.setPhone(tenant.getPhone()); // 📱 Adicionando atualização do telefone
         newObj.setRenovation(tenant.getRenovation());
         newObj.setEndDate(tenant.getEndDate());
 

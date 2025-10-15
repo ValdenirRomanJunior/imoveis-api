@@ -223,66 +223,6 @@ const Plans: React.FC = () => {
         <PlansHeader>
           <Title>Escolha seu Plano</Title>
         </PlansHeader>
-
-        {/* Card do Plano Atual */}
-        {currentPlan && (
-          <div style={{ maxWidth: '600px', margin: '0 auto 3rem', padding: '0 1rem' }}>
-            <h2 style={{ textAlign: 'center', marginBottom: '1.5rem', color: '#3b82f6' }}>
-              Plano Atual
-            </h2>
-            <PricingCard className="current-plan">
-              <PricingIcon>
-                {getPlanIcon(currentPlan.planType)}
-              </PricingIcon>
-              
-              <PricingPlanName>{currentPlan.planName}</PricingPlanName>
-              
-              <PricingDescription>
-                {currentPlan.planDescription}
-              </PricingDescription>
-              
-              <PricingPrice>
-                <PricingCurrency>R$</PricingCurrency>
-                <PricingAmount>
-                  {formatPrice(currentPlan.planPrice)}
-                </PricingAmount>
-                <PricingPeriod>/mês</PricingPeriod>
-              </PricingPrice>
-
-              <div style={{ marginBottom: '1.5rem', textAlign: 'center' }}>
-                <p style={{ margin: '0.5rem 0', color: '#6b7280' }}>
-                  <strong>Status:</strong> {currentPlan.isPlanActive ? 'Ativo' : 'Inativo'}
-                </p>
-                {currentPlan.isTrialActive && (
-                  <p style={{ margin: '0.5rem 0', color: '#f59e0b' }}>
-                    <strong>Período de Teste</strong> - Expira em: {formatDate(currentPlan.planEndDate)}
-                  </p>
-                )}
-                {!currentPlan.isTrialActive && (
-                  <p style={{ margin: '0.5rem 0', color: '#6b7280' }}>
-                    <strong>Válido até:</strong> {formatDate(currentPlan.planEndDate)}
-                  </p>
-                )}
-              </div>
-
-              {/* Botão de Cancelar Assinatura - apenas para planos pagos ativos */}
-              {currentPlan.isPlanActive && !currentPlan.isTrialActive && (
-                <PricingButton 
-                  onClick={handleCancelSubscription}
-                  disabled={loadingCancel}
-                  style={{ 
-                    background: '#dc3545', 
-                    color: 'white', 
-                    border: 'none',
-                    marginBottom: '1rem'
-                  }}
-                >
-                  {loadingCancel ? 'Cancelando...' : 'Cancelar Assinatura'}
-                </PricingButton>
-              )}
-            </PricingCard>
-          </div>
-        )}
         
         {/* Toggle de Preços */}
         <PricingToggleContainer>

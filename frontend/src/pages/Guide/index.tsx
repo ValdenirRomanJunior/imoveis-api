@@ -70,21 +70,22 @@ const Guide: React.FC = () => {
             Primeiros Passos
           </SectionTitle>
           <SectionContent>
-            <h3>1. Cadastro no Sistema</h3>
+            <h3>1. Cadastro no Sistema e Acesso</h3>
             <StepCard>
               <StepNumber>1</StepNumber>
-              <strong>Acesse a página de cadastro</strong>
-              <p>Clique em "Criar Conta" na página inicial e preencha seus dados pessoais.</p>
+              <strong>Acesse o site da Standi</strong>
+              <p>Clique em "Teste Grátis" na página inicial, abrirá uma pop-up e preencha seus dados pessoais.</p>
             </StepCard>
             <StepCard>
               <StepNumber>2</StepNumber>
-              <strong>Confirme seu email</strong>
-              <p>Verifique sua caixa de entrada e clique no link de confirmação enviado.</p>
+              <strong>Dados de acesso</strong>
+              <p>Após o cadastro aguarde um pouco e o sistema retornará seus dados de acesso e verifique sua caixa de entrada de e-mail que enviamos todos os seus dados para lá.Dica: Salve esses dados em um lugar seguro.</p>
             </StepCard>
             <StepCard>
               <StepNumber>3</StepNumber>
-              <strong>Complete seu perfil</strong>
-              <p>Adicione foto, informações profissionais e configure suas preferências.</p>
+              <strong>Acesso ao sistema</strong>
+              <p>Após o cadastro, na mesma tela que mostra seus dados, clique no em "Acessar sistema" que você será redireccionado para seu painel ou acesse o site da Standi e faça o Login com seus dados de acesso.</p>
+          
             </StepCard>
 
             <NavigationTip>
@@ -101,30 +102,30 @@ const Guide: React.FC = () => {
           </SectionTitle>
           <SectionContent>
             <h3>Planos Disponíveis</h3>
-            <p>O Standi oferece diferentes planos para atender suas necessidades:</p>
+            <p>Ao se cadastrar, automaticamente você estará no plano de teste:</p>
             
             <FeatureGrid>
               <FeatureCard>
                 <FaShieldAlt />
-                <h4>Plano Básico</h4>
-                <p>Ideal para corretores iniciantes com funcionalidades essenciais para gestão de imóveis.</p>
+                <h4>Plano de Teste</h4>
+                <p>Ideal para corretores Testar as funcionalidades básicas da Standi poe 3 dias.</p>
               </FeatureCard>
               <FeatureCard>
                 <FaChartLine />
-                <h4>Plano Profissional</h4>
-                <p>Para corretores experientes com ferramentas avançadas de análise e relatórios.</p>
+                <h4>Plano Lite</h4>
+                <p>Para corretores iniciantes que queiram se posicionar no mercado digital.</p>
               </FeatureCard>
               <FeatureCard>
                 <FaRocket />
-                <h4>Plano Premium</h4>
-                <p>Solução completa com todas as funcionalidades e suporte prioritário.</p>
+                <h4>Plano Pro</h4>
+                <p>Solução mais completa com todas as funcionalidades da Standi.</p>
               </FeatureCard>
             </FeatureGrid>
 
             <h3>Como Escolher seu Plano</h3>
             <ol>
-              <li>Acesse a seção "Planos" no menu lateral</li>
-              <li>Compare as funcionalidades de cada plano</li>
+              <li>Acesse a seção "Minha Conta" no icone superior direito com suas iniciais</li>
+              <li>Clique em "Ver todos os planos"</li>
               <li>Selecione o plano que melhor atende suas necessidades</li>
               <li>Complete o processo de pagamento</li>
               <li>Comece a usar todas as funcionalidades disponíveis</li>
@@ -145,25 +146,25 @@ const Guide: React.FC = () => {
             <StepCard>
               <StepNumber>1</StepNumber>
               <strong>Adicionar Novo Imóvel</strong>
-              <p>Clique em "Imóveis" no menu e depois em "Adicionar Imóvel". Preencha todas as informações detalhadas.</p>
+              <p>Clique em "Imóveis" no menu e depois no "Icone da casinha". Preencha toas as informações detalhadas.</p>
             </StepCard>
             <StepCard>
               <StepNumber>2</StepNumber>
               <strong>Upload de Fotos</strong>
-              <p>Adicione fotos de alta qualidade do imóvel. Recomendamos pelo menos 5 fotos por imóvel.</p>
+              <p>Adicione fotos de alta qualidade do imóvel. Recomendamos pelo menos 5 fotos por imóvel e no máximo 20.</p>
             </StepCard>
             <StepCard>
               <StepNumber>3</StepNumber>
-              <strong>Definir Preço e Condições</strong>
-              <p>Configure o valor, tipo de negociação (venda/aluguel) e condições especiais.</p>
+              <strong>Edição e exclusão</strong>
+              <p>Para editae e excluir, ao do lado dirito de cada imóvel na página imóveis terá as opções.</p>
             </StepCard>
 
             <h3>Funcionalidades Principais</h3>
             <ul>
-              <li><strong>Busca Avançada:</strong> Filtre imóveis por localização, preço, tipo e características</li>
-              <li><strong>Edição Rápida:</strong> Atualize informações e preços facilmente</li>
-              <li><strong>Status do Imóvel:</strong> Controle se está disponível, reservado ou vendido</li>
-              <li><strong>Relatórios:</strong> Acompanhe performance e estatísticas dos seus imóveis</li>
+              <li><strong>Busca Avançada:</strong> Filtre imóveis por localização, finalidade e tipo.</li>
+              <li><strong>Edição Rápida:</strong> Atualize informações facilmente</li>
+              <li><strong>Status do Imóvel:</strong> Controle se está disponível</li>
+              
             </ul>
           </SectionContent>
         </GuideSection>
@@ -176,23 +177,23 @@ const Guide: React.FC = () => {
           </SectionTitle>
           <SectionContent>
             <h3>O que são Leads?</h3>
-            <p>Leads são potenciais clientes interessados nos seus imóveis. O sistema captura automaticamente informações de visitantes do seu site.</p>
+            <p>Leads são potenciais clientes interessados ativos ou já resolvidos nos seus imóveis. O sistema captura automaticamente informações de visitantes do seu site.</p>
 
             <h3>Como Gerenciar Leads</h3>
             <StepCard>
               <StepNumber>1</StepNumber>
               <strong>Visualizar Leads</strong>
-              <p>Acesse "Leads" no menu para ver todos os interessados nos seus imóveis.</p>
+              <p>Acesse "Leads" no menu para ver todos os interessados ativos ou já resolvidos nos seus imóveis.</p>
             </StepCard>
             <StepCard>
               <StepNumber>2</StepNumber>
               <strong>Classificar por Interesse</strong>
-              <p>Organize leads por nível de interesse: quente, morno ou frio.</p>
+              <p> Quando um Lead vem do site ou é criado direto no sistema ele terá uma oportunidade em aberto na aba "portunidades". Podendo organizar seus  leads por nível de interesse.</p>
             </StepCard>
             <StepCard>
               <StepNumber>3</StepNumber>
-              <strong>Acompanhar Histórico</strong>
-              <p>Veja todas as interações e mensagens trocadas com cada lead.</p>
+              <strong>Acompanhar Atendimento</strong>
+              <p>Veja em que etapa seu lead está no funil na aba "Oportunidades".</p>
             </StepCard>
 
             <NavigationTip>
@@ -214,9 +215,8 @@ const Guide: React.FC = () => {
             <h3>Gestão de Oportunidades</h3>
             <ul>
               <li><strong>Pipeline de Vendas:</strong> Acompanhe o progresso de cada negociação</li>
-              <li><strong>Agendamento:</strong> Marque visitas e reuniões diretamente no sistema</li>
-              <li><strong>Propostas:</strong> Gerencie ofertas e contra-ofertas</li>
-              <li><strong>Documentação:</strong> Organize contratos e documentos importantes</li>
+             
+    
             </ul>
 
             <h3>Etapas do Funil de Vendas</h3>
@@ -228,13 +228,16 @@ const Guide: React.FC = () => {
               <li><strong>Fechamento:</strong> Conclusão da venda ou locação</li>
             </ol>
           </SectionContent>
+            <NavigationTip>
+              <strong>Importante:</strong> Cadastre as etapas do seu funil de vendas em "oportunidades" em seguida clique em "Etapas" e cadastre seu todas as etapas, pois sem elas nao é possivel receber ou cadastrar leads.
+            </NavigationTip>
         </GuideSection>
 
         {/* Seção: Personalização */}
         <GuideSection>
           <SectionTitle>
             <FaPalette />
-            Personalização e Tema
+            Personalização do Site
           </SectionTitle>
           <SectionContent>
             <h3>Editor de Tema</h3>
@@ -254,6 +257,11 @@ const Guide: React.FC = () => {
               <StepNumber>3</StepNumber>
               <strong>Configure Layout</strong>
               <p>Ajuste a disposição dos elementos, fontes e espaçamentos.</p>
+            </StepCard>
+                <StepCard>
+              <StepNumber>4</StepNumber>
+              <strong>Configure seu domínio próprio</strong>
+              <p>Vá na aba "Configurações" e adicione seu domínio próprio, lá também tem um link explicando como apontar para nosso servidor.</p>
             </StepCard>
 
             <h3>Opções de Personalização</h3>
@@ -320,10 +328,10 @@ const Guide: React.FC = () => {
             <h3>Configurações Disponíveis</h3>
             <ul>
               <li><strong>Dados Pessoais:</strong> Nome, email, telefone e endereço</li>
-              <li><strong>Foto do Perfil:</strong> Imagem que aparece no sistema e site</li>
+      
               <li><strong>Senha:</strong> Altere sua senha de acesso</li>
-              <li><strong>Notificações:</strong> Configure como receber alertas</li>
-              <li><strong>Preferências:</strong> Idioma e configurações regionais</li>
+             
+              <li><strong>Pagamentos:</strong> Aqui poderá ver as informações sobre seus pagamentos e assinaturas.</li>
             </ul>
 
             <NavigationTip>

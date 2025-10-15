@@ -55,6 +55,11 @@ public class UserController {
             UserSS user = UserService.authenticated();
             String email = user.getUsername();
             
+            // 📱 LOG: Dados recebidos na API
+            System.out.println("📱 [UserController] Dados recebidos para atualização:");
+            System.out.println("📱 [UserController] Updates map: " + updates);
+            System.out.println("📱 [UserController] Phone no payload: " + updates.get("phone"));
+            
             // Verificar se é admin ou tenant
             if (email.equals("admin@outlook.com")) {
                 UserAdmin userAdmin = userAdminRepository.findByEmail(email);
@@ -94,6 +99,9 @@ public class UserController {
                     return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
                 }
                 
+                // 📱 LOG: Dados do tenant atual
+                System.out.println("📱 [UserController] Tenant atual - Phone: " + tenant.getPhone());
+                
                 // Criar um objeto Tenant com os novos valores para usar o TenantService.update()
                 Tenant updatedTenant = new Tenant();
                 updatedTenant.setId(tenant.getId());
@@ -127,9 +135,14 @@ public class UserController {
                 }
                 
                 if (updates.containsKey("phone")) {
-                    updatedTenant.setPhone(updates.get("phone"));
+                    String newPhone = updates.get("phone");
+                    updatedTenant.setPhone(newPhone);
+                    // 📱 LOG: Phone sendo definido
+                    System.out.println("📱 [UserController] Definindo phone no updatedTenant: " + newPhone);
                 } else {
                     updatedTenant.setPhone(tenant.getPhone());
+                    // 📱 LOG: Phone mantido
+                    System.out.println("📱 [UserController] Mantendo phone atual: " + tenant.getPhone());
                 }
                 
                 // Copiar outros campos necessários
@@ -142,8 +155,14 @@ public class UserController {
                 updatedTenant.setEndDate(tenant.getEndDate());
                 updatedTenant.setAccount(tenant.getAccount());
                 
+                // 📱 LOG: Antes de chamar TenantService.update()
+                System.out.println("📱 [UserController] Antes de salvar - updatedTenant.getPhone(): " + updatedTenant.getPhone());
+                
                 // Usar TenantService.update() que contém a lógica de atualização de subdomínio
                 tenantService.update(updatedTenant);
+                
+                // 📱 LOG: Após salvar
+                System.out.println("📱 [UserController] TenantService.update() executado com sucesso");
             }
             
             response.put("success", true);
@@ -156,6 +175,9 @@ public class UserController {
             response.put("message", e.getMessage());
             return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
         } catch (Exception e) {
+            // 📱 LOG: Erro
+            System.out.println("📱 [UserController] ERRO ao atualizar perfil: " + e.getMessage());
+            e.printStackTrace();
             response.put("success", false);
             response.put("message", "Erro interno do servidor: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);

@@ -209,13 +209,29 @@ const MyAccount = ()=>{
             // Mapear o campo 'name' para 'slug' na API
             const apiField = field === 'name' ? 'slug' : field;
             
-            console.log('Salvando campo:', field, 'como:', apiField, 'com valor:', editValues[field as keyof typeof editValues]);
+            console.log('🔄 Salvando campo:', field, 'como:', apiField, 'com valor:', editValues[field as keyof typeof editValues]);
+            
+            // Log específico para telefone
+            if (field === 'phone') {
+                console.log('📱 Dados do telefone antes do envio:');
+                console.log('- Valor no editValues:', editValues.phone);
+                console.log('- Valor atual do usuário:', user?.phone);
+                console.log('- Payload que será enviado:', { [apiField]: editValues[field as keyof typeof editValues] });
+            }
             
             const response = await api.put('/user/update-profile', {
                 [apiField]: editValues[field as keyof typeof editValues]
             });
             
-            console.log('Resposta da API:', response.data);
+            console.log('📡 Resposta da API:', response.data);
+            
+            // Log específico para telefone após resposta
+            if (field === 'phone') {
+                console.log('📱 Resposta específica para telefone:', {
+                    success: response.data.success,
+                    message: response.data.message
+                });
+            }
             
             if (response.data.success) {
                 // Atualizar dados do usuário no contexto
@@ -235,14 +251,23 @@ const MyAccount = ()=>{
                 try {
                     // Para outros campos, recarregar os dados do usuário normalmente
                     const updatedUser = await getCurrentUser();
-                    console.log('Dados do usuário recarregados com sucesso:', updatedUser);
+                    console.log('👤 Dados do usuário recarregados com sucesso:', updatedUser);
+                    
+                    // Log específico para telefone após recarregar
+                    if (field === 'phone') {
+                        console.log('📱 Telefone após recarregar usuário:', updatedUser.phone);
+                        console.log('📱 Comparação de valores:');
+                        console.log('- Valor enviado:', editValues.phone);
+                        console.log('- Valor retornado:', updatedUser.phone);
+                        console.log('- São iguais?', editValues.phone === updatedUser.phone);
+                    }
                     
                     // Atualizar os valores de edição com os dados mais recentes
                     setEditValues({
                         name: updatedUser.slug || '',
                         email: updatedUser.email || '',
                         creci: updatedUser.creci || '',
-                        phone: ''
+                        phone: updatedUser.phone || ''
                     });
                     
                 } catch (userError) {
@@ -839,7 +864,7 @@ const MyAccount = ()=>{
                                 bottom: 'auto',
                                 marginRight: '-50%',
                                 transform: 'translate(-50%, -50%)',
-                                width: '400px',
+                                width: '390px',
                                 padding: '20px',
                                 borderRadius: '8px',
                                 border: '1px solid #ddd'

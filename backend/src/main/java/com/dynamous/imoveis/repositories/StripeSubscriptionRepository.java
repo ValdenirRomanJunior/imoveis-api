@@ -39,4 +39,8 @@ public interface StripeSubscriptionRepository extends JpaRepository<StripeSubscr
     @Transactional(readOnly = true)
     @Query("SELECT COUNT(s) FROM StripeSubscription s WHERE s.stripeCustomer.account.id = :accountId AND s.status = :status")
     Long countByAccountIdAndStatus(@Param("accountId") Long accountId, @Param("status") SubscriptionStatus status);
+
+    @Transactional(readOnly = true)
+    @Query("SELECT s FROM StripeSubscription s WHERE s.stripeCustomer = :customer AND s.status = 'ACTIVE'")
+    List<StripeSubscription> findActiveByCustomer(@Param("customer") StripeCustomer customer);
 }
