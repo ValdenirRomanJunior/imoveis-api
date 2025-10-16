@@ -479,13 +479,19 @@ public class PropertyService {
 	}
 	
 	public List<Property> findAllFeaturedPropertiesPublic() {
-		// Método público para buscar propriedades em destaque sem autenticação
-		// Por enquanto, retorna todas as propriedades com status featured
-		// Em uma implementação real, você pode filtrar por tenant específico ou usar outros critérios
-		return propertyRepository.findAll().stream()
-				.filter(property -> property.getStatusFeatured() != null && 
-						property.getStatusFeatured() == com.dynamous.imoveis.enums.StatusFeatured.DESTACADO)
-				.limit(6) // Limita a 6 propriedades
+		// Buscar propriedades em destaque apenas da conta do usuário autenticado
+		UserSS user = UserService.authenticated();
+		if (user == null) {
+			throw new AuthorizationException("Acesso negado");
+		}
+		
+		Tenant tenant = tenantService.find(user.getId());
+		Account account = accountService.find(tenant.getAccount().getId());
+		
+		// Retorna apenas propriedades em destaque da conta específica
+		return propertyRepository.findAllByAccountAndStatusFeatureAndStatusProperty(account.getId())
+				.stream()
+				.filter(property -> property.getStatusFeatured() == com.dynamous.imoveis.enums.StatusFeatured.DESTACADO)
 				.collect(java.util.stream.Collectors.toList());
 	}
 }
