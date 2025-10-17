@@ -927,7 +927,7 @@ const Home: React.FC = () => {
       <CallToActionBanner id='contato'>
         <CTALeftSide>
           <CTAText>Transforme sua imobiliária hoje mesmo!</CTAText>
-          <CTABannerButtonBottom>Testar grátis agora</CTABannerButtonBottom>
+          <CTABannerButtonBottom onClick={handleOpenRegisterModal}>Testar grátis agora</CTABannerButtonBottom>
         </CTALeftSide>
         <CTARightSide>
           <PersonImage src={userImage} alt="Atendente" />
