@@ -875,7 +875,7 @@ const Home: React.FC = () => {
             </PricingCard>
 
             {/* Plano Pro */}
-            <PricingCard className="popular">
+            <PricingCard className="popular" style={{display:'none'}}>
               <PricingIcon>
                 <HiRocketLaunch />
               </PricingIcon>
@@ -949,18 +949,16 @@ const Home: React.FC = () => {
             <FooterTitle>Produtos</FooterTitle>
             <FooterLinks>
               <FooterLink href="#">CRM Imobiliário</FooterLink>
-              <FooterLink href="#">Gestão de Aluguéis</FooterLink>
               <FooterLink href="#">Site Imobiliário</FooterLink>
-              <FooterLink href="#">Gestão Financeira</FooterLink>
+             
             </FooterLinks>
           </FooterSection>
           
           <FooterSection>
             <FooterTitle>Recursos</FooterTitle>
             <FooterLinks>
-              <FooterLink href="#">Pipeline de Vendas</FooterLink>
-              <FooterLink href="#">Controle de Chaves</FooterLink>
-              <FooterLink href="#">Relatórios</FooterLink>
+              <FooterLink href="#">Funil de Vendas</FooterLink>
+              <FooterLink href="#">Editor do Site</FooterLink>
               <FooterLink href="#">Integrações</FooterLink>
             </FooterLinks>
           </FooterSection>
@@ -969,9 +967,8 @@ const Home: React.FC = () => {
             <FooterTitle>Suporte</FooterTitle>
             <FooterLinks>
               <FooterLink href="#">Central de Ajuda</FooterLink>
-              <FooterLink href="#">Treinamentos</FooterLink>
               <FooterLink href="#">Contato</FooterLink>
-              <FooterLink href="#">Blog</FooterLink>
+              <FooterLink href="#">Blog(em construção)</FooterLink>
             </FooterLinks>
           </FooterSection>
         </FooterContent>

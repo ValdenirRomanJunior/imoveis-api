@@ -1006,7 +1006,7 @@ export const PricingCard = styled.div`
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
   width: 100%;
   height: auto;
-  min-height: 480px;
+ 
   display: flex;
   flex-direction: column;
   justify-content: space-between;

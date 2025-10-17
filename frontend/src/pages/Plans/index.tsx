@@ -248,7 +248,11 @@ const Plans: React.FC = () => {
         
         <PricingGrid>
         {plans.map((plan) => (
-          <PricingCard key={plan.code} className={plan.code === '2' ? 'popular' : ''}>
+          <PricingCard 
+            key={plan.code} 
+            className={plan.code === '2' ? 'popular' : ''}
+            style={plan.name === 'Pro' ? { display: 'none' } : {}}
+          >
             <PricingIcon>
               {getPlanIcon(plan.code)}
             </PricingIcon>
@@ -276,7 +280,8 @@ const Plans: React.FC = () => {
                   <PricingFeature>Editor do site</PricingFeature>
                   <PricingFeature>Site seguro com SSL</PricingFeature>
                   <PricingFeature>Whatsapp integrado</PricingFeature>
-                  <PricingFeature>Até 200 imóveis</PricingFeature>
+                 <PricingFeature>Imóveis ilimitados</PricingFeature>
+                  <PricingFeature>Tudo liberado</PricingFeature>
                 </>
               )}
               
@@ -288,7 +293,8 @@ const Plans: React.FC = () => {
                   <PricingFeature>Editor do site</PricingFeature>
                   <PricingFeature>Site seguro com SSL</PricingFeature>
                   <PricingFeature>Whatsapp integrado</PricingFeature>
-                  <PricingFeature>Até 200 imóveis</PricingFeature>
+                  <PricingFeature>Imóveis ilimitados</PricingFeature>
+                  <PricingFeature>Tudo liberado</PricingFeature>
                 </>
               )}
               

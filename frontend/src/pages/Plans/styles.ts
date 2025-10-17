@@ -146,7 +146,7 @@ export const PricingGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
   gap: 2rem;
-  max-width: 1200px;
+  max-width: 900px;
   margin: 0 auto;
   
   @media (max-width: 768px) {
@@ -164,6 +164,11 @@ export const PricingCard = styled.div`
   position: relative;
   overflow: hidden;
   border: 1px solid #e6e9ed;
+  
+  @media (min-width: 1000px) {
+    width: 350px;
+    margin: 0 auto;
+  }
   
   &:hover {
     transform: translateY(-5px);
@@ -216,6 +221,8 @@ export const PricingCard = styled.div`
       box-shadow: 0 6px 20px rgba(40, 167, 69, 0.2);
     }
   }
+
+ 
 `;
 
 export const PricingIcon = styled.div`
