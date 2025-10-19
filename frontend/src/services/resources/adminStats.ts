@@ -74,7 +74,8 @@ export const getAccessMetrics = () => {
 };
 
 export const trackAccess = (page: string) => {
-  return api.post('/admin/stats/track-access', { page });
+  // Envia o campo esperado pelo backend: eventType
+  return api.post('/admin/stats/track-access', { eventType: page });
 };
 
 export const getUserDetailedStats = (userId: number) => {

@@ -94,6 +94,16 @@ public class AdminStatsController {
     @PostMapping("/track-access")
     public ResponseEntity<Void> trackAccess(@RequestBody Map<String, String> trackingData, HttpServletRequest request) {
         String eventType = trackingData.get("eventType");
+        // Compatibilidade: aceitar 'page' como alias de eventType
+        if (eventType == null || eventType.isBlank()) {
+            String page = trackingData.get("page");
+            if (page != null && !page.isBlank()) {
+                eventType = page;
+            } else {
+                // Default sensato para evitar NULL no banco
+                eventType = "HOME_ACCESS";
+            }
+        }
         String sessionId = trackingData.get("sessionId");
         String ipAddress = request.getRemoteAddr();
         String userAgent = request.getHeader("User-Agent");

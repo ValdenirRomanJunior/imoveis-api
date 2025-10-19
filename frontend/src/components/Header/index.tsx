@@ -6,7 +6,7 @@ import { VscComment } from "react-icons/vsc";
 import { useEffect, useState } from 'react';
 import {AiOutlineHome} from 'react-icons/ai';
 import {VscDashboard} from 'react-icons/vsc';
-import {AiOutlineUser} from 'react-icons/ai';
+import {AiOutlineUser, AiOutlineBook} from 'react-icons/ai';
 import {IoIosArrowForward} from 'react-icons/io';
 import {MdLogout} from 'react-icons/md'
 import { getImageIfExist, refreshToken, UserDto } from '../../services/resources/user';
@@ -225,6 +225,11 @@ const Header = () =>{
             <NavIcon to="/users" onClick={() => setSidebar(false)}>
             <AiOutlineUser className='icon-sidebar'/>
             <p className='description-icon'>Usuários</p>
+            </NavIcon>
+
+            <NavIcon to="/blog-admin" onClick={() => setSidebar(false)}>
+            <AiOutlineBook className='icon-sidebar'/>
+            <p className='description-icon'>Blog Admin</p>
             </NavIcon>
 
             <NavIcon to="/atendimento-standi" onClick={() => setSidebar(false)}>
