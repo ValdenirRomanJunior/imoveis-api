@@ -51,9 +51,9 @@ INSERT INTO opportunity(instant,property_id,step_id,lead_id,account_id) VALUES (
 INSERT INTO opportunity(instant,property_id,step_id,lead_id,account_id) VALUES ('08/05/2024 01:58',1,3,3,2);
 
 -- Insert theme data for tenants
-INSERT INTO theme (name, main_color, tenant_id) VALUES ('Tema Padrão Tenant 1', '#007bff', 1);
-INSERT INTO theme (name, main_color, tenant_id) VALUES ('Tema Padrão Tenant 2', '#28a745', 2);
-INSERT INTO theme (name, main_color, tenant_id) VALUES ('Tema Padrão Tenant 3', '#dc3545', 3);
+INSERT INTO theme (name, main_color, tenant_id, favicon) VALUES ('Tema Padrão Tenant 1', '#007bff', 1, 'https://www.google.com/favicon.ico');
+INSERT INTO theme (name, main_color, tenant_id, favicon) VALUES ('Tema Padrão Tenant 2', '#28a745', 2, 'https://www.google.com/favicon.ico');
+INSERT INTO theme (name, main_color, tenant_id, favicon) VALUES ('Tema Padrão Tenant 3', '#dc3545', 3, 'https://www.google.com/favicon.ico');
 
 
 /*INSERT INTO urls(id, id_tenant, url,property_id) VALUES (1,1,'https://dynamous.s3.sa-east-1.amazonaws.com/logo-site.png',1);

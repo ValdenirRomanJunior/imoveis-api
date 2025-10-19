@@ -109,8 +109,12 @@ public class ThemeService {
         theme.setPrivacyPolicy(themeDTO.getPrivacyPolicy());
         theme.setAboutUs(themeDTO.getAboutUs());
         
+        // Favicon
+        theme.setFavicon(themeDTO.getFavicon());
+        
         theme.setCustomDomain(themeDTO.getCustomDomain());
         theme = themeRepository.save(theme);
+        themeRepository.flush(); // Force immediate persistence to database
         
         return new ThemeDTO(theme);
     }

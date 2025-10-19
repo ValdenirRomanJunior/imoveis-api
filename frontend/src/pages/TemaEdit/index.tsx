@@ -104,6 +104,11 @@ const TemaEdit: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [previewKey, setPreviewKey] = useState(0);
   
+  // Estados para arquivos selecionados (não enviados ainda)
+  const [selectedLogoFile, setSelectedLogoFile] = useState<File | null>(null);
+  const [selectedBannerFile, setSelectedBannerFile] = useState<File | null>(null);
+  const [selectedAgentPhotoFile, setSelectedAgentPhotoFile] = useState<File | null>(null);
+  
   // Estados para gerenciamento de domínio
   const [domainInfo, setDomainInfo] = useState<any>(null);
   const [customDomain, setCustomDomain] = useState('');
@@ -167,7 +172,7 @@ const TemaEdit: React.FC = () => {
         timestamp: Date.now()
       };
       
-      localStorage.setItem(`theme-preview-${user?.slug || 'default'}`, JSON.stringify(previewData));
+      localStorage.setItem(`theme-preview-${user?.accountId || 'default'}`, JSON.stringify(previewData));
       
       // Forçar atualização do iframe
       setPreviewKey(prev => prev + 1);
@@ -186,12 +191,18 @@ const TemaEdit: React.FC = () => {
 
       return () => clearTimeout(timeoutId);
     }
-  }, [themeConfig, loading, user?.slug]);
+  }, [themeConfig, loading, user?.accountId]);
 
   const loadThemeConfig = async () => {
     try {
-      // For now, using tenant ID 1. In a real app, this would come from auth context
-      const response = await api.get('/api/themes/tenant/1');
+      // Use accountId from authenticated user instead of fixed tenant ID
+      const accountId = user?.account?.id;
+      if (!accountId) {
+        console.error('User accountId not available');
+        return;
+      }
+      
+      const response = await api.get(`/api/themes/account-id/${accountId}`);
       const data = response.data;
       
       // Parse JSON strings from backend
@@ -205,6 +216,7 @@ const TemaEdit: React.FC = () => {
       
       const parsedData = {
         ...data,
+        tenantId: data.tenantId, // Ensure tenantId is included for saving
         menuLinks: typeof data.menuLinks === 'string' ? JSON.parse(data.menuLinks || '[]') : data.menuLinks || [],
         services: parsedServices.length > 0 ? parsedServices : defaultServices,
         socialLinks: typeof data.socialLinks === 'string' ? JSON.parse(data.socialLinks || '{}') : data.socialLinks || {}
@@ -222,7 +234,7 @@ const TemaEdit: React.FC = () => {
   // Função para gerar URL do subdomínio
   const getSubdomainUrl = (companySlug: string) => {
     const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-    const accountId = user?.accountId || user?.id || '';
+    const accountId = user?.account?.id || user?.id || '';
     const subdomain = accountId ? `${companySlug}-${accountId}` : companySlug;
     
     if (isLocalhost) {
@@ -367,7 +379,7 @@ const TemaEdit: React.FC = () => {
     setThemeConfig(prev => ({ ...prev, menuLinks: newMenuLinks }));
   };
 
-  const handleLogoUpload = async (file: File | undefined) => {
+  const handleLogoUpload = (file: File | undefined) => {
     if (!file) return;
     
     // Validate that the file is PNG
@@ -376,67 +388,40 @@ const TemaEdit: React.FC = () => {
       return;
     }
     
-    try {
-      const formData = new FormData();
-      formData.append('file', file);
-      
-      const response = await api.post('/api/themes/upload-logo', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        }
-      });
-      
-      // Update logo URL in theme config
-      handleDirectChange('logo', response.data);
-    } catch (error) {
-      console.error('Error uploading logo:', error);
-      alert('Erro ao fazer upload da logo. Tente novamente.');
-    }
+    // Armazenar arquivo localmente para envio posterior
+    setSelectedLogoFile(file);
+    
+    // Criar URL temporária para preview
+    const tempUrl = URL.createObjectURL(file);
+    handleDirectChange('logo', tempUrl);
+    
+    alert('Logo selecionada! Clique em "Salvar" para fazer o upload.');
   };
 
-  const handleBannerUpload = async (file: File | undefined) => {
+  const handleBannerUpload = (file: File | undefined) => {
     if (!file) return;
     
-    try {
-      const formData = new FormData();
-      formData.append('file', file);
-      
-      const response = await api.post('/api/themes/upload-banner', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        }
-      });
-      
-      // Update banner URL in theme config
-      handleDirectChange('bannerImage', response.data);
-    } catch (error) {
-      console.error('Error uploading banner:', error);
-      alert('Erro ao fazer upload do banner. Tente novamente.');
-    }
+    // Armazenar arquivo localmente para envio posterior
+    setSelectedBannerFile(file);
+    
+    // Criar URL temporária para preview
+    const tempUrl = URL.createObjectURL(file);
+    handleDirectChange('bannerImage', tempUrl);
+    
+    alert('Banner selecionado! Clique em "Salvar" para fazer o upload.');
   };
 
-  const handleAgentPhotoUpload = async (file: File | undefined) => {
+  const handleAgentPhotoUpload = (file: File | undefined) => {
     if (!file) return;
     
-    try {
-      const formData = new FormData();
-      formData.append('file', file);
-      
-      const response = await api.post('/api/themes/upload-agent-photo', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        }
-      });
-      
-      // Update agent photo URL in theme config
-      handleDirectChange('agentPhoto', response.data);
-      
-      // Auto-save theme after successful upload
-      await handleSave();
-    } catch (error) {
-      console.error('Error uploading agent photo:', error);
-      alert('Erro ao fazer upload da foto do corretor. Tente novamente.');
-    }
+    // Armazenar arquivo localmente para envio posterior
+    setSelectedAgentPhotoFile(file);
+    
+    // Criar URL temporária para preview
+    const tempUrl = URL.createObjectURL(file);
+    handleDirectChange('agentPhoto', tempUrl);
+    
+    alert('Foto do corretor selecionada! Clique em "Salvar" para fazer o upload.');
   };
 
   const handleSave = async () => {
@@ -444,11 +429,90 @@ const TemaEdit: React.FC = () => {
       setSaving(true);
       console.log('Iniciando salvamento do tema...');
       console.log('ThemeConfig atual:', themeConfig);
+      console.log('User accountId:', user?.account?.id);
       console.log('socialLinks.whatsapp antes do salvamento:', themeConfig.socialLinks.whatsapp);
+      
+      const accountId = user?.account?.id;
+      if (!accountId) {
+        alert('Erro: ID da conta não encontrado. Faça login novamente.');
+        return;
+      }
+      
+      // Upload das imagens selecionadas primeiro
+      let logoUrl = themeConfig.logo;
+      let bannerUrl = themeConfig.bannerImage;
+      let agentPhotoUrl = themeConfig.agentPhoto;
+      
+      // Upload da logo se foi selecionada
+      if (selectedLogoFile) {
+        try {
+          const formData = new FormData();
+          formData.append('file', selectedLogoFile);
+          
+          const response = await api.post(`/api/themes/upload-logo/${accountId}`, formData, {
+            headers: {
+              'Content-Type': 'multipart/form-data'
+            }
+          });
+          
+          logoUrl = response.data;
+          setSelectedLogoFile(null); // Limpar arquivo selecionado
+          console.log('Logo enviada com sucesso! Favicon gerado automaticamente.');
+        } catch (error) {
+          console.error('Error uploading logo:', error);
+          alert('Erro ao fazer upload da logo. Salvamento cancelado.');
+          return;
+        }
+      }
+      
+      // Upload do banner se foi selecionado
+      if (selectedBannerFile) {
+        try {
+          const formData = new FormData();
+          formData.append('file', selectedBannerFile);
+          
+          const response = await api.post('/api/themes/upload-banner', formData, {
+            headers: {
+              'Content-Type': 'multipart/form-data'
+            }
+          });
+          
+          bannerUrl = response.data;
+          setSelectedBannerFile(null); // Limpar arquivo selecionado
+        } catch (error) {
+          console.error('Error uploading banner:', error);
+          alert('Erro ao fazer upload do banner. Salvamento cancelado.');
+          return;
+        }
+      }
+      
+      // Upload da foto do corretor se foi selecionada
+      if (selectedAgentPhotoFile) {
+        try {
+          const formData = new FormData();
+          formData.append('file', selectedAgentPhotoFile);
+          
+          const response = await api.post('/api/themes/upload-agent-photo', formData, {
+            headers: {
+              'Content-Type': 'multipart/form-data'
+            }
+          });
+          
+          agentPhotoUrl = response.data;
+          setSelectedAgentPhotoFile(null); // Limpar arquivo selecionado
+        } catch (error) {
+          console.error('Error uploading agent photo:', error);
+          alert('Erro ao fazer upload da foto do corretor. Salvamento cancelado.');
+          return;
+        }
+      }
       
       // Convert arrays and objects to JSON strings for backend
       const dataToSave = {
         ...themeConfig,
+        logo: logoUrl,
+        bannerImage: bannerUrl,
+        agentPhoto: agentPhotoUrl,
         menuLinks: JSON.stringify(themeConfig.menuLinks),
         services: JSON.stringify(themeConfig.services),
         socialLinks: JSON.stringify(themeConfig.socialLinks)
@@ -457,25 +521,36 @@ const TemaEdit: React.FC = () => {
       console.log('Dados a serem salvos:', dataToSave);
       console.log('socialLinks JSON string:', dataToSave.socialLinks);
       
-      if (themeConfig.id) {
-        // Update existing theme
-        console.log('Atualizando tema existente com ID:', themeConfig.id);
-        const response = await api.put(`/api/themes/${themeConfig.id}`, dataToSave);
-        console.log('Resposta do PUT:', response.data);
-      } else {
-        // Create new theme
-        console.log('Criando novo tema...');
-        const response = await api.post('/api/themes', dataToSave);
-        console.log('Resposta do POST:', response.data);
-      }
+      // Use account-specific endpoint for saving
+      const response = await api.post(`/api/themes/save-by-account/${accountId}`, dataToSave);
+      console.log('Resposta do salvamento:', response.data);
+      
+      // Update local state with saved theme data
+      const savedTheme = response.data;
+      setThemeConfig(prevConfig => ({
+        ...prevConfig,
+        id: savedTheme.id,
+        tenantId: savedTheme.tenantId,
+        logo: logoUrl,
+        bannerImage: bannerUrl,
+        agentPhoto: agentPhotoUrl
+      }));
       
       // Update preview after saving
       setPreviewKey(prev => prev + 1);
-      alert('Tema salvo com sucesso!');
+      
+      let successMessage = 'Tema salvo com sucesso!';
+      if (selectedLogoFile || selectedBannerFile || selectedAgentPhotoFile) {
+        successMessage += ' Todas as imagens foram enviadas.';
+        if (selectedLogoFile) {
+          successMessage += ' Favicon gerado automaticamente a partir da logo.';
+        }
+      }
+      
+      alert(successMessage);
       console.log('Tema salvo com sucesso!');
     } catch (error) {
       console.error('Error saving theme:', error);
-   
       alert('Erro ao salvar tema. Tente novamente.');
     } finally {
       setSaving(false);
@@ -501,6 +576,9 @@ const TemaEdit: React.FC = () => {
           <TabContent>
             <FormGroup>
               <Label>Logo</Label>
+              <p style={{ fontSize: '12px', color: '#666', marginBottom: '10px' }}>
+                Ao fazer upload da logo, o sistema gerará automaticamente um favicon personalizado para seu site.
+              </p>
               {themeConfig.logo ? (
                 <div style={{ marginBottom: '10px' }}>
                   <img src={themeConfig.logo} alt="Logo" style={{ maxWidth: '200px', maxHeight: '100px' }} />
@@ -912,7 +990,7 @@ const TemaEdit: React.FC = () => {
                   fontSize: '14px',
                   fontFamily: 'monospace'
                 }}>
-                  {domainInfo?.subdomain || `${user?.slug || 'seu-slug'}${user?.accountId ? `-${user.accountId}` : user?.id ? `-${user.id}` : ''}.standi.com.br`}
+                  {user?.account?.domain || domainInfo?.subdomain || `${user?.slug || 'seu-slug'}${user?.accountId || ''}.standi.com.br`}
                   <FiExternalLink 
                     style={{ cursor: 'pointer', color: '#3b82f6' }}
                     onClick={() => window.open(getSubdomainUrl(user?.slug || ''), '_blank')}
@@ -1323,7 +1401,7 @@ const TemaEdit: React.FC = () => {
                 <strong>Registro CNAME para www:</strong>
                 <div style={{ fontFamily: 'monospace', fontSize: '14px', marginTop: '8px' }}>
                   <div>Nome/Host: <strong>www</strong></div>
-                  <div>Valor/Destino: <strong>{user?.slug || 'seu-slug'}{user?.accountId ? `-${user.accountId}` : user?.id ? `-${user.id}` : ''}.standi.com.br</strong></div>
+                  <div>Valor/Destino: <strong>{user?.account?.domain || `${user?.slug || 'seu-slug'}${user?.accountId || ''}.standi.com.br`}</strong></div>
                   <div>TTL: <strong>3600</strong> (ou deixe o padrão)</div>
                 </div>
               </div>

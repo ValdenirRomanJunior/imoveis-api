@@ -17,37 +17,48 @@ public class RateLimitingInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        String clientIp = getClientIpAddress(request);
-        String requestURI = request.getRequestURI();
-        
-        // Determina qual tipo de bucket usar baseado na URI
-        RateLimitingService.BucketType bucketType = getBucketType(requestURI);
-        
-        // Cria uma chave única para o IP + tipo de endpoint
-        String bucketKey = clientIp + ":" + bucketType.name();
-        
-        // Obtém o bucket para este IP/endpoint
-        Bucket bucket = rateLimitingService.getBucket(bucketKey, bucketType);
-
-        // Tenta consumir 1 token
-        if (bucket.tryConsume(1)) {
-            // Adiciona headers informativos sobre o rate limiting
-            long availableTokens = bucket.getAvailableTokens();
-            response.setHeader("X-Rate-Limit-Remaining", String.valueOf(availableTokens));
-            response.setHeader("X-Rate-Limit-Retry-After-Seconds", "60");
+        try {
+            System.out.println("=== RateLimitingInterceptor preHandle START ===");
+            System.out.println("Request URI: " + request.getRequestURI());
+            System.out.println("Request Method: " + request.getMethod());
             
-            return true; // Permite a requisição
-        } else {
-            // Rate limit excedido
-            response.setStatus(HttpStatus.TOO_MANY_REQUESTS.value());
-            response.setContentType("application/json");
-            response.getWriter().write("{\"error\":\"Rate limit exceeded. Too many requests.\",\"message\":\"Muitas requisições. Tente novamente em alguns minutos.\"}");
+            String clientIp = getClientIpAddress(request);
+            System.out.println("Client IP: " + clientIp);
             
-            // Headers informativos
-            response.setHeader("X-Rate-Limit-Remaining", "0");
-            response.setHeader("X-Rate-Limit-Retry-After-Seconds", "60");
+            RateLimitingService.BucketType bucketType = getBucketType(request.getRequestURI());
+            System.out.println("Bucket Type: " + bucketType);
             
-            return false; // Bloqueia a requisição
+            String key = clientIp + ":" + bucketType.name();
+            System.out.println("Bucket Key: " + key);
+            
+            System.out.println("Getting bucket from service...");
+            Bucket bucket = rateLimitingService.getBucket(key, bucketType);
+            System.out.println("Bucket obtained successfully");
+            
+            System.out.println("Checking if request can be consumed...");
+            if (bucket.tryConsume(1)) {
+                System.out.println("Request allowed - consuming token");
+                System.out.println("=== RateLimitingInterceptor preHandle END - SUCCESS ===");
+                return true;
+            } else {
+                System.out.println("Rate limit exceeded for IP: " + clientIp);
+                
+                response.setStatus(HttpStatus.TOO_MANY_REQUESTS.value());
+                response.setContentType("application/json");
+                response.getWriter().write("{\"error\":\"Rate limit exceeded. Please try again later.\"}");
+                
+                System.out.println("=== RateLimitingInterceptor preHandle END - RATE LIMITED ===");
+                return false;
+            }
+        } catch (Exception e) {
+            System.err.println("=== ERROR in RateLimitingInterceptor preHandle ===");
+            System.err.println("Error message: " + e.getMessage());
+            System.err.println("Error class: " + e.getClass().getName());
+            e.printStackTrace();
+            
+            // Em caso de erro, permitir a requisição para não bloquear o sistema
+            System.err.println("Allowing request due to error in rate limiting");
+            return true;
         }
     }
 

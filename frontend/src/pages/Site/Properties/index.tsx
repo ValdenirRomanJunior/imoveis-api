@@ -139,9 +139,9 @@ const Properties = ()=>{
         }
     
         // Use clientSlug to get theme config
-        const response = await api.get(`/theme-config/${clientSlug}`);
-        if (response.data) {
-          setThemeConfig(response.data);
+        const response = await api.get(`/api/themes/theme-config/${clientSlug}`);
+        if (response.data && response.data.themeConfig) {
+          setThemeConfig(response.data.themeConfig);
         }
       } catch (error) {
         console.error('Erro ao carregar configuração do tema:', error);

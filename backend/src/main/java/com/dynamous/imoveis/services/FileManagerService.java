@@ -79,6 +79,33 @@ public class FileManagerService {
         return s3Service.uploadThemeFile(imageService.getPngInputStream(pngImage), fileName, "image/png");
     }
     
+    //SERVICE PARA GERAR FAVICON A PARTIR DO LOGO
+    public String generateFaviconFromLogo(MultipartFile multipartFile, Long accountId) {
+        try {
+            // Get PNG image from uploaded logo
+            BufferedImage originalImage = imageService.getPngImageFromFile(multipartFile);
+            
+            // Generate favicon in different sizes
+            BufferedImage favicon16 = imageService.resizeImageForFavicon(originalImage, 16);
+            BufferedImage favicon32 = imageService.resizeImageForFavicon(originalImage, 32);
+            BufferedImage faviconIco = imageService.resizeImageForFavicon(originalImage, 32); // Use 32x32 for .ico
+            
+            // Upload favicon files with accountId in the filename
+            String fileName16 = "favicon-16x16_" + accountId + ".png";
+            String fileName32 = "favicon-32x32_" + accountId + ".png";
+            String fileNameIco = "favicon_" + accountId + ".ico";
+            
+            // Upload all favicon sizes
+            s3Service.uploadThemeFile(imageService.getPngInputStream(favicon16), fileName16, "image/png");
+            s3Service.uploadThemeFile(imageService.getPngInputStream(favicon32), fileName32, "image/png");
+            URI faviconUri = s3Service.uploadThemeFile(imageService.getFaviconInputStream(faviconIco), fileNameIco, "image/x-icon");
+            
+            return faviconUri.toString(); // Return the main favicon.ico URI as String
+        } catch (Exception e) {
+            throw new RuntimeException("Erro ao gerar favicon: " + e.getMessage());
+        }
+    }
+    
     //SERVICE PARA UPLOAD DE BANNER DO TEMA
     public URI uploadThemeBanner(MultipartFile multipartFile) {
         // For theme uploads, use a fixed tenant ID (1) since themes are public

@@ -83,17 +83,40 @@ public class ImageService {
     
     // Method to get PNG image without conversion to JPG
     public BufferedImage getPngImageFromFile(MultipartFile multipartFile) {
+        System.out.println("=== getPngImageFromFile DEBUG ===");
+        System.out.println("MultipartFile is null: " + (multipartFile == null));
+        
+        if (multipartFile == null) {
+            throw new FileException("Arquivo não fornecido");
+        }
+        
         String fileName = multipartFile.getOriginalFilename();
+        System.out.println("Original filename: " + fileName);
+        System.out.println("File size: " + multipartFile.getSize());
+        System.out.println("Content type: " + multipartFile.getContentType());
+        
+        if (fileName == null || fileName.isEmpty()) {
+            throw new FileException("Nome do arquivo não fornecido");
+        }
+        
         String ext = fileName.substring(fileName.lastIndexOf(".") + 1).toLowerCase();
+        System.out.println("File extension: " + ext);
         
         if (!"png".equals(ext)) {
             throw new FileException("Somente imagens PNG são permitidas para logo");
         }
         
         try {
-            return ImageIO.read(multipartFile.getInputStream());
+            BufferedImage image = ImageIO.read(multipartFile.getInputStream());
+            System.out.println("Image read successfully: " + (image != null));
+            if (image != null) {
+                System.out.println("Image dimensions: " + image.getWidth() + "x" + image.getHeight());
+            }
+            return image;
         } catch (IOException e) {
-            throw new FileException("erro ao ler arquivo PNG");
+            System.err.println("IOException reading PNG file: " + e.getMessage());
+            e.printStackTrace();
+            throw new FileException("erro ao ler arquivo PNG: " + e.getMessage());
         }
     }
     
@@ -105,6 +128,33 @@ public class ImageService {
             return new ByteArrayInputStream(baos.toByteArray());
         } catch (IOException e) {
             throw new FileException("erro ao processar imagem PNG");
+        }
+    }
+    
+    // Method to resize image for favicon generation
+    public BufferedImage resizeImageForFavicon(BufferedImage originalImage, int size) {
+        BufferedImage resizedImage = new BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g2d = resizedImage.createGraphics();
+        
+        // Enable high-quality rendering
+        g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+        g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        
+        g2d.drawImage(originalImage, 0, 0, size, size, null);
+        g2d.dispose();
+        
+        return resizedImage;
+    }
+    
+    // Method to convert PNG to ICO format (simplified - creates PNG with .ico extension)
+    public InputStream getFaviconInputStream(BufferedImage image) {
+        try {
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            ImageIO.write(image, "png", baos);
+            return new ByteArrayInputStream(baos.toByteArray());
+        } catch (IOException e) {
+            throw new FileException("erro ao processar favicon");
         }
     }
     		

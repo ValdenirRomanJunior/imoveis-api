@@ -155,14 +155,14 @@ const Detail  = () => {
                 }
             }
 
-            const response = await api.get(`/theme-config/${clientSlug}`);
-            if (response.data) {
+            const response = await api.get(`/api/themes/theme-config/${clientSlug}`);
+            if (response.data && response.data.themeConfig) {
                 // Parse JSON strings from backend
                 const themeData = {
-                    ...response.data,
-                    menuLinks: typeof response.data.menuLinks === 'string' ? JSON.parse(response.data.menuLinks || '[]') : response.data.menuLinks || [],
-                    services: typeof response.data.services === 'string' ? JSON.parse(response.data.services || '[]') : response.data.services || [],
-                    socialLinks: typeof response.data.socialLinks === 'string' ? JSON.parse(response.data.socialLinks || '{}') : response.data.socialLinks || {}
+                    ...response.data.themeConfig,
+                    menuLinks: typeof response.data.themeConfig.menuLinks === 'string' ? JSON.parse(response.data.themeConfig.menuLinks || '[]') : response.data.themeConfig.menuLinks || [],
+                    services: typeof response.data.themeConfig.services === 'string' ? JSON.parse(response.data.themeConfig.services || '[]') : response.data.themeConfig.services || [],
+                    socialLinks: typeof response.data.themeConfig.socialLinks === 'string' ? JSON.parse(response.data.themeConfig.socialLinks || '{}') : response.data.themeConfig.socialLinks || {}
                 };
                 setThemeConfig(themeData);
             }

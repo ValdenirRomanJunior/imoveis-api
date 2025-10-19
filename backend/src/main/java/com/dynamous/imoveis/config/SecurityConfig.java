@@ -62,6 +62,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 			"/properties/findAllDistricts/**",
 			"/themes/**",
 			"/api/themes/**",
+			"/theme-config/**",
 			"/tenants/register",
 			"/api/tenants/register",
 			"/plans/available",

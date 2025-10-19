@@ -63,6 +63,7 @@ public class Theme {
     private String facebookPixel;
     @Column(columnDefinition = "TEXT")
     private String seoKeywords;
+    private String favicon;
 
     @OneToOne
     @JoinColumn(name = "tenant_id")
@@ -358,6 +359,14 @@ public class Theme {
 
     public void setSeoKeywords(String seoKeywords) {
         this.seoKeywords = seoKeywords;
+    }
+
+    public String getFavicon() {
+        return favicon;
+    }
+
+    public void setFavicon(String favicon) {
+        this.favicon = favicon;
     }
 
     @Override

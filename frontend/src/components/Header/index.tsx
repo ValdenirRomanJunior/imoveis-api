@@ -170,7 +170,7 @@ const Header = () =>{
                         <IoIosArrowForward  className='icon-sidebar'/>
                         <div className='domain-info' style={{ cursor: 'pointer', color: '#3b82f6',position: 'relative', top: '0px', left: '20px' , fontSize: '15px', display: 'flex'}}
                         >
-                         {domainInfo?.subdomain || `${user?.slug || 'seu-slug'}${user?.accountId ? `-${user.accountId}` : user?.id ? `-${user.id}` : ''}.standi.com.br`}
+                         {domainInfo?.subdomain || `${user?.slug || 'seu-slug'}${user?.accountId || user?.id || ''}.standi.com.br`}
                   <FiExternalLink  
                     style={{ cursor: 'pointer', color: '#3b82f6',position: 'relative', top: '2px', left: '12px'}}
                     onClick={() => window.open(getSubdomainUrl(user?.slug || ''), '_blank')}

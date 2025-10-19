@@ -53,6 +53,7 @@ public class ThemeDTO {
     private String customDomain;
     private String facebookPixel;
     private String seoKeywords;
+    private String favicon;
 
     public ThemeDTO() {}
 
@@ -107,6 +108,7 @@ public class ThemeDTO {
         this.customDomain = theme.getCustomDomain();
         this.facebookPixel = theme.getFacebookPixel();
         this.seoKeywords = theme.getSeoKeywords();
+        this.favicon = theme.getFavicon();
     }
 
     // Getters and Setters
@@ -372,5 +374,13 @@ public class ThemeDTO {
 
     public void setSeoKeywords(String seoKeywords) {
         this.seoKeywords = seoKeywords;
+    }
+
+    public String getFavicon() {
+        return favicon;
+    }
+
+    public void setFavicon(String favicon) {
+        this.favicon = favicon;
     }
 }

@@ -28,6 +28,12 @@ interface UserDto{
     imageUrl?:string;
     domain?:string;
     phone?:string;
+    account?: {
+        id: string;
+        domain: string;
+        companyName: string;
+        customDomain?: string;
+    };
     
 }
 

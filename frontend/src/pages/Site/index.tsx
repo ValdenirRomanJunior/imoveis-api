@@ -95,6 +95,7 @@ import bannerPadrao from '../../assets/images/bg-principal.png';
 import FeaturedPropertyCard from './components/FeaturedPropertyCard';
 import houseimage from '../../assets/house-image.png';
 import { newLeadHome } from './Services/lead';
+import DynamicFavicon from '../../components/DynamicFavicon';
 
 interface Property {
   id: number;
@@ -167,7 +168,7 @@ interface ThemeConfig {
   textColor: string;
   buttonColor: string;
   h2Color: string;
-
+  favicon?: string;
   privacyPolicy: string;
   aboutUs: string;
   tenantId: number;
@@ -212,8 +213,21 @@ const Site: React.FC = () => {
 
   const loadThemeConfig = useCallback(async () => {
     try {
+      // Extract accountId from clientSlug for preview lookup
+      let previewKey = clientSlug;
+      if (clientSlug) {
+        // Extract accountId from clientSlug format: companyName-accountId
+        const lastHyphenIndex = clientSlug.lastIndexOf('-');
+        if (lastHyphenIndex !== -1 && lastHyphenIndex < clientSlug.length - 1) {
+          const possibleId = clientSlug.substring(lastHyphenIndex + 1);
+          if (possibleId.match(/^\d+$/)) {
+            previewKey = possibleId; // Use accountId as preview key
+          }
+        }
+      }
+      
       // Verificar se existe configuração de preview no localStorage
-      const previewData = localStorage.getItem(`theme-preview-${clientSlug}`);
+      const previewData = localStorage.getItem(`theme-preview-${previewKey}`);
       
       if (previewData) {
         try {
@@ -222,7 +236,7 @@ const Site: React.FC = () => {
           const isRecentPreview = Date.now() - parsedPreview.timestamp < 5 * 60 * 1000;
           
           if (parsedPreview.isPreview && isRecentPreview) {
-            console.log('Usando configuração de preview do localStorage');
+            console.log('Usando configuração de preview do localStorage com key:', previewKey);
             // Parse JSON strings do preview
             const previewConfig = {
               ...parsedPreview,
@@ -235,30 +249,32 @@ const Site: React.FC = () => {
             return;
           } else {
             // Preview expirado, remover do localStorage
-            localStorage.removeItem(`theme-preview-${clientSlug}`);
+            localStorage.removeItem(`theme-preview-${previewKey}`);
           }
         } catch (previewError) {
           console.error('Erro ao processar preview:', previewError);
-          localStorage.removeItem(`theme-preview-${clientSlug}`);
+          localStorage.removeItem(`theme-preview-${previewKey}`);
         }
       }
 
       // Use clientSlug to get theme config
-      const response = await api.get(`/theme-config/${clientSlug}`);
-      if (response.data) {
-        console.log('Site - ThemeConfig carregado do backend:', response.data);
-        console.log('Site - socialLinks raw:', response.data.socialLinks);
+      const response = await api.get(`/api/themes/theme-config/${clientSlug}`);
+      if (response.data && response.data.themeConfig) {
+        console.log('Site - ThemeConfig carregado do backend:', response.data.themeConfig);
+        console.log('Site - favicon do backend:', response.data.themeConfig.favicon);
+        console.log('Site - socialLinks raw:', response.data.themeConfig.socialLinks);
         
         // Parse JSON strings from backend if needed
         const themeData = {
-          ...response.data,
-          menuLinks: typeof response.data.menuLinks === 'string' ? JSON.parse(response.data.menuLinks || '[]') : response.data.menuLinks || [],
-          services: typeof response.data.services === 'string' ? JSON.parse(response.data.services || '[]') : response.data.services || [],
-          socialLinks: typeof response.data.socialLinks === 'string' ? JSON.parse(response.data.socialLinks || '{}') : response.data.socialLinks || {}
+          ...response.data.themeConfig,
+          menuLinks: typeof response.data.themeConfig.menuLinks === 'string' ? JSON.parse(response.data.themeConfig.menuLinks || '[]') : response.data.themeConfig.menuLinks || [],
+          services: typeof response.data.themeConfig.services === 'string' ? JSON.parse(response.data.themeConfig.services || '[]') : response.data.themeConfig.services || [],
+          socialLinks: typeof response.data.themeConfig.socialLinks === 'string' ? JSON.parse(response.data.themeConfig.socialLinks || '{}') : response.data.themeConfig.socialLinks || {}
         };
         
         console.log('Site - socialLinks após parsing:', themeData.socialLinks);
         console.log('Site - socialLinks.whatsapp final:', themeData.socialLinks?.whatsapp);
+        console.log('Site - favicon final:', themeData.favicon);
         setThemeConfig(themeData);
       }
     } catch (error) {
@@ -292,6 +308,7 @@ const Site: React.FC = () => {
         textColor: '#1f2937',
         buttonColor: '#2563eb',
         h2Color: '#1f2937',
+        favicon: '', // Adicionar favicon no fallback
         privacyPolicy: '',
         aboutUs: '',
         tenantId: 0
@@ -484,6 +501,7 @@ function handleChange(e: any): void {
 
   return (
     <ThemeProvider theme={dynamicTheme}>
+      <DynamicFavicon faviconUrl={themeConfig?.favicon} />
       <SiteContainer>
       {/* Bloco 1 - Header */}
       <Header>
