@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -148,10 +149,23 @@ public class S3Service {
            
            s3client.putObject(bucketName, fileName, is,meta);
            LOG.info("Finalizado upload de tema");
+           
+           URL s3Url = s3client.getUrl(bucketName, fileName);
+           System.out.println("=== S3 URL DEBUG ===");
+           System.out.println("Bucket: " + bucketName);
+           System.out.println("FileName: " + fileName);
+           System.out.println("Generated URL: " + s3Url.toString());
+           System.out.println("URL Protocol: " + s3Url.getProtocol());
+           System.out.println("URL Host: " + s3Url.getHost());
+           System.out.println("URL Path: " + s3Url.getPath());
         
-           return s3client.getUrl(bucketName,fileName).toURI();
+           return s3Url.toURI();
           
       } catch (URISyntaxException | AmazonClientException  e) {
+         System.err.println("=== ERROR CONVERTING URL TO URI ===");
+         System.err.println("Exception type: " + e.getClass().getSimpleName());
+         System.err.println("Exception message: " + e.getMessage());
+         e.printStackTrace();
          throw new FileException(("Erro ao converter URL para URI"));
          
       }

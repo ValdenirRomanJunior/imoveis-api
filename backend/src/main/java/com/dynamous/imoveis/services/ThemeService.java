@@ -110,7 +110,9 @@ public class ThemeService {
         theme.setAboutUs(themeDTO.getAboutUs());
         
         // Favicon
-        theme.setFavicon(themeDTO.getFavicon());
+        if (themeDTO.getFavicon() != null && !themeDTO.getFavicon().isEmpty()) {
+            theme.setFavicon(themeDTO.getFavicon());
+        }
         
         theme.setCustomDomain(themeDTO.getCustomDomain());
         theme = themeRepository.save(theme);

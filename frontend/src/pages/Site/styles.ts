@@ -225,6 +225,9 @@ export const ServiceIcon = styled.div<{ buttonColor?: string }>`
   font-size: 3rem;
   color: ${props => props.buttonColor || props.theme.colors.primary};
   margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 `;
 
 export const ServiceTitle = styled.h3<{ textColor?: string }>`
@@ -433,6 +436,9 @@ export const FooterLogo = styled.div`
   font-weight: bold;
   margin-bottom: 2rem;
   color: ${props => props.theme.colors.primary};
+  display: flex;
+  align-items: center;
+  justify-content: center;
 `;
 
 export const SocialLinks = styled.div`

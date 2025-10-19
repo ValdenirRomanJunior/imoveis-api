@@ -94,6 +94,7 @@ interface ThemeConfig {
   customDomain: string;
   facebookPixel: string;
   seoKeywords: string;
+  favicon?: string;
   tenantId: number;
 }
 
@@ -204,6 +205,9 @@ const TemaEdit: React.FC = () => {
       
       const response = await api.get(`/api/themes/account-id/${accountId}`);
       const data = response.data;
+      
+      console.log('TemaEdit - Response completa da API:', response.data);
+      console.log('TemaEdit - favicon recebido:', data.favicon);
       
       // Parse JSON strings from backend
       const defaultServices = [
@@ -471,7 +475,7 @@ const TemaEdit: React.FC = () => {
           const formData = new FormData();
           formData.append('file', selectedBannerFile);
           
-          const response = await api.post('/api/themes/upload-banner', formData, {
+          const response = await api.post(`/api/themes/upload-banner/${accountId}` , formData, {
             headers: {
               'Content-Type': 'multipart/form-data'
             }
@@ -492,7 +496,7 @@ const TemaEdit: React.FC = () => {
           const formData = new FormData();
           formData.append('file', selectedAgentPhotoFile);
           
-          const response = await api.post('/api/themes/upload-agent-photo', formData, {
+          const response = await api.post(`/api/themes/upload-agent-photo/${accountId}`, formData, {
             headers: {
               'Content-Type': 'multipart/form-data'
             }
@@ -513,6 +517,7 @@ const TemaEdit: React.FC = () => {
         logo: logoUrl,
         bannerImage: bannerUrl,
         agentPhoto: agentPhotoUrl,
+        favicon: themeConfig.favicon,
         menuLinks: JSON.stringify(themeConfig.menuLinks),
         services: JSON.stringify(themeConfig.services),
         socialLinks: JSON.stringify(themeConfig.socialLinks)

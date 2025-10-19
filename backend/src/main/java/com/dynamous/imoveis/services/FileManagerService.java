@@ -78,6 +78,13 @@ public class FileManagerService {
        
         return s3Service.uploadThemeFile(imageService.getPngInputStream(pngImage), fileName, "image/png");
     }
+
+    // Novo: upload de logo com accountId no nome do arquivo
+    public URI uploadThemeLogoWithAccountId(MultipartFile multipartFile, Long accountId) {
+        BufferedImage pngImage = imageService.getPngImageFromFile(multipartFile);
+        String fileName = "logo_theme_" + accountId + ".png";
+        return s3Service.uploadThemeFile(imageService.getPngInputStream(pngImage), fileName, "image/png");
+    }
     
     //SERVICE PARA GERAR FAVICON A PARTIR DO LOGO
     public String generateFaviconFromLogo(MultipartFile multipartFile, Long accountId) {
@@ -114,6 +121,13 @@ public class FileManagerService {
        
         return s3Service.uploadThemeFile(imageService.getInputStream(jpgImage, "jpg"), fileName, "image/jpeg");
     }
+
+    // Novo: upload de banner com accountId no nome do arquivo
+    public URI uploadThemeBannerWithAccountId(MultipartFile multipartFile, Long accountId) {
+        BufferedImage jpgImage = imageService.getJpgImageFromFile(multipartFile);
+        String fileName = "banner_theme_" + accountId + ".jpg";
+        return s3Service.uploadThemeFile(imageService.getInputStream(jpgImage, "jpg"), fileName, "image/jpeg");
+    }
     
     //SERVICE PARA UPLOAD DE FOTO DO CORRETOR
     public URI uploadThemeAgentPhoto(MultipartFile multipartFile) {
@@ -121,6 +135,13 @@ public class FileManagerService {
         BufferedImage jpgImage = imageService.getJpgImageFromFile(multipartFile);
         String fileName = "agent_theme_1.jpg";
        
+        return s3Service.uploadThemeFile(imageService.getInputStream(jpgImage, "jpg"), fileName, "image/jpeg");
+    }
+
+    // Novo: upload de foto do corretor com accountId no nome do arquivo
+    public URI uploadThemeAgentPhotoWithAccountId(MultipartFile multipartFile, Long accountId) {
+        BufferedImage jpgImage = imageService.getJpgImageFromFile(multipartFile);
+        String fileName = "agent_theme_" + accountId + ".jpg";
         return s3Service.uploadThemeFile(imageService.getInputStream(jpgImage, "jpg"), fileName, "image/jpeg");
     }
     

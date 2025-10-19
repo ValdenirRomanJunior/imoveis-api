@@ -318,28 +318,41 @@ public class ThemeController {
     }
     
     @PostMapping("/upload-logo/{accountId}")
+    @Transactional
     public ResponseEntity<String> uploadLogoWithAccountId(@PathVariable Long accountId, @RequestParam("file") MultipartFile file) {
         try {
-            URI logoUri = fileManagerService.uploadThemeLogo(file);
+            URI logoUri = fileManagerService.uploadThemeLogoWithAccountId(file, accountId);
+            System.out.println("Logo uploaded successfully: " + logoUri.toString());
             
             // Automatically generate favicon from the uploaded logo with accountId
             String faviconUrl = null;
             try {
+                System.out.println("Generating favicon for accountId: " + accountId);
                 faviconUrl = fileManagerService.generateFaviconFromLogo(file, accountId);
+                System.out.println("Favicon generated successfully: " + faviconUrl);
                 
                 // Save favicon URL to theme
                 Account account = accountService.find(accountId);
+                System.out.println("Account found: " + (account != null ? account.getId() : "null"));
+                
                 if (account != null && !account.getTenants().isEmpty()) {
                     Long tenantId = account.getTenants().get(0).getId();
+                    System.out.println("Using tenant ID: " + tenantId);
+                    
                     ThemeDTO themeDTO = themeService.findByTenantId(tenantId);
+                    System.out.println("Theme found: " + (themeDTO != null ? themeDTO.getName() : "null"));
+                    
                     if (themeDTO != null) {
+                        System.out.println("Setting favicon URL: " + faviconUrl);
                         themeDTO.setFavicon(faviconUrl);
-                        themeService.save(themeDTO);
+                        ThemeDTO savedTheme = themeService.save(themeDTO);
+                        System.out.println("Theme saved with favicon: " + savedTheme.getFavicon());
                     }
                 }
             } catch (Exception faviconError) {
                 // Log the error but don't fail the logo upload
                 System.err.println("Erro ao gerar favicon automaticamente: " + faviconError.getMessage());
+                faviconError.printStackTrace();
             }
             
             return ResponseEntity.ok(logoUri.toString());
@@ -357,11 +370,31 @@ public class ThemeController {
             return ResponseEntity.badRequest().body("Erro ao fazer upload do banner: " + e.getMessage());
         }
     }
+
+    @PostMapping("/upload-banner/{accountId}")
+    public ResponseEntity<String> uploadBannerWithAccountId(@PathVariable Long accountId, @RequestParam("file") MultipartFile file) {
+        try {
+            URI bannerUri = fileManagerService.uploadThemeBannerWithAccountId(file, accountId);
+            return ResponseEntity.ok(bannerUri.toString());
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Erro ao fazer upload do banner: " + e.getMessage());
+        }
+    }
     
     @PostMapping("/upload-agent-photo")
     public ResponseEntity<String> uploadAgentPhoto(@RequestParam("file") MultipartFile file) {
         try {
             URI agentPhotoUri = fileManagerService.uploadThemeAgentPhoto(file);
+            return ResponseEntity.ok(agentPhotoUri.toString());
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Erro ao fazer upload da foto do corretor: " + e.getMessage());
+        }
+    }
+
+    @PostMapping("/upload-agent-photo/{accountId}")
+    public ResponseEntity<String> uploadAgentPhotoWithAccountId(@PathVariable Long accountId, @RequestParam("file") MultipartFile file) {
+        try {
+            URI agentPhotoUri = fileManagerService.uploadThemeAgentPhotoWithAccountId(file, accountId);
             return ResponseEntity.ok(agentPhotoUri.toString());
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Erro ao fazer upload da foto do corretor: " + e.getMessage());
