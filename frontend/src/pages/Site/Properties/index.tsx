@@ -28,6 +28,8 @@ import PageNotFound from '../PageNotFound';
 import corretorPadrao from '../assets/corretor-padrao.jpg';
 import bannerPadrao from '../../../assets/images/bg-principal.png';
 
+import DynamicSEO from '../../../components/DynamicSEO';
+
 interface ThemeConfig {
   name: string;
   logo: string;
@@ -67,6 +69,8 @@ interface ThemeConfig {
   tenantId?: number;
   bannerColor?: string;
   menuLinks?: any[];
+  facebookPixel?: string;
+  seoKeywords?: string;
 }
 
 
@@ -224,6 +228,7 @@ const Properties = ()=>{
       <ErrorBoundary FallbackComponent={ErrorHandler}>
       <ThemeProvider theme={dynamicTheme}>
       <div>
+        <DynamicSEO facebookPixelId={themeConfig.facebookPixel} keywords={themeConfig?.seoKeywords} />
         {/* Header */}
         <Header>
          <NavLink href={`/site/${companyName}`}> <Logo logoSize={themeConfig.logoSize}>

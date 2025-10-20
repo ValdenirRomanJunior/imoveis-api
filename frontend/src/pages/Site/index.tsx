@@ -96,6 +96,7 @@ import FeaturedPropertyCard from './components/FeaturedPropertyCard';
 import houseimage from '../../assets/house-image.png';
 import { newLeadHome } from './Services/lead';
 import DynamicFavicon from '../../components/DynamicFavicon';
+import DynamicSEO from '../../components/DynamicSEO';
 
 interface Property {
   id: number;
@@ -172,6 +173,8 @@ interface ThemeConfig {
   privacyPolicy: string;
   aboutUs: string;
   tenantId: number;
+  facebookPixel?: string;
+  seoKeywords?: string;
 }
 
 const Site: React.FC = () => {
@@ -502,6 +505,7 @@ function handleChange(e: any): void {
   return (
     <ThemeProvider theme={dynamicTheme}>
       <DynamicFavicon faviconUrl={themeConfig?.favicon} />
+      <DynamicSEO facebookPixelId={themeConfig?.facebookPixel} keywords={themeConfig?.seoKeywords} />
       <SiteContainer>
       {/* Bloco 1 - Header */}
       <Header>

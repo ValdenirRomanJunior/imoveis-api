@@ -36,6 +36,7 @@ import {
   MobileMenuButton,
   MobileMenu
 } from '../styles';
+import DynamicSEO from '../../../components/DynamicSEO';
 // Importar imagens padrão
 import corretorPadrao from '../../../assets/images/user-image.jpeg';
 import bannerPadrao from '../../../assets/images/bg-principal.png';
@@ -82,6 +83,8 @@ interface ThemeConfig {
   privacyPolicy?: string;
   aboutUs?: string;
   tenantId?: number;
+  facebookPixel?: string;
+  seoKeywords?: string;
 }
 
 
@@ -403,7 +406,9 @@ console.log(property?.id)
 
     return(
         <>
+        <ErrorBoundary FallbackComponent={ErrorHandler}>
         <ThemeProvider theme={dynamicTheme}>
+            <DynamicSEO facebookPixelId={themeConfig?.facebookPixel} keywords={themeConfig?.seoKeywords} />
             <Header>
                 <Logo logoSize={themeConfig.logoSize}>
                     {themeConfig.logoUrl ? (
@@ -428,7 +433,6 @@ console.log(property?.id)
                     </MobileMenu>
                 )}
             </Header>
-        <ErrorBoundary FallbackComponent={ErrorHandler}>
         { !errors ? 
         <DetailContainer>
               
@@ -590,8 +594,8 @@ console.log(property?.id)
             </SessionFooter>                         
         </DetailContainer>
                         :<PageNotFound/>}
-                        </ErrorBoundary>
         </ThemeProvider>
+        </ErrorBoundary>
                         </>
     )
 }

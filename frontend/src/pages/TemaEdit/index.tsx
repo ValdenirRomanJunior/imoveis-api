@@ -677,7 +677,7 @@ const TemaEdit: React.FC = () => {
                 }}
               />
             </FormGroup>
-            <FormGroup>
+            <FormGroup style={{display: 'none'}}>
               <Label>Cor de Fundo</Label>
               <ColorInput
                 type="color"
@@ -871,7 +871,7 @@ const TemaEdit: React.FC = () => {
       case 'footer':
         return (
           <TabContent>
-            <FormGroup>
+            <FormGroup style={{display: 'none'}}>
               <Label>Logo do Footer</Label>
               <Input
                 value={themeConfig.footerLogo}
@@ -925,7 +925,7 @@ const TemaEdit: React.FC = () => {
       case 'colors':
         return (
           <TabContent>
-            <FormGroup>
+            <FormGroup style={{display: 'none'}}>
               <Label>Cor Principal</Label>
               <ColorInput
                 type="color"
