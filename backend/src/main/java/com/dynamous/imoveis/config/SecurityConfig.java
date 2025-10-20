@@ -84,6 +84,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 			"/properties/findAddress/{nameUrl}/**",
 			"/properties/findAllFeatures/**",
 			"/api/blog/**",
+			"/api/accounts/resolve-domain/**"
 			
 			
 		

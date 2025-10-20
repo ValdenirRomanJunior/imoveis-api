@@ -89,10 +89,11 @@ import {
 } from './styles';
 import PseudoSearch from './PseudoSearch';
 import WhatsappButton from './WhatsappButton';
-import api from '../../utils/requests';
+import api from './utils/requests';
 import corretorPadrao from './assets/corretor-padrao.jpg';
 import bannerPadrao from '../../assets/images/bg-principal.png';
 import FeaturedPropertyCard from './components/FeaturedPropertyCard';
+import { getPropertiesHome } from './Services/property';
 import houseimage from '../../assets/house-image.png';
 import { newLeadHome } from './Services/lead';
 import DynamicFavicon from '../../components/DynamicFavicon';
@@ -323,7 +324,7 @@ const Site: React.FC = () => {
 
   const loadFeaturedProperties = useCallback(async () => {
     try {
-      const response = await api.get(`/properties/findAllFeatures`);
+      const response = await getPropertiesHome(clientSlug as string);
       if (response.data) {
         setFeaturedProperties(response.data.slice(0, 6)); // Mostrar apenas 6 propriedades
       }
