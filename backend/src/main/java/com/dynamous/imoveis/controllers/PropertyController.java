@@ -227,18 +227,36 @@ public class PropertyController {
             @RequestParam(value = "linesPerPage",defaultValue = "12")  Integer linesPerPage,
             @RequestParam(value = "orderBy",defaultValue = "name")String orderBy,
             @RequestParam(value = "direction",defaultValue = "ASC")  String direction){
-        //verificar se vem nullo nos parametros
-    	
-          
-    	 //Page<Property> list= service.search(id,state, city, goal, typeProperty, page, linesPerPage, orderBy, direction);
-         Page<Property> list = service.findByTenantMatchAnyParam(goal,typeProperty,name, nameUrl,page, linesPerPage, orderBy, direction);
+        //verificar se vem nulo nos parametros e dar suporte a hífen com ID (ex.: 'slug-3')
+        String resolvedKey = nameUrl;
+        Long accountId = null;
+        int lastHyphen = nameUrl != null ? nameUrl.lastIndexOf('-') : -1;
+        if (lastHyphen > 0 && lastHyphen < nameUrl.length() - 1) {
+            String suffix = nameUrl.substring(lastHyphen + 1);
+            if (suffix.matches("\\d+")) {
+                try {
+                    accountId = Long.parseLong(suffix);
+                } catch (NumberFormatException ignored) {}
+                resolvedKey = nameUrl.substring(0, lastHyphen);
+            }
+        }
+
+        Page<Property> list;
+        if (accountId != null) {
+            Account account = accountService.find(accountId);
+            org.springframework.data.domain.PageRequest pageRequest = org.springframework.data.domain.PageRequest.of(page, linesPerPage, org.springframework.data.domain.Sort.Direction.valueOf(direction), orderBy);
+            list = propertyRepository.findByGoalAndAccountPropertiesIn(name, goal, typeProperty, account, pageRequest);
+        } else {
+            list = service.findByTenantMatchAnyParam(goal, typeProperty, name, resolvedKey, page, linesPerPage, orderBy, direction);
+        }
+
          Image imgux=null;
          Set<Image> OneImg=null;
          
        	for( Property item : list) {
        		
        		if( item.getImages().size() >0 ) {  
-       		imgux = item.getImages().iterator().next();    		
+       			imgux = item.getImages().iterator().next();    		
        		OneImg =  new HashSet<>();
        		item.setImages(OneImg);
        		item.getImages().add(imgux);
@@ -259,7 +277,7 @@ public class PropertyController {
     }
     //busca endereços por tenant
     
-    @GetMapping(value= "/findAddress/{nameUrl}", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @GetMapping(value= "/findAddress/{nameUrl:.+}", produces = {MediaType.APPLICATION_JSON_VALUE})
 	public ResponseEntity <List<Address>> findAddressByTenant(@PathVariable String nameUrl){
     	List<Address> list = service.findAddressByTenant(nameUrl);	
     	
@@ -269,10 +287,28 @@ public class PropertyController {
     //busca home site
     @GetMapping(value= "/findAll/{nameUrl}", produces = {MediaType.APPLICATION_JSON_VALUE})
 	public ResponseEntity <List<Property>> findAll(@PathVariable String nameUrl){
-    	List<Property> list = service.findByStatusFeatured(nameUrl);
-    	
+        // Suporte a subdomínio com hífen (ex: 'slug-123'), extraindo o ID da Account
+        String resolvedKey = nameUrl;
+        Long accountId = null;
+        int lastHyphen = nameUrl.lastIndexOf('-');
+        if (lastHyphen > 0 && lastHyphen < nameUrl.length() - 1) {
+            String suffix = nameUrl.substring(lastHyphen + 1);
+            if (suffix.matches("\\d+")) {
+                try {
+                    accountId = Long.parseLong(suffix);
+                } catch (NumberFormatException ignored) {}
+                resolvedKey = nameUrl.substring(0, lastHyphen);
+            }
+        }
+
+        List<Property> list;
+        if (accountId != null) {
+            Account account = accountService.find(accountId);
+            list = propertyRepository.findFirst4ByAccountAndStatusFeaturedAndStatusProperty(account, 1, 1);
+        } else {
+            list = service.findByStatusFeatured(resolvedKey);
+        }
 		return ResponseEntity.ok().body(list);
-		
 	}
     @GetMapping(value= "/findAllFeatures", produces = {MediaType.APPLICATION_JSON_VALUE})
   	public ResponseEntity <List<Property>> findAllPropertiesAsList(){
@@ -281,6 +317,13 @@ public class PropertyController {
   		return ResponseEntity.ok().body(list);
   		
   	}
+
+    // Novo: endpoint público para listar todos os destaques por slug/companyName
+    @GetMapping(value= "/findAllFeatures/{nameUrl}", produces = {MediaType.APPLICATION_JSON_VALUE})
+    public ResponseEntity<List<Property>> findAllFeaturedByCompanyOrSlug(@PathVariable String nameUrl){
+        List<Property> list = service.findAllFeaturedPropertiesPublicByCompanyOrSlug(nameUrl);
+        return ResponseEntity.ok().body(list);
+    }
     
     @GetMapping(value= "/findAllFeature", produces = {MediaType.APPLICATION_JSON_VALUE})
   	public ResponseEntity<List<FeatureDTO>> findAllFeatures(){

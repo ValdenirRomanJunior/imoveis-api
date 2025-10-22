@@ -109,6 +109,11 @@ public class ThemeService {
         theme.setPrivacyPolicy(themeDTO.getPrivacyPolicy());
         theme.setAboutUs(themeDTO.getAboutUs());
         
+        // SEO and Marketing
+        theme.setFacebookPixel(themeDTO.getFacebookPixel());
+        theme.setSeoKeywords(themeDTO.getSeoKeywords());
+        theme.setSiteTitle(themeDTO.getSiteTitle());
+        
         // Favicon
         if (themeDTO.getFavicon() != null && !themeDTO.getFavicon().isEmpty()) {
             theme.setFavicon(themeDTO.getFavicon());
@@ -156,6 +161,9 @@ public class ThemeService {
         theme.setH3Color("#374151");
         theme.setPrivacyPolicy("Política de privacidade padrão.");
         theme.setAboutUs("Sobre nós padrão.");
+        theme.setFacebookPixel("");
+        theme.setSeoKeywords("");
+        theme.setSiteTitle("Imobiliária - Encontre seu imóvel");
         
         theme = themeRepository.save(theme);
         return new ThemeDTO(theme);

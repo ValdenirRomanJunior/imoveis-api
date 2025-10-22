@@ -38,6 +38,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
@@ -111,6 +112,44 @@ public class PropertyService {
     
 	@Autowired
 	private AccountService accountService;
+
+    // Helper to resolve Account by custom domain, slug, or companyName
+	private Account resolveAccountKey(String key) {
+		if (key == null || key.trim().isEmpty()) {
+			return null;
+		}
+		// Try custom domain
+		Optional<Account> accountOpt = accountService.findByCustomDomain(key);
+		if (accountOpt.isPresent()) {
+			return accountOpt.get();
+		}
+		// Try tenant slug
+		Optional<Tenant> tenantOpt = tenantRepository.findBySlug(key);
+		if (tenantOpt.isPresent()) {
+			Tenant tenant = tenantOpt.get();
+			return accountService.find(tenant.getAccount().getId());
+		}
+		// Try account domain
+		try {
+			return accountService.findByDomain(key);
+		} catch (ObjectNotFoundException e) {
+			// ignore
+		}
+		// Try company name
+		try {
+			return accountService.findByCompanyName(key);
+		} catch (ObjectNotFoundException e) {
+			// ignore
+		}
+		// Try tenant service by domain
+		try {
+			Tenant tenant = tenantService.findByDomain(key);
+			return accountService.find(tenant.getAccount().getId());
+		} catch (ObjectNotFoundException e) {
+			// ignore
+		}
+		return null;
+	}
 
     //PROCURA POR ID
     public Property find(Long id) {
@@ -385,17 +424,18 @@ public class PropertyService {
 	}
     			
 	return property;
+	}
 		
-}
-	
+
 	//busca paginada por tenant 20/05/2024
 	 @Transactional(readOnly = true)
 	 public Page<Property> findByTenantMatchAnyParam(Integer goal,Integer typeProperty, String name, String domain, Integer page, Integer linesPerPage, String orderBy, String direction){
-		  PageRequest pageRequest = PageRequest.of(page, linesPerPage, Direction.valueOf(direction), orderBy);		  
-		  	
-		  	Tenant tenant = tenantService.findByDomain(domain);
-			Account account= accountService.find(tenant.getAccount().getId());
-		  	return propertyRepository.findByGoalAndAccountPropertiesIn(name,goal, typeProperty, account, pageRequest);
+		  PageRequest pageRequest = PageRequest.of(page, linesPerPage, Direction.valueOf(direction), orderBy);
+		  Account account = resolveAccountKey(domain);
+		  if (account == null) {
+		      return new PageImpl<>(java.util.Collections.emptyList(), pageRequest, 0);
+		  }
+		  return propertyRepository.findByGoalAndAccountPropertiesIn(name,goal, typeProperty, account, pageRequest);
 
 	}
 	 	
@@ -419,23 +459,54 @@ public class PropertyService {
 	}
 
 	 @Transactional(readOnly = true)
-	public List<Property> findByStatusFeatured(String companyName) {
-		   
-	     Account account = accountService.findByCompanyName(companyName);  
-		List<Property> list = propertyRepository.findFirst4ByAccountAndStatusFeaturedAndStatusProperty(account,1,1);
-		return list;
-	}
-	
-	 public List<Property> findFourByTenant(Long id) {
-		 Tenant tenant = tenantService.find(id);
-			Account account= accountService.find(tenant.getAccount().getId());
-		List<Property> list = propertyRepository.findFirst4ByAccountAndStatusPropertyLessThanEqual(account,1);
-		return list;
-	}
+	public List<Property> findByStatusFeatured(String companyOrSlug) {
+        Account account = resolveAccountKey(companyOrSlug);
+        if (account == null) {
+            return java.util.Collections.emptyList();
+        }
+        return propertyRepository.findFirst4ByAccountAndStatusFeaturedAndStatusProperty(account, 1, 1);
+    }
+
+    // Novo: lista TODAS as propriedades em destaque e publicadas para um tenant resolvido por slug ou companyName
+    public List<Property> findAllFeaturedPropertiesPublicByCompanyOrSlug(String companyOrSlug) {
+        Account account = null;
+
+        // Primeiro tenta resolver via slug de tenant
+        Optional<Tenant> tenantOpt = tenantRepository.findBySlug(companyOrSlug);
+        if (tenantOpt.isPresent()) {
+            Tenant tenant = tenantOpt.get();
+            account = accountService.find(tenant.getAccount().getId());
+        }
+
+        // Fallback: tenta por companyName
+        if (account == null) {
+            try {
+                account = accountService.findByCompanyName(companyOrSlug);
+            } catch (ObjectNotFoundException ignored) {
+                // Se não encontrar, retorna lista vazia abaixo
+            }
+        }
+
+        if (account == null) {
+            return java.util.Collections.emptyList();
+        }
+
+        // Já filtra por destacados e publicados no repositório
+        return propertyRepository.findAllByAccountAndStatusFeatureAndStatusProperty(account.getId());
+    }
+    
+    public List<Property> findFourByTenant(Long id) {
+         Tenant tenant = tenantService.find(id);
+            Account account= accountService.find(tenant.getAccount().getId());
+        List<Property> list = propertyRepository.findFirst4ByAccountAndStatusPropertyLessThanEqual(account,1);
+        return list;
+    }
 	 //busca endereços por tenant(20/05/2024) do site
 	public List<Address> findAddressByTenant(String domain) {
-		 Tenant tenant = tenantService.findByDomain(domain);
-			Account account= accountService.find(tenant.getAccount().getId());
+		 Account account = resolveAccountKey(domain);
+		 if (account == null) {
+		     return java.util.Collections.emptyList();
+		 }
 		 List<Property> list = propertyRepository.findAllByAccount(account);
 		 List<Address>listAddress= new ArrayList<Address>();
 			for(Property property : list) {
@@ -443,7 +514,8 @@ public class PropertyService {
 				
 	}
 			return listAddress;
-}
+	}
+
 	public List<Property> findAll() {	
 		return propertyRepository.findAll();
 	}

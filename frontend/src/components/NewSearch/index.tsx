@@ -4,6 +4,8 @@ import {BsSliders} from 'react-icons/bs'
 import { useEffect, useState } from 'react';
 import { getTAllAddressRequest } from '../../services/resources/property';
 import { lowercase } from './mask';
+import { useParams } from 'react-router-dom';
+import { useSubdomain } from '../SubdomainRouter';
 
 type Address={
   
@@ -44,6 +46,10 @@ const NewSearch = ({onChange}:Prop) =>{
     const[type,setType]=useState('');
     const[name,setSearch]= useState('');
 
+    const { companyName: subdomainCompanyName } = useSubdomain();
+    const params = useParams();
+    const companySlug = subdomainCompanyName || (params as any)?.companyName;
+
     const [address,setAddress]= useState<Address[]>([]);   
     const [cities,setCities]= useState<City[]>([]);
     const [openHiddenSearch,setOpenHiddenSearch]= useState(false);
@@ -53,7 +59,7 @@ const NewSearch = ({onChange}:Prop) =>{
         
     }
 
-    const [url,setUrl]= useState(window.location.hostname);
+    const [url,setUrl]= useState(companySlug || window.location.hostname);
     const getAllAddress = async () => {
         let params = new URLSearchParams(document.location.search);
        
@@ -62,8 +68,12 @@ const NewSearch = ({onChange}:Prop) =>{
     }
 
      useEffect(()=> {
+        setUrl(companySlug || window.location.hostname);
+     },[companySlug])
+
+     useEffect(()=> {
         getAllAddress()
-     },[])
+     },[url])
 
 
      const getOnlyCities = () => {

@@ -7,6 +7,7 @@ import { useCountUp } from '../../hooks/useCountUp';
 import { trackAccess } from '../../services/resources/adminStats';
 import RegisterModal from '../../components/RegisterModal';
 import RegisterSuccess from '../../components/RegisterSuccess';
+import WhatsAppHome from './WhatsappHome';
 import tela1 from '../../assets/images/tela-1.png';
 import tela2 from '../../assets/images/tela-2.png';
 import tela3 from '../../assets/images/foto-1.png';
@@ -126,6 +127,7 @@ import {
   RegisterButton,
   MobileSidebarRegisterButton
 } from './styles';
+import WhatsappHome from './WhatsappHome';
 
   const styles = `
     .container-main-mockup {
@@ -400,6 +402,7 @@ const Home: React.FC = () => {
   ];
   return (
     <HomeContainer>
+     <WhatsappHome />
       <Header>
         <Nav>
           <Logo>
@@ -503,7 +506,7 @@ const Home: React.FC = () => {
               editor do site em um só lugar.
             </p>
             <CTAButton onClick={handleOpenRegisterModal}>
-              Testar grátis Agora
+              TESTAR GRÁTIS AGORA
             </CTAButton>
          
           
@@ -931,10 +934,11 @@ const Home: React.FC = () => {
         </CTALeftSide>
         <CTARightSide>
           <PersonImage src={userImage} alt="Atendente" />
+          <a href={`https://api.whatsapp.com/send?phone=45988348165`} target="_blank">
           <div>
             <WhatsAppIcon><img src={Whats} alt="WhatsApp" /></WhatsAppIcon>
             <WhatsAppText>Dúvidas,clique aqui e fale conosco</WhatsAppText>
-          </div>
+          </div></a>
         </CTARightSide>
       </CallToActionBanner>
 

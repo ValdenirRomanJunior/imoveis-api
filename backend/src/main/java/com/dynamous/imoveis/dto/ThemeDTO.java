@@ -53,6 +53,7 @@ public class ThemeDTO {
     private String customDomain;
     private String facebookPixel;
     private String seoKeywords;
+    private String siteTitle;
     private String favicon;
 
     public ThemeDTO() {}
@@ -108,6 +109,7 @@ public class ThemeDTO {
         this.customDomain = theme.getCustomDomain();
         this.facebookPixel = theme.getFacebookPixel();
         this.seoKeywords = theme.getSeoKeywords();
+        this.siteTitle = theme.getSiteTitle();
         this.favicon = theme.getFavicon();
     }
 
@@ -269,7 +271,6 @@ public class ThemeDTO {
         this.agentName = agentName;
     }
 
-    // Footer configuration getters/setters
     public String getFooterLogo() {
         return footerLogo;
     }
@@ -302,7 +303,6 @@ public class ThemeDTO {
         this.footerBackgroundColor = footerBackgroundColor;
     }
 
-    // Color scheme getters/setters
     public String getTextColor() {
         return textColor;
     }
@@ -335,7 +335,6 @@ public class ThemeDTO {
         this.h3Color = h3Color;
     }
 
-    // Legal pages getters/setters
     public String getPrivacyPolicy() {
         return privacyPolicy;
     }
@@ -374,6 +373,14 @@ public class ThemeDTO {
 
     public void setSeoKeywords(String seoKeywords) {
         this.seoKeywords = seoKeywords;
+    }
+
+    public String getSiteTitle() {
+        return siteTitle;
+    }
+
+    public void setSiteTitle(String siteTitle) {
+        this.siteTitle = siteTitle;
     }
 
     public String getFavicon() {

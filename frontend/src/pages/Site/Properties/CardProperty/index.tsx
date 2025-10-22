@@ -13,6 +13,7 @@ import { searchProperties } from '../../Services/property';
 import {HiHome} from 'react-icons/hi';
 import Search from '../../Search';
 import defaultImage from '../../.././../assets/images/no-pictures.png';
+import { useSubdomain } from '../../../../components/SubdomainRouter';
 
 
 type Props={
@@ -30,20 +31,23 @@ const useNavigateSearch = () => {
 
 const CardListItem = ({id,name,images,price,address, numberRooms,bathRooms, area, goal,statusProperty,onChange,close,error,booleanModal}: Property) =>{
     const { companyName } = useParams<{ companyName: string }>();
+    const { companyName: subdomainCompanyName } = useSubdomain();
+    const slug = subdomainCompanyName || companyName;
+    const isLocalhost = window.location.hostname.includes('localhost') || window.location.hostname.startsWith('127.');
 
-
+    const detailLink = isLocalhost ? `/site/${slug}/detail/${id}` : `/detail/${id}`;
 
     return(
         <CardWrapper>               
               <CardContent>
                     <div className='image-card-properties-wrapper'>               
-                    {images?.[0] ?  <Link to={`/site/${companyName}/detail/${id}`}> <img src={images?.[0]?.url }/>  </Link> : <Link to={`/site/${companyName}/detail/${id}`}> <img src={defaultImage} className='default-image-card-properties'/> </Link> }
+                    {images?.[0] ?  <Link to={detailLink}> <img src={images?.[0]?.url }/>  </Link> : <Link to={detailLink}> <img src={defaultImage} className='default-image-card-properties'/> </Link> }
                     </div>     
                      <div className='price-wrapper'>R$ {price}</div>  
                      <div className='type-wrapper'><HiHome/></div>    
 
                                 <div className='text-wrapper-card'>
-                                <Link to={`/site/${companyName}/detail/${id}`} className='title-wrapper-card-property'> <p className='title-card-property'>{name}</p><p className='title-card-property-cod'>Cod.{id}</p></Link>  
+                                <Link to={detailLink} className='title-wrapper-card-property'> <p className='title-card-property'>{name}</p><p className='title-card-property-cod'>Cod.{id}</p></Link>  
                                 
                                 <div className='localization-wrapper'>                                   
                                     <BiMap className='localization-icon'/>                              
@@ -70,6 +74,9 @@ const CardListItem = ({id,name,images,price,address, numberRooms,bathRooms, area
 
 const CardProperty = (props:{goal:string})=>{
     const { companyName } = useParams<{ companyName: string }>();
+    const { companyName: subdomainCompanyName } = useSubdomain();
+    const clientSlug = subdomainCompanyName || companyName;
+    const isLocalhost = window.location.hostname.includes('localhost') || window.location.hostname.startsWith('127.');
 
     const navigateSearch = useNavigateSearch();
     let params = new URLSearchParams(document.location.search);
@@ -82,9 +89,11 @@ const CardProperty = (props:{goal:string})=>{
     const [type,setType]=useState(typeParam)
     const [name,setName]=useState(nameParam);
 
-    const [url,setUrl]= useState(window.location.hostname);
+    const [url,setUrl]= useState(clientSlug || window.location.hostname);
 
-
+    useEffect(() => {
+        setUrl(clientSlug || window.location.hostname);
+    }, [clientSlug]);
     
     
     const [pageNumber, setPageNumber] = useState(0);
@@ -120,8 +129,7 @@ const CardProperty = (props:{goal:string})=>{
     useEffect (() =>{ 
  
         getProperties(); 
-    },[pageNumber,name,goal,type,props])
-
+    },[pageNumber,name,goal,type,props,url])
    
 
     const handlePageChange = (newPageNumber : number)=>{          
@@ -135,7 +143,8 @@ const CardProperty = (props:{goal:string})=>{
         setType(type)
         setName(name)
         
-        navigateSearch(`/site/${companyName}/imoveis`,{'goal': `${goal}`, type: `${type}`, name:`${name}`});
+        const targetPath = isLocalhost ? `/site/${clientSlug}/imoveis` : `/imoveis`;
+        navigateSearch(targetPath,{ 'goal': `${goal}`, type: `${type}`, name:`${name}`});
     }
 
     return(

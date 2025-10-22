@@ -16,6 +16,7 @@ import defaultImage from '../../../assets/images/no-pictures.png';
 import NewSearch from '../../../components/NewSearch';
 import { IoCloseOutline } from 'react-icons/io5';
 import Loading from '../../../components/Loading';
+import { useSubdomain } from '../../../components/SubdomainRouter';
 
 
 type Props={
@@ -83,8 +84,12 @@ const CardPortal = ()=>{
     const [type,setType]=useState(typeParam)
     const [name,setName]=useState(nameParam);
 
-    const [url,setUrl]= useState(window.location.hostname);
+    const { companyName: subdomainCompanyName } = useSubdomain();
+    const [url,setUrl]= useState(subdomainCompanyName || window.location.hostname);
 
+    useEffect(() => {
+        setUrl(subdomainCompanyName || window.location.hostname);
+    }, [subdomainCompanyName]);
 
     
 

@@ -71,6 +71,7 @@ interface ThemeConfig {
   menuLinks?: any[];
   facebookPixel?: string;
   seoKeywords?: string;
+  siteTitle?: string;
 }
 
 
@@ -228,7 +229,7 @@ const Properties = ()=>{
       <ErrorBoundary FallbackComponent={ErrorHandler}>
       <ThemeProvider theme={dynamicTheme}>
       <div>
-        <DynamicSEO facebookPixelId={themeConfig.facebookPixel} keywords={themeConfig?.seoKeywords} />
+        <DynamicSEO facebookPixelId={themeConfig.facebookPixel} keywords={themeConfig?.seoKeywords} title={themeConfig?.siteTitle} />
         {/* Header */}
         <Header>
          <NavLink href={`/site/${companyName}`}> <Logo logoSize={themeConfig.logoSize}>

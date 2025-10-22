@@ -176,6 +176,7 @@ interface ThemeConfig {
   tenantId: number;
   facebookPixel?: string;
   seoKeywords?: string;
+  siteTitle?: string;
 }
 
 const Site: React.FC = () => {
@@ -455,25 +456,30 @@ function handleChange(e: any): void {
     // Detectar se é subdomínio ou domínio personalizado
     const hostname = window.location.hostname;
     const isLocalhost = hostname === 'localhost' || hostname === '127.0.0.1';
-    let identifier = '';
+    let identifierCompanyName = '';
+    let domainValue = '';
     
     if (isLocalhost) {
       // Em localhost, usar o clientSlug (que vem da URL /site/companyName)
-      identifier = clientSlug || companyName || '';
+      identifierCompanyName = clientSlug || companyName || '';
     } else {
       // Em produção, verificar se é subdomínio do standi.com.br ou domínio personalizado
       const parts = hostname.split('.');
       
       if (parts.length >= 3 && parts.slice(1).join('.') === 'standi.com.br') {
         // É um subdomínio (ex: corretor1.standi.com.br)
-        identifier = parts[0];
+        identifierCompanyName = parts[0];
       } else {
         // É um domínio personalizado (ex: www.minhaImobiliaria.com.br)
-        identifier = hostname;
+        domainValue = hostname;
       }
     }
        
-     const data = await newLeadHome(form['name'],form['email'],form['phone'],form['message'], identifier); 
+     // Remover sufixo numérico do slug (ex: "minha-imobiliaria-42" -> "minha-imobiliaria")
+     const stripIdSuffix = (val: string) => val ? val.replace(/-\d+$/, '') : '';
+     identifierCompanyName = stripIdSuffix(identifierCompanyName);
+        
+      const data = await newLeadHome(form['name'],form['email'],form['phone'],form['message'], identifierCompanyName, domainValue); 
       if(data.status === 201){
         cleanForm()         
         setSuccessMessage(true)
@@ -487,7 +493,7 @@ function handleChange(e: any): void {
             setErrorsLead(data.response.data.errors);
             setSuccessMessage(false)
             setLoadingAddLead(false)
-                                                                           
+                                                                            
         } 
         else if(data.response.status === 404 || data.response.status === 403 || data.response.status === 400){
                
@@ -506,7 +512,7 @@ function handleChange(e: any): void {
   return (
     <ThemeProvider theme={dynamicTheme}>
       <DynamicFavicon faviconUrl={themeConfig?.favicon} />
-      <DynamicSEO facebookPixelId={themeConfig?.facebookPixel} keywords={themeConfig?.seoKeywords} />
+      <DynamicSEO facebookPixelId={themeConfig?.facebookPixel} keywords={themeConfig?.seoKeywords} title={themeConfig?.siteTitle} />
       <SiteContainer>
       {/* Bloco 1 - Header */}
       <Header>

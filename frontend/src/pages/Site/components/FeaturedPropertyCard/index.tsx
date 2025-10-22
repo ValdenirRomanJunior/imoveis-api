@@ -135,7 +135,7 @@ const FeaturedPropertyCard = ({ url, properties, buttonColor = '#2563eb' }: Feat
 
   const settings = {
     dots: false,
-    infinite: true,
+    infinite: false,
     speed: 500,
     slidesToShow: 4,
     slidesToScroll: 1,

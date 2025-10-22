@@ -3,6 +3,7 @@ package com.dynamous.imoveis.config;
 import io.github.bucket4j.Bucket;
 import io.github.bucket4j.Bandwidth;
 import io.github.bucket4j.Refill;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
@@ -14,6 +15,16 @@ public class RateLimitingService {
 
     private final Map<String, Bucket> buckets = new ConcurrentHashMap<>();
 
+    // Valores configuráveis via propriedades com defaults seguros
+    @Value("${ratelimit.general.perMinute:400}")
+    private int generalPerMinute;
+
+    @Value("${ratelimit.strict.perMinute:400}")
+    private int strictPerMinute;
+
+    @Value("${ratelimit.auth.perMinute:400}")
+    private int authPerMinute;
+
     /**
      * Obtém ou cria um bucket para o IP especificado
      */
@@ -22,6 +33,7 @@ public class RateLimitingService {
             System.out.println("=== RateLimitingService getBucket START ===");
             System.out.println("Key: " + key);
             System.out.println("BucketType: " + bucketType);
+            System.out.println("Configured rates -> GENERAL:" + generalPerMinute + ", STRICT:" + strictPerMinute + ", AUTH:" + authPerMinute);
             
             Bucket bucket = buckets.computeIfAbsent(key, k -> {
                 System.out.println("Creating new bucket for key: " + k);
@@ -51,20 +63,20 @@ public class RateLimitingService {
             
             switch (bucketType) {
                 case AUTH:
-                    // 10 tentativas por minuto para endpoints de autenticação
-                    System.out.println("Creating AUTH bucket with 400 requests per minute");
-                    limit = Bandwidth.classic(400, Refill.intervally(400, Duration.ofMinutes(1)));
+                    // Limite específico para endpoints de autenticação
+                    System.out.println("Creating AUTH bucket with " + authPerMinute + " requests per minute");
+                    limit = Bandwidth.classic(authPerMinute, Refill.intervally(authPerMinute, Duration.ofMinutes(1)));
                     break;
                 case STRICT:
-                    // 20 requisições por minuto para endpoints críticos
-                    System.out.println("Creating STRICT bucket with 400 requests per minute");
-                    limit = Bandwidth.classic(400, Refill.intervally(400, Duration.ofMinutes(1)));
+                    // Limite específico para endpoints críticos
+                    System.out.println("Creating STRICT bucket with " + strictPerMinute + " requests per minute");
+                    limit = Bandwidth.classic(strictPerMinute, Refill.intervally(strictPerMinute, Duration.ofMinutes(1)));
                     break;
                 case GENERAL:
                 default:
-                    // 100 requisições por minuto para endpoints gerais
-                    System.out.println("Creating GENERAL bucket with 400 requests per minute");
-                    limit = Bandwidth.classic(400, Refill.intervally(400, Duration.ofMinutes(1)));
+                    // Limite para endpoints gerais
+                    System.out.println("Creating GENERAL bucket with " + generalPerMinute + " requests per minute");
+                    limit = Bandwidth.classic(generalPerMinute, Refill.intervally(generalPerMinute, Duration.ofMinutes(1)));
                     break;
             }
             

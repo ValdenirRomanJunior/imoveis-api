@@ -94,6 +94,7 @@ interface ThemeConfig {
   customDomain: string;
   facebookPixel: string;
   seoKeywords: string;
+  siteTitle: string;
   favicon?: string;
   tenantId: number;
 }
@@ -104,6 +105,9 @@ const TemaEdit: React.FC = () => {
   const [saving, setSaving] = useState(false);
   const [loading, setLoading] = useState(true);
   const [previewKey, setPreviewKey] = useState(0);
+  const [toastVisible, setToastVisible] = useState(false);
+  const [toastMessage, setToastMessage] = useState('');
+  const [toastType, setToastType] = useState<'success'|'error'>('success');
   
   // Estados para arquivos selecionados (não enviados ainda)
   const [selectedLogoFile, setSelectedLogoFile] = useState<File | null>(null);
@@ -153,6 +157,7 @@ const TemaEdit: React.FC = () => {
     customDomain: '',
     facebookPixel: '',
     seoKeywords: '',
+    siteTitle: 'Imobiliária - Encontre seu imóvel',
     tenantId: 1
   });
 
@@ -216,14 +221,22 @@ const TemaEdit: React.FC = () => {
         { icon: 'calculator', title: 'Financiamento', description: 'Facilitamos seu financiamento imobiliário', active: true }
       ];
       
-      const parsedServices = typeof data.services === 'string' ? JSON.parse(data.services || '[]') : data.services || [];
+      const parsedServices = typeof data.services === 'string' ? JSON.parse(data.services || '[]') : (Array.isArray(data.services) ? data.services : []);
+      const parsedSocialLinks = typeof data.socialLinks === 'string' ? JSON.parse(data.socialLinks || '{}') : (data.socialLinks || {});
       
       const parsedData = {
         ...data,
         tenantId: data.tenantId, // Ensure tenantId is included for saving
         menuLinks: typeof data.menuLinks === 'string' ? JSON.parse(data.menuLinks || '[]') : data.menuLinks || [],
         services: parsedServices.length > 0 ? parsedServices : defaultServices,
-        socialLinks: typeof data.socialLinks === 'string' ? JSON.parse(data.socialLinks || '{}') : data.socialLinks || {}
+        socialLinks: {
+          facebook: parsedSocialLinks.facebook || '#',
+          instagram: parsedSocialLinks.instagram || '#',
+          whatsapp: parsedSocialLinks.whatsapp || '#'
+        },
+        siteTitle: data.siteTitle || 'Imobiliária - Encontre seu imóvel',
+        facebookPixel: data.facebookPixel || '',
+        seoKeywords: data.seoKeywords || ''
       };
       
       setThemeConfig(parsedData);
@@ -252,11 +265,12 @@ const TemaEdit: React.FC = () => {
 
   // Funções para gerenciamento de domínio
   const loadDomainInfo = async () => {
-    if (!user?.id) return;
+    const accountId = user?.account?.id || user?.id;
+    if (!accountId) return;
     
     try {
       setDomainLoading(true);
-      const response = await axios.get(`/api/domain/info/${user?.accountId || user?.id}`);
+      const response = await axios.get(`/api/domain/info/${accountId}`);
       setDomainInfo(response.data);
     } catch (error) {
       console.error('Erro ao carregar informações de domínio:', error);
@@ -266,14 +280,15 @@ const TemaEdit: React.FC = () => {
   };
 
   const addCustomDomain = async () => {
-    if (!customDomain.trim() || !user?.accountId && !user?.id) return;
+    const accountId = user?.account?.id || user?.id;
+    if (!customDomain.trim() || !accountId) return;
     
     try {
       setDomainLoading(true);
       setDomainMessage(null);
       
       const response = await axios.post('/api/domain/custom', {
-        accountId: user?.accountId || user?.id,
+        accountId,
         domain: customDomain.trim()
       });
       
@@ -291,14 +306,15 @@ const TemaEdit: React.FC = () => {
   };
 
   const verifyDomain = async (domain: string) => {
-    if (!user?.id) return;
+    const accountId = user?.account?.id || user?.id;
+    if (!accountId) return;
     
     try {
       setVerifying(true);
       setDomainMessage(null);
       
       const response = await axios.post('/api/domain/verify', {
-        accountId: user?.accountId || user?.id,
+        accountId,
         domain
       });
       
@@ -321,14 +337,15 @@ const TemaEdit: React.FC = () => {
   };
 
   const removeCustomDomain = async (domain: string) => {
-    if (!user?.id) return;
+    const accountId = user?.account?.id || user?.id;
+    if (!accountId) return;
     
     try {
       setDomainLoading(true);
       setDomainMessage(null);
       
       await axios.delete('/api/domain/custom', {
-        data: { accountId: user?.accountId || user?.id, domain }
+        data: { accountId, domain }
       });
       
       setDomainMessage({ type: 'success', text: 'Domínio personalizado removido com sucesso!' });
@@ -438,7 +455,10 @@ const TemaEdit: React.FC = () => {
       
       const accountId = user?.account?.id;
       if (!accountId) {
-        alert('Erro: ID da conta não encontrado. Faça login novamente.');
+        setToastType('error');
+        setToastMessage('Erro: ID da conta não encontrado. Faça login novamente.');
+        setToastVisible(true);
+        setTimeout(() => setToastVisible(false), 4000);
         return;
       }
       
@@ -464,7 +484,10 @@ const TemaEdit: React.FC = () => {
           console.log('Logo enviada com sucesso! Favicon gerado automaticamente.');
         } catch (error) {
           console.error('Error uploading logo:', error);
-          alert('Erro ao fazer upload da logo. Salvamento cancelado.');
+          setToastType('error');
+          setToastMessage('Erro ao fazer upload da logo. Salvamento cancelado.');
+          setToastVisible(true);
+          setTimeout(() => setToastVisible(false), 4000);
           return;
         }
       }
@@ -485,7 +508,10 @@ const TemaEdit: React.FC = () => {
           setSelectedBannerFile(null); // Limpar arquivo selecionado
         } catch (error) {
           console.error('Error uploading banner:', error);
-          alert('Erro ao fazer upload do banner. Salvamento cancelado.');
+          setToastType('error');
+          setToastMessage('Erro ao fazer upload do banner. Salvamento cancelado.');
+          setToastVisible(true);
+          setTimeout(() => setToastVisible(false), 4000);
           return;
         }
       }
@@ -506,7 +532,10 @@ const TemaEdit: React.FC = () => {
           setSelectedAgentPhotoFile(null); // Limpar arquivo selecionado
         } catch (error) {
           console.error('Error uploading agent photo:', error);
-          alert('Erro ao fazer upload da foto do corretor. Salvamento cancelado.');
+          setToastType('error');
+          setToastMessage('Erro ao fazer upload da foto do corretor. Salvamento cancelado.');
+          setToastVisible(true);
+          setTimeout(() => setToastVisible(false), 4000);
           return;
         }
       }
@@ -552,11 +581,17 @@ const TemaEdit: React.FC = () => {
         }
       }
       
-      alert(successMessage);
+      setToastType('success');
+      setToastMessage(successMessage);
+      setToastVisible(true);
+      setTimeout(() => setToastVisible(false), 4000);
       console.log('Tema salvo com sucesso!');
     } catch (error) {
       console.error('Error saving theme:', error);
-      alert('Erro ao salvar tema. Tente novamente.');
+      setToastType('error');
+      setToastMessage('Erro ao salvar tema. Tente novamente.');
+      setToastVisible(true);
+      setTimeout(() => setToastVisible(false), 4000);
     } finally {
       setSaving(false);
     }
@@ -633,7 +668,7 @@ const TemaEdit: React.FC = () => {
                 <p style={{ margin: '5px 0', fontWeight: 'bold' }}>Início</p>
                 <p style={{ margin: '5px 0', fontWeight: 'bold' }}>Imóveis</p>
                 <p style={{ margin: '5px 0', fontWeight: 'bold' }}>Contato</p>
-                <small style={{ color: '#6c757d' }}>Os links do menu são fixos e não podem ser editados</small>
+                <small style={{ color: '#6c757d', fontSize: '12px' }}>Os links do menu são fixos e não podem ser editados</small>
               </div>
             </FormGroup>
           </TabContent>
@@ -1124,6 +1159,17 @@ const TemaEdit: React.FC = () => {
 
             {/* Outras configurações */}
             <FormGroup>
+              <Label>Título do Site (tag title)</Label>
+              <Input
+                value={themeConfig.siteTitle}
+                onChange={(e) => handleDirectChange('siteTitle', e.target.value)}
+                placeholder="Ex: Imobiliária X - Encontre seu imóvel"
+              />
+              <small style={{ color: '#6c757d', fontSize: '12px' }}>
+                Define o texto da tag &lt;title&gt; mostrado no navegador (importante para SEO)
+              </small>
+            </FormGroup>
+            <FormGroup>
               <Label>Pixel do Facebook</Label>
               <Input
                 value={themeConfig.facebookPixel}
@@ -1201,7 +1247,33 @@ const TemaEdit: React.FC = () => {
 
   return (
   
-       <><Header /><TemaEditContainer>
+       <>
+         <Header />
+         {/* Toast abaixo do Header */}
+         <div
+           style={{
+             position: 'fixed',
+             top: '76px',
+             left: '60%',
+             transform: toastVisible ? 'translate(-50%, 0) scale(1)' : 'translate(-50%, -6px) scale(0.98)',
+             zIndex: 9999,
+             background: toastType === 'success' ? 'rgba(16, 185, 129, 0.15)' : 'rgba(239, 68, 68, 0.15)',
+             border: `1px solid ${toastType === 'success' ? '#10b981' : '#ef4444'}`,
+             color: toastType === 'success' ? '#065f46' : '#b91c1c',
+             padding: '12px 18px',
+             borderRadius: '10px',
+             boxShadow: '0 10px 25px rgba(0,0,0,0.08)',
+             opacity: toastVisible ? 1 : 0,
+             transition: 'opacity 300ms ease, transform 300ms ease',
+             pointerEvents: 'none',
+             fontWeight: 600,
+             minWidth: '240px',
+             textAlign: 'center'
+           }}
+         >
+           {toastMessage}
+         </div>
+         <TemaEditContainer>
 
       <EditorPanel>
         <SectionTitle>Editor de Tema</SectionTitle>

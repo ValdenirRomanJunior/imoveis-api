@@ -3,9 +3,17 @@ import React, { useEffect } from 'react';
 type Props = {
   facebookPixelId?: string;
   keywords?: string;
+  title?: string;
 };
 
-const DynamicSEO: React.FC<Props> = ({ facebookPixelId, keywords }) => {
+const DynamicSEO: React.FC<Props> = ({ facebookPixelId, keywords, title }) => {
+  // Document title
+  useEffect(() => {
+    if (typeof title !== 'undefined') {
+      document.title = title || '';
+    }
+  }, [title]);
+
   // Meta keywords
   useEffect(() => {
     if (typeof keywords !== 'undefined') {

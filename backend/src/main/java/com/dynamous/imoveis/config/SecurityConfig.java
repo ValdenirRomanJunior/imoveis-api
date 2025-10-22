@@ -141,8 +141,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		configuration.addAllowedOrigin("https://app.standi.com.br");
 		configuration.addAllowedOrigin("http://app.standi.com.br");
 		
-		// Allow Netlify domains
+		// Allow Netlify and Vercel domains and Standi subdomains
 		configuration.addAllowedOriginPattern("https://*.netlify.app");
+		configuration.addAllowedOriginPattern("https://*.vercel.app");
+		configuration.addAllowedOriginPattern("http://*.vercel.app");
+		configuration.addAllowedOriginPattern("https://*.standi.com.br");
+		configuration.addAllowedOriginPattern("http://*.standi.com.br");
+		// Fallback: allow any origin for public endpoints (credentials disabled)
+		configuration.addAllowedOriginPattern("*");
 		
 	        configuration.addAllowedHeader("*");
 	        configuration.addAllowedMethod("*");

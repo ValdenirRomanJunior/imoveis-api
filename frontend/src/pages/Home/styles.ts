@@ -301,11 +301,11 @@ export const CTAButton = styled.a`
   display: inline-block;
   background: linear-gradient(135deg, #3b82f6, #1d4ed8);
   color: white;
-  padding: 1rem 2rem;
-  border-radius: 12px;
+  padding: .8rem 2rem;
+  border-radius: 4px;
   text-decoration: none;
   font-weight: 700;
-  font-size: 1.1rem;
+  font-size: 1rem;
   margin-top: 2rem;
   transition: all 0.3s ease;
   box-shadow: 0 8px 25px rgba(59, 130, 246, 0.3);

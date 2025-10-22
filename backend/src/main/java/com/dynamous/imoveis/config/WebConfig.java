@@ -35,12 +35,12 @@ public class WebConfig extends WebMvcConfigurerAdapter {
 
  @Override
  public void addInterceptors(InterceptorRegistry registry) {
-     // Temporariamente desabilitado para debug
-     /*
-     registry.addInterceptor(rateLimitingInterceptor)
-             .addPathPatterns("/**") // Aplica a todos os endpoints
-             .excludePathPatterns("/webjars/**", "/resources/**", "/static/**", "/images/**", "/css/**", "/js/**"); // Exclui recursos estáticos
-     */
+    registry.addInterceptor(rateLimitingInterceptor)
+            .addPathPatterns("/**")
+            .excludePathPatterns(
+                    "/webjars/**", "/resources/**", "/static/**", "/images/**", "/css/**", "/js/**",
+                    "/favicon.ico", "/ws/**", "/socket/**", "/actuator/**"
+            );
  }
 
  @Override

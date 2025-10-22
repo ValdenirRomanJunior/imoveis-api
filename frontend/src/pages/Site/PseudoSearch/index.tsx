@@ -10,6 +10,7 @@ import { createSearchParams, Link, useNavigate, useSearchParams, useParams } fro
 import { getTAllAddressRequest} from '../Services/property';
 import Loading from "../Loading";
 import { IoCloseOutline } from "react-icons/io5";
+import { useSubdomain } from '../../../components/SubdomainRouter';
 
 type Address={
   
@@ -47,6 +48,9 @@ const useNavigateSearch = () => {
   
 const PseudoSearch = () =>{
     const { companyName } = useParams<{ companyName: string }>();
+    const { companyName: subdomainCompanyName } = useSubdomain();
+    const clientSlug = subdomainCompanyName || companyName;
+    const isLocalhost = window.location.hostname.includes('localhost') || window.location.hostname.startsWith('127.');
     const navigateSearch = useNavigateSearch();
 
 
@@ -95,7 +99,7 @@ const PseudoSearch = () =>{
     let toogleClassCheckRent = selectedRent ? ' activeRent': '';
     let toogleClassCheckSale = selectedSale ? ' activeSale':  '';
 
-    const [url,setUrl]= useState(window.location.hostname);
+    const [url,setUrl]= useState(clientSlug || window.location.hostname);
     const getAllAddress = async () => {
         let params = new URLSearchParams(document.location.search);
         const data = await getTAllAddressRequest(url);
@@ -103,8 +107,12 @@ const PseudoSearch = () =>{
     }
 
      useEffect(()=> {
+        setUrl(clientSlug || window.location.hostname);
+     },[clientSlug])
+
+     useEffect(()=> {
         getAllAddress()
-     },[])
+     },[url])
 
 
      const getOnlyCities = () => {
@@ -130,7 +138,6 @@ const PseudoSearch = () =>{
     
    
      
-   
    
      //pega cidade da lista de sujestão 
      const [showCompomentSelectCity,setshowComponentSelectCity]= useState(false);
@@ -257,7 +264,8 @@ const PseudoSearch = () =>{
      
  
      const startLoading = () => {    
-        navigateSearch(`/site/${companyName}/imoveis`,{'goal': `${goal}`, type: `${type}`, name:`${name}`});
+        const targetPath = isLocalhost ? `/site/${clientSlug}/imoveis` : `/imoveis`;
+navigateSearch(targetPath,{'goal': `${goal}`, type: `${type}`, name:`${name}`});
    
     
         setLoading(true)
@@ -519,4 +527,5 @@ const PseudoSearch = () =>{
             
     )
 }
+
 export default  PseudoSearch;

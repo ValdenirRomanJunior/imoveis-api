@@ -84,8 +84,9 @@ interface ThemeConfig {
   aboutUs?: string;
   tenantId?: number;
   facebookPixel?: string;
-  seoKeywords?: string;
-}
+   seoKeywords?: string;
+   siteTitle?: string;
+ }
 
 
 type Error = {
@@ -408,11 +409,11 @@ console.log(property?.id)
         <>
         <ErrorBoundary FallbackComponent={ErrorHandler}>
         <ThemeProvider theme={dynamicTheme}>
-            <DynamicSEO facebookPixelId={themeConfig?.facebookPixel} keywords={themeConfig?.seoKeywords} />
+            <DynamicSEO facebookPixelId={themeConfig?.facebookPixel} keywords={themeConfig?.seoKeywords} title={themeConfig?.siteTitle} />
             <Header>
                 <Logo logoSize={themeConfig.logoSize}>
-                    {themeConfig.logoUrl ? (
-                        <img src={themeConfig.logoUrl} alt={themeConfig.companyName || 'Logo'} />
+                    {themeConfig.logo ? (
+                        <img src={themeConfig.logo} alt={themeConfig.companyName || 'Logo'} />
                     ) : (
                         themeConfig.companyName || 'Imobiliária'
                     )}

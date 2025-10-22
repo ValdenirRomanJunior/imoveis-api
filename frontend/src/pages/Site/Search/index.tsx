@@ -6,6 +6,8 @@ import { getTAllAddressRequest } from '../Services/property';
 import { lowercase } from '../PseudoSearch/masks';
 import { IoCloseOutline } from 'react-icons/io5';
 import { IoIosArrowDown } from 'react-icons/io';
+import { useParams } from 'react-router-dom';
+import { useSubdomain } from '../../../components/SubdomainRouter';
 
 type Address={
   
@@ -44,6 +46,11 @@ const Search = ({onChange}:Prop) =>{
     const[type,setType]=useState('');
     const[name,setSearch]= useState('');
 
+    const { companyName: subdomainCompanyName } = useSubdomain();
+    const params = useParams();
+    const companySlug = subdomainCompanyName || (params as any)?.companyName;
+    const isLocalhost = window.location.hostname.includes('localhost') || window.location.hostname.startsWith('127.');
+
     const [address,setAddress]= useState<Address[]>([]);   
     const [cities,setCities]= useState<City[]>([]);
 
@@ -53,7 +60,7 @@ const Search = ({onChange}:Prop) =>{
         setOpenHiddenSearch(openHiddenSearch => !openHiddenSearch);
         
     }
-    const [url,setUrl]= useState(window.location.hostname);
+    const [url,setUrl]= useState(companySlug || window.location.hostname);
     const getAllAddress = async () => {
         let params = new URLSearchParams(document.location.search);
        
@@ -62,8 +69,12 @@ const Search = ({onChange}:Prop) =>{
     }
 
      useEffect(()=> {
+        setUrl(companySlug || window.location.hostname);
+     },[companySlug])
+
+     useEffect(()=> {
         getAllAddress()
-     },[])
+     },[url])
 
 
      const getOnlyCities = () => {

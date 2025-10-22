@@ -63,6 +63,7 @@ public class Theme {
     private String facebookPixel;
     @Column(columnDefinition = "TEXT")
     private String seoKeywords;
+    private String siteTitle;
     private String favicon;
 
     @OneToOne
@@ -359,6 +360,14 @@ public class Theme {
 
     public void setSeoKeywords(String seoKeywords) {
         this.seoKeywords = seoKeywords;
+    }
+
+    public String getSiteTitle() {
+        return siteTitle;
+    }
+
+    public void setSiteTitle(String siteTitle) {
+        this.siteTitle = siteTitle;
     }
 
     public String getFavicon() {
