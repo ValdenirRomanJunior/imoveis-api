@@ -188,7 +188,7 @@ const OportunidadeCard = (props:{param:string})=>{
   
  useEffect(() => {
         
-       const evtSource = new EventSource(`http://localhost:8080/opportunities/SSe`)   
+       const evtSource = new EventSource(`https://standi-api-dd146fec77bd.herokuapp.com/opportunities/SSe`)   
        if(typeof(EventSource) !== 'undefined'){
         console.log('error')
       } 
