@@ -26,9 +26,9 @@ const stripePromise = loadStripe('pk_live_51SEuVEJlRuVndWwzHix67RZKcXoKQJYbfKPXQ
 
 // Valores reais dos planos (alinhados com o backend)
 const realPlanPrices: { [key: string]: number } = {
-  'Lite': 99.00,
+  'Lite': 87.00,
   'Pro': 239.00,
-  'LITE': 99.00,
+  'LITE': 87.00,
   'PRO': 239.00
 };
 
