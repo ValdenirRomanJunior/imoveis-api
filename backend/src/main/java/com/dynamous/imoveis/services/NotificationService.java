@@ -72,6 +72,11 @@ public class NotificationService {
         // Por exemplo, notificações mais antigas que 30 dias
     }
 
+    // Novo: deletar todas as notificações
+    public void deleteAllNotifications() {
+        notificationRepository.deleteAll();
+    }
+
     // Método específico para criar notificação de novo usuário
     public Notification createNewUserNotification(Long userId, String userName, String userEmail) {
         String title = "Novo usuário cadastrado!";

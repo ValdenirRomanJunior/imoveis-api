@@ -54,3 +54,13 @@ export const markAllNotificationsAsRead = async () => {
     throw error;
   }
 };
+
+// Novo: deletar todas as notificações
+export const clearAllNotifications = async () => {
+  try {
+    await api.delete('/admin/stats/notifications');
+  } catch (error) {
+    console.error('Erro ao deletar todas as notificações:', error);
+    throw error;
+  }
+};

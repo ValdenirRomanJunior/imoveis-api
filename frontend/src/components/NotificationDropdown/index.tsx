@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Bell, X, Check, CheckCheck } from 'lucide-react';
+import { Bell, X, Check, CheckCheck, Trash2 } from 'lucide-react';
 import { 
   getNotifications, 
   getNotificationCount, 
   markNotificationAsRead, 
   markAllNotificationsAsRead,
-  Notification 
+  Notification,
+  clearAllNotifications
 } from '../../services/resources/notifications';
 import { formatDistanceToNow } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
@@ -101,6 +102,16 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({ clas
     }
   };
 
+  const handleClearAll = async () => {
+    try {
+      await clearAllNotifications();
+      setNotifications([]);
+      setUnreadCount(0);
+    } catch (error) {
+      console.error('Erro ao deletar todas as notificações:', error);
+    }
+  };
+
   const formatNotificationTime = (dateString: string) => {
     return formatDistanceToNow(new Date(dateString), { 
       addSuffix: true, 
@@ -152,6 +163,15 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({ clas
                   Marcar todas
                 </button>
               )}
+              {/* Novo botão Limpar: deleta todas do banco */}
+              <button
+                onClick={handleClearAll}
+                className="text-xs text-red-600 hover:text-red-800 flex items-center gap-1"
+                title="Limpar e deletar todas"
+              >
+                <Trash2 size={14} />
+                Limpar
+              </button>
               <button
                 onClick={() => setIsOpen(false)}
                 className="text-gray-400 hover:text-gray-600"
