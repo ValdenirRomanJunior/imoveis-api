@@ -252,7 +252,17 @@ const TemaEdit: React.FC = () => {
   const getSubdomainUrl = (companySlug: string) => {
     const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
     const accountId = user?.account?.id || user?.id || '';
-    const subdomain = accountId ? `${companySlug}-${accountId}` : companySlug;
+
+    // Normaliza o slug para subdomínio: espaços -> hífen e remoção de inválidos
+    const base = (companySlug || '')
+      .trim()
+      .toLowerCase()
+      .replace(/\s+/g, '-')
+      .replace(/[^a-z0-9-]/g, '-')
+      .replace(/-+/g, '-')
+      .replace(/^-|-$|/g, '');
+
+    const subdomain = accountId ? `${base}-${accountId}` : base;
     
     if (isLocalhost) {
       // Em desenvolvimento, usar parâmetro de query

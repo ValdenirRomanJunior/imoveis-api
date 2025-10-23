@@ -221,12 +221,15 @@ public class TenantService {
             return "empresa";
         }
         
-        return companyName
+        // Normaliza explicitamente espaços em hífens e aplica regras de domínio
+        String sanitized = companyName
             .toLowerCase()
-            .replaceAll("[^a-z0-9-]", "-")
-            .replaceAll("-+", "-")
-            .replaceAll("^-|-$", "")
-            .substring(0, Math.min(companyName.length(), 63)); // Limite DNS
+            .replaceAll("\\s+", "-")              // espaços -> hífen
+            .replaceAll("[^a-z0-9-]", "-")        // caracteres inválidos -> hífen
+            .replaceAll("-+", "-")                // colapsa hífens
+            .replaceAll("^-|-$", "");             // remove hífens das pontas
+        
+        return sanitized.substring(0, Math.min(sanitized.length(), 63)); // Limite DNS
     }
     public Tenant updateNoLogin(Tenant tenant) {
         Tenant newObj= findSite(tenant.getId());
@@ -239,7 +242,7 @@ public class TenantService {
     	Tenant tenant = find(id);
     	Account account= accountService.find(tenant.getAccount().getId());
     		
-  			 		 
+  			 	 
     	//   try {   	    
           //  s3Service.deleteAllFiles(id);
             //} catch (URISyntaxException | AmazonServiceException  e) {
