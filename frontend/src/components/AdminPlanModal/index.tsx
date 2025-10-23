@@ -59,7 +59,7 @@ const AdminPlanModal: React.FC<AdminPlanModalProps> = ({
         const token = localStorage.getItem('token');
         const tokenString = token ? JSON.parse(token) : '';
         
-        const response = await fetch('http://localhost:8080/plans/available', {
+        const response = await fetch('https://standi-api-dd146fec77bd.herokuapp.com/plans/available', {
           headers: {
             'Authorization': tokenString
           }
@@ -84,7 +84,7 @@ const AdminPlanModal: React.FC<AdminPlanModalProps> = ({
         const tokenString = token ? JSON.parse(token) : '';
         
         // Primeiro buscar o usuário para obter o accountId
-        const userResponse = await fetch(`http://localhost:8080/admin/stats/users/${userId}/details`, {
+        const userResponse = await fetch(`https://standi-api-dd146fec77bd.herokuapp.com/admin/stats/users/${userId}/details`, {
           headers: {
             'Authorization': tokenString
           }
@@ -93,7 +93,7 @@ const AdminPlanModal: React.FC<AdminPlanModalProps> = ({
         
         if (userDetails.accountId) {
           // Agora buscar as informações do plano usando o accountId
-          const planResponse = await fetch(`http://localhost:8080/plans/account/${userDetails.accountId}`, {
+          const planResponse = await fetch(`https://standi-api-dd146fec77bd.herokuapp.com/plans/account/${userDetails.accountId}`, {
             headers: {
               'Authorization': tokenString
             }
@@ -173,7 +173,7 @@ const AdminPlanModal: React.FC<AdminPlanModalProps> = ({
           break;
       }
 
-      const response = await fetch(`http://localhost:8080${endpoint}`, {
+      const response = await fetch(`https://standi-api-dd146fec77bd.herokuapp.com/${endpoint}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

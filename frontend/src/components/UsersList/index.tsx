@@ -130,7 +130,7 @@ const UsersList: React.FC = () => {
       const token = localStorage.getItem('token');
       const tokenString = token ? JSON.parse(token) : '';
 
-      const response = await fetch(`http://localhost:8080/admin/stats/users/${selectedUser.id}`, {
+      const response = await fetch(`https://standi-api-dd146fec77bd.herokuapp.com/admin/stats/users/${selectedUser.id}`, {
         method: 'DELETE',
         headers: {
           'Authorization': tokenString,
