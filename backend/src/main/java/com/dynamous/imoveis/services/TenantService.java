@@ -129,9 +129,6 @@ public class TenantService {
          // Salvar a Account primeiro para obter o ID
          accountRepo.save(account);
          
-         obj.setAccount(account);
-        tenantRepository.save(obj);   
-         
          // Criar subdomínio automaticamente na Vercel usando companyName + accountId
          try {
              String createdSubdomain = vercelDomainService.createSubdomain(obj.getSlug(), account.getId());
@@ -146,6 +143,8 @@ public class TenantService {
              System.err.println("Erro ao criar subdomínio: " + e.getMessage());
          }
          
+         obj.setAccount(account);
+        tenantRepository.save(obj);   
         return obj;
     }
 

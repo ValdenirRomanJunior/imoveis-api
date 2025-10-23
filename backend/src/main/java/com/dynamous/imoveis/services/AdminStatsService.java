@@ -22,8 +22,10 @@ import com.dynamous.imoveis.repositories.AccountRepository;
 import com.dynamous.imoveis.repositories.LeadRepository;
 import com.dynamous.imoveis.repositories.OpportunityRepository;
 import com.dynamous.imoveis.repositories.PropertyRepository;
+import com.dynamous.imoveis.repositories.ThemeRepository;
 import com.dynamous.imoveis.repositories.TenantRepository;
 import com.dynamous.imoveis.services.exceptions.ObjectNotFoundException;
+import com.dynamous.imoveis.services.VercelDomainService;
 
 @Service
 public class AdminStatsService {
@@ -42,6 +44,12 @@ public class AdminStatsService {
     
     @Autowired
     private OpportunityRepository opportunityRepository;
+    
+    @Autowired
+    private ThemeRepository themeRepository;
+    
+    @Autowired
+    private VercelDomainService vercelDomainService;
     
     public AdminStatsDTO getSystemOverview() {
         AdminStatsDTO stats = new AdminStatsDTO();
@@ -407,8 +415,7 @@ public class AdminStatsService {
                 return result;
             }
             
-            // Verificar se o usuário pode ser excluído (regras de negócio)
-            // Não pode excluir se tiver propriedades ativas
+            // Verificações de objetos anexados
             Long propertiesCount = propertyRepository.countByAccount(account);
             if (propertiesCount > 0) {
                 result.put("success", false);
@@ -416,7 +423,6 @@ public class AdminStatsService {
                 return result;
             }
             
-            // Não pode excluir se tiver leads
             Long leadsCount = leadRepository.countByAccount(account);
             if (leadsCount > 0) {
                 result.put("success", false);
@@ -424,7 +430,6 @@ public class AdminStatsService {
                 return result;
             }
             
-            // Não pode excluir se tiver oportunidades
             Long opportunitiesCount = opportunityRepository.countOpportunityByAccountId(account.getId());
             if (opportunitiesCount > 0) {
                 result.put("success", false);
@@ -432,8 +437,38 @@ public class AdminStatsService {
                 return result;
             }
             
-            // Se chegou até aqui, pode excluir
+            // Remover Theme vinculado ao tenant antes de excluir
+            themeRepository.findByTenantId(userId).ifPresent(theme -> {
+                themeRepository.deleteById(theme.getId());
+            });
+            
+            // Excluir o tenant
             tenantRepository.deleteById(userId);
+            
+            // Se a conta não tiver mais tenants, remover domínios e tentar apagar a conta
+            java.util.List<Tenant> tenantsDaConta = tenantRepository.findAllByAccount(account);
+            if (tenantsDaConta == null || tenantsDaConta.isEmpty()) {
+                try {
+                    String subdomain = account.getDomain();
+                    if (subdomain != null && !subdomain.trim().isEmpty()) {
+                        boolean removed = vercelDomainService.removeDomain(subdomain);
+                        System.out.println("Subdomínio removido: " + subdomain + " - Sucesso: " + removed);
+                    }
+                    String customDomain = account.getCustomDomain();
+                    if (customDomain != null && !customDomain.trim().isEmpty()) {
+                        boolean removedCustom = vercelDomainService.removeDomain(customDomain);
+                        System.out.println("Domínio personalizado removido: " + customDomain + " - Sucesso: " + removedCustom);
+                    }
+                } catch (Exception e) {
+                    System.err.println("Erro ao remover domínios na Vercel: " + e.getMessage());
+                }
+                try {
+                    accountRepository.deleteById(account.getId());
+                } catch (DataIntegrityViolationException e) {
+                    // Se a conta não puder ser apagada, ao menos os domínios foram removidos
+                    System.err.println("Falha ao deletar Account por integridade: " + e.getMessage());
+                }
+            }
             
             result.put("success", true);
             result.put("message", "Usuário excluído com sucesso");
