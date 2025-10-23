@@ -57,7 +57,7 @@ public class StripeService {
     // Preços dos planos (em centavos)
     private static final Map<PlanType, Long> PLAN_PRICES = new HashMap<>();
     static {
-        PLAN_PRICES.put(PlanType.LITE, 8700L); // R$ 87,00
+        PLAN_PRICES.put(PlanType.LITE, 300L); // R$ 3,00
         PLAN_PRICES.put(PlanType.PRO, 23900L); // R$ 239,00
     }
 

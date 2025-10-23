@@ -112,6 +112,7 @@ const TrialGuard: React.FC = () => {
                 <Route path="/plans"  element={<React.Suspense fallback={<LoadingLogin/>}><LazyPlans/></React.Suspense>} />
                 <Route path="/payment/success"  element={<React.Suspense fallback={<LoadingLogin/>}><LazyPaymentSuccess/></React.Suspense>} />
                 <Route path="/payment/cancel"  element={<React.Suspense fallback={<LoadingLogin/>}><LazyPaymentCancel/></React.Suspense>} />
+                <Route path="/payment-cancel"  element={<React.Suspense fallback={<LoadingLogin/>}><LazyPaymentCancel/></React.Suspense>} />
                 <Route path="/payment/expired"  element={<React.Suspense fallback={<LoadingLogin/>}><LazyPaymentExpired/></React.Suspense>} />
                 <Route path="/guide"  element={<React.Suspense fallback={<LoadingLogin/>}><LazyGuide/></React.Suspense>} />
 
