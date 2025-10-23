@@ -126,7 +126,7 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose, onSucces
     setLoading(true);
 
     try {
-      const response = await fetch('http://localhost:8080/tenants/register', {
+      const response = await fetch('https://standi-api-dd146fec77bd.herokuapp.com/tenants/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
