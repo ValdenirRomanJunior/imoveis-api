@@ -1,19 +1,38 @@
 import React, { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import useAuth from '../../hooks/useAuth';
 import { CheckCircle } from 'lucide-react';
+import api from '../../utils/requests';
 
 const PaymentSuccess: React.FC = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { getCurrentUser } = useAuth();
+
+  // Confirma sucesso no backend usando session_id para ativar plano imediatamente
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const sessionId = params.get('session_id');
+
+    const confirm = async () => {
+      if (!sessionId) return;
+      try {
+        await api.post('/stripe/confirm-success', { sessionId });
+      } catch (err) {
+        // Em dev, pode falhar sem sessão real; ignorar para não travar UX
+      } finally {
+        // Atualiza dados do usuário para refletir plano ativo
+        try { getCurrentUser?.(); } catch {}
+      }
+    };
+
+    confirm();
+  }, [location.search, getCurrentUser]);
 
   useEffect(() => {
     try {
       localStorage.removeItem('trial_force_expired');
     } catch {}
-
-    // Atualiza dados do usuário para refletir plano ativo
-    getCurrentUser?.();
 
     // Redirecionar para o dashboard após 5 segundos
     const timer = setTimeout(() => {

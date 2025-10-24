@@ -86,6 +86,32 @@ public class StripeController {
     }
 
     /**
+     * Confirma o sucesso do checkout usando o session_id
+     */
+    @PreAuthorize("hasAnyRole('TENANT')")
+    @PostMapping("/confirm-success")
+    public ResponseEntity<Map<String, Object>> confirmCheckoutSuccess(@RequestBody Map<String, String> request) {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            String sessionId = request.get("sessionId");
+            if (sessionId == null || sessionId.trim().isEmpty()) {
+                response.put("success", false);
+                response.put("message", "sessionId é obrigatório");
+                return ResponseEntity.badRequest().body(response);
+            }
+
+            stripeService.handleSuccessfulPayment(sessionId);
+            response.put("success", true);
+            response.put("message", "Assinatura ativada com sucesso");
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", "Erro ao confirmar sucesso: " + e.getMessage());
+            return ResponseEntity.internalServerError().body(response);
+        }
+    }
+
+    /**
      * Webhook para processar eventos do Stripe
      */
     @PostMapping("/webhook")
