@@ -65,10 +65,21 @@ public class PlanController {
         
         // Determina se a conta já teve uma assinatura (não trial)
         boolean hasHadSubscription = false;
-        if (account.getPlanType() != null && account.getPlanStartDate() != null) {
-            // Se tem um plano que não é trial ou se já teve um plano pago anteriormente
-            hasHadSubscription = !account.getPlanType().getIsTrial() || 
-                                (account.getPlanEndDate() != null && !account.getIsTrialActive());
+        
+        // Se já teve um plano (mesmo que agora seja null) e uma data de início
+        if (account.getPlanStartDate() != null) {
+            // Se tem plano ativo que não é trial
+            if (account.getPlanType() != null && !account.getPlanType().getIsTrial()) {
+                hasHadSubscription = true;
+            }
+            // Se não tem plano ativo mas já teve uma data de fim (indica cancelamento)
+            else if (account.getPlanType() == null && account.getPlanEndDate() != null && !account.getIsTrialActive()) {
+                hasHadSubscription = true;
+            }
+            // Se teve um plano pago anteriormente (mesmo em trial agora)
+            else if (account.getPlanEndDate() != null && !account.getIsTrialActive()) {
+                hasHadSubscription = true;
+            }
         }
         
         if (account.getPlanType() != null) {

@@ -91,6 +91,15 @@ const useSubscriptionStatus = (): SubscriptionStatus => {
     // Plano FREE sem trial = sem acesso apenas se já teve assinatura antes
     // Para usuários novos, não deve mostrar modal de assinatura expirada
     
+    // Debug: log para verificar os valores
+    console.log('Debug useSubscriptionStatus:', {
+      planType,
+      isPlanActive,
+      isTrialActive,
+      hasHadSubscription,
+      planEndDate
+    });
+    
     return {
       isActive: false,
       isExpired: hasHadSubscription, // ✅ Só expirado se já teve assinatura antes

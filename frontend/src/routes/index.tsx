@@ -85,6 +85,16 @@ const TrialGuard: React.FC = () => {
     const showSubscriptionModal = subscriptionStatus.isExpired && !isSubscriptionFlow;
     const showTrialModal = trialStatus.isExpired && !isSubscriptionFlow && !showSubscriptionModal;
 
+    // Debug: log para verificar os valores
+    console.log('Debug TrialGuard:', {
+        pathname: location.pathname,
+        isSubscriptionFlow,
+        subscriptionStatus,
+        trialStatus,
+        showSubscriptionModal,
+        showTrialModal
+    });
+
     return (
         <>
             {showSubscriptionModal && (
