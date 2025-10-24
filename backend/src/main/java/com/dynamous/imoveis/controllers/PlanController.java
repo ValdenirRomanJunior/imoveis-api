@@ -63,6 +63,14 @@ public class PlanController {
         
         Map<String, Object> response = new HashMap<>();
         
+        // Determina se a conta já teve uma assinatura (não trial)
+        boolean hasHadSubscription = false;
+        if (account.getPlanType() != null && account.getPlanStartDate() != null) {
+            // Se tem um plano que não é trial ou se já teve um plano pago anteriormente
+            hasHadSubscription = !account.getPlanType().getIsTrial() || 
+                                (account.getPlanEndDate() != null && !account.getIsTrialActive());
+        }
+        
         if (account.getPlanType() != null) {
             response.put("planType", account.getPlanType());
             response.put("planName", account.getPlanType().getName());
@@ -74,9 +82,11 @@ public class PlanController {
             response.put("isTrialActive", account.getIsTrialActive());
             response.put("isPlanActive", account.isPlanActive());
             response.put("isInTrialPeriod", account.isInTrialPeriod());
+            response.put("hasHadSubscription", hasHadSubscription);
         } else {
             response.put("planType", null);
             response.put("message", "Nenhum plano ativo");
+            response.put("hasHadSubscription", hasHadSubscription);
         }
         
         return ResponseEntity.ok(response);

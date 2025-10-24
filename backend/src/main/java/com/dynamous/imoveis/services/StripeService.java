@@ -370,12 +370,39 @@ public class StripeService {
     @Transactional
     public void handleSubscriptionCanceled(com.stripe.model.Event event) {
         try {
+            System.out.println("🔄 [STRIPE] Processando cancelamento de assinatura");
+            
             // Processar evento de cancelamento de assinatura
             Subscription subscription = (Subscription) event.getDataObjectDeserializer().getObject().orElse(null);
             if (subscription != null) {
+                System.out.println("🔄 [STRIPE] ID da assinatura cancelada: " + subscription.getId());
+                
+                // Cancelar assinatura localmente
                 cancelSubscription(subscription.getId());
+                
+                // Buscar a assinatura local para obter a conta
+                Optional<StripeSubscription> subscriptionOpt = stripeSubscriptionRepository.findByStripeSubscriptionId(subscription.getId());
+                if (subscriptionOpt.isPresent()) {
+                    StripeSubscription localSubscription = subscriptionOpt.get();
+                    Account account = localSubscription.getStripeCustomer().getAccount();
+                    
+                    System.out.println("🔄 [STRIPE] Desativando conta após cancelamento - Account ID: " + account.getId());
+                    
+                    // Desativar o plano imediatamente
+                    account.setPlanType(PlanType.FREE);
+                    account.setPlanEndDate(LocalDateTime.now()); // Expira imediatamente
+                    account.setIsTrialActive(false); // Desativa trial também
+                    
+                    accountService.update(account);
+                    
+                    System.out.println("✅ [STRIPE] Conta desativada após cancelamento de assinatura");
+                } else {
+                    System.err.println("❌ [STRIPE] Assinatura local não encontrada para ID: " + subscription.getId());
+                }
             }
         } catch (Exception e) {
+            System.err.println("❌ [STRIPE] Erro ao processar cancelamento: " + e.getMessage());
+            e.printStackTrace();
             throw new ServiceException("Erro ao processar cancelamento de assinatura: " + e.getMessage(), e);
         }
     }
@@ -408,9 +435,12 @@ public class StripeService {
     @Transactional
     public boolean cancelSubscription(Long accountId) {
         try {
+            System.out.println("🔄 [STRIPE] Cancelando assinatura para Account ID: " + accountId);
+            
             List<StripeSubscription> subscriptions = stripeSubscriptionRepository.findByAccountIdAndStatus(accountId, SubscriptionStatus.ACTIVE);
             
             if (subscriptions.isEmpty()) {
+                System.out.println("❌ [STRIPE] Nenhuma assinatura ativa encontrada para Account ID: " + accountId);
                 return false;
             }
 
@@ -422,10 +452,27 @@ public class StripeService {
                 // Atualizar status local
                 subscription.setStatus(SubscriptionStatus.CANCELED);
                 stripeSubscriptionRepository.save(subscription);
+                
+                System.out.println("✅ [STRIPE] Assinatura cancelada no Stripe: " + subscription.getStripeSubscriptionId());
             }
+
+            // Desativar a conta imediatamente após cancelamento manual
+            Account account = accountService.find(accountId);
+            account.setPlanType(PlanType.FREE);
+            account.setPlanEndDate(LocalDateTime.now()); // Expira imediatamente
+            account.setIsTrialActive(false); // Desativa trial também
+            
+            accountService.update(account);
+            
+            System.out.println("✅ [STRIPE] Conta desativada após cancelamento manual - Account ID: " + accountId);
 
             return true;
         } catch (StripeException e) {
+            System.err.println("❌ [STRIPE] Erro do Stripe ao cancelar: " + e.getMessage());
+            throw new ServiceException("Erro ao cancelar assinatura: " + e.getMessage(), e);
+        } catch (Exception e) {
+            System.err.println("❌ [STRIPE] Erro geral ao cancelar: " + e.getMessage());
+            e.printStackTrace();
             throw new ServiceException("Erro ao cancelar assinatura: " + e.getMessage(), e);
         }
     }

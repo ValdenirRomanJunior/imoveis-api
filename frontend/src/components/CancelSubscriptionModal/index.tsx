@@ -248,13 +248,18 @@ const CancelSubscriptionModal: React.FC<CancelSubscriptionModalProps> = ({
         setSuccess('');
 
         try {
-            // TODO: Implementar cancelamento com Stripe
-            console.log('Cancelamento de assinatura será implementado com Stripe');
-            setSuccess('Funcionalidade será implementada com Stripe!');
-            setTimeout(() => {
-                onSuccess();
-                onClose();
-            }, 2000);
+            console.log('Cancelando assinatura via API...');
+            const response = await api.post('/stripe/cancel-subscription');
+            
+            if (response.data.success) {
+                setSuccess('Assinatura cancelada com sucesso!');
+                setTimeout(() => {
+                    onSuccess();
+                    onClose();
+                }, 2000);
+            } else {
+                setError(response.data.message || 'Erro ao cancelar assinatura');
+            }
         } catch (error: any) {
             console.error('Erro ao cancelar assinatura:', error);
             setError(

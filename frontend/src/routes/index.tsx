@@ -28,6 +28,8 @@ import LoadingPage from "../pages/Site/LoadingPage";
 import SubdomainRouter from "../components/SubdomainRouter";
 import useTrialStatus from '../hooks/useTrialStatus';
 import TrialExpiredModal from '../components/TrialExpiredModal';
+import useSubscriptionStatus from '../hooks/useSubscriptionStatus';
+import SubscriptionExpiredModal from '../components/SubscriptionExpiredModal';
 const LazyHome = React.lazy(() => import('../pages/Home'));
 const LazyDashboard = React.lazy(() => import('../pages/Dashboard'));
 const LazyProperties = React.lazy(() => import('../pages/Properties'));
@@ -72,15 +74,23 @@ const LazyBlogAdmin = React.lazy(() => import('../pages/BlogAdmin'));
 // Componente guard para exibir modal de trial expirado globalmente
 const TrialGuard: React.FC = () => {
     const trialStatus = useTrialStatus();
+    const subscriptionStatus = useSubscriptionStatus();
     const navigate = useNavigate();
     const location = useLocation();
 
     // Não exibir modal no fluxo de assinatura de planos
     const isSubscriptionFlow = location.pathname === '/plans' || location.pathname.startsWith('/payment');
 
+    // Prioridade: primeiro verifica se a assinatura está expirada, depois o trial
+    const showSubscriptionModal = subscriptionStatus.isExpired && !isSubscriptionFlow;
+    const showTrialModal = trialStatus.isExpired && !isSubscriptionFlow && !showSubscriptionModal;
+
     return (
         <>
-            {trialStatus.isExpired && !isSubscriptionFlow && (
+            {showSubscriptionModal && (
+                <SubscriptionExpiredModal onViewPlans={() => navigate('/plans')} />
+            )}
+            {showTrialModal && (
                 <TrialExpiredModal onViewPlans={() => navigate('/plans')} />
             )}
             <Routes>

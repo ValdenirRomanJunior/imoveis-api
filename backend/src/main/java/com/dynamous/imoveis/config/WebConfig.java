@@ -32,12 +32,24 @@ public class WebConfig extends WebMvcConfigurerAdapter {
 
  @Autowired
  private RateLimitingInterceptor rateLimitingInterceptor;
+ 
+ @Autowired
+ private SubscriptionInterceptor subscriptionInterceptor;
 
  @Override
  public void addInterceptors(InterceptorRegistry registry) {
     registry.addInterceptor(rateLimitingInterceptor)
             .addPathPatterns("/**")
             .excludePathPatterns(
+                    "/webjars/**", "/resources/**", "/static/**", "/images/**", "/css/**", "/js/**",
+                    "/favicon.ico", "/ws/**", "/socket/**", "/actuator/**"
+            );
+            
+    registry.addInterceptor(subscriptionInterceptor)
+            .addPathPatterns("/**")
+            .excludePathPatterns(
+                    "/auth/**", "/login", "/register", "/stripe/webhook", "/api/accounts/resolve-domain/**",
+                    "/properties/findAddress/**", "/properties/findAllFeatures/**", "/api/blog/**",
                     "/webjars/**", "/resources/**", "/static/**", "/images/**", "/css/**", "/js/**",
                     "/favicon.ico", "/ws/**", "/socket/**", "/actuator/**"
             );
