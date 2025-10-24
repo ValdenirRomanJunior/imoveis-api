@@ -121,8 +121,8 @@ public class SubscriptionInterceptor implements HandlerInterceptor {
         }
         
         // Se não está em trial, verificar se tem plano pago ativo
-        if (account.getPlanType() == PlanType.FREE) {
-            return false; // Plano gratuito sem trial = sem acesso
+        if (account.getPlanType() == null) {
+            return false; // Sem plano = sem acesso
         }
         
         // Verificar se o plano pago não expirou

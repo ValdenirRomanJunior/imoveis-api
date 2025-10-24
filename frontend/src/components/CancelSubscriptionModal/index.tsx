@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
+import { useNavigate } from 'react-router-dom';
 import api from '../../utils/requests';
 
 interface CancelSubscriptionModalProps {
@@ -204,6 +205,7 @@ const CancelSubscriptionModal: React.FC<CancelSubscriptionModalProps> = ({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const navigate = useNavigate();
 
   const formatDate = (dateString: string) => {
     if (!dateString) return 'Data não disponível';
@@ -256,6 +258,8 @@ const CancelSubscriptionModal: React.FC<CancelSubscriptionModalProps> = ({
                 setTimeout(() => {
                     onSuccess();
                     onClose();
+                    // Redirecionar para o dashboard após cancelamento
+                    navigate('/dashboard');
                 }, 2000);
             } else {
                 setError(response.data.message || 'Erro ao cancelar assinatura');

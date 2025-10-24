@@ -389,7 +389,7 @@ public class StripeService {
                     System.out.println("🔄 [STRIPE] Desativando conta após cancelamento - Account ID: " + account.getId());
                     
                     // Desativar o plano imediatamente
-                    account.setPlanType(PlanType.FREE);
+                    account.setPlanType(null);
                     account.setPlanEndDate(LocalDateTime.now()); // Expira imediatamente
                     account.setIsTrialActive(false); // Desativa trial também
                     
@@ -458,7 +458,7 @@ public class StripeService {
 
             // Desativar a conta imediatamente após cancelamento manual
             Account account = accountService.find(accountId);
-            account.setPlanType(PlanType.FREE);
+            account.setPlanType(null);
             account.setPlanEndDate(LocalDateTime.now()); // Expira imediatamente
             account.setIsTrialActive(false); // Desativa trial também
             

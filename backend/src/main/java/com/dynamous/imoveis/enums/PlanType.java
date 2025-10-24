@@ -1,7 +1,6 @@
 package com.dynamous.imoveis.enums;
 
 public enum PlanType {
-    FREE(0, "Free", "Plano gratuito sem funcionalidades", 0.0, 0, false),
     TESTE(1, "Teste", "Plano de teste gratuito por 7 dias", 0.0, 7, true),
     LITE(2, "Lite", "Plano completo com funcionalidades essenciais", 99.00, 30, false),
     PRO(3, "Pro", "Plano completo com todas as funcionalidades", 239.00, 30, false);
