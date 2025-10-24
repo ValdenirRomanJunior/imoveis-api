@@ -120,31 +120,40 @@ public class StripeController {
             @RequestHeader("Stripe-Signature") String sigHeader) {
         
         try {
+            System.out.println("🔔 [WEBHOOK] Recebido evento do Stripe");
+            
             // Verificar assinatura do webhook (em produção, use o endpoint secret)
             Event event = Webhook.constructEvent(payload, sigHeader, "whsec_your_webhook_secret_here");
+            
+            System.out.println("🔔 [WEBHOOK] Tipo do evento: " + event.getType());
             
             // Processar diferentes tipos de eventos
             switch (event.getType()) {
                 case "checkout.session.completed":
+                    System.out.println("🔔 [WEBHOOK] Processando checkout.session.completed");
                     stripeService.handlePaymentSuccess(event);
                     break;
                 case "invoice.payment_succeeded":
+                    System.out.println("🔔 [WEBHOOK] Processando invoice.payment_succeeded (renovação)");
                     // Renovação de assinatura
                     stripeService.handlePaymentSuccess(event);
                     break;
                 case "customer.subscription.deleted":
+                    System.out.println("🔔 [WEBHOOK] Processando customer.subscription.deleted");
                     // Cancelamento de assinatura
                     stripeService.handleSubscriptionCanceled(event);
                     break;
                 default:
-                    System.out.println("Evento não tratado: " + event.getType());
+                    System.out.println("🔔 [WEBHOOK] Evento não tratado: " + event.getType());
             }
             
+            System.out.println("✅ [WEBHOOK] Evento processado com sucesso");
             return ResponseEntity.ok("Success");
             
         } catch (Exception e) {
-            System.err.println("Erro no webhook: " + e.getMessage());
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Webhook error");
+            System.err.println("❌ [WEBHOOK] Erro no webhook: " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.badRequest().body("Webhook error");
         }
     }
 

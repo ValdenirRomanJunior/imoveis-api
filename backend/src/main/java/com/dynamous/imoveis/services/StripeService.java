@@ -275,16 +275,25 @@ public class StripeService {
     @Transactional
     public void handleSuccessfulPayment(String sessionId) {
         try {
+            System.out.println("🔄 [STRIPE] Iniciando processamento de pagamento bem-sucedido para sessionId: " + sessionId);
+            
             Session session = Session.retrieve(sessionId);
             String accountId = session.getMetadata().get("account_id");
             String planTypeName = session.getMetadata().get("plan_type");
 
+            System.out.println("🔄 [STRIPE] Dados da sessão - AccountId: " + accountId + ", PlanType: " + planTypeName);
+
             Account account = accountService.find(Long.parseLong(accountId));
             PlanType planType = PlanType.valueOf(planTypeName);
+
+            System.out.println("🔄 [STRIPE] Account encontrada - ID: " + account.getId() + ", Trial atual: " + account.getIsTrialActive());
+            System.out.println("🔄 [STRIPE] Plano atual - Tipo: " + account.getPlanType() + ", EndDate: " + account.getPlanEndDate());
 
             // Recupera a assinatura do Stripe
             String subscriptionId = session.getSubscription();
             Subscription subscription = Subscription.retrieve(subscriptionId);
+
+            System.out.println("🔄 [STRIPE] Assinatura Stripe - ID: " + subscriptionId + ", Status: " + subscription.getStatus());
 
             // Cria ou atualiza a assinatura na base de dados
             StripeCustomer customer = stripeCustomerRepository.findByAccount(account)
@@ -300,22 +309,39 @@ public class StripeService {
             stripeSubscription.setCurrency("BRL");
             
             // Converte timestamps do Stripe para LocalDateTime
-            stripeSubscription.setCurrentPeriodStart(
-                    LocalDateTime.ofInstant(Instant.ofEpochSecond(subscription.getCurrentPeriodStart()), ZoneId.systemDefault())
-            );
-            stripeSubscription.setCurrentPeriodEnd(
-                    LocalDateTime.ofInstant(Instant.ofEpochSecond(subscription.getCurrentPeriodEnd()), ZoneId.systemDefault())
-            );
+            LocalDateTime periodStart = LocalDateTime.ofInstant(Instant.ofEpochSecond(subscription.getCurrentPeriodStart()), ZoneId.systemDefault());
+            LocalDateTime periodEnd = LocalDateTime.ofInstant(Instant.ofEpochSecond(subscription.getCurrentPeriodEnd()), ZoneId.systemDefault());
+            
+            stripeSubscription.setCurrentPeriodStart(periodStart);
+            stripeSubscription.setCurrentPeriodEnd(periodEnd);
+
+            System.out.println("🔄 [STRIPE] Período da assinatura - Início: " + periodStart + ", Fim: " + periodEnd);
 
             stripeSubscriptionRepository.save(stripeSubscription);
 
+            System.out.println("🔄 [STRIPE] Assinatura salva no banco de dados");
+
             // Atualiza a conta com o novo plano
             account.setPlanType(planType);
-            account.setPlanStartDate(stripeSubscription.getCurrentPeriodStart());
-            account.setPlanEndDate(stripeSubscription.getCurrentPeriodEnd());
+            account.setPlanStartDate(periodStart);
+            account.setPlanEndDate(periodEnd);
+            
+            // IMPORTANTE: Desativar o trial quando um plano é ativado
+            account.setIsTrialActive(false);
+            
+            System.out.println("🔄 [STRIPE] Atualizando Account - Novo plano: " + planType + ", Trial desativado: " + !account.getIsTrialActive());
+            System.out.println("🔄 [STRIPE] Novas datas - Início: " + account.getPlanStartDate() + ", Fim: " + account.getPlanEndDate());
+            
             accountService.update(account);
 
+            System.out.println("✅ [STRIPE] Pagamento processado com sucesso! Account atualizada.");
+
         } catch (StripeException e) {
+            System.err.println("❌ [STRIPE] Erro do Stripe: " + e.getMessage());
+            throw new ServiceException("Erro ao processar pagamento: " + e.getMessage(), e);
+        } catch (Exception e) {
+            System.err.println("❌ [STRIPE] Erro geral: " + e.getMessage());
+            e.printStackTrace();
             throw new ServiceException("Erro ao processar pagamento: " + e.getMessage(), e);
         }
     }
