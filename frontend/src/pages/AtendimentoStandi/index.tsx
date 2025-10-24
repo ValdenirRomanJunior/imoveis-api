@@ -56,7 +56,7 @@ const AtendimentoStandi: React.FC = () => {
     {
       id: '3',
       title: 'Dúvidas sobre planos',
-      text: 'Temos três planos disponíveis: Teste (gratuito por 7 dias), Lite (R$ 97/mês) e Pro (R$ 197/mês). Qual plano gostaria de conhecer melhor?'
+      text: 'Temos três planos disponíveis: Teste (gratuito por 7 dias), Lite (R$ 87/mês) e Pro (R$ 197/mês). Qual plano gostaria de conhecer melhor?'
     },
     {
       id: '4',

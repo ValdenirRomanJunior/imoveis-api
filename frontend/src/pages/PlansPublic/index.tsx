@@ -55,8 +55,8 @@ const PlansPublic: React.FC = () => {
       id: 'lite',
       name: 'Lite',
       description: 'Ideal para corretores iniciantes',
-      monthlyPrice: 97,
-      yearlyPrice: 970,
+      monthlyPrice: 87,
+      yearlyPrice: 870,
       popular: true,
       features: [
         'Até 100 imóveis cadastrados',

@@ -280,8 +280,8 @@ const Home: React.FC = () => {
   // Preços dos planos
   const planPrices = {
     lite: {
-      monthly: 3.00,
-      annual: 2.70 // 10% de desconto
+      monthly: 87.00,
+      annual: 78.30 // 10% de desconto
     },
     pro: {
       monthly: 239.00,
