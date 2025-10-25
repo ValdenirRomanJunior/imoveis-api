@@ -57,7 +57,7 @@ public class StripeService {
     // Preços dos planos (em centavos)
     private static final Map<PlanType, Long> PLAN_PRICES = new HashMap<>();
     static {
-        PLAN_PRICES.put(PlanType.LITE, 8700L); // R$ 87,00
+        PLAN_PRICES.put(PlanType.LITE, 300L); // R$ 87,00
         PLAN_PRICES.put(PlanType.PRO, 23900L); // R$ 239,00
     }
 
@@ -377,16 +377,20 @@ public class StripeService {
             if (subscription != null) {
                 System.out.println("🔄 [STRIPE] ID da assinatura cancelada: " + subscription.getId());
                 
-                // Cancelar assinatura localmente
-                cancelSubscription(subscription.getId());
-                
-                // Buscar a assinatura local para obter a conta
+                // Buscar a assinatura local para obter a conta antes de excluir
                 Optional<StripeSubscription> subscriptionOpt = stripeSubscriptionRepository.findByStripeSubscriptionId(subscription.getId());
                 if (subscriptionOpt.isPresent()) {
                     StripeSubscription localSubscription = subscriptionOpt.get();
-                    Account account = localSubscription.getStripeCustomer().getAccount();
+                    StripeCustomer stripeCustomer = localSubscription.getStripeCustomer();
+                    Account account = stripeCustomer.getAccount();
                     
                     System.out.println("🔄 [STRIPE] Desativando conta após cancelamento - Account ID: " + account.getId());
+                    
+                    // Cancelar assinatura localmente (apenas atualiza status)
+                    cancelSubscription(subscription.getId());
+                    
+                    // Excluir dados do Stripe das tabelas locais
+                    deleteStripeData(account.getId());
                     
                     // Desativar o plano imediatamente
                     account.setPlanType(null);
@@ -395,7 +399,7 @@ public class StripeService {
                     
                     accountService.update(account);
                     
-                    System.out.println("✅ [STRIPE] Conta desativada após cancelamento de assinatura");
+                    System.out.println("✅ [STRIPE] Conta desativada e dados do Stripe excluídos após cancelamento de assinatura");
                 } else {
                     System.err.println("❌ [STRIPE] Assinatura local não encontrada para ID: " + subscription.getId());
                 }
@@ -413,18 +417,49 @@ public class StripeService {
     @Transactional
     public void cancelSubscription(String stripeSubscriptionId) {
         try {
+            System.out.println("🔄 [STRIPE] Cancelando assinatura por ID: " + stripeSubscriptionId);
+            
+            // Buscar a assinatura local primeiro para obter informações da conta
+            Optional<StripeSubscription> subscriptionOpt = stripeSubscriptionRepository.findByStripeSubscriptionId(stripeSubscriptionId);
+            Long accountId = null;
+            
+            if (subscriptionOpt.isPresent()) {
+                StripeSubscription subscription = subscriptionOpt.get();
+                accountId = subscription.getStripeCustomer().getAccount().getId();
+                
+                // Atualizar status local
+                subscription.setStatus(SubscriptionStatus.CANCELED);
+                stripeSubscriptionRepository.save(subscription);
+                
+                System.out.println("✅ [STRIPE] Status da assinatura atualizado para CANCELED - Account ID: " + accountId);
+            }
+            
             // Cancelar no Stripe
             Subscription stripeSubscription = Subscription.retrieve(stripeSubscriptionId);
             stripeSubscription.cancel();
-
-            // Atualizar status local
-            Optional<StripeSubscription> subscriptionOpt = stripeSubscriptionRepository.findByStripeSubscriptionId(stripeSubscriptionId);
-            if (subscriptionOpt.isPresent()) {
-                StripeSubscription subscription = subscriptionOpt.get();
-                subscription.setStatus(SubscriptionStatus.CANCELED);
-                stripeSubscriptionRepository.save(subscription);
+            
+            System.out.println("✅ [STRIPE] Assinatura cancelada no Stripe: " + stripeSubscriptionId);
+            
+            // Se temos o accountId, verificar se deve excluir os dados do Stripe
+            if (accountId != null) {
+                // Verificar se ainda há outras assinaturas ativas para esta conta
+                List<StripeSubscription> remainingSubscriptions = stripeSubscriptionRepository.findByAccountIdAndStatus(accountId, SubscriptionStatus.ACTIVE);
+                
+                if (remainingSubscriptions.isEmpty()) {
+                    // Não há mais assinaturas ativas, excluir dados do Stripe
+                    System.out.println("🔄 [STRIPE] Nenhuma assinatura ativa restante, excluindo dados do Stripe para Account ID: " + accountId);
+                    deleteStripeData(accountId);
+                } else {
+                    System.out.println("ℹ️ [STRIPE] Ainda existem " + remainingSubscriptions.size() + " assinaturas ativas, mantendo dados do Stripe para Account ID: " + accountId);
+                }
             }
+            
         } catch (StripeException e) {
+            System.err.println("❌ [STRIPE] Erro do Stripe ao cancelar: " + e.getMessage());
+            throw new ServiceException("Erro ao cancelar assinatura: " + e.getMessage(), e);
+        } catch (Exception e) {
+            System.err.println("❌ [STRIPE] Erro geral ao cancelar: " + e.getMessage());
+            e.printStackTrace();
             throw new ServiceException("Erro ao cancelar assinatura: " + e.getMessage(), e);
         }
     }
@@ -456,6 +491,9 @@ public class StripeService {
                 System.out.println("✅ [STRIPE] Assinatura cancelada no Stripe: " + subscription.getStripeSubscriptionId());
             }
 
+            // Excluir dados do Stripe das tabelas locais
+            deleteStripeData(accountId);
+
             // Desativar a conta imediatamente após cancelamento manual
             Account account = accountService.find(accountId);
             account.setPlanType(null);
@@ -464,7 +502,7 @@ public class StripeService {
             
             accountService.update(account);
             
-            System.out.println("✅ [STRIPE] Conta desativada após cancelamento manual - Account ID: " + accountId);
+            System.out.println("✅ [STRIPE] Conta desativada e dados do Stripe excluídos após cancelamento manual - Account ID: " + accountId);
 
             return true;
         } catch (StripeException e) {
@@ -502,5 +540,43 @@ public class StripeService {
     public boolean hasActiveSubscription(Long accountId) {
         Long count = stripeSubscriptionRepository.countByAccountIdAndStatus(accountId, SubscriptionStatus.ACTIVE);
         return count > 0;
+    }
+
+    /**
+     * Exclui todos os dados do Stripe relacionados a uma conta
+     */
+    @Transactional
+    public void deleteStripeData(Long accountId) {
+        try {
+            System.out.println("🔄 [STRIPE] Iniciando exclusão dos dados do Stripe para Account ID: " + accountId);
+            
+            // Buscar o cliente Stripe da conta
+            Account account = accountService.find(accountId);
+            Optional<StripeCustomer> customerOpt = stripeCustomerRepository.findByAccount(account);
+            
+            if (customerOpt.isPresent()) {
+                StripeCustomer stripeCustomer = customerOpt.get();
+                
+                // 1. Excluir todas as assinaturas relacionadas ao cliente
+                List<StripeSubscription> subscriptions = stripeSubscriptionRepository.findByStripeCustomer(stripeCustomer);
+                if (!subscriptions.isEmpty()) {
+                    stripeSubscriptionRepository.deleteAll(subscriptions);
+                    System.out.println("🗑️ [STRIPE] Excluídas " + subscriptions.size() + " assinaturas da tabela stripe_subscriptions");
+                }
+                
+                // 2. Excluir o cliente Stripe
+                stripeCustomerRepository.delete(stripeCustomer);
+                System.out.println("🗑️ [STRIPE] Excluído cliente da tabela stripe_customers - ID: " + stripeCustomer.getStripeCustomerId());
+                
+                System.out.println("✅ [STRIPE] Todos os dados do Stripe foram excluídos para Account ID: " + accountId);
+            } else {
+                System.out.println("ℹ️ [STRIPE] Nenhum cliente Stripe encontrado para Account ID: " + accountId);
+            }
+            
+        } catch (Exception e) {
+            System.err.println("❌ [STRIPE] Erro ao excluir dados do Stripe: " + e.getMessage());
+            e.printStackTrace();
+            throw new ServiceException("Erro ao excluir dados do Stripe: " + e.getMessage(), e);
+        }
     }
 }
