@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Chart from 'react-apexcharts';
 import { ApexOptions } from 'apexcharts';
-import { getSystemOverview, getUsersStats, getRecentUsersStats, getAccessMetrics, AdminStatsDTO, UsersStatsResponse, AccessMetricsDTO } from '../../services/resources/adminStats';
+import { getSystemOverview, getUsersStats, getRecentUsersStats, getAccessMetrics, clearAccessMetrics, AdminStatsDTO, UsersStatsResponse, AccessMetricsDTO } from '../../services/resources/adminStats';
 import {
   AdminStatsContainer,
   StatsGrid,
@@ -18,6 +18,7 @@ import {
 import { AiOutlineHome, AiOutlineUser, AiOutlineEye } from 'react-icons/ai';
 import { IoCloudUploadOutline } from 'react-icons/io5';
 import { RiUserLine, RiMouseLine } from 'react-icons/ri';
+import { MdDeleteSweep } from 'react-icons/md';
 
 interface AdminStatsProps {
   isVisible: boolean;
@@ -92,6 +93,23 @@ const AdminStats: React.FC<AdminStatsProps> = ({ isVisible }) => {
       }
     } catch (err) {
       setError('Erro ao carregar métricas de acesso');
+    }
+  };
+
+  const handleClearAccessMetrics = async () => {
+    if (window.confirm('Tem certeza que deseja limpar todas as métricas de acesso? Esta ação não pode ser desfeita.')) {
+      try {
+        const response = await clearAccessMetrics();
+        if (response.status === 200) {
+          // Recarregar as métricas após limpeza
+          await loadAccessMetrics();
+          alert('Métricas de acesso limpas com sucesso!');
+        } else {
+          alert('Erro ao limpar métricas de acesso');
+        }
+      } catch (err) {
+        alert('Erro ao limpar métricas de acesso');
+      }
     }
   };
 
@@ -212,6 +230,27 @@ const AdminStats: React.FC<AdminStatsProps> = ({ isVisible }) => {
             <span className='stat-number'>{accessMetrics?.total?.homeAccesses || 0}</span>
             <small>Últimas 24h: {accessMetrics?.last24Hours?.homeAccesses || 0}</small>
           </div>
+          <button
+            onClick={handleClearAccessMetrics}
+            style={{
+              position: 'absolute',
+              top: '10px',
+              right: '10px',
+              background: '#dc3545',
+              color: 'white',
+              border: 'none',
+              borderRadius: '4px',
+              padding: '6px 8px',
+              cursor: 'pointer',
+              fontSize: '14px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '4px'
+            }}
+            title="Limpar métricas de acesso"
+          >
+            <MdDeleteSweep />
+          </button>
         </StatCard>
 
         <StatCard>

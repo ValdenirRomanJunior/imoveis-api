@@ -118,6 +118,23 @@ public class AdminStatsController {
         Map<String, Object> metrics = accessMetricsService.getAccessMetrics();
         return ResponseEntity.ok().body(metrics);
     }
+
+    @DeleteMapping("/access-metrics")
+    @PreAuthorize("hasAnyRole('ADMIN')")
+    public ResponseEntity<Map<String, Object>> clearAccessMetrics() {
+        try {
+            accessMetricsService.clearAllAccessMetrics();
+            Map<String, Object> result = new HashMap<>();
+            result.put("success", true);
+            result.put("message", "Métricas de acesso limpas com sucesso");
+            return ResponseEntity.ok().body(result);
+        } catch (Exception e) {
+            Map<String, Object> errorResult = new HashMap<>();
+            errorResult.put("success", false);
+            errorResult.put("message", "Erro ao limpar métricas: " + e.getMessage());
+            return ResponseEntity.badRequest().body(errorResult);
+        }
+    }
     
     // Endpoints para notificações
     @GetMapping("/notifications")

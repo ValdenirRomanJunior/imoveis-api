@@ -280,8 +280,8 @@ const Home: React.FC = () => {
   // Preços dos planos
   const planPrices = {
     lite: {
-      monthly: 3.00,
-      annual: 2.70 // 10% de desconto
+      monthly: 87.00,
+      annual: 78.30 // 10% de desconto
     },
     pro: {
       monthly: 239.00,
@@ -412,6 +412,7 @@ const Home: React.FC = () => {
             
             <NavLink href="#recursos">Recursos</NavLink>
             <NavLink href="#planos">Planos</NavLink>
+            <NavLink href="/blog">Blog</NavLink>
             <NavLink href="#contato">Contato</NavLink>
            
               <LoginButton as={Link} to="/login">
@@ -453,6 +454,9 @@ const Home: React.FC = () => {
                 </MobileSidebarNavLink>
                 <MobileSidebarNavLink href="#planos" onClick={closeMobileMenu}>
                   Planos
+                </MobileSidebarNavLink>
+                <MobileSidebarNavLink href="/blog" onClick={closeMobileMenu}>
+                  Blog
                 </MobileSidebarNavLink>
                 <MobileSidebarNavLink href="#contato" onClick={closeMobileMenu}>
                   Contato

@@ -90,4 +90,8 @@ public class AccessMetricsService {
     public Long getTestButtonClicksInPeriod(LocalDateTime startDate) {
         return accessMetricsRepository.countByEventTypeAndCreatedAtAfter("TEST_BUTTON_CLICK", startDate);
     }
+
+    public void clearAllAccessMetrics() {
+        accessMetricsRepository.deleteAll();
+    }
 }

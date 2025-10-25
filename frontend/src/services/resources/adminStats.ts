@@ -107,3 +107,13 @@ export const getLoginMetrics = () => {
       return error;
     });
 };
+
+export const clearAccessMetrics = () => {
+  return api.delete('/admin/stats/access-metrics')
+    .then(response => {
+      return response;
+    })
+    .catch((error) => {
+      return error;
+    });
+};

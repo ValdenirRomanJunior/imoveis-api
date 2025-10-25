@@ -62,6 +62,7 @@ export const StatCard = styled.div`
   align-items: center;
   gap: 15px;
   transition: transform 0.2s ease;
+  position: relative;
   
   @media (max-width: 768px) {
     padding: 15px;
