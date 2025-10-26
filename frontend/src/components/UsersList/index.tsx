@@ -180,6 +180,7 @@ const UsersList: React.FC = () => {
 
   return (
     <UsersListContainer>
+     
       <Header>
         <h1><AiOutlineUser /> Gerenciamento de Usuários</h1>
         <p>Visualize e gerencie todos os usuários cadastrados na plataforma</p>

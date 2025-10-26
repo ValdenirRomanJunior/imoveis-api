@@ -280,7 +280,7 @@ const TemaEdit: React.FC = () => {
     
     try {
       setDomainLoading(true);
-      const response = await axios.get(`/api/domain/info/${accountId}`);
+      const response = await axios.get(`/api/domains/info/${accountId}`);
       setDomainInfo(response.data);
     } catch (error) {
       console.error('Erro ao carregar informações de domínio:', error);

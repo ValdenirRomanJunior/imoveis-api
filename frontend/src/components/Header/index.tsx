@@ -227,10 +227,7 @@ const Header = () =>{
     }
             {perfilAdmin &&
             <>
-            <NavIcon to="/accounts" onClick={() => setSidebar(false)}>
-            <IoSettingsOutline className='icon-sidebar'/>
-            <p className='description-icon'>Configurações</p>
-            </NavIcon>
+          
             
             <NavIcon to="/users" onClick={() => setSidebar(false)}>
             <AiOutlineUser className='icon-sidebar'/>
