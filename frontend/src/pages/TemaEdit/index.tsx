@@ -297,8 +297,7 @@ const TemaEdit: React.FC = () => {
       setDomainLoading(true);
       setDomainMessage(null);
       
-      const response = await axios.post('/api/domain/custom', {
-        accountId,
+      const response = await axios.post(`/api/domains/custom/${accountId}`, {
         domain: customDomain.trim()
       });
       
@@ -323,8 +322,7 @@ const TemaEdit: React.FC = () => {
       setVerifying(true);
       setDomainMessage(null);
       
-      const response = await axios.post('/api/domain/verify', {
-        accountId,
+      const response = await axios.post(`/api/domains/verify/${accountId}`, {
         domain
       });
       
@@ -354,8 +352,8 @@ const TemaEdit: React.FC = () => {
       setDomainLoading(true);
       setDomainMessage(null);
       
-      await axios.delete('/api/domain/custom', {
-        data: { accountId, domain }
+      await axios.delete(`/api/domains/custom/${accountId}`, {
+        data: { domain }
       });
       
       setDomainMessage({ type: 'success', text: 'Domínio personalizado removido com sucesso!' });
