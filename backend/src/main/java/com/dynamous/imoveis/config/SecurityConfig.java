@@ -66,7 +66,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 			"/tenants/register",
 			"/api/tenants/register",
 			"/plans/available",
-			"/api/plans/available"
+			"/api/plans/available",
+			"/domains/**",
+			"/api/domains/**"
 		
 			
 			
