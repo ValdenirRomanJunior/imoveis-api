@@ -98,6 +98,10 @@ public class AccountService {
     public Optional<Account> findByCustomDomain(String customDomain) {
         return repo.findByCustomDomain(customDomain);
     }
+
+    public Optional<Account> findByCustomDomainWithTenants(String customDomain) {
+        return repo.findByCustomDomainWithTenants(customDomain);
+    }
     
     public Account update(Account account) {
         return repo.save(account);

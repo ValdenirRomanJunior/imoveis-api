@@ -26,6 +26,9 @@ public interface AccountRepository extends JpaRepository<Account,Long> {
 	@Query("SELECT a FROM Account a LEFT JOIN FETCH a.tenants WHERE a.companyName = :companyName")
 	List<Account> findByCompanyNameWithTenants(@Param("companyName") String companyName);
 	
+	@Query("SELECT a FROM Account a LEFT JOIN FETCH a.tenants WHERE a.customDomain = :customDomain")
+	Optional<Account> findByCustomDomainWithTenants(@Param("customDomain") String customDomain);
+	
 	Long countByStatus(Integer status);
 
  

@@ -29,7 +29,7 @@ public class PublicAccountController {
         Map<String, Object> response = new HashMap<>();
 
         try {
-            Optional<Account> optionalAccount = accountService.findByCustomDomain(domain);
+            Optional<Account> optionalAccount = accountService.findByCustomDomainWithTenants(domain);
             if (optionalAccount.isEmpty()) {
                 response.put("success", false);
                 response.put("message", "Domínio não encontrado");
@@ -43,7 +43,6 @@ public class PublicAccountController {
                 return ResponseEntity.status(404).body(response);
             }
 
-            // Usa o primeiro tenant associado à conta (padrão do projeto)
             Tenant tenant = account.getTenants().get(0);
 
             response.put("success", true);
