@@ -280,7 +280,7 @@ const TemaEdit: React.FC = () => {
     
     try {
       setDomainLoading(true);
-      const response = await axios.get(`/api/domains/info/${accountId}`);
+      const response = await api.get(`/api/domains/info/${accountId}`);
       setDomainInfo(response.data);
     } catch (error) {
       console.error('Erro ao carregar informações de domínio:', error);
@@ -297,7 +297,7 @@ const TemaEdit: React.FC = () => {
       setDomainLoading(true);
       setDomainMessage(null);
       
-      const response = await axios.post(`/api/domains/custom/${accountId}`, {
+      const response = await api.post(`/api/domains/custom/${accountId}`, {
         domain: customDomain.trim()
       });
       
@@ -322,7 +322,7 @@ const TemaEdit: React.FC = () => {
       setVerifying(true);
       setDomainMessage(null);
       
-      const response = await axios.post(`/api/domains/verify/${accountId}`, {
+      const response = await api.post(`/api/domains/verify/${accountId}`, {
         domain
       });
       
@@ -352,7 +352,7 @@ const TemaEdit: React.FC = () => {
       setDomainLoading(true);
       setDomainMessage(null);
       
-      await axios.delete(`/api/domains/custom/${accountId}`, {
+      await api.delete(`/api/domains/custom/${accountId}`, {
         data: { domain }
       });
       
