@@ -475,7 +475,7 @@ const TemaEdit: React.FC = () => {
       let bannerUrl = themeConfig.bannerImage;
       let agentPhotoUrl = themeConfig.agentPhoto;
       
-      // Upload da logo se foi selecionada
+      // Upload da logo se foi selecion
       if (selectedLogoFile) {
         try {
           const formData = new FormData();
