@@ -13,7 +13,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestController
-@RequestMapping(value = "/api/domains", produces = {MediaType.APPLICATION_JSON_VALUE})
+@RequestMapping(value = {"/domains", "/api/domains"}, produces = {MediaType.APPLICATION_JSON_VALUE})
 public class DomainController {
 
     @Autowired
@@ -25,6 +25,7 @@ public class DomainController {
     /**
      * Adiciona um domínio personalizado para uma conta
      */
+    @PreAuthorize("hasAnyRole('TENANT')")
     @PostMapping("/custom/{accountId}")
     public ResponseEntity<Map<String, Object>> addCustomDomain(
             @PathVariable Long accountId, 
@@ -73,6 +74,7 @@ public class DomainController {
     /**
      * Verifica o status de um domínio
      */
+    @PreAuthorize("hasAnyRole('TENANT')")
     @PostMapping("/verify/{accountId}")
     public ResponseEntity<Map<String, Object>> verifyDomain(
             @PathVariable Long accountId,
@@ -102,6 +104,7 @@ public class DomainController {
     /**
      * Remove um domínio personalizado
      */
+    @PreAuthorize("hasAnyRole('TENANT')")
     @DeleteMapping("/custom/{accountId}")
     public ResponseEntity<Map<String, Object>> removeCustomDomain(
             @PathVariable Long accountId,
@@ -166,6 +169,7 @@ public class DomainController {
     /**
      * Obtém informações de domínio de uma conta
      */
+    @PreAuthorize("hasAnyRole('TENANT')")
     @GetMapping("/info/{accountId}")
     public ResponseEntity<Map<String, Object>> getDomainInfo(@PathVariable Long accountId) {
         Map<String, Object> response = new HashMap<>();
