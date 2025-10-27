@@ -398,7 +398,7 @@ const Home: React.FC = () => {
     },
     {
       question: "Quais são as formas de pagamento aceitas?",
-      answer: "Aceitamos pix, a vista ou parcelado no cartão."
+      answer: "A vista ou parcelado no cartão."
     }
   ];
   return (
@@ -824,7 +824,7 @@ const Home: React.FC = () => {
       </StatsSection>
 
  
-         <Promotion />
+         <Promotion onOpenRegisterModal={handleOpenRegisterModal} />
       {/* Seção de Planos */}
       <PricingSection id='planos'>
         

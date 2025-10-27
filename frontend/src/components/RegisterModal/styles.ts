@@ -22,7 +22,7 @@ export const ModalContainer = styled.div`
   max-height: 90vh;
   overflow-y: auto;
   box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-  animation: modalSlideIn 0.1s ease-out;
+  animation: modalSlideIn 0.05s ease-out;
 
   @keyframes modalSlideIn {
     from {

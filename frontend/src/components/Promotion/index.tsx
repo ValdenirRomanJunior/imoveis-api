@@ -1,4 +1,5 @@
 
+// Componente Promotion
 import React from 'react';
 
 // Cores usadas no banner para referência, mas aplicadas via classes Tailwind
@@ -43,7 +44,7 @@ const GoogleIcon = () => (
 // 2. COMPONENTE PRINCIPAL (Utilizando Classes Tailwind)
 // =======================================================================================
 
-const Promotion = () => {
+const Promotion: React.FC<PromotionProps> = ({ onOpenRegisterModal }) => {
 
     // Classes Tailwind que simulam o gradiente e a sombra complexa do Banner
     const bannerClasses = `
@@ -152,6 +153,10 @@ const Promotion = () => {
                             style={{ 
                                 boxShadow: `0 15px 20px -5px rgba(0, 0, 0, 0.2), 0 0 10px ${COLORS['standi-cyan']}` 
                             }}
+                            onClick={(e) => {
+                                e.preventDefault();
+                                onOpenRegisterModal && onOpenRegisterModal();
+                            }}
                         >
                             TESTAR GRÁTIS AGORA
                         </a>
@@ -170,3 +175,8 @@ const Promotion = () => {
 };
 
 export default Promotion;
+
+// Tipagem de props para receber o handler que abre o modal
+type PromotionProps = {
+    onOpenRegisterModal?: () => void;
+};

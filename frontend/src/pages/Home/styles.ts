@@ -774,7 +774,7 @@ export const CTASection = styled.section`
 
 // FAQ Section
 export const FAQSection = styled.section`
-  padding: 6rem 1rem;
+  padding: 2rem 1rem;
   background: #f8fafc;
 
   @media screen and(min-width:768px){
