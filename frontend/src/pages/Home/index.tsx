@@ -128,6 +128,7 @@ import {
   MobileSidebarRegisterButton
 } from './styles';
 import WhatsappHome from './WhatsappHome';
+import Promotion from '../../components/Promotion';
 
   const styles = `
     .container-main-mockup {
@@ -822,10 +823,11 @@ const Home: React.FC = () => {
         <TestFreeButton onClick={handleOpenRegisterModal}>Testar Grátis Agora</TestFreeButton>
       </StatsSection>
 
-  
-
+ 
+         <Promotion />
       {/* Seção de Planos */}
       <PricingSection id='planos'>
+        
         <PricingContainer>
           <SectionTitle>Nossos Planos</SectionTitle>
           
