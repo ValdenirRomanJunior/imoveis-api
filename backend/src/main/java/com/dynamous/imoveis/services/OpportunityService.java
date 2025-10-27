@@ -188,37 +188,81 @@ public class OpportunityService {
     	
     	SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");		
 		String newDate= sdf.format(new Date());	
-		 Opportunity opportunity = new Opportunity(null,newDate);
+		Opportunity opportunity = new Opportunity(null,newDate);
 
-		 Account account = new Account();
-		 if(objDto.getCompanyName() == null || objDto.getCompanyName().isEmpty()) {
-			  account= accountService.findByDomain(objDto.getDomain());
-			  if(account == null) {
-				 throw new DataIntegrityException("Empresa não encontrada");
-			  }
-		 } else {
-			 account= accountService.findByCompanyName(objDto.getCompanyName());
-		 }
-		
-		 opportunity.setAccount(account); 
-		 Step firtsStep= stepRepository.findFirstByAccount(account);
- 		if(firtsStep != null ) {
- 			opportunity.setStep(firtsStep);
- 		}
- 		if(firtsStep == null ) {
- 			 throw new DataIntegrityException("Precisa ter pelo menos 1 etapa cadastrada ");
- 		}
-		 
-        Lead lead= new Lead(null,objDto.getName(),objDto.getEmail(),objDto.getPhone(),objDto.getMessage(),newDate);     	     	        	 
-         lead.setPropertyId(null);
-    	 opportunity.setPropertyId(null);   	    	  	   	       	 	   	       	     
+        Account account;
+        if (objDto.getCompanyName() != null && !objDto.getCompanyName().isEmpty()) {
+            // Prioriza companyName quando informado
+            account = accountService.findByCompanyName(objDto.getCompanyName());
+        } else {
+            // Resolve por domínio (suporta customDomain e subdomínio)
+            String domain = objDto.getDomain();
+            if (domain == null || domain.trim().isEmpty()) {
+                throw new DataIntegrityException("Domínio não informado");
+            }
+            String resolvedDomain = sanitizeDomain(domain);
+
+            Optional<Account> accountOpt = accountService.findByCustomDomain(resolvedDomain);
+            if (accountOpt.isPresent()) {
+                account = accountOpt.get();
+            } else {
+                try {
+                    account = accountService.findByDomain(resolvedDomain);
+                } catch (ObjectNotFoundException e) {
+                    throw new DataIntegrityException("Empresa não encontrada para o domínio: " + resolvedDomain);
+                }
+            }
+        }
+
+        opportunity.setAccount(account); 
+        Step firtsStep= stepRepository.findFirstByAccount(account);
+        if (firtsStep != null ) {
+            opportunity.setStep(firtsStep);
+        } else {
+            throw new DataIntegrityException("Precisa ter pelo menos 1 etapa cadastrada ");
+        }
+
+        Lead lead= new Lead(null,objDto.getName(),objDto.getEmail(),objDto.getPhone(),objDto.getMessage(),newDate);
+        lead.setPropertyId(null);
+        opportunity.setPropertyId(null);
         lead.setAccount(account);
-        leadService.insert(lead);              		
-        opportunity.setLead(lead);	
+        leadService.insert(lead);
+        opportunity.setLead(lead);
         lead.setOpportunity(opportunity);
-	
+
         return opportunity; 		   
-}
+    }
+
+    // Normaliza domínio (remove http/https, porta, path e 'www.')
+    private String sanitizeDomain(String input) {
+        String domain = input.trim();
+        if (domain.startsWith("http://") || domain.startsWith("https://")) {
+            try {
+                java.net.URI uri = new java.net.URI(domain);
+                String host = uri.getHost();
+                if (host != null) {
+                    domain = host;
+                } else {
+                    domain = domain.replace("http://", "").replace("https://", "");
+                }
+            } catch (java.net.URISyntaxException e) {
+                domain = domain.replace("http://", "").replace("https://", "");
+            }
+        }
+        int slashIndex = domain.indexOf('/');
+        if (slashIndex > -1) {
+            domain = domain.substring(0, slashIndex);
+        }
+        int colonIndex = domain.indexOf(':');
+        if (colonIndex > -1) {
+            domain = domain.substring(0, colonIndex);
+        }
+        if (domain.startsWith("www.")) {
+            domain = domain.substring(4);
+        }
+        return domain.toLowerCase();
+    }
+
     //oportunidade que vem do detalhe do imovel do site do cliente
     public Opportunity fromDTODetailSite(OpportunityNewSiteDetailDTO objDto){ 
     	
