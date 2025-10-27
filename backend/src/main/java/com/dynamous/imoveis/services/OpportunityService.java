@@ -185,44 +185,43 @@ public class OpportunityService {
 
     //oportunidade que vem da home do site do cliente
     public Opportunity fromDTOHomeSite(OpportunityNewHomeSiteDTO objDto){ 
-    	
-    	SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");		
-		String newDate= sdf.format(new Date());	
-		Opportunity opportunity = new Opportunity(null,newDate);
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+        String newDate = sdf.format(new Date());
+        Opportunity opportunity = new Opportunity(null, newDate);
 
         Account account;
         if (objDto.getCompanyName() != null && !objDto.getCompanyName().isEmpty()) {
-            // Prioriza companyName quando informado
             account = accountService.findByCompanyName(objDto.getCompanyName());
         } else {
-            // Resolve por domínio (suporta customDomain e subdomínio)
-            String domain = objDto.getDomain();
-            if (domain == null || domain.trim().isEmpty()) {
+            String domainInput = objDto.getDomain();
+            if (domainInput == null || domainInput.trim().isEmpty()) {
                 throw new DataIntegrityException("Domínio não informado");
             }
-            String resolvedDomain = sanitizeDomain(domain);
 
-            Optional<Account> accountOpt = accountService.findByCustomDomain(resolvedDomain);
+            String host = extractHost(domainInput);
+            String bare = stripWWW(host);
+            String withWWW = host.startsWith("www.") ? host : "www." + host;
+
+            Optional<Account> accountOpt = accountService.findByCustomDomain(host);
+            if (accountOpt.isEmpty()) accountOpt = accountService.findByCustomDomain(bare);
+            if (accountOpt.isEmpty()) accountOpt = accountService.findByCustomDomain(withWWW);
+
             if (accountOpt.isPresent()) {
                 account = accountOpt.get();
             } else {
-                try {
-                    account = accountService.findByDomain(resolvedDomain);
-                } catch (ObjectNotFoundException e) {
-                    throw new DataIntegrityException("Empresa não encontrada para o domínio: " + resolvedDomain);
-                }
+                throw new DataIntegrityException("Empresa não encontrada para o domínio: " + host);
             }
         }
 
-        opportunity.setAccount(account); 
-        Step firtsStep= stepRepository.findFirstByAccount(account);
-        if (firtsStep != null ) {
+        opportunity.setAccount(account);
+        Step firtsStep = stepRepository.findFirstByAccount(account);
+        if (firtsStep != null) {
             opportunity.setStep(firtsStep);
         } else {
             throw new DataIntegrityException("Precisa ter pelo menos 1 etapa cadastrada ");
         }
 
-        Lead lead= new Lead(null,objDto.getName(),objDto.getEmail(),objDto.getPhone(),objDto.getMessage(),newDate);
+        Lead lead = new Lead(null, objDto.getName(), objDto.getEmail(), objDto.getPhone(), objDto.getMessage(), newDate);
         lead.setPropertyId(null);
         opportunity.setPropertyId(null);
         lead.setAccount(account);
@@ -230,11 +229,10 @@ public class OpportunityService {
         opportunity.setLead(lead);
         lead.setOpportunity(opportunity);
 
-        return opportunity; 		   
+        return opportunity;
     }
 
-    // Normaliza domínio (remove http/https, porta, path e 'www.')
-    private String sanitizeDomain(String input) {
+    private String extractHost(String input) {
         String domain = input.trim();
         if (domain.startsWith("http://") || domain.startsWith("https://")) {
             try {
@@ -257,10 +255,11 @@ public class OpportunityService {
         if (colonIndex > -1) {
             domain = domain.substring(0, colonIndex);
         }
-        if (domain.startsWith("www.")) {
-            domain = domain.substring(4);
-        }
         return domain.toLowerCase();
+    }
+
+    private String stripWWW(String host) {
+        return host.startsWith("www.") ? host.substring(4) : host;
     }
 
     //oportunidade que vem do detalhe do imovel do site do cliente
