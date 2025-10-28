@@ -18,7 +18,7 @@ import {SlArrowRight} from 'react-icons/sl';
 import {AiFillStar} from 'react-icons/ai';
 import { findProperty } from '../Services/property';
 import { Property } from '../types/property';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import { ItemSlide, Slides } from '../types/image';
 import PageNotFound from '../PageNotFound';
 import { ErrorBoundary } from 'react-error-boundary';
@@ -37,6 +37,7 @@ import {
   MobileMenu
 } from '../styles';
 import DynamicSEO from '../../../components/DynamicSEO';
+import { useSubdomain } from '../../../components/SubdomainRouter';
 // Importar imagens padrão
 import corretorPadrao from '../../../assets/images/user-image.jpeg';
 import bannerPadrao from '../../../assets/images/bg-principal.png';
@@ -97,13 +98,15 @@ type Error = {
 const Detail  = () => {
 
  
-    const params = useParams();
-    const { companyName } = useParams<{ companyName: string }>();
-    const clientSlug = companyName;
+    const { propertyId, companyName: companyNameParam } = useParams<{ propertyId?: string; companyName?: string }>();
+    const location = useLocation();
+    const { companyName: companyNameCtx } = useSubdomain();
+    const clientSlug = (companyNameCtx || companyNameParam || '');
+    const companySlugForLinks = (companyNameCtx || companyNameParam || '');
     
     const [openModalContact,setOpenModalContact]=useState(true);
     const [property, setProperty]= useState<Property>();
-    const [errors,setErrors]=useState();
+    const [errors,setErrors]=useState<string | undefined>(undefined);
     const [errorsLead, setErrorsLead] = useState<Error[]>([]);
     const [otherError, setOtherError] = useState(false);
     const [loading, setLoading] = useState(true);
@@ -211,10 +214,10 @@ const Detail  = () => {
     }, [clientSlug]);
 
     useEffect(() => {
-        if (companyName) {
+        if (clientSlug) {
             loadThemeConfig();
         }
-    }, [companyName]);
+    }, [clientSlug]);
     
     // Tema dinâmico
     const dynamicTheme = {
@@ -246,9 +249,36 @@ const Detail  = () => {
     } as any;
 
 
+    // Resolve o ID do imóvel a partir dos parâmetros ou da URL
+    const resolvePropertyId = () => {
+        if (propertyId) {
+            return String(propertyId);
+        }
+        const pathname = location.pathname;
+        const matchDetail = pathname.match(/\/detail\/([^\/]+)/);
+        if (matchDetail && matchDetail[1]) {
+            return matchDetail[1];
+        }
+        const matchSiteDetail = pathname.match(/\/site\/[^\/]+\/detail\/([^\/]+)/);
+        if (matchSiteDetail && matchSiteDetail[1]) {
+            return matchSiteDetail[1];
+        }
+        const segments = pathname.split('/').filter(Boolean);
+        const lastSegment = segments[segments.length - 1];
+        if (lastSegment && /^[a-zA-Z0-9]+$/.test(lastSegment)) {
+            return lastSegment;
+        }
+        return null;
+    };
+
     //pega propriedade com id
     const getProperty = async() => {             
-        const dataProperty = await findProperty(`${params.propertyId}`);
+        const resolvedId = resolvePropertyId();
+        if (!resolvedId) {
+            setErrors('ID do imóvel não encontrado na URL.');
+            return;
+        }
+        const dataProperty = await findProperty(resolvedId as string);
         if(dataProperty && dataProperty.status === 200){  
             console.log(dataProperty.status) 
             setProperty(dataProperty.data as Property)           
@@ -266,7 +296,7 @@ const Detail  = () => {
     useEffect(() => {
         getProperty();
         
-    }, [`${params.propertyId}`]);
+    }, [location.pathname, propertyId]);
    
  
 
@@ -419,8 +449,18 @@ console.log(property?.id)
                     )}
                 </Logo>
                 <Nav>
-                    <NavLink href={`/site/${companyName}`}>Início</NavLink>
-                <NavLink href={`/site/${companyName}/imoveis`}>Imóveis</NavLink>
+                    {(() => {
+                        const hostname = window.location.hostname;
+                        const isLocalhost = hostname === 'localhost' || hostname === '127.0.0.1';
+                        const homePath = isLocalhost ? `/site/${companySlugForLinks}` : '/';
+                        const propertiesPath = isLocalhost ? `/site/${companySlugForLinks}/imoveis` : '/imoveis';
+                        return (
+                            <>
+                                <NavLink href={homePath}>Início</NavLink>
+                                <NavLink href={propertiesPath}>Imóveis</NavLink>
+                            </>
+                        );
+                    })()}
                     <NavLink href={`tel:${themeConfig.phone}`}>{themeConfig.phone || '(00) 0000-0000'}</NavLink>
                 </Nav>
                 <MobileMenuButton onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
@@ -428,8 +468,18 @@ console.log(property?.id)
                 </MobileMenuButton>
                 {mobileMenuOpen && (
                     <MobileMenu>
-                        <NavLink href={`/site/${companyName}`} onClick={() => setMobileMenuOpen(false)}>Início</NavLink>
-                <NavLink href={`/site/${companyName}/imoveis`} onClick={() => setMobileMenuOpen(false)}>Imóveis</NavLink>
+                        {(() => {
+                            const hostname = window.location.hostname;
+                            const isLocalhost = hostname === 'localhost' || hostname === '127.0.0.1';
+                            const homePath = isLocalhost ? `/site/${companySlugForLinks}` : '/';
+                            const propertiesPath = isLocalhost ? `/site/${companySlugForLinks}/imoveis` : '/imoveis';
+                            return (
+                                <>
+                                    <NavLink href={homePath} onClick={() => setMobileMenuOpen(false)}>Início</NavLink>
+                                    <NavLink href={propertiesPath} onClick={() => setMobileMenuOpen(false)}>Imóveis</NavLink>
+                                </>
+                            );
+                        })()}
                         <NavLink href={`tel:${themeConfig.phone}`} onClick={() => setMobileMenuOpen(false)}>{themeConfig.phone || '(00) 0000-0000'}</NavLink>
                     </MobileMenu>
                 )}
