@@ -516,16 +516,26 @@ function handleChange(e: any): void {
       <SiteContainer>
       {/* Bloco 1 - Header */}
       <Header>
-         <NavLink href={`/site/${companyName}`}>  <Logo logoSize={themeConfig.logoSize}>
-          {themeConfig.logo ? (
-            <img 
-              src={themeConfig.logo} 
-              alt="Logo" 
-            />
-          ) : (
-            'ImóveisLogo'
-          )}
-        </Logo></NavLink>
+        {(() => {
+          const hostname = window.location.hostname;
+          const isLocalhost = hostname === 'localhost' || hostname === '127.0.0.1';
+          const slug = clientSlug || companyName || '';
+          const homePath = isLocalhost ? `/site/${slug}` : '/';
+          return (
+            <NavLink href={homePath}>
+              <Logo logoSize={themeConfig.logoSize}>
+                {themeConfig.logo ? (
+                  <img 
+                    src={themeConfig.logo} 
+                    alt="Logo" 
+                  />
+                ) : (
+                  'ImóveisLogo'
+                )}
+              </Logo>
+            </NavLink>
+          );
+        })()}
         <Nav>
           <NavLink href={`/site/${companyName}`}>Início</NavLink>
           <NavLink href={`/site/${companyName}/imoveis/?goal=&type=&name=`}>Imóveis</NavLink>

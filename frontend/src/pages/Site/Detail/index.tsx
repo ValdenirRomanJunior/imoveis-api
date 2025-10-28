@@ -441,13 +441,22 @@ console.log(property?.id)
         <ThemeProvider theme={dynamicTheme}>
             <DynamicSEO facebookPixelId={themeConfig?.facebookPixel} keywords={themeConfig?.seoKeywords} title={themeConfig?.siteTitle} />
             <Header>
-                <Logo logoSize={themeConfig.logoSize}>
-                    {themeConfig.logo ? (
-                        <img src={themeConfig.logo} alt={themeConfig.companyName || 'Logo'} />
-                    ) : (
-                        themeConfig.companyName || 'Imobiliária'
-                    )}
-                </Logo>
+                {(() => {
+                    const hostname = window.location.hostname;
+                    const isLocalhost = hostname === 'localhost' || hostname === '127.0.0.1';
+                    const homePath = isLocalhost ? `/site/${companySlugForLinks}` : '/';
+                    return (
+                        <NavLink href={homePath}>
+                            <Logo logoSize={themeConfig.logoSize}>
+                                {themeConfig.logo ? (
+                                    <img src={themeConfig.logo} alt={themeConfig.companyName || 'Logo'} />
+                                ) : (
+                                    themeConfig.companyName || 'Imobiliária'
+                                )}
+                            </Logo>
+                        </NavLink>
+                    );
+                })()}
                 <Nav>
                     {(() => {
                         const hostname = window.location.hostname;

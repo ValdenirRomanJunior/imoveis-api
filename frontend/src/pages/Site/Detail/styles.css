@@ -81,3 +81,18 @@
   user-select: none;
 
 }
+.slide-item-image-detail-wrapper{
+  margin-top:70px !important;
+
+  @media screen and (min-width: 768px) {
+    margin-top: 30px !important;
+  }
+}
+
+.slide-property-wrapper-detail{
+ margin-top:70px !important;
+
+  @media screen and (min-width: 768px) {
+    margin-top: 30px !important;
+  }
+}
