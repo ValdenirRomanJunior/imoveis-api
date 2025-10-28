@@ -194,24 +194,27 @@ const FeaturedPropertyCard = ({ url, properties, buttonColor = '#2563eb' }: Feat
 export default FeaturedPropertyCard;
 
 const CardListItem = ({id,name,images,price,address,numberRooms,bathRooms,area,goal}: SiteProperty) =>{
- const { companyName } = useParams<{ companyName: string }>();
-
+    const { companyName } = useParams<{ companyName: string }>();
+    const { companyName: subdomainCompanyName } = useSubdomain();
+    const slug = subdomainCompanyName || companyName;
+    const isLocalhost = window.location.hostname.includes('localhost') || window.location.hostname.startsWith('127.');
+    const detailLink = isLocalhost ? `/site/${slug}/detail/${id}` : `/detail/${id}`;
 
     return(
         <CardContainer>
         <CardWrapper>               
               <CardContent>
                    <div className='image-card-property-home-wrapper'>                   
-                    {images?.[0]?.url ?  <Link to={`/site/${companyName}/detail/${id}`} className='link-card-property-home'><LazyLoadImage effect='opacity' dir="vertical"  src={images?.[0].url } className='image-card-property-home'/> </Link>
+                    {images?.[0]?.url ?  <Link to={detailLink} className='link-card-property-home'><LazyLoadImage effect='opacity' dir="vertical"  src={images?.[0].url } className='image-card-property-home'/> </Link>
                     :
-                    <Link to={`/site/${companyName}/detail/${id}`} className='link-card-property-home'><LazyLoadImage effect='opacity' dir="vertical"  src={defaultImage} className='default-image-card-property-home'/> </Link>}
+                    <Link to={detailLink} className='link-card-property-home'><LazyLoadImage effect='opacity' dir="vertical"  src={defaultImage} className='default-image-card-property-home'/> </Link>}
                     </div> 
 
                      <div className='price-wrapper'>R$ {price}</div>  
                      <div className='type-wrapper'><HiHome/></div>    
 
                                 <div className='text-wrapper-card'>
-                                <Link to={`/site/${companyName}/detail/${id}`} className='title-wrapper-card-property'> <p className='title-card-property'>{name}</p><p className='title-card-property-cod'>Cod.{id}</p></Link>  
+                                <Link to={detailLink} className='title-wrapper-card-property'> <p className='title-card-property'>{name}</p><p className='title-card-property-cod'>Cod.{id}</p></Link>  
                                 
                                 <div className='localization-wrapper'>
                                 <BiMap className='localization-icon'/> <p className='localization'>
@@ -232,6 +235,7 @@ const CardListItem = ({id,name,images,price,address,numberRooms,bathRooms,area,g
       </CardWrapper>
       </CardContainer>
       
-
+   
     )
+     
 }
