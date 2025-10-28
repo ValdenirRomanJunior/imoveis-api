@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { ThemeProvider } from 'styled-components';
 import { useParams } from 'react-router-dom';
+import { useSubdomain } from '../../../components/SubdomainRouter';
 import api from '../../../utils/requests';
 
 import CardProperty from './CardProperty';
@@ -80,6 +81,7 @@ const Properties = ()=>{
 
     const navigate = useNavigate();
     const { companyName } = useParams<{ companyName: string }>();
+    const { companyName: subdomainCompanyName } = useSubdomain();
     const [goal,setGoal]= useState('');
     const [loading, setLoading] = useState(true);
     const [themeConfig, setThemeConfig] = useState<ThemeConfig>({
@@ -102,13 +104,13 @@ const Properties = ()=>{
       }
     });
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-    const clientSlug = companyName;
+    const clientSlug = subdomainCompanyName || companyName || '';
 
     useEffect(() => {
-      if (companyName) {
+      if (clientSlug) {
         loadThemeConfig();
       }
-    }, [companyName]);
+    }, [clientSlug]);
 
     const loadThemeConfig = useCallback(async () => {
       try {
