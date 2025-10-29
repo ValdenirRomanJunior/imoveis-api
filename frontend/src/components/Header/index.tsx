@@ -2,6 +2,7 @@ import {HeaderContainer,HeaderWrapper,UserInfo,Hambuguer,MenuLogoWrapper,NavIcon
 import useAuth from '../../hooks/useAuth';
 import logo from '../../assets/images/logo-sem fundo.png';
 import {Link, useNavigate} from 'react-router-dom';
+import axios from 'axios';
 import { VscComment } from "react-icons/vsc";
 import { useEffect, useState } from 'react';
 import {AiOutlineHome} from 'react-icons/ai';
@@ -121,6 +122,22 @@ const Header = () =>{
 
     const [domainInfo, setDomainInfo] = useState<any>(null);
 
+    // Carregar informações de domínio do usuário (custom domain e subdomínio)
+    useEffect(() => {
+      const id = user?.accountId || user?.id;
+      if (!id) return;
+      (async () => {
+        try {
+          const response = await axios.get(`/api/domains/info/${id}`);
+          if (response.data?.success) {
+            setDomainInfo(response.data);
+          }
+        } catch (error) {
+          console.error('Header - Erro ao carregar informações de domínio:', error);
+        }
+      })();
+    }, [user?.accountId, user?.id]);
+
       const getSubdomainUrl = (companySlug: string) => {
     const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
     const accountId = user?.accountId || user?.id || '';
@@ -133,7 +150,7 @@ const Header = () =>{
       .replace(/[^a-z0-9-]/g, '-')
       .replace(/-+/g, '-')
       .replace(/^-|-$|/g, '');
-
+    
     const subdomain = accountId ? `${base}-${accountId}` : base;
     
     if (isLocalhost) {
@@ -142,6 +159,31 @@ const Header = () =>{
     } else {
       // Em produção, usar subdomínio
       return `https://${subdomain}.standi.com.br`;
+    }
+  };
+  
+  const buildSubdomainHost = () => {
+    const accountId = user?.accountId || user?.id || '';
+    const base = (user?.slug || 'seu-slug')
+      .trim()
+      .toLowerCase()
+      .replace(/\s+/g, '-')
+      .replace(/[^a-z0-9-]/g, '-')
+      .replace(/-+/g, '-')
+      .replace(/^-|-$|/g, '');
+    const subdomain = accountId ? `${base}-${accountId}` : base;
+    return `${subdomain}.standi.com.br`;
+  };
+  
+  const displayDomainLabel = domainInfo?.customDomain 
+    ? domainInfo.customDomain 
+    : (domainInfo?.subdomain || buildSubdomainHost());
+  
+  const openDomainLink = () => {
+    if (domainInfo?.customDomain) {
+      window.open(`https://${domainInfo.customDomain}`, '_blank');
+    } else {
+      window.open(getSubdomainUrl(user?.slug || ''), '_blank');
     }
   };
     return(
@@ -178,14 +220,13 @@ const Header = () =>{
                 <SideBarTop >
                     <NavIcon to="#" onClick={ (event) => event.preventDefault() }>
                         <IoIosArrowForward  className='icon-sidebar'/>
-                        <div className='domain-info' style={{ cursor: 'pointer', color: '#3b82f6',position: 'relative', top: '0px', left: '20px' , fontSize: '15px', display: 'flex'}}
-                        >
-                         {domainInfo?.subdomain || `${user?.slug || 'seu-slug'}${user?.accountId || user?.id || ''}.standi.com.br`}
-                  <FiExternalLink  
-                    style={{ cursor: 'pointer', color: '#3b82f6',position: 'relative', top: '2px', left: '12px'}}
-                    onClick={() => window.open(getSubdomainUrl(user?.slug || ''), '_blank')}
-                  />
-             </div>
+                        <div className='domain-info' style={{ cursor: 'pointer', color: '#3b82f6',position: 'relative', top: '0px', left: '20px' , fontSize: '15px', display: 'flex'}}>
+                          {displayDomainLabel}
+                          <FiExternalLink  
+                            style={{ cursor: 'pointer', color: '#3b82f6',position: 'relative', top: '2px', left: '12px'}}
+                            onClick={openDomainLink}
+                          />
+                        </div>
              
                     </NavIcon>
                     
