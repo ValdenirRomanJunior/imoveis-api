@@ -582,7 +582,7 @@ console.log(property?.id)
                         <ul>
                              <li><div className='more-detail-dot-label-wrapper'><div className='dot-iptu'></div><span className='more-detail-label'>Iptu</span></div><span className='more-detail-value'>R${property?.iptu}</span></li>
                              <li><div className='more-detail-dot-label-wrapper'><div className='dot-vacancies'></div><span className='more-detail-label'>vagas</span></div><span className='more-detail-value'>R${property?.vacancies}</span></li>
-                             <li><div className='more-detail-dot-label-wrapper'><div className='dot-condominium'></div><span className='more-detail-label'>Condomínio</span></div><span className='more-detail-value'>R${property?.condominium}</span></li>                               
+                             <li><div className='more-detail-dot-label-wrapper'><div className='dot-condominium'></div><span className='more-detail-label'>Condomínio</span></div><span className='more-detail-value'>{property?.condominium}</span></li>                               
                         </ul>
                 </MoreDetailsWrapper>
            </DetailTextContainer> 
