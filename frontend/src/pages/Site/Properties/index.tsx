@@ -255,8 +255,20 @@ const Properties = ()=>{
             );
           })()}
           <Nav>
-            <NavLink href={`/site/${companyName}`}>Início</NavLink>
-            <NavLink href={`/site/${companyName}/imoveis/?goal=&type=&name=`}>Imóveis</NavLink>
+            {(() => {
+              const hostname = window.location.hostname;
+              const isLocalhost = hostname === 'localhost' || hostname === '127.0.0.1';
+              const slug = clientSlug || companyName || '';
+              const homePath = isLocalhost ? `/site/${slug}` : '/';
+              return <NavLink href={homePath}>Início</NavLink>;
+            })()}
+            {(() => {
+              const hostname = window.location.hostname;
+              const isLocalhost = hostname === 'localhost' || hostname === '127.0.0.1';
+              const slug = clientSlug || companyName || '';
+              const propertiesPath = isLocalhost ? `/site/${slug}/imoveis/?goal=&type=&name=` : '/imoveis/?goal=&type=&name=';
+              return <NavLink href={propertiesPath}>Imóveis</NavLink>;
+            })()}
             <NavLink href={`tel:${themeConfig.phone}`}>{themeConfig.phone}</NavLink>
           </Nav>
           <MobileMenuButton onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
@@ -264,8 +276,20 @@ const Properties = ()=>{
           </MobileMenuButton>
           {mobileMenuOpen && (
             <MobileMenu>
-              <NavLink href={`/site/${companyName}`} onClick={() => setMobileMenuOpen(false)}>Início</NavLink>
-              <NavLink href={`/site/${companyName}/imoveis`} onClick={() => setMobileMenuOpen(false)}>Imóveis</NavLink>
+              {(() => {
+                const hostname = window.location.hostname;
+                const isLocalhost = hostname === 'localhost' || hostname === '127.0.0.1';
+                const slug = clientSlug || companyName || '';
+                const homePath = isLocalhost ? `/site/${slug}` : '/';
+                return <NavLink href={homePath} onClick={() => setMobileMenuOpen(false)}>Início</NavLink>;
+              })()}
+              {(() => {
+                const hostname = window.location.hostname;
+                const isLocalhost = hostname === 'localhost' || hostname === '127.0.0.1';
+                const slug = clientSlug || companyName || '';
+                const propertiesPath = isLocalhost ? `/site/${slug}/imoveis/?goal=&type=&name=` : '/imoveis/?goal=&type=&name=';
+                return <NavLink href={propertiesPath} onClick={() => setMobileMenuOpen(false)}>Imóveis</NavLink>;
+              })()}
               <NavLink href={`tel:${themeConfig.phone}`} onClick={() => setMobileMenuOpen(false)}>{themeConfig.phone}</NavLink>
             </MobileMenu>
           )}

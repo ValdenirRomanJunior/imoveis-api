@@ -462,7 +462,7 @@ console.log(property?.id)
                         const hostname = window.location.hostname;
                         const isLocalhost = hostname === 'localhost' || hostname === '127.0.0.1';
                         const homePath = isLocalhost ? `/site/${companySlugForLinks}` : '/';
-                        const propertiesPath = isLocalhost ? `/site/${companySlugForLinks}/imoveis` : '/imoveis';
+                        const propertiesPath = isLocalhost ? `/site/${companySlugForLinks}/imoveis/?goal=&type=&name=` : '/imoveis/?goal=&type=&name=';
                         return (
                             <>
                                 <NavLink href={homePath}>Início</NavLink>
@@ -481,7 +481,7 @@ console.log(property?.id)
                             const hostname = window.location.hostname;
                             const isLocalhost = hostname === 'localhost' || hostname === '127.0.0.1';
                             const homePath = isLocalhost ? `/site/${companySlugForLinks}` : '/';
-                            const propertiesPath = isLocalhost ? `/site/${companySlugForLinks}/imoveis` : '/imoveis';
+                            const propertiesPath = isLocalhost ? `/site/${companySlugForLinks}/imoveis/?goal=&type=&name=` : '/imoveis/?goal=&type=&name=';
                             return (
                                 <>
                                     <NavLink href={homePath} onClick={() => setMobileMenuOpen(false)}>Início</NavLink>
