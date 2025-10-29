@@ -48,7 +48,7 @@ const Promotion: React.FC<PromotionProps> = ({ onOpenRegisterModal }) => {
 
     // Classes Tailwind que simulam o gradiente e a sombra complexa do Banner
     const bannerClasses = `
-        max-w-6xl w-full mx-auto rounded-xl overflow-hidden text-white 
+          max-w-6xl w-full mx-auto rounded-xl overflow-hidden text-white 
         transition-all duration-300 
         bg-gradient-to-r from-blue-950 to-blue-800 
         shadow-2xl hover:scale-[1.01]
