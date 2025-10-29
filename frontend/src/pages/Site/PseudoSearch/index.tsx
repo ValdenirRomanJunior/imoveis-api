@@ -378,12 +378,12 @@ navigateSearch(targetPath,{'goal': `${goal}`, type: `${type}`, name:`${name}`});
           
             <div className="input-rent-sale-wrapper-desktop">
             <label  onClick={selectedAfterGoalSale} className={`selectedClass${toogleClassCheckSale} label-class`} >
-                    <input type="radio" name="goal" value="1" onChange={(e)=>setGoal(e.target.value)}/>                
+                    <input type="radio" name="goal" value="2" onChange={(e)=>setGoal(e.target.value)}/>                
                     <span className="sale-span">comprar</span>
                 </label>
 
                 <label  onClick={selectedAfterGoalRent} className={`selectedClass${toogleClassCheckRent} label-class`} >
-                <input type="radio" name="goal" value="2"  onChange={(e)=>setGoal(e.target.value)}/>
+                <input type="radio" name="goal" value="1"  onChange={(e)=>setGoal(e.target.value)}/>
                     <span className="rent-span">alugar</span>
                  
                 </label>
