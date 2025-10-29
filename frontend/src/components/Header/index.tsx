@@ -124,11 +124,11 @@ const Header = () =>{
 
     // Carregar informações de domínio do usuário (custom domain e subdomínio)
     useEffect(() => {
-      const id = user?.accountId || user?.id;
-      if (!id) return;
+      const accountId = user?.account?.id || user?.accountId || user?.id;
+      if (!accountId) return;
       (async () => {
         try {
-          const response = await axios.get(`/api/domains/info/${id}`);
+          const response = await axios.get(`/api/domains/info/${accountId}`);
           if (response.data?.success) {
             setDomainInfo(response.data);
           }
@@ -136,7 +136,7 @@ const Header = () =>{
           console.error('Header - Erro ao carregar informações de domínio:', error);
         }
       })();
-    }, [user?.accountId, user?.id]);
+    }, [user?.account?.id, user?.accountId, user?.id]);
 
       const getSubdomainUrl = (companySlug: string) => {
     const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
@@ -175,13 +175,25 @@ const Header = () =>{
     return `${subdomain}.standi.com.br`;
   };
   
-  const displayDomainLabel = domainInfo?.customDomain 
-    ? domainInfo.customDomain 
-    : (domainInfo?.subdomain || buildSubdomainHost());
+  const customDomainFromApi = domainInfo?.customDomain;
+  const customDomainFromUser = user?.account?.customDomain;
+  const subdomainLabel = domainInfo?.subdomain || buildSubdomainHost();
+
+  const displayDomainLabel = (customDomainFromApi && customDomainFromApi.trim())
+    ? customDomainFromApi.trim()
+    : (customDomainFromUser && customDomainFromUser.trim())
+      ? customDomainFromUser.trim()
+      : subdomainLabel;
   
   const openDomainLink = () => {
-    if (domainInfo?.customDomain) {
-      window.open(`https://${domainInfo.customDomain}`, '_blank');
+    const custom = (customDomainFromApi && customDomainFromApi.trim())
+      ? customDomainFromApi.trim()
+      : (customDomainFromUser && customDomainFromUser.trim())
+        ? customDomainFromUser.trim()
+        : null;
+
+    if (custom) {
+      window.open(`https://${custom}`,'_blank');
     } else {
       window.open(getSubdomainUrl(user?.slug || ''), '_blank');
     }
