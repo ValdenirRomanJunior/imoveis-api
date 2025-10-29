@@ -30,11 +30,13 @@ import corretorPadrao from '../assets/corretor-padrao.jpg';
 import bannerPadrao from '../../../assets/images/bg-principal.png';
 
 import DynamicSEO from '../../../components/DynamicSEO';
+import DynamicFavicon from '../../../components/DynamicFavicon';
 
 interface ThemeConfig {
   name: string;
   logo: string;
   logoSize: string;
+  favicon?: string;
   phone: string;
   bannerImage: string;
   bannerTitle: string;
@@ -232,6 +234,7 @@ const Properties = ()=>{
       <ThemeProvider theme={dynamicTheme}>
       <div>
         <DynamicSEO facebookPixelId={themeConfig.facebookPixel} keywords={themeConfig?.seoKeywords} title={themeConfig?.siteTitle} />
+        <DynamicFavicon faviconUrl={themeConfig?.favicon} />
         {/* Header */}
         <Header>
           {(() => {

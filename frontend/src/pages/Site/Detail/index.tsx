@@ -37,6 +37,7 @@ import {
   MobileMenu
 } from '../styles';
 import DynamicSEO from '../../../components/DynamicSEO';
+import DynamicFavicon from '../../../components/DynamicFavicon';
 import { useSubdomain } from '../../../components/SubdomainRouter';
 // Importar imagens padrão
 import corretorPadrao from '../../../assets/images/user-image.jpeg';
@@ -46,6 +47,7 @@ interface ThemeConfig {
   name?: string;
   logo?: string;
   logoSize?: string;
+  favicon?: string;
   menuLinks?: any[];
   phone?: string;
   bannerImage?: string;
@@ -440,6 +442,7 @@ console.log(property?.id)
         <ErrorBoundary FallbackComponent={ErrorHandler}>
         <ThemeProvider theme={dynamicTheme}>
             <DynamicSEO facebookPixelId={themeConfig?.facebookPixel} keywords={themeConfig?.seoKeywords} title={themeConfig?.siteTitle} />
+            <DynamicFavicon faviconUrl={themeConfig?.favicon} />
             <Header>
                 {(() => {
                     const hostname = window.location.hostname;
