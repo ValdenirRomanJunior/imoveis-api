@@ -660,6 +660,11 @@ export const UserInfo = styled.div`
         font-family:'Nunito Sans', sans-serif;
         font-size:14px;
         margin-top:10px;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
     }
 
     .builder-icon{
