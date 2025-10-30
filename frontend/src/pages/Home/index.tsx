@@ -504,7 +504,7 @@ const Home: React.FC = () => {
             </div>
             <Title>SITE IMOBILIÁRIO</Title>
             <Subtitle>
-              PARA IMOBILIÁRIAS E CORRETORES AUTÔNOMOS
+              CRIE SEU SITE IMOBILIÁRIO EM 1 MINUTO!
             </Subtitle>
             <p>
               O site imobiliário que aparece nas buscas por I.A e do Google. Gestão de imóveis, gestão de clientes, 
