@@ -54,6 +54,7 @@ export const BodyContainer = styled.main`
             flex-direction: column;
             align-items: center;
             justify-content: center;
+            position:relative;
 
             button{
                 width: auto;
@@ -84,6 +85,23 @@ export const BodyContainer = styled.main`
                     }
                     .eye-icon{
                         margin-right: 5px;
+                    }
+
+                    .whatsapp-image{
+                        width: 50px;
+                        height: 50px;
+                        margin-right: 5px;
+                    }
+                    .google-image{
+                        width: 200px;
+                        height: 200px;
+                        margin-right: 5px;
+
+                        position: absolute;
+                        top: 3%;
+                        left: 3%;
+                       
+                        opacity: 0.1;
                     }
         }     
 

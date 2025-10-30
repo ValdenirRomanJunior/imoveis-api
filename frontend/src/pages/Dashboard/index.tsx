@@ -28,6 +28,7 @@ import TrialWarningBanner from '../../components/TrialWarningBanner';
 import TrialExpiredModal from '../../components/TrialExpiredModal';
 // Helper para testes de trial (apenas desenvolvimento)
 import '../../utils/trialTestHelper';
+import whatsapp from '../../assets/images/whatsapp.png'
 
 
 
@@ -196,10 +197,12 @@ const Dashboard = ()=>{
             <div className='left-side'>
 
            <div className='top-right-side'>               
-              
-                  <div className='card-wrapper-top'>             
-                     <p>Ver todas as minhas oportunidades</p>
-                     <Link to='/oportunidades' className='opportunities-link'> <button  className="button-top"><IoEyeOutline className='eye-icon'/> Ver Oportunidades</button> </Link>
+                               
+                  <div className='card-wrapper-top' style={{border: '1px solid #2fc900ff', background:'#00ff080e'}} >
+                    <img src={whatsapp} alt='whatsapp' className='whatsapp-image' />
+                    
+                     <p style={{fontSize:'18px',fontWeight:'bold', width:'100%', textAlign:'center', color:'#155701ff'}}>Entre no grupo e coloque sua imobiliária no topo!</p>
+                     <a href='https://chat.whatsapp.com/LsKPMsjAZTnEv9F2lQ3nxR' target='_blank' className='opportunities-link'> <button  className="button-top" style={{background: 'linear-gradient(135deg, rgba(1, 255, 5, 1), rgba(1, 139, 70, 1))', color: 'white', fontWeight:'bold'}}><IoEyeOutline className='eye-icon' style={{fontWeight:'bold'}} />Entrar no grupo</button> </a>
                  </div>
             </div>
 
