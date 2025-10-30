@@ -14,6 +14,39 @@ import {
   EmptyState
 } from './styles';
 
+// Helper simples para converter links Markdown [texto](url) e autolinks em HTML clicável
+const mdToHtml = (md: string) => {
+  const escapeHtml = (s: string) =>
+    s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+  let html = escapeHtml(md);
+
+  // Links [texto](https://url)
+  html = html.replace(/\[(.+?)\]\((https?:\/\/[^\s)]+)\)/g, (_m, text, url) => {
+    try {
+      const safeUrl = new URL(url).toString();
+      return `<a href="${safeUrl}" target="_blank" rel="noopener noreferrer">${text}</a>`;
+    } catch {
+      return text;
+    }
+  });
+
+  // Autolinks https://... em texto
+  html = html.replace(/(?<!["'])(https?:\/\/[^\s<]+)/g, (url) => {
+    try {
+      const safeUrl = new URL(url).toString();
+      return `<a href="${safeUrl}" target="_blank" rel="noopener noreferrer">${safeUrl}</a>`;
+    } catch {
+      return url;
+    }
+  });
+
+  // Quebras de linha para visual mais amigável
+  html = html.replace(/\n{2,}/g, '<br/><br/>').replace(/\n/g, '<br/>');
+
+  return html;
+};
+
 const BlogPostPage: React.FC = () => {
   const { slug } = useParams();
   const [post, setPost] = useState<BlogPost | null>(null);
@@ -51,7 +84,9 @@ const BlogPostPage: React.FC = () => {
       {post.coverUrl && <PostCover src={post.coverUrl} alt={post.title} />}
 
       <PostContent>
-        {post.contentMarkdown}
+        <div
+          dangerouslySetInnerHTML={{ __html: mdToHtml(post.contentMarkdown || '') }}
+        />
       </PostContent>
 
       {post.tags && post.tags.length > 0 && (
