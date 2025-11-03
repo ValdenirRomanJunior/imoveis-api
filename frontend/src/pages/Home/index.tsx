@@ -129,6 +129,7 @@ import {
 } from './styles';
 import WhatsappHome from './WhatsappHome';
 import Promotion from '../../components/Promotion';
+import MetaPixel from '../../components/MetaPixel';
 
   const styles = `
     .container-main-mockup {
@@ -402,7 +403,12 @@ const Home: React.FC = () => {
     }
   ];
   return (
-    <HomeContainer>
+    <>
+      <MetaPixel />
+      <section>
+              CRIE SEU SITE IMOBILIÁRIO EM 1 MINUTO!
+            </section>
+      <HomeContainer>
      <WhatsappHome />
       <Header>
         <Nav>
@@ -1007,6 +1013,7 @@ const Home: React.FC = () => {
         />
       )}
     </HomeContainer>
+    </>
   );
 };
 
