@@ -29,12 +29,39 @@ export const HeaderWrapper = styled.div`
     align-items: center;
     justify-content: space-between;
 
+    /* Ícone antigo - mantido, mas será neutralizado dentro do link */
     .message-icon{
         position:absolute;
         top:50%;
         right:10%;
         transform:translate(-50%,-50%);
-       
+    }
+
+    /* Bloco clicável do WhatsApp (texto + ícone) */
+    .whatsapp-support-link {
+        position: absolute;
+        top: 50%;
+        right: 10%;
+        transform: translate(-50%, -50%);
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        text-decoration: none;
+    }
+
+    /* Neutraliza posicionamento do ícone dentro do link */
+    .whatsapp-support-link .message-icon {
+        position: static;
+        transform: none;
+    }
+
+    /* Estilo do texto “suporte” */
+    .whatsapp-support-text {
+        background-color: rgba(110, 231, 183, 0.30); /* verde claro translúcido */
+        color: #065f46; /* verde escuro */
+        border-radius: 3px;
+        padding: 2px 6px;
+        font-size: 14px;
     }
 
     @media screen and (min-width: 550px){
@@ -43,7 +70,9 @@ export const HeaderWrapper = styled.div`
             top:50%;
             right:8%;
             transform:translate(-50%,-50%);
-           
+        }
+        .whatsapp-support-link {
+            right: 8%;
         }
     }
 
@@ -53,7 +82,9 @@ export const HeaderWrapper = styled.div`
             top:50%;
             right:6%;
             transform:translate(-50%,-50%);
-           
+        }
+        .whatsapp-support-link {
+            right: 6%;
         }
     }
 
@@ -65,7 +96,9 @@ export const HeaderWrapper = styled.div`
             top:50%;
             right:4%;
             transform:translate(-50%,-50%);
-           
+        }
+        .whatsapp-support-link {
+            right: 4%;
         }
     }
 

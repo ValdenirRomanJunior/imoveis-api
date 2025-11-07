@@ -209,7 +209,16 @@ const Header = () =>{
                 </Hambuguer>
                 <img src={logo} className="logo"  alt='logo dynamous' />
                 </MenuLogoWrapper>
-               <a href={`https://api.whatsapp.com/send?phone=45988348165`} target="_blank"> <VscComment  fontSize={22} color="gray" className="message-icon"/></a>
+
+                <a
+                  href={`https://api.whatsapp.com/send?phone=45988348165`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="whatsapp-support-link"
+                >
+                  <span className="whatsapp-support-text">suporte</span>
+                  <VscComment fontSize={22} color="gray" className="message-icon" />
+                </a>
                
                {/* Sistema de notificações - apenas para Admin */}
                {perfilAdmin && <NotificationDropdown />}
