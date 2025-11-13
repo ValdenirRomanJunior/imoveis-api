@@ -1,7 +1,7 @@
 import {HeaderContainer,HeaderWrapper,UserInfo,Hambuguer,MenuLogoWrapper,NavIcon,SideBarContainer, SidebarFooter,SideBarTop,BoxLinks} from './styles';
 import useAuth from '../../hooks/useAuth';
 import logo from '../../assets/images/logo-sem fundo.png';
-import {Link, useNavigate} from 'react-router-dom';
+import {Link, useNavigate, useLocation} from 'react-router-dom';
 import axios from 'axios';
 import { VscComment } from "react-icons/vsc";
 import { useEffect, useState } from 'react';
@@ -23,12 +23,16 @@ import { NotificationDropdown } from '../NotificationDropdown';
 import { FaQuestionCircle } from 'react-icons/fa';
 import { MdSupportAgent } from 'react-icons/md';
 import { useSidebar } from '../../context/SidebarContext';
+import useSubscriptionStatus from '../../hooks/useSubscriptionStatus';
+import TrialExpiredModal from '../TrialExpiredModal';
 
 const Header = () =>{
 
     const navigate = useNavigate();
+    const location = useLocation();
     const {user, getCurrentUser,refreshTokenUser} = useAuth();
     const [imageUser,setImageUser]= useState<string>("");
+    const subscriptionStatus = useSubscriptionStatus();
 
   
 
@@ -198,7 +202,10 @@ const Header = () =>{
       window.open(getSubdomainUrl(user?.slug || ''), '_blank');
     }
   };
+    const shouldShowBlockModal = subscriptionStatus.isExpired && !subscriptionStatus.isActive && location.pathname !== '/plans';
+
     return(
+        <>
         <HeaderContainer>
             <HeaderWrapper>
                 <MenuLogoWrapper>
@@ -318,8 +325,11 @@ const Header = () =>{
         </SideBarContainer>
        
         </HeaderContainer>
-        
-    )
+        {shouldShowBlockModal && (
+          <TrialExpiredModal onViewPlans={() => navigate('/plans')} />
+        )}
+        </>
+        )
 
 }
 export default Header;
