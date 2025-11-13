@@ -169,7 +169,7 @@ const Dashboard = ()=>{
           
         <div>
        
-        <ErrorBoundary FallbackComponent={Dashboard}>
+        <ErrorBoundary FallbackComponent={PageNotFoundDashboard}>
          {!errors ?    
         <DashboardBackground>
                  
