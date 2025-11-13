@@ -70,9 +70,7 @@ const SignIn = () => {
       
   }
 
-useEffect( () =>  {
-refreshTokenUser()
-},[])
+  // Removido refresh automático ao montar a tela de login
 
     const {user, getCurrentUser} = useAuth();
     useEffect(() =>{
