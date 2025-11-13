@@ -163,13 +163,9 @@ const Dashboard = ()=>{
     return(
         <>
         
-        {/* Modal de Trial Expirado - Bloqueia completamente o acesso */}
-        {subscriptionStatus.isExpired && !subscriptionStatus.isActive && (
-          <TrialExpiredModal 
-            onViewPlans={() => navigate('/plans')}
-          />
-        )}
-          
+        {subscriptionStatus.isExpired && !subscriptionStatus.isActive ? (
+          <TrialExpiredModal onViewPlans={() => navigate('/plans')} />
+        ) : (
         <div>
        
         <ErrorBoundary FallbackComponent={PageNotFoundDashboard}>
@@ -279,6 +275,7 @@ const Dashboard = ()=>{
         </ErrorBoundary>
       
         </div>
+        )}
      
       </>
     )

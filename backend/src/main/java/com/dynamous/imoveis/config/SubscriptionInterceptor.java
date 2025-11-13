@@ -84,7 +84,7 @@ public class SubscriptionInterceptor implements HandlerInterceptor {
                 Map<String, Object> errorResponse = new HashMap<>();
                 errorResponse.put("error", "SUBSCRIPTION_REQUIRED");
                 errorResponse.put("message", "Sua assinatura expirou ou foi cancelada. Renove seu plano para continuar usando o sistema.");
-                errorResponse.put("planType", account.getPlanType().toString());
+                errorResponse.put("planType", account.getPlanType() != null ? account.getPlanType().toString() : null);
                 errorResponse.put("isTrialActive", account.getIsTrialActive());
                 errorResponse.put("planEndDate", account.getPlanEndDate());
                 
