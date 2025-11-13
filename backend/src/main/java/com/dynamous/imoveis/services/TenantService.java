@@ -303,7 +303,7 @@ public class TenantService {
     
     public Tenant fromUpdateDTO(TenantUpdateDTO objDto){
    
-    	SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy hh:mm");
+    	SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
     	String renovation= sdf.format(new Date());
     
     	Tenant ten = find(objDto.getId());
