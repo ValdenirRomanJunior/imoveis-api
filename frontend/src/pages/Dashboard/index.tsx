@@ -52,6 +52,18 @@ const Dashboard = ()=>{
       ? Math.max(0, Math.ceil((subscriptionStatus.endDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24)))
       : 0;
     
+    const refreshTokenUser = async ()=>{
+        const  resp = await refreshToken();    
+        if(resp === 204){  
+         navigate('/dashboard')
+        }else{         
+           navigate('/');
+        }
+    }
+
+    useEffect( () =>  {
+      refreshTokenUser()
+    },[])
     
 
     useEffect(() =>{
