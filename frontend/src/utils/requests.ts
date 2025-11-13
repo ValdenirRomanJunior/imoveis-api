@@ -11,25 +11,15 @@ export const tokenAux= localStorage.getItem('token') || '';
     api.interceptors.request.use(config =>{
     
     const token = localStorage.getItem('token') || '';
-
-     if  (!token || token === null){
-        localStorage.setItem('token',JSON.stringify('adaddadaadgrtr435'))
+    if (!token) {
         return config;
-    }else{
-        const tokenString = JSON.parse(token || '');
-        
-        config.headers = {
-             'Authorization':`${tokenString}`,
-             'Content-Type': 'application/json; charset=utf-8',           
-             'Access-Control-Allow-Headers': 'Content-Type',
-             "Access-Control-Allow-Origin": "https://standi.com.br/",
-             "Access-Control-Allow-Methods": "OPTIONS,POST,GET"
-
-        
-        }
-       
-        return config; 
     }
+    const tokenString = JSON.parse(token || '');
+    config.headers = {
+        'Authorization': `${tokenString}`,
+        'Content-Type': 'application/json; charset=utf-8'
+    }
+    return config;
     
 });
 

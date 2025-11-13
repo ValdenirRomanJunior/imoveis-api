@@ -48,13 +48,12 @@ public class AuthController {
         UserSS user= UserService.authenticated();
         
         if(user != null ) {
-        
-        	 String token = jwtUtil.GenerateToken(user.getUsername());
+             String token = jwtUtil.GenerateToken(user.getUsername());
              response.addHeader("Authorization", "Bearer " + token);
              response.addHeader("access-control-expose-headers", "Authorization");
-             return ResponseEntity.noContent().build();      	
+             return ResponseEntity.noContent().build();
         }
-        return ResponseEntity.noContent().build(); 
+        return ResponseEntity.status(401).build();
        
     }
     

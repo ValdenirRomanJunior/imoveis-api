@@ -50,19 +50,15 @@ const Dashboard = ()=>{
     const trialStatus = useTrialStatus();
     
     const refreshTokenUser = async ()=>{
-   
-        const  resp = await refreshToken();    
-        if(resp === 204){  
-         navigate('/dashboard')
-        }else{         
-           navigate('/');
-       
- }
+        const resp = await refreshToken();
+        if(resp !== 204){
+            navigate('/');
+        }
     }
 
   useEffect( () =>  {
-  refreshTokenUser()
-},[])
+    refreshTokenUser()
+  },[])
 
     useEffect(() =>{
         
@@ -169,7 +165,7 @@ const Dashboard = ()=>{
           
         <div>
        
-        <ErrorBoundary FallbackComponent={Dashboard}>
+        <ErrorBoundary FallbackComponent={PageNotFoundDashboard}>
          {!errors ?    
         <DashboardBackground>
                  
