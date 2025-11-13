@@ -31,8 +31,20 @@ const useSubscriptionStatus = (): SubscriptionStatus => {
         const data = response.data || {};
         setSubscriptionData(data);
       } catch (err) {
-        console.error('Erro ao buscar status da assinatura:', err);
-        // Em caso de erro, mantém estado atual
+        const anyErr: any = err;
+        const status = anyErr?.response?.status;
+        const payload = anyErr?.response?.data;
+        if (status === 403 && payload?.error === 'SUBSCRIPTION_REQUIRED') {
+          setSubscriptionData({
+            planType: payload?.planType || 'FREE',
+            planEndDate: payload?.planEndDate || null,
+            isTrialActive: !!payload?.isTrialActive,
+            isPlanActive: false,
+            hasHadSubscription: true
+          });
+        } else {
+          console.error('Erro ao buscar status da assinatura:', err);
+        }
       }
     };
     

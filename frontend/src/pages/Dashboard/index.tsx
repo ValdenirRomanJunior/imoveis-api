@@ -23,7 +23,7 @@ import { AiOutlineHome, AiOutlineUser } from 'react-icons/ai';
 import AdminStats from '../../components/AdminStats';
 import { useSidebar } from '../../context/SidebarContext';
 import TrialMessage from '../../components/TrialMessage';
-import useTrialStatus from '../../hooks/useTrialStatus';
+import useSubscriptionStatus from '../../hooks/useSubscriptionStatus';
 import TrialWarningBanner from '../../components/TrialWarningBanner';
 import TrialExpiredModal from '../../components/TrialExpiredModal';
 // Helper para testes de trial (apenas desenvolvimento)
@@ -47,7 +47,10 @@ const Dashboard = ()=>{
     
     const {user, getCurrentUser} = useAuth();
     const { sidebar, setSidebar } = useSidebar();
-    const trialStatus = useTrialStatus();
+    const subscriptionStatus = useSubscriptionStatus();
+    const trialDaysRemaining = subscriptionStatus.endDate 
+      ? Math.max(0, Math.ceil((subscriptionStatus.endDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24)))
+      : 0;
     
     const refreshTokenUser = async ()=>{
    
@@ -161,7 +164,7 @@ const Dashboard = ()=>{
         <>
         
         {/* Modal de Trial Expirado - Bloqueia completamente o acesso */}
-        {trialStatus.isExpired && (
+        {subscriptionStatus.isExpired && !subscriptionStatus.isActive && (
           <TrialExpiredModal 
             onViewPlans={() => navigate('/plans')}
           />
@@ -179,9 +182,9 @@ const Dashboard = ()=>{
       <AdminStats isVisible={user?.perfis?.includes('ADMIN')} />
       
       {/* Banner de Aviso do Trial - Apenas durante o período ativo */}
-      {trialStatus.isActive && !trialStatus.isExpired && (
+      {subscriptionStatus.isTrialActive && !subscriptionStatus.isExpired && (
         <TrialWarningBanner 
-          daysRemaining={trialStatus.daysRemaining}
+          daysRemaining={trialDaysRemaining}
           onViewPlans={() => navigate('/plans')}
         />
       )}
