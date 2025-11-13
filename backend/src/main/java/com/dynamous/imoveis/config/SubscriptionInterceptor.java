@@ -28,6 +28,9 @@ public class SubscriptionInterceptor implements HandlerInterceptor {
     @Autowired
     private AccountRepository accountRepository;
 
+    @Autowired
+    private ObjectMapper objectMapper;
+
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         try {
@@ -85,8 +88,7 @@ public class SubscriptionInterceptor implements HandlerInterceptor {
                 errorResponse.put("isTrialActive", account.getIsTrialActive());
                 errorResponse.put("planEndDate", account.getPlanEndDate());
                 
-                ObjectMapper mapper = new ObjectMapper();
-                response.getWriter().write(mapper.writeValueAsString(errorResponse));
+                response.getWriter().write(objectMapper.writeValueAsString(errorResponse));
                 
                 System.out.println("=== SubscriptionInterceptor preHandle END - ACCESS DENIED ===");
                 return false;
