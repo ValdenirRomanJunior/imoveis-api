@@ -22,7 +22,6 @@ import Funil from '../../components/Funnel';
 import { AiOutlineHome, AiOutlineUser } from 'react-icons/ai';
 import AdminStats from '../../components/AdminStats';
 import { useSidebar } from '../../context/SidebarContext';
-import TrialMessage from '../../components/TrialMessage';
 import useSubscriptionStatus from '../../hooks/useSubscriptionStatus';
 import TrialWarningBanner from '../../components/TrialWarningBanner';
 import TrialExpiredModal from '../../components/TrialExpiredModal';
@@ -53,11 +52,16 @@ const Dashboard = ()=>{
       : 0;
     
     const refreshTokenUser = async ()=>{
-        const  resp = await refreshToken();    
-        if(resp === 204){  
-         navigate('/dashboard')
-        }else{         
-           navigate('/');
+        const resp = await refreshToken();
+        const currentPath = window.location.pathname;
+        if(resp === 204){
+          if(currentPath === '/dashboard'){
+            navigate('/dashboard');
+          }
+        }else{
+          if(currentPath === '/dashboard'){
+            navigate('/');
+          }
         }
     }
 
@@ -186,7 +190,6 @@ const Dashboard = ()=>{
       
         <p className='left-side-message-user welcome-message'>Olá, <strong>{user.slug}</strong>, o que temos pra hoje?</p>
         
-        <TrialMessage />
         
        { perfilTenant ? 
         <BodyContainer>
