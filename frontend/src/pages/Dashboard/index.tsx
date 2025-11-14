@@ -50,19 +50,18 @@ const Dashboard = ()=>{
     const trialStatus = useTrialStatus();
     
     const refreshTokenUser = async ()=>{
-   
         const  resp = await refreshToken();    
         if(resp === 204){  
          navigate('/dashboard')
         }else{         
            navigate('/');
-       
- }
+        }
     }
 
-  useEffect( () =>  {
-  refreshTokenUser()
-},[])
+    useEffect( () =>  {
+      refreshTokenUser()
+    },[])
+    
 
     useEffect(() =>{
         
