@@ -22,10 +22,8 @@ import Funil from '../../components/Funnel';
 import { AiOutlineHome, AiOutlineUser } from 'react-icons/ai';
 import AdminStats from '../../components/AdminStats';
 import { useSidebar } from '../../context/SidebarContext';
-import TrialMessage from '../../components/TrialMessage';
 import useTrialStatus from '../../hooks/useTrialStatus';
 import TrialWarningBanner from '../../components/TrialWarningBanner';
-import TrialExpiredModal from '../../components/TrialExpiredModal';
 // Helper para testes de trial (apenas desenvolvimento)
 import '../../utils/trialTestHelper';
 import whatsapp from '../../assets/images/whatsapp.png'
@@ -159,16 +157,10 @@ const Dashboard = ()=>{
     return(
         <>
         
-        {/* Modal de Trial Expirado - Bloqueia completamente o acesso */}
-        {trialStatus.isExpired && (
-          <TrialExpiredModal 
-            onViewPlans={() => navigate('/plans')}
-          />
-        )}
-          
+        
         <div>
        
-        <ErrorBoundary FallbackComponent={Dashboard}>
+        <ErrorBoundary FallbackComponent={PageNotFoundDashboard}>
          {!errors ?    
         <DashboardBackground>
                  
@@ -187,7 +179,7 @@ const Dashboard = ()=>{
       
         <p className='left-side-message-user welcome-message'>Olá, <strong>{user.slug}</strong>, o que temos pra hoje?</p>
         
-        <TrialMessage />
+        
         
        { perfilTenant ? 
         <BodyContainer>

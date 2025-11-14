@@ -24,7 +24,6 @@ import { FaQuestionCircle } from 'react-icons/fa';
 import { MdSupportAgent } from 'react-icons/md';
 import { useSidebar } from '../../context/SidebarContext';
 import useSubscriptionStatus from '../../hooks/useSubscriptionStatus';
-import TrialExpiredModal from '../TrialExpiredModal';
 
 const Header = () =>{
 
@@ -202,7 +201,6 @@ const Header = () =>{
       window.open(getSubdomainUrl(user?.slug || ''), '_blank');
     }
   };
-    const shouldShowBlockModal = subscriptionStatus.isExpired && !subscriptionStatus.isActive && location.pathname !== '/plans';
 
     return(
         <>
@@ -325,9 +323,7 @@ const Header = () =>{
         </SideBarContainer>
        
         </HeaderContainer>
-        {shouldShowBlockModal && (
-          <TrialExpiredModal onViewPlans={() => navigate('/plans')} />
-        )}
+        
         </>
         )
 

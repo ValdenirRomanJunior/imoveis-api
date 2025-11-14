@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import useAuth from './useAuth';
-import api from '../utils/requests';
+import useSubscriptionStatus from './useSubscriptionStatus';
 
 export interface TrialStatus {
   isActive: boolean;
@@ -13,6 +13,7 @@ const useTrialStatus = (): TrialStatus => {
   const { user } = useAuth();
   const [now, setNow] = useState<Date>(new Date());
   const [planActive, setPlanActive] = useState<boolean>(false);
+  const subscriptionStatus = useSubscriptionStatus();
 
   // Atualiza o "agora" periodicamente para refletir mudanças de tempo
   useEffect(() => {
@@ -22,20 +23,9 @@ const useTrialStatus = (): TrialStatus => {
     return () => clearInterval(interval);
   }, []);
 
-  // Busca status do plano atual para liberar acesso mesmo com trial expirado
   useEffect(() => {
-    const fetchPlanStatus = async () => {
-      try {
-        const response = await api.get('/plans/current');
-        const data = response.data || {};
-        const isActive = !!(data.isPlanActive ?? data.isActive);
-        setPlanActive(isActive);
-      } catch (err) {
-        // Em caso de erro, mantém estado atual
-      }
-    };
-    fetchPlanStatus();
-  }, [user?.id]);
+    setPlanActive(!!subscriptionStatus.isActive);
+  }, [subscriptionStatus.isActive]);
 
   return useMemo(() => {
     // Override de expiração via flag de debug (deve prevalecer mesmo sem usuário)
