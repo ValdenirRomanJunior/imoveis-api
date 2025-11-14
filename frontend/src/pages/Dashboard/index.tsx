@@ -22,7 +22,8 @@ import Funil from '../../components/Funnel';
 import { AiOutlineHome, AiOutlineUser } from 'react-icons/ai';
 import AdminStats from '../../components/AdminStats';
 import { useSidebar } from '../../context/SidebarContext';
-import useSubscriptionStatus from '../../hooks/useSubscriptionStatus';
+import TrialMessage from '../../components/TrialMessage';
+import useTrialStatus from '../../hooks/useTrialStatus';
 import TrialWarningBanner from '../../components/TrialWarningBanner';
 import TrialExpiredModal from '../../components/TrialExpiredModal';
 // Helper para testes de trial (apenas desenvolvimento)
@@ -46,29 +47,22 @@ const Dashboard = ()=>{
     
     const {user, getCurrentUser} = useAuth();
     const { sidebar, setSidebar } = useSidebar();
-    const subscriptionStatus = useSubscriptionStatus();
-    const trialDaysRemaining = subscriptionStatus.endDate 
-      ? Math.max(0, Math.ceil((subscriptionStatus.endDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24)))
-      : 0;
+    const trialStatus = useTrialStatus();
     
     const refreshTokenUser = async ()=>{
-        const resp = await refreshToken();
-        const currentPath = window.location.pathname;
-        if(resp === 204){
-          if(currentPath === '/dashboard'){
-            navigate('/dashboard');
-          }
-        }else{
-          if(currentPath === '/dashboard'){
-            navigate('/');
-          }
-        }
+   
+        const  resp = await refreshToken();    
+        if(resp === 204){  
+         navigate('/dashboard')
+        }else{         
+           navigate('/');
+       
+ }
     }
 
-    useEffect( () =>  {
-      refreshTokenUser()
-    },[])
-    
+  useEffect( () =>  {
+  refreshTokenUser()
+},[])
 
     useEffect(() =>{
         
@@ -166,12 +160,16 @@ const Dashboard = ()=>{
     return(
         <>
         
-        {subscriptionStatus.isExpired && !subscriptionStatus.isActive ? (
-          <TrialExpiredModal onViewPlans={() => navigate('/plans')} />
-        ) : (
+        {/* Modal de Trial Expirado - Bloqueia completamente o acesso */}
+        {trialStatus.isExpired && (
+          <TrialExpiredModal 
+            onViewPlans={() => navigate('/plans')}
+          />
+        )}
+          
         <div>
        
-        <ErrorBoundary FallbackComponent={PageNotFoundDashboard}>
+        <ErrorBoundary FallbackComponent={Dashboard}>
          {!errors ?    
         <DashboardBackground>
                  
@@ -181,15 +179,16 @@ const Dashboard = ()=>{
       <AdminStats isVisible={user?.perfis?.includes('ADMIN')} />
       
       {/* Banner de Aviso do Trial - Apenas durante o período ativo */}
-      {subscriptionStatus.isTrialActive && !subscriptionStatus.isExpired && (
+      {trialStatus.isActive && !trialStatus.isExpired && (
         <TrialWarningBanner 
-          daysRemaining={trialDaysRemaining}
+          daysRemaining={trialStatus.daysRemaining}
           onViewPlans={() => navigate('/plans')}
         />
       )}
       
         <p className='left-side-message-user welcome-message'>Olá, <strong>{user.slug}</strong>, o que temos pra hoje?</p>
         
+        <TrialMessage />
         
        { perfilTenant ? 
         <BodyContainer>
@@ -273,11 +272,10 @@ const Dashboard = ()=>{
     : ''}
 
         </DashboardBackground> 
-        : <PageNotFoundDashboard/>}  
+        : <Dashboard/>}  
         </ErrorBoundary>
       
         </div>
-        )}
      
       </>
     )
