@@ -12,6 +12,7 @@ export const useSubdomain = () => useContext(SubdomainContext);
 const LazySite = React.lazy(() => import('../pages/Site'));
 const LazyImoveis = React.lazy(() => import('../pages/Site/Properties'));
 const LazyDetail = React.lazy(() => import('../pages/Site/Detail'));
+const LazyLancamentoPublico = React.lazy(() => import('../pages/LancamentoPublico'));
 
 interface SubdomainRouterProps {
   children: React.ReactNode;
@@ -183,6 +184,16 @@ const SubdomainRouter: React.FC<SubdomainRouterProps> = ({ children }) => {
              <div className="subdomain-site">
                <React.Suspense fallback={<div>Carregando...</div>}>
                  <LazyDetail />
+               </React.Suspense>
+             </div>
+           </SubdomainContext.Provider>
+         );
+       } else if (pathname.startsWith('/lp/')) {
+         return (
+           <SubdomainContext.Provider value={{ companyName }}>
+             <div className="subdomain-site">
+               <React.Suspense fallback={<div>Carregando...</div>}>
+                 <LazyLancamentoPublico />
                </React.Suspense>
              </div>
            </SubdomainContext.Provider>

@@ -11,6 +11,7 @@ import WhatsAppHome from './WhatsappHome';
 import tela1 from '../../assets/images/tela-1.png';
 import tela2 from '../../assets/images/tela-2.png';
 import tela3 from '../../assets/images/foto-1.png';
+import heroImage from '../../assets/images/bg-principal-home.png';
 import google from '../../assets/images/google.png'
 import gpt from '../../assets/images/gpt.webp'
 import standi from '../../assets/images/logo.png'
@@ -25,9 +26,6 @@ import {
   Header,
   Nav,
   Logo,
-  NavLinks,
-  NavLink,
-  LoginButton,
   MobileMenuButton,
   MobileSidebar,
   MobileSidebarOverlay,
@@ -38,10 +36,76 @@ import {
   MobileSidebarNavLink,
   MobileSidebarLoginButton,
   HeroSection,
+  HeroContainer,
+  BadgeDev,
+  CTASubtext,
+  HeroImageWrapper,
+  FloatingChatBtn,
   HeroContent,
   Title,
   Subtitle,
   CTAButton,
+  QuotesSection,
+  QuotesContainer,
+  QuoteCard,
+  QuoteIconWrapper,
+  QuoteText,
+  QuoteAuthor,
+  FeatureGridSection,
+  FeatureGridLeft,
+  FeatureGridRight,
+  VSAIFeatureCard,
+  FeatureIcon,
+  FeatureCardTitle,
+  FeatureCardText,
+  HowItWorksSection,
+  HowItWorksContainer,
+  HowItWorksBadge,
+  HowItWorksTitle,
+  HowItWorksSubtitle,
+  HowItWorksGrid,
+  HowItWorksCard,
+  HowItWorksCardHeader,
+  HowItWorksCardTitle,
+  HowItWorksStepNumber,
+  HowItWorksCardText,
+  HowItWorksImageWrapper,
+  HowItWorksOverlayBlack,
+  HowItWorksOverlayGreen,
+  HowItWorksDots,
+  ComparisonSection,
+  ComparisonBadge,
+  ComparisonTitle,
+  ComparisonGrid,
+  ComparisonCardBlue,
+  ComparisonCardRed,
+  ComparisonCardTitle,
+  ComparisonList,
+  ComparisonItem,
+  ComparisonItemTitle,
+  VsBadge,
+  FAQSection,
+  FAQContainer,
+  FAQLeft,
+  FAQBadge,
+  FAQTitle,
+  FAQRight,
+  FAQItem,
+  FAQQuestionRow,
+  FAQQuestionText,
+  FAQIconWrapper,
+  FAQAnswerWrapper,
+  FAQAnswerText,
+  PreLaunchCTASection,
+  PreLaunchCTAContainer,
+  PreLaunchCTALeft,
+  PreLaunchCTATitle,
+  PreLaunchCTADesc,
+  PreLaunchCTAButtonContainer,
+  PreLaunchCTAButton,
+  PreLaunchCTASubtext,
+  PreLaunchCTARight,
+  PreLaunchCTAImage,
   ProductsSection,
   SectionTitle,
   ProductsGrid,
@@ -101,12 +165,12 @@ import {
   PricingButton,
   PricingFeatures,
   PricingFeature,
-  FAQSection,
-  FAQContainer,
-  FAQTitle,
-  FAQItem,
-  FAQQuestion,
-  FAQAnswer,
+  OldFAQSection,
+  OldFAQContainer,
+  OldFAQTitle,
+  OldFAQItem,
+  OldFAQQuestion,
+  OldFAQAnswer,
   CallToActionBanner,
   CTALeftSide,
   CTARightSide,
@@ -124,7 +188,6 @@ import {
   FooterLink,
   FooterBottom,
   Copyright,
-  RegisterButton,
   MobileSidebarRegisterButton
 } from './styles';
 import WhatsappHome from './WhatsappHome';
@@ -266,6 +329,17 @@ const Home: React.FC = () => {
   const [showSuccessPage, setShowSuccessPage] = useState(false);
   const [registeredUser, setRegisteredUser] = useState<any>(null);
 
+  // FAQ State
+  const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(0);
+
+  const toggleFaq = (index: number) => {
+    if (openFaqIndex === index) {
+      setOpenFaqIndex(null);
+    } else {
+      setOpenFaqIndex(index);
+    }
+  };
+
   // Tracking de acesso à página Home
   useEffect(() => {
     const trackHomeAccess = async () => {
@@ -405,31 +479,13 @@ const Home: React.FC = () => {
   return (
     <>
       <MetaPixel />
-      <section>
-              CRIE SEU SITE IMOBILIÁRIO EM 1 MINUTO!
-            </section>
       <HomeContainer>
-     <WhatsappHome />
       <Header>
         <Nav>
           <Logo>
-            <img src={standi} alt="Standi" />
-          </Logo>
-          <NavLinks>
+            <img src={standi} alt="Standi" style={{ filter: 'brightness(0) invert(1)' }} />
             
-            <NavLink href="#recursos">Recursos</NavLink>
-            <NavLink href="#planos">Planos</NavLink>
-            <NavLink href="/blog">Blog</NavLink>
-            <NavLink href="#contato">Contato</NavLink>
-           
-              <LoginButton as={Link} to="/login">
-              Acessar
-            </LoginButton >
-             <RegisterButton onClick={handleOpenRegisterModal} style={{cursor:'pointer'}}>
-              Teste Grátis
-            </RegisterButton>
-      
-          </NavLinks>
+          </Logo>
           
           {/* Botão hambúrguer mobile */}
           <MobileMenuButton 
@@ -455,7 +511,6 @@ const Home: React.FC = () => {
               </MobileSidebarHeader>
               
               <MobileSidebarNav>
-           
                 <MobileSidebarNavLink href="#recursos" onClick={closeMobileMenu}>
                   Recursos
                 </MobileSidebarNavLink>
@@ -468,12 +523,6 @@ const Home: React.FC = () => {
                 <MobileSidebarNavLink href="#contato" onClick={closeMobileMenu}>
                   Contato
                 </MobileSidebarNavLink>
-                <MobileSidebarLoginButton as={Link} to="/login" onClick={closeMobileMenu}>
-                  Fazer Login
-                </MobileSidebarLoginButton>
-                <MobileSidebarRegisterButton onClick={handleOpenRegisterModal}>
-                  Teste Grátis
-                </MobileSidebarRegisterButton> 
               </MobileSidebarNav>
             </MobileSidebar>
           </>
@@ -481,519 +530,525 @@ const Home: React.FC = () => {
       </Header>
 
       <HeroSection>
-        <HeroContent>
-         
-            {/* Badge de IA otimizada */}
-            <div className="inline-flex items-center gap-2 px-4 py-2 mb-6 text-green-300 bg-green-50/10 backdrop-blur-sm  rounded-full text-sm font-medium">
-              <svg 
-                width="16" 
-                height="16" 
-                viewBox="0 0 24 24" 
-                fill="none" 
-                xmlns="http://www.w3.org/2000/svg"
-                className="text-green-600"
-              >
-                <path 
-                  d="M12 2L13.09 8.26L20 9L13.09 9.74L12 16L10.91 9.74L4 9L10.91 8.26L12 2Z" 
-                  fill="currentColor"
-                />
-                <path 
-                  d="M19 15L19.5 17.5L22 18L19.5 18.5L19 21L18.5 18.5L16 18L18.5 17.5L19 15Z" 
-                  fill="currentColor"
-                />
-                <path 
-                  d="M5 9L5.5 11.5L8 12L5.5 12.5L5 15L4.5 12.5L2 12L4.5 11.5L5 9Z" 
-                  fill="currentColor"
-                />
-              </svg>
-              Site otimizado para buscas I.A
-            </div>
-            <Title>SITE IMOBILIÁRIO</Title>
+        <HeroContainer>
+          <HeroContent>
+            <BadgeDev>
+              Pré-Lançamento Aberto
+            </BadgeDev>
+            
+            <Title>
+              Lance um imóvel em poucos minutos.
+            </Title>
+            
             <Subtitle>
-              CRIE SEU SITE IMOBILIÁRIO EM 1 MINUTO!
+            LP que qualifica Leads, I.A que Gera Criativos <strong>Lance em 1 Clique.</strong>
             </Subtitle>
-            <p>
-              O site imobiliário que aparece nas buscas por I.A e do Google. Gestão de imóveis, gestão de clientes, 
-              editor do site em um só lugar.
-            </p>
-            <CTAButton onClick={handleOpenRegisterModal}>
-              TESTAR GRÁTIS AGORA
+            
+            <CTAButton onClick={() => window.open('https://forms.fillout.com/t/prjyisTSa2us', '_blank')}>
+              Lista de espera <span className="free">aberta</span>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="17 8 12 3 7 8"></polyline>
+                <line x1="12" y1="3" x2="12" y2="15"></line>
+              </svg>
             </CTAButton>
-         
-          
+            
+            <CTASubtext>
+              Desconto de 30% | No lançamento
+            </CTASubtext>
+          </HeroContent>
 
-        </HeroContent>
-        
+          <HeroImageWrapper>
+            <img src={heroImage} alt="Hero Section Image" />
+          </HeroImageWrapper>
+        </HeroContainer>
       </HeroSection>
 
-      {/* Container dos Mockups posicionado 40px abaixo do botão */}
-      <style>{styles}</style>
-      <div className="container-main-mockup">
+      <QuotesSection>
+        <QuotesContainer>
+          <QuoteCard>
+            <QuoteIconWrapper>
+              <svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                <path d="M14.017 18L14.017 10.609C14.017 4.905 17.748 1.039 23 0L23.995 2.151C21.563 3.068 20 5.789 20 8H24V18H14.017ZM0 18V10.609C0 4.905 3.748 1.038 9 0L9.996 2.151C7.563 3.068 6 5.789 6 8H9.983L9.983 18L0 18Z"/>
+              </svg>
+            </QuoteIconWrapper>
+            <QuoteText>É indiscutivel que a Standi facilitou o nosso lançamento.</QuoteText>
+            <QuoteAuthor>IRONCORP</QuoteAuthor>
+          </QuoteCard>
 
-        {/* Frase manuscrita e seta do lado esquerdo dos mockups */}
-        <div className="absolute left-[-70px] top-20 transform -translate-y-1/2 hidden md:block">
-          <div className="font-handwriting text-green-300 text-lg transform rotate-5 whitespace-nowrap mb-2">
-             Posiciona sua imobiliária
-          </div>
-          <svg 
-            width="120" 
-            height="80" 
-            viewBox="0 0 130 80" 
-            fill="none" 
-            xmlns="http://www.w3.org/2000/svg"
-            className="text-green-300 transform rotate-12"
-          >
-            <path 
-             d="M26 1 Q 10 20, 40 65 T  80 Q 100 55, 110 60" 
-              stroke="currentColor" 
-              strokeWidth="2" 
-              fill="none"
-              markerEnd="url(#arrowhead-left)"
-            />
-            <defs>
-              <marker 
-                id="arrowhead-left" 
-                markerWidth="10" 
-                markerHeight="7" 
-                refX="9" 
-                refY="3.5" 
-                orient="auto"
-              >
-                <polygon 
-                  points="0 0, 10 3.5, 0 7" 
-                  fill="currentColor"
-                />
-              </marker>
-            </defs>
+          <QuoteCard>
+            <QuoteIconWrapper>
+              <svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                <path d="M14.017 18L14.017 10.609C14.017 4.905 17.748 1.039 23 0L23.995 2.151C21.563 3.068 20 5.789 20 8H24V18H14.017ZM0 18V10.609C0 4.905 3.748 1.038 9 0L9.996 2.151C7.563 3.068 6 5.789 6 8H9.983L9.983 18L0 18Z"/>
+              </svg>
+            </QuoteIconWrapper>
+            <QuoteText>Criar Landing Page e criativos agora ficou fácil.</QuoteText>
+            <QuoteAuthor>SIDE URBAN<br/></QuoteAuthor>
+          </QuoteCard>
+
+          <QuoteCard>
+            <QuoteIconWrapper>
+              <svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                <path d="M14.017 18L14.017 10.609C14.017 4.905 17.748 1.039 23 0L23.995 2.151C21.563 3.068 20 5.789 20 8H24V18H14.017ZM0 18V10.609C0 4.905 3.748 1.038 9 0L9.996 2.151C7.563 3.068 6 5.789 6 8H9.983L9.983 18L0 18Z"/>
+              </svg>
+            </QuoteIconWrapper>
+            <QuoteText> A página literalmente tem um qualificador embutido.</QuoteText>
+            <QuoteAuthor style={{textTransform: 'lowercase', letterSpacing: '-1px'}}>Ativo imobiliaria</QuoteAuthor>
+          </QuoteCard>  
+
+          <QuoteCard>
+            <QuoteIconWrapper>
+              <svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                <path d="M14.017 18L14.017 10.609C14.017 4.905 17.748 1.039 23 0L23.995 2.151C21.563 3.068 20 5.789 20 8H24V18H14.017ZM0 18V10.609C0 4.905 3.748 1.038 9 0L9.996 2.151C7.563 3.068 6 5.789 6 8H9.983L9.983 18L0 18Z"/>
+              </svg>
+            </QuoteIconWrapper>
+            <QuoteText>A contrutora me passa os dados crio a LP e criativos facilmente.</QuoteText>
+            <QuoteAuthor>TC <span style={{fontWeight: '500', textTransform: 'none', letterSpacing: '0'}}>Imóveis</span></QuoteAuthor>
+          </QuoteCard>
+        </QuotesContainer>
+      </QuotesSection>
+
+      <FeatureGridSection>
+        <FeatureGridLeft>
+          <BadgeDev style={{ backgroundColor: '#1f2937', color: '#86efac' }}>
+            <span style={{ marginRight: '0.5rem' }}>🛏️</span> Processo simplificado
+          </BadgeDev>
+          <Title style={{ fontSize: '2.5rem', marginBottom: '2rem' }}>
+            Faça lançamentos em minutos com maturidade
+          </Title>
+          <CTAButton onClick={() => window.open('https://forms.fillout.com/t/prjyisTSa2us', '_blank')} style={{ width: '100%', marginBottom: '1rem' }}>
+            Lista de espera <span className="free">aberta</span>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="17 8 12 3 7 8"></polyline>
+              <line x1="12" y1="3" x2="12" y2="15"></line>
+            </svg>
+          </CTAButton>
+          <CTASubtext>Desconto de 30% | No lançamento</CTASubtext>
+        </FeatureGridLeft>
+
+        <FeatureGridRight>
+          <VSAIFeatureCard>
+            <FeatureIcon>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7M14 14l-4 4M10 10l4-4"/>
+              </svg>
+            </FeatureIcon>
+            <FeatureCardTitle>Fácil de usar</FeatureCardTitle>
+            <FeatureCardText>
+              Crie Landing Pages e Criativos  <strong>em 1 clique.</strong>
+            </FeatureCardText>
+          </VSAIFeatureCard>
+
+          <VSAIFeatureCard>
+            <FeatureIcon>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <polyline points="12 6 12 12 16 14"></polyline>
+              </svg>
+            </FeatureIcon>
+            <FeatureCardTitle>Resultados instantâneos</FeatureCardTitle>
+            <FeatureCardText>
+              Obtenha leads qualificados com <strong>rastreador embutido.</strong> Chega de leads frios.
+            </FeatureCardText>
+          </VSAIFeatureCard>
+
+          <VSAIFeatureCard>
+            <FeatureIcon>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                <line x1="16" y1="2" x2="16" y2="6"></line>
+                <line x1="8" y1="2" x2="8" y2="6"></line>
+                <line x1="3" y1="10" x2="21" y2="10"></line>
+              </svg>
+            </FeatureIcon>
+            <FeatureCardTitle>Preço Baixo</FeatureCardTitle>
+            <FeatureCardText>
+              Você pode começar com <strong>com pouco</strong> Isso é mais barato do que a maioria das agências cobra por uma única página.
+            </FeatureCardText>
+          </VSAIFeatureCard>
+
+          <VSAIFeatureCard>
+            <FeatureIcon>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M21.5 2v6h-6M2.13 15.57a9 9 0 1 0 3.84-10.36L2 8"></path>
+              </svg>
+            </FeatureIcon>
+            <FeatureCardTitle>Ciclo ilimitado</FeatureCardTitle>
+            <FeatureCardText>
+               Em breve a standi terá novidades e seu lançamento completo, <strong>estará aqui</strong> na Standi.
+            </FeatureCardText>
+          </VSAIFeatureCard>
+        </FeatureGridRight>
+      </FeatureGridSection>
+
+      <HowItWorksSection>
+        <HowItWorksContainer>
+        <ComparisonBadge>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2z"></path>
           </svg>
-        </div>
-        
-    {/* Frase manuscrita e seta do lado direito dos mockups */}
-        <div className="absolute right-[-90px] top-20 transform -translate-y-1/2 hidden md:block">
-          <div className="font-handwriting text-green-300 text-lg transform rotate-5 whitespace-nowrap mb-2">
-            Gestão do seu negócio
-          </div>
-          <svg 
-            width="120" 
-            height="80" 
-            viewBox="0 0 120 80" 
-            fill="none" 
-            xmlns="http://www.w3.org/2000/svg"
-            className="text-green-300 transform rotate-12"
-          >
-            <path 
-              d="M26 1 Q 50 20, 40 65 T  80 Q 100 55, 110 60" 
-              stroke="currentColor" 
-              strokeWidth="2" 
-              fill="none"
-              markerEnd="url(#arrowhead-left)"
-            />
-            <defs>
-              <marker 
-                id="arrowhead-left" 
-                markerWidth="10" 
-                markerHeight="7" 
-                refX="9" 
-                refY="3.5" 
-                orient="auto"
-              >
-                <polygon 
-                  points="0 0, 10 3.5, 0 7" 
-                  fill="currentColor"
-                />
-              </marker>
-            </defs>
+          Como funciona?
+        </ComparisonBadge>
+          <HowItWorksTitle>
+            Obtenha resultados excelentes <strong>Em poucos minutos</strong>
+          </HowItWorksTitle>
+          <HowItWorksSubtitle>
+            Siga<strong> três passos simples</strong> para transformar seus lançamentos imobiliários.
+          </HowItWorksSubtitle>
+
+          <HowItWorksGrid>
+            <HowItWorksCard>
+              <HowItWorksCardHeader>
+                <HowItWorksCardTitle>Clique em "Criar página"</HowItWorksCardTitle>
+                <HowItWorksStepNumber>1</HowItWorksStepNumber>
+              </HowItWorksCardHeader>
+              <HowItWorksCardText>Inicie o processo rapidamente no nosso painel.</HowItWorksCardText>
+              <HowItWorksImageWrapper>
+                <div style={{ width: '100%', height: '100%', backgroundColor: '#f8fafc', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative', border: '1px solid #e2e8f0', borderRadius: '1rem' }}>
+                  <div style={{ padding: '14px 28px', backgroundColor: '#2563eb', color: 'white', borderRadius: '10px', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '10px', boxShadow: '0 4px 14px 0 rgba(37,99,235,0.39)', fontSize: '1.1rem' }}>
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+                    Criar página
+                  </div>
+                  <svg style={{ position: 'absolute', top: '55%', left: '55%', filter: 'drop-shadow(0 4px 6px rgba(0,0,0,0.3))' }} width="40" height="40" viewBox="0 0 24 24" fill="white" stroke="black" strokeWidth="1"><path d="M5 3l7 19 3-8 8-3-18-8z"/></svg>
+                </div>
+              </HowItWorksImageWrapper>
+            </HowItWorksCard>
+
+            <HowItWorksCard>
+              <HowItWorksCardHeader>
+                <HowItWorksCardTitle>Clique em "Gerar criativos"</HowItWorksCardTitle>
+                <HowItWorksStepNumber>2</HowItWorksStepNumber>
+              </HowItWorksCardHeader>
+              <HowItWorksCardText>A I.A. cria seus anúncios automaticamente.</HowItWorksCardText>
+              <HowItWorksImageWrapper>
+                <div style={{ width: '100%', height: '100%', backgroundColor: '#f8fafc', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative', flexDirection: 'column', gap: '20px', border: '1px solid #e2e8f0', borderRadius: '1rem' }}>
+                  <div style={{ width: '70%', height: '40px', backgroundColor: '#e2e8f0', borderRadius: '8px' }}></div>
+                  <div style={{ padding: '14px 28px', background: 'linear-gradient(135deg, #8b5cf6, #d946ef)', color: 'white', borderRadius: '10px', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '10px', boxShadow: '0 4px 14px 0 rgba(139,92,246,0.39)', fontSize: '1.1rem' }}>
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+                    Gerar criativos
+                  </div>
+                  <svg style={{ position: 'absolute', top: '65%', left: '55%', filter: 'drop-shadow(0 4px 6px rgba(0,0,0,0.3))' }} width="40" height="40" viewBox="0 0 24 24" fill="white" stroke="black" strokeWidth="1"><path d="M5 3l7 19 3-8 8-3-18-8z"/></svg>
+                </div>
+                <HowItWorksOverlayBlack>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M5 3v4M3 5h4M6 17v4M4 19h4M13 3l-1.5 4.5L7 9l4.5 1.5L13 15l1.5-4.5L19 9l-4.5-1.5L13 3z"/>
+                  </svg>
+                  Gerando com I.A...
+                </HowItWorksOverlayBlack>
+              </HowItWorksImageWrapper>
+            </HowItWorksCard>
+
+            <HowItWorksCard>
+              <HowItWorksCardHeader>
+                <HowItWorksCardTitle>Pronto para usar</HowItWorksCardTitle>
+                <HowItWorksStepNumber>3</HowItWorksStepNumber>
+              </HowItWorksCardHeader>
+              <HowItWorksCardText>Sua página e criativos gerados com sucesso.</HowItWorksCardText>
+              <HowItWorksImageWrapper>
+                <div style={{ width: '100%', height: '100%', backgroundColor: '#1e293b', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '20px', padding: '20px', boxSizing: 'border-box', borderRadius: '1rem' }}>
+                  {/* Mock Landing Page */}
+                  <div style={{ width: '45%', height: '100%', backgroundColor: 'white', borderRadius: '8px', overflow: 'hidden', display: 'flex', flexDirection: 'column', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.3)' }}>
+                    <div style={{ height: '35%', backgroundColor: '#94a3b8' }}></div>
+                    <div style={{ padding: '12px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                      <div style={{ width: '70%', height: '10px', backgroundColor: '#cbd5e1', borderRadius: '4px' }}></div>
+                      <div style={{ width: '40%', height: '10px', backgroundColor: '#e2e8f0', borderRadius: '4px' }}></div>
+                      <div style={{ width: '100%', height: '20px', backgroundColor: '#3b82f6', borderRadius: '4px', marginTop: '12px' }}></div>
+                    </div>
+                  </div>
+                  {/* Mock Ad */}
+                  <div style={{ width: '45%', aspectRatio: '1/1', backgroundColor: 'white', borderRadius: '8px', padding: '10px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.5)', border: '2px solid #8b5cf6' }}>
+                    <div style={{ width: '100%', height: '65%', backgroundColor: '#94a3b8', borderRadius: '4px' }}></div>
+                    <div style={{ width: '100%', height: '16px', backgroundColor: '#8b5cf6', borderRadius: '4px' }}></div>
+                  </div>
+                </div>
+                <HowItWorksOverlayGreen>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2z" />
+                  </svg>
+                  Combo Lançamento Completo!
+                </HowItWorksOverlayGreen>
+              </HowItWorksImageWrapper>
+            </HowItWorksCard>
+          </HowItWorksGrid>
+
+          <HowItWorksDots>
+            <div className="dot"></div>
+            <div className="dot active"></div>
+            <div className="dot"></div>
+          </HowItWorksDots>
+        </HowItWorksContainer>
+      </HowItWorksSection>
+
+      <ComparisonSection>
+        <ComparisonBadge>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2z"></path>
           </svg>
-        </div>
+          Compare e veja
+        </ComparisonBadge>
 
-        <div className="mockup-section">
-          {/* Mockup do Monitor (mais fino) */}
-          <div className="monitor-mockup">
-            {/* Div com 3 círculos no canto superior esquerdo */}
-            <div className="absolute top-2 left-2 flex gap-2 bg-transparent">
-              <div className="w-3 h-3 rounded-full bg-green-500"></div>
-              <div className="w-3 h-3 rounded-full bg-red-500"></div>
-              <div className="w-3 h-3 rounded-full bg-blue-500"></div>
-            </div>
-            <img
-              src={tela3}
-              alt="Tela do Dashboard Standi"
-            />
-          </div>
+        <ComparisonTitle>
+         Por que nos escolher?  <strong>A vantagem da Standi</strong>
+        </ComparisonTitle>
 
-          {/* Mockup do Celular (lado direito) */}
-          <div className="phone-mockup">
-            <img
-              src={tela2}
-              alt="Tela do Aplicativo Móvel Standi"
-            />
-          </div>
-        </div>
-      </div>
-    
-      <ProductsSection id="produtos">
-        <SectionTitle>Porque eu deveria ter um site com a Standi?</SectionTitle>
-        <p style={{ textAlign: 'center', marginBottom: '3rem', fontSize: '1.1rem', color: '#666', padding:'0 1rem' }}>
-          Além do Google você já percebeu que as pessoas também usam o chatGpt para buscar imóveis certo?<br/>
-             Nosso site imobiliário é projetado para estas buscas modernas
-        </p>
-        
-        <ProductsGrid>
-          <ProductCard>
-            <div style={{ display: 'flex', alignItems: 'flex-start' ,justifyContent:'left', width:'100%'}}>
-            <ProductIcon>
-             <img src={google} alt="Google" />
-            </ProductIcon>
-            <span style={{color:'#000',fontSize:'1.2rem', fontWeight:'600', marginLeft:'10px'}}>Google</span>
-            </div>
-            <ProductContent>
-              <ProductTitle>Site otimizado para buscas do Google (SEO)</ProductTitle>
-              <ProductDescription>
-                Seu site será encontrado facilmente pelos clientes através de buscas inteligentes e otimização para.
-              </ProductDescription>
-           
-            </ProductContent>
-          </ProductCard>
+        <ComparisonGrid>
+          <ComparisonCardBlue>
+            <ComparisonCardTitle>Standi Ai</ComparisonCardTitle>
+            <ComparisonList>
+              <ComparisonItem>
+                <svg fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" />
+                </svg>
+                <span>
+                  <ComparisonItemTitle>Resultados instantâneos: </ComparisonItemTitle>
+                  5 minutos do seu tempo.
+                </span>
+              </ComparisonItem>
 
-          <ProductCard>
-             <div style={{ display: 'flex', alignItems: 'flex-start' ,justifyContent:'left', width:'100%'}}>
+              <ComparisonItem>
+                <svg fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" />
+                </svg>
+                <span>
+                  <ComparisonItemTitle>Combo lançamento: </ComparisonItemTitle>
+                  Gera landing page e criativo para lançamento.
+                </span>
+              </ComparisonItem>
 
-            <ProductIcon>
-           <img src={gpt} alt="Google" />
-            </ProductIcon>
-            <span style={{color:'#000',fontSize:'1.2rem', fontWeight:'600', marginLeft:'10px'}}>Chat GPT</span>
-            </div>
-            <ProductContent>
-              <ProductTitle>Site otimizado para buscas por I.A (GEO)</ProductTitle>
-              <ProductDescription>
-                O jogo no digital mudou e você precisa ter um site que apareça nas buscas por Inteligência Artificial.
-              </ProductDescription>
-           
-            </ProductContent>
-          </ProductCard>
+              <ComparisonItem>
+                <svg fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" />
+                </svg>
+                <span>
+                  <ComparisonItemTitle>CRM inteligente: </ComparisonItemTitle>
+                  Lead cai no CRM já classificado.
+                </span>
+              </ComparisonItem>
 
-          <ProductCard>
-          <div style={{ display: 'flex', alignItems: 'flex-start' ,justifyContent:'left', width:'100%'}}>
+              <ComparisonItem>
+                <svg fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" />
+                </svg>
+                <span>
+                  <ComparisonItemTitle>Foco em lead qualificado: </ComparisonItemTitle>
+                  a página tem literalmente um rastreador de lead embutido e formulário de contato. inteligente
+                </span>
+              </ComparisonItem>
 
-            <ProductIcon>
-             <img src={standilogo} alt="Google" />
-            </ProductIcon>
-            <span style={{color:'#000',fontSize:'1.2rem', fontWeight:'600', marginLeft:'10px'}}>Pronto em 5 minutos!</span>
-            </div>
-            <ProductContent>
-              <ProductTitle>Site Pronto assim que faz o seu cadastro</ProductTitle>
-              <ProductDescription>
-                Seu site pode ter domínio personalizado, editado de forma simples e ter um pixel de conversão.
-              </ProductDescription>
-            
-            </ProductContent>
-          </ProductCard>
-        </ProductsGrid>
-        
-        <TestFreeButton onClick={handleOpenRegisterModal}>Testar Grátis Agora</TestFreeButton>
-      </ProductsSection>
+              <ComparisonItem>
+                <svg fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" />
+                </svg>
+                <span>
+                  <ComparisonItemTitle>I.A altamente precisa para gerar os criativos: </ComparisonItemTitle>
+                   mantém o layout fiel a página.
+                </span>
+              </ComparisonItem>
 
-      <ResourcesSection id="recursos">
-        <ResourcesContainer>
-          <ResourcesTitle>Estes são os recursos que você pode aproveitar:</ResourcesTitle>
-          <ResourcesSubtitle>Além de um site moderno preparado para SEO e GEO também você tem a liberdade de editar seu site, <br/>
-             adicionar o pixel, fazer a gestão dos imóveis e seus clientes</ResourcesSubtitle>
-          
-          <ResourcesContent>
-            <ResourcesNavigation>
-              <ResourceNavItem 
-                className={activeResource === 'site' ? 'active' : ''}
-                onClick={() => handleResourceClick('site')}
-              >
-                <ResourceNavIcon>
-                  <FaGlobe />
-                </ResourceNavIcon>
-                Site
-              </ResourceNavItem>
-              
-              <ResourceNavItem 
-                className={activeResource === 'crm' ? 'active' : ''}
-                onClick={() => handleResourceClick('crm')}
-              >
-                <ResourceNavIcon>
-                  <FaUsers />
-                </ResourceNavIcon>
-                CRM
-              </ResourceNavItem>
-              
-              <ResourceNavItem 
-                className={activeResource === 'integracao' ? 'active' : ''}
-                onClick={() => handleResourceClick('integracao')}
-              >
-                <ResourceNavIcon>
-                  <FaPlug />
-                </ResourceNavIcon>
-                Editor do seu site
-              </ResourceNavItem>
-            </ResourcesNavigation>
-            
-            <ResourceMockupArea>
-              {resources[activeResource as keyof typeof resources] ? (
-                <>
-                  <ResourceMockupHeader>
-                    <ResourceMockupTitle>
-                      {activeResource === 'site' && 'Site Imobiliário'}
-                      {activeResource === 'crm' && 'CRM Completo'}
-                      {activeResource === 'integracao' && 'Editor Visual'}
-                    </ResourceMockupTitle>
-                    <ResourceMockupSubtitle>
-                      {activeResource === 'site' && 'Tenha seu site profissional pronto em minutos'}
-                      {activeResource === 'crm' && 'Gerencie leads, clientes e vendas em um só lugar'}
-                      {activeResource === 'integracao' && 'Edite seu site facilmente com nosso editor visual'}
-                    </ResourceMockupSubtitle>
-                  </ResourceMockupHeader>
-                  <ResourceMockupImage 
-                    src={resources[activeResource as keyof typeof resources].image}
-                    alt={resources[activeResource as keyof typeof resources].description}
-                  />
-                </>
-              ) : (
-                <ResourceMockupPlaceholder>
-                  <FaImage size={48} />
-                  <p>Selecione um recurso para ver o mockup</p>
-                </ResourceMockupPlaceholder>
-              )}
-            </ResourceMockupArea>
-          </ResourcesContent>
-        </ResourcesContainer>
-        
+              <ComparisonItem>
+                <svg fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" />
+                </svg>
+                <span>
+                  <ComparisonItemTitle>Atende diferentes players imobiliários: </ComparisonItemTitle>
+                  crie páginas para diferentes tipologias.
+                </span>
+              </ComparisonItem>
+            </ComparisonList>
+          </ComparisonCardBlue>
 
-      </ResourcesSection>
+          <VsBadge>VS</VsBadge>
 
-      <StatsSection>
-        <AnimatedCirclesContainer>
-          {/* Círculos da esquerda para direita */}
-          <AnimatedCircle className="left-to-right" style={{ top: '10%', animationDelay: '0s' }}>
-            <CircleImage src="https://randomuser.me/api/portraits/men/32.jpg" alt="Pessoa 1" />
-          </AnimatedCircle>
-          <AnimatedCircle className="left-to-right" style={{ top: '30%', animationDelay: '3s' }}>
-            <CircleImage src="https://randomuser.me/api/portraits/women/44.jpg" alt="Pessoa 2" />
-          </AnimatedCircle>
-          <AnimatedCircle className="left-to-right" style={{ top: '50%', animationDelay: '6s' }}>
-            <CircleImage src="https://randomuser.me/api/portraits/men/65.jpg" alt="Pessoa 3" />
-          </AnimatedCircle>
-          <AnimatedCircle className="left-to-right" style={{ top: '70%', animationDelay: '9s' }}>
-            <CircleImage src="https://randomuser.me/api/portraits/women/68.jpg" alt="Pessoa 4" />
-          </AnimatedCircle>
-          <AnimatedCircle className="left-to-right" style={{ top: '20%', animationDelay: '12s' }}>
-            <CircleImage src="https://randomuser.me/api/portraits/men/78.jpg" alt="Pessoa 5" />
-          </AnimatedCircle>
-          <AnimatedCircle className="left-to-right" style={{ top: '60%', animationDelay: '15s' }}>
-            <CircleImage src="https://randomuser.me/api/portraits/women/25.jpg" alt="Pessoa 6" />
-          </AnimatedCircle>
+          <ComparisonCardRed>
+            <ComparisonCardTitle>Outros</ComparisonCardTitle>
+            <ComparisonList>
+              <ComparisonItem>
+                <svg fill="#dc2626" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                </svg>
+                <span>
+                  <ComparisonItemTitle>Vários dias: </ComparisonItemTitle>
+                  Tempo é dinheiro que vai pro ralo do seu lançamento.
+                </span>
+              </ComparisonItem>
 
-          {/* Círculos da direita para esquerda */}
-          <AnimatedCircle className="right-to-left" style={{ top: '15%', animationDelay: '2s' }}>
-            <CircleImage src="https://randomuser.me/api/portraits/men/45.jpg" alt="Pessoa 7" />
-          </AnimatedCircle>
-          <AnimatedCircle className="right-to-left" style={{ top: '35%', animationDelay: '5s' }}>
-            <CircleImage src="https://randomuser.me/api/portraits/women/32.jpg" alt="Pessoa 8" />
-          </AnimatedCircle>
-          <AnimatedCircle className="right-to-left" style={{ top: '55%', animationDelay: '8s' }}>
-            <CircleImage src="https://randomuser.me/api/portraits/men/23.jpg" alt="Pessoa 9" />
-          </AnimatedCircle>
-          <AnimatedCircle className="right-to-left" style={{ top: '75%', animationDelay: '11s' }}>
-            <CircleImage src="https://randomuser.me/api/portraits/women/56.jpg" alt="Pessoa 10" />
-          </AnimatedCircle>
-          <AnimatedCircle className="right-to-left" style={{ top: '25%', animationDelay: '14s' }}>
-            <CircleImage src="https://randomuser.me/api/portraits/men/89.jpg" alt="Pessoa 11" />
-          </AnimatedCircle>
-          <AnimatedCircle className="right-to-left" style={{ top: '65%', animationDelay: '17s' }}>
-            <CircleImage src="https://randomuser.me/api/portraits/women/73.jpg" alt="Pessoa 12" />
-          </AnimatedCircle>
-        </AnimatedCirclesContainer>
+              <ComparisonItem>
+                <svg fill="#dc2626" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                </svg>
+                <span>
+                  <ComparisonItemTitle>Instruções tediosas: </ComparisonItemTitle>
+                  Precisa falar com Social media e Agência para criar a página.
+                </span>
+              </ComparisonItem>
 
-       
-   
-        
-        <StatsGrid>
-          <StatCard>
-            <StatNumber ref={yearsCount.ref}>{yearsCount.value}</StatNumber>
-            <StatLabel>anos de mercado</StatLabel>
-          </StatCard>
-          <StatCard>
-            <StatNumber ref={usersCount.ref}>{usersCount.value}</StatNumber>
-            <StatLabel>usuários ativos</StatLabel>
-          </StatCard>
-          <StatCard>
-            <StatNumber ref={clientsCount.ref}>{clientsCount.value}</StatNumber>
-            <StatLabel>clientes ativos</StatLabel>
-          </StatCard>
-        </StatsGrid>
-        
-        <TestFreeButton onClick={handleOpenRegisterModal}>Testar Grátis Agora</TestFreeButton>
-      </StatsSection>
+              <ComparisonItem>
+                <svg fill="#dc2626" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                </svg>
+                <span>
+                  <ComparisonItemTitle>Caro: </ComparisonItemTitle>
+                 R$ 1200,00 reais por LP de lançamento.
+                </span>
+              </ComparisonItem>
 
- 
-         <Promotion onOpenRegisterModal={handleOpenRegisterModal} />
-      {/* Seção de Planos */}
-      <PricingSection id='planos'>
-        
-        <PricingContainer>
-          <SectionTitle>Nossos Planos</SectionTitle>
-          
-          {/* Toggle de Preços */}
-          <PricingToggleContainer>
-            <PricingToggle>
-              <PricingToggleButton 
-                active={pricingPlan === 'annual'} 
-                onClick={() => setPricingPlan('annual')}
-              >
-                Anual
-              </PricingToggleButton>
-              <PricingToggleButton 
-                active={pricingPlan === 'monthly'} 
-                onClick={() => setPricingPlan('monthly')}
-              >
-                Mensal
-              </PricingToggleButton>
-            </PricingToggle>
-            <EconomyBadge>
-              
-              Economize até 10%
-              <EconomyArrow />
-            </EconomyBadge>
-          </PricingToggleContainer>
-          
-          <PricingGrid>
-            {/* Plano Lite */}
-            <PricingCard>
-              <PricingIcon>
-                <HiHome />
-              </PricingIcon>
-              <PricingPlanName>Lite</PricingPlanName>
-              <PricingDescription>
-                CRM para acompanhar negócios e mais possibilidades de integrações.
-              </PricingDescription>
-                <PricingPrice>
-                <PricingCurrency>R$</PricingCurrency>
-                <PricingAmount>{planPrices.lite[pricingPlan]}</PricingAmount>
-                <PricingPeriod>/mês</PricingPeriod>
-              </PricingPrice>
-              <PricingFeatures>
-                <PricingFeature>1 usuário</PricingFeature>
-                <PricingFeature>Site profissional e personalizável</PricingFeature>
-                <PricingFeature>Gestão de imóveis e clientes</PricingFeature>
-                <PricingFeature>Editor do site</PricingFeature>
-                <PricingFeature>Site seguro com SSL</PricingFeature>
-                <PricingFeature>Whatsapp integrado</PricingFeature>
-                <PricingFeature>Até 200 imóveis</PricingFeature>
-              </PricingFeatures>
-            
-              <PricingNote>Para testar, não precisa de cartão</PricingNote>
-              <PricingButton onClick={handleOpenRegisterModal}>Teste Grátis</PricingButton>
-            </PricingCard>
+              <ComparisonItem>
+                <svg fill="#dc2626" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                </svg>
+                <span>
+                  <ComparisonItemTitle>Páginas negéricas: </ComparisonItemTitle>
+                  Landing pages sem rastreador e form inteligente.
+                </span>
+              </ComparisonItem>
 
-            {/* Plano Pro */}
-            <PricingCard className="popular" style={{display:'none'}}>
-              <PricingIcon>
-                <HiRocketLaunch />
-              </PricingIcon>
-              <PricingPlanName>Pro</PricingPlanName>
-              <PricingDescription>
-                Para gerenciar negócios e equipes de maneira profissional e escalável.
-              </PricingDescription>
-              <PricingPrice>
-                <PricingCurrency>R$</PricingCurrency>
-                <PricingAmount>{planPrices.pro[pricingPlan]}</PricingAmount>
-                <PricingPeriod>/mês</PricingPeriod>
-              </PricingPrice>
-              <PricingFeatures>
-               <PricingFeature style={{fontWeight:'bold'}}>1 usuário</PricingFeature>
-                <PricingFeature>Site profissional e personalizável</PricingFeature>
-                <PricingFeature>Gestão de imóveis e clientes</PricingFeature>
-                <PricingFeature>Editor do site</PricingFeature>
-                <PricingFeature>Site seguro com SSL</PricingFeature>
-                <PricingFeature>Whatsapp integrado</PricingFeature>
-                <PricingFeature style={{fontWeight:'bold'}}>Imóveis ilimitados</PricingFeature>
-              </PricingFeatures>
-        
-              <PricingNote>Para testar, não precisa de cartão</PricingNote>
-              <PricingButton className="primary" onClick={handleOpenRegisterModal}>Teste Grátis</PricingButton>
-            </PricingCard>
-          </PricingGrid>
-        </PricingContainer>
-      </PricingSection>
+              <ComparisonItem>
+                <svg fill="#dc2626" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                </svg>
+                <span>
+                  <ComparisonItemTitle>Erro humano: </ComparisonItemTitle>
+                  Qualidade diferente a cada vez.
+                </span>
+              </ComparisonItem>
+
+              <ComparisonItem>
+                <svg fill="#dc2626" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                </svg>
+                <span>
+                  <ComparisonItemTitle>Foco em tudo: </ComparisonItemTitle>
+                  Foco pulverizado em diversas areas e não somente no lançamento.
+                </span>
+              </ComparisonItem>
+            </ComparisonList>
+          </ComparisonCardRed>
+        </ComparisonGrid>
+      </ComparisonSection>
 
       <FAQSection>
         <FAQContainer>
-          <FAQTitle>Perguntas frequentes sobre sistema imobiliário</FAQTitle>
-          {faqData.map((faq, index) => (
-            <FAQItem key={index}>
-              <FAQQuestion 
-                className={openFAQ === index ? 'active' : ''}
-                onClick={() => toggleFAQ(index)}
-              >
-                {faq.question}
-              </FAQQuestion>
-              <FAQAnswer className={openFAQ === index ? 'active' : ''}>
-                {faq.answer}
-              </FAQAnswer>
-            </FAQItem>
-          ))}
+          <FAQLeft>
+            <FAQBadge>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                <line x1="12" y1="17" x2="12.01" y2="17"></line>
+              </svg>
+              FAQ
+            </FAQBadge>
+            <FAQTitle>
+             Tem perguntas?
+              <span>Nós temos as respostas.</span>
+            </FAQTitle>
+          </FAQLeft>
+
+          <FAQRight>
+            {[
+              {
+                question: "O que é a Standi lançamentos imobiliários?",
+                answer: "É uma plataforma que permite você criar landing pages e criativos para lançamentos imobiliários."
+              },
+              {
+                question: "Por que devo escolher a Standi e não criar com uma agência ou com i.a externa?",
+                answer: "Porquê quando você cria uma landing page com i.a externa existem muitos erros gerados e com agência é caro, além disso as páginas da Standi tem um qualificador de leads embutido além de gerar os criativos com 1 clique."
+              },
+              {
+                question: "Porque anunciar com uma Landing Page?",
+                answer: "Dará a seus lançamentos mais possibilidades de ter leads conscientes, qualificados e consequentemente mais vendas."
+              },
+              {
+                question: "Como são os criativos gerados?",
+                answer: "Assim que voce cria uma landing page, você aperta um botão e automaticamente será gerado a partir dos dados da landing page mas com I.A."
+              },
+              {
+                question: "Posso cancelar quando quiser?",
+                answer: "Sim, pode cancelar quando quiser."
+              },
+              {
+                question: "Vocês garantem que vou ter resultados?",
+                answer: "Quem fala que garante resultados(vendas) está mentindo, nós agilizamos o processo do seu lançamento que permitirá a geração de leads mais quentes."
+              }
+            ].map((faq, index) => (
+              <FAQItem key={index} onClick={() => toggleFaq(index)}>
+                <FAQQuestionRow>
+                  <FAQQuestionText>{faq.question}</FAQQuestionText>
+                  <FAQIconWrapper $isOpen={openFaqIndex === index}>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                  </FAQIconWrapper>
+                </FAQQuestionRow>
+                <FAQAnswerWrapper $isOpen={openFaqIndex === index}>
+                  <FAQAnswerText>{faq.answer}</FAQAnswerText>
+                </FAQAnswerWrapper>
+              </FAQItem>
+            ))}
+          </FAQRight>
         </FAQContainer>
       </FAQSection>
 
-      <CallToActionBanner id='contato'>
-        <CTALeftSide>
-          <CTAText>Transforme sua imobiliária hoje mesmo!</CTAText>
-          <CTABannerButtonBottom onClick={handleOpenRegisterModal}>Testar grátis agora</CTABannerButtonBottom>
-        </CTALeftSide>
-        <CTARightSide>
-          <PersonImage src={userImage} alt="Atendente" />
-          <a href={`https://api.whatsapp.com/send?phone=45988348165`} target="_blank">
-          <div>
-            <WhatsAppIcon><img src={Whats} alt="WhatsApp" /></WhatsAppIcon>
-            <WhatsAppText>Dúvidas,clique aqui e fale conosco</WhatsAppText>
-          </div></a>
-        </CTARightSide>
-      </CallToActionBanner>
 
-      <Footer>
-        <FooterContent>
-          <FooterSection>
-            <FooterTitle>Standi</FooterTitle>
-            <p>A plataforma completa para gestão imobiliária. Simplifique sua rotina e aumente seus resultados.</p>
-          </FooterSection>
-          
-          <FooterSection>
-            <FooterTitle>Produtos</FooterTitle>
-            <FooterLinks>
-              <FooterLink href="#">CRM Imobiliário</FooterLink>
-              <FooterLink href="#">Site Imobiliário</FooterLink>
-             
-            </FooterLinks>
-          </FooterSection>
-          
-          <FooterSection>
-            <FooterTitle>Recursos</FooterTitle>
-            <FooterLinks>
-              <FooterLink href="#">Funil de Vendas</FooterLink>
-              <FooterLink href="#">Editor do Site</FooterLink>
-              <FooterLink href="#">Integrações</FooterLink>
-            </FooterLinks>
-          </FooterSection>
-          
-          <FooterSection>
-            <FooterTitle>Suporte</FooterTitle>
-            <FooterLinks>
-              <FooterLink href="#">Central de Ajuda</FooterLink>
-              <FooterLink href="#">Contato</FooterLink>
-              <FooterLink href="#">Blog(em construção)</FooterLink>
-            </FooterLinks>
-          </FooterSection>
-        </FooterContent>
-        
-        <FooterBottom>
-          <Copyright>
-            © 2024 Standi. Todos os direitos reservados.
-          </Copyright>
-        </FooterBottom>
+
+  
+
+      <Footer style={{ backgroundColor: '#0a1628', color: 'white', padding: '4rem 2rem 2rem' }}>
+        <div style={{ maxWidth: '1200px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '3rem' }}>
+          <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', gap: '2rem' }}>
+            {/* Newsletter / CTA Section */}
+            <div style={{ flex: '1 1 300px' }}>
+              <h4 style={{ fontSize: '0.875rem', fontWeight: 'bold', marginBottom: '1rem', color: '#e2e8f0',display:'none'}}>Newsletter</h4>
+              <Logo style={{ marginBottom: '1rem' }}>
+                <img src={standi} alt="Standi" style={{ filter: 'brightness(0) invert(1)' }} />
+
+              </Logo>
+              <p style={{ fontSize: '0.875rem', color: '#cbd5e1', marginBottom: '1.5rem', lineHeight: '1.5' }}>
+                Crie páginas de lançamentos e criativos automáticos<br/>Qualifique leads e poupe tempo com criativos.
+              </p>
+              <button 
+                onClick={() => window.open('https://forms.fillout.com/t/prjyisTSa2us', '_blank')}
+                style={{ 
+                  backgroundColor: '#2563eb', 
+                  color: 'white', 
+                  padding: '0.75rem 2rem', 
+                  borderRadius: '0.5rem', 
+                  border: 'none', 
+                  fontWeight: 'bold', 
+                  cursor: 'pointer',
+                  fontSize: '1rem',
+                  boxShadow: '0 4px 6px -1px rgba(37, 99, 235, 0.5)'
+                }}
+              >
+                Entrar na lista de espera
+              </button>
+            </div>
+
+            {/* Social Media Section */}
+            <div style={{ flex: '1 1 300px' }}>
+              <h4 style={{ fontSize: '0.875rem', fontWeight: 'bold', marginBottom: '1rem', color: '#e2e8f0' }}>Social Media</h4>
+              <h3 style={{ fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '1.5rem' }}>Entre em nossa comunidade</h3>
+              <div style={{ display: 'flex', gap: '1rem' }}>
+                <a href="https://www.facebook.com/profile.php?id=100075702506516" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', width: '90px', height: '90px', backgroundColor: '#1e293b', borderRadius: '0.5rem', textDecoration: 'none', color: 'white', gap: '0.5rem' }}>
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#86efac" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg>
+                  <span style={{ fontSize: '0.65rem', fontWeight: 'bold' }}>FACEBOOK</span>
+                </a>
+                <a href="https://www.instagram.com/standi.com.br/" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', width: '90px', height: '90px', backgroundColor: '#1e293b', borderRadius: '0.5rem', textDecoration: 'none', color: 'white', gap: '0.5rem' }}>
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#86efac" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
+                  <span style={{ fontSize: '0.65rem', fontWeight: 'bold' }}>INSTAGRAM</span>
+                </a>
+                <a href="#" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', width: '90px', height: '90px', backgroundColor: '#1e293b', borderRadius: '0.5rem', textDecoration: 'none', color: 'white', gap: '0.5rem' }}>
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#86efac" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33 2.78 2.78 0 0 0 1.94 2C5.12 19.5 12 19.5 12 19.5s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.33 29 29 0 0 0-.46-5.33z"></path><polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02"></polygon></svg>
+                  <span style={{ fontSize: '0.65rem', fontWeight: 'bold' }}>YOUTUBE</span>
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <div style={{ borderTop: '1px solid #1e293b', paddingTop: '2rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <p style={{ fontSize: '0.875rem', color: '#94a3b8' }}>© 2024 Standi. Todos os direitos reservados.</p>
+          </div>
+        </div>
       </Footer>
 
       {/* Modal de Cadastro */}

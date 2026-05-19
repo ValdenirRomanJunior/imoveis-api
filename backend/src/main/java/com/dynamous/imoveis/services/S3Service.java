@@ -170,6 +170,28 @@ public class S3Service {
          
       }
   }
+
+  // service s3 para imagens da Landing Page (usa prefixo lp)
+  public URI uploadLandingPageImage(MultipartFile multipartFile) {
+      try {
+          String originalName = multipartFile.getOriginalFilename();
+          String ext = originalName.substring(originalName.lastIndexOf("."));
+          String fileName = "lp_" + java.util.UUID.randomUUID().toString() + ext;
+          InputStream is = multipartFile.getInputStream();
+          String contentType = multipartFile.getContentType();
+          
+          ObjectMetadata meta = new ObjectMetadata();
+          meta.setContentType(contentType);
+          
+          LOG.info("Iniciando upload de imagem da Landing Page");
+          s3client.putObject(bucketName, fileName, is, meta);
+          LOG.info("Finalizado upload de imagem da Landing Page");
+          
+          return s3client.getUrl(bucketName, fileName).toURI();
+      } catch (IOException | URISyntaxException | AmazonClientException e) {
+          throw new FileException("Erro ao fazer upload da imagem: " + e.getMessage());
+      }
+  }
   
     
     

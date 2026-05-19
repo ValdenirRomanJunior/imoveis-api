@@ -24,6 +24,7 @@ import { FaQuestionCircle } from 'react-icons/fa';
 import { MdSupportAgent } from 'react-icons/md';
 import { useSidebar } from '../../context/SidebarContext';
 import useSubscriptionStatus from '../../hooks/useSubscriptionStatus';
+import { MdRocketLaunch } from 'react-icons/md';
 
 const Header = () =>{
 
@@ -265,7 +266,7 @@ const Header = () =>{
             </NavIcon>
    
 
-            <NavIcon to="/properties" onClick={() => setSidebar(false)}>
+            <NavIcon style={{display: 'none'}} to="/properties" onClick={() => setSidebar(false)}>
             <AiOutlineHome className='icon-sidebar'/>
             <p className='description-icon'>Imóveis</p>
             </NavIcon>
@@ -284,10 +285,15 @@ const Header = () =>{
             <p className='description-icon-op '>Oportunidades</p>
             </NavIcon>
 
-            <NavIcon to="/temaEdit" onClick={() => setSidebar(false)}>
-            <MdDesignServices className='icon-sidebar'/>
-            <p className='description-icon'>Editor de Tema</p>
+            <NavIcon style={{display: 'none'}} to="/temaEdit" onClick={() => setSidebar(false)}>
+           <MdDesignServices className='icon-sidebar'/>
+           <p className='description-icon'>Editor de Tema</p>
             </NavIcon>
+
+            <NavIcon to="/empreendimentos" onClick={() => setSidebar(false)}>
+            <MdRocketLaunch className='icon-sidebar'/>
+            <p className='description-icon'>Empreendimentos</p>
+          </NavIcon>
 
               
             </>

@@ -67,6 +67,11 @@ const LazyPlansPublic = React.lazy(() => import('../pages/PlansPublic'));
 const LazyBlog = React.lazy(() => import('../pages/Blog'));
 const LazyBlogPost = React.lazy(() => import('../pages/BlogPost'));
 const LazyBlogAdmin = React.lazy(() => import('../pages/BlogAdmin'));
+const LazyEmpreendimentos = React.lazy(() => import('../pages/Empreendimentos'));
+const LazyNovoLancamento = React.lazy(() => import('../pages/Empreendimentos/Novo'));
+const LazyEmpreendimentoDetalhe = React.lazy(() => import('../pages/Empreendimentos/Detalhe'));
+const LazyEditorLP = React.lazy(() => import('../pages/Empreendimentos/EditorLP'));
+const LazyLancamentoPublico = React.lazy(() => import('../pages/LancamentoPublico'));
 
 
 
@@ -135,6 +140,14 @@ const TrialGuard: React.FC = () => {
                 <Route path="/payment-cancel"  element={<React.Suspense fallback={<LoadingLogin/>}><LazyPaymentCancel/></React.Suspense>} />
                 <Route path="/payment/expired"  element={<React.Suspense fallback={<LoadingLogin/>}><LazyPaymentExpired/></React.Suspense>} />
                 <Route path="/guide"  element={<React.Suspense fallback={<LoadingLogin/>}><LazyGuide/></React.Suspense>} />
+                <Route path="/empreendimentos" element={<React.Suspense fallback={<LoadingLogin/>}><LazyEmpreendimentos/></React.Suspense>} />
+                <Route path="/empreendimentos/:id" element={<React.Suspense fallback={<LoadingLogin/>}><LazyEmpreendimentoDetalhe/></React.Suspense>} />
+                <Route path="/empreendimentos/:id/nova-pagina" element={<Navigate to="/empreendimentos/:id/nova-pagina/briefing" replace />} />
+                <Route path="/empreendimentos/:id/nova-pagina/briefing" element={<React.Suspense fallback={<LoadingLogin/>}><LazyNovoLancamento/></React.Suspense>} />
+                <Route path="/empreendimentos/:id/nova-pagina/template" element={<React.Suspense fallback={<LoadingLogin/>}><LazyNovoLancamento/></React.Suspense>} />
+                <Route path="/empreendimentos/:id/nova-pagina/preview" element={<React.Suspense fallback={<LoadingLogin/>}><LazyNovoLancamento/></React.Suspense>} />
+                <Route path="/empreendimentos/:id/pagina/:paginaId/editar" element={<React.Suspense fallback={<LoadingLogin/>}><LazyEditorLP/></React.Suspense>} />
+                <Route path="/:tenantSlug/lp/:lancamentoSlug" element={<React.Suspense fallback={<div>Carregando...</div>}><LazyLancamentoPublico/></React.Suspense>} />
 
                 <Route path="/blog" element={
                     <React.Suspense fallback={<div>Carregando...</div>}>

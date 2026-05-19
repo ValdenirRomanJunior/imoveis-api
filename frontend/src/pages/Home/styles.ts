@@ -8,15 +8,13 @@ export const HomeContainer = styled.div`
 
 // Header Styles
 export const Header = styled.header`
-  position: fixed;
+  position: absolute;
   top: 0;
   left: 0;
   right: 0;
-  background: rgba(10, 22, 40, 0.95);
-  backdrop-filter: blur(10px);
+  background: transparent;
   z-index: 1000;
-  padding: 1rem 0;
-  border-bottom: 1px solid rgba(59, 130, 246, 0.2);
+  padding: 1.5rem 0;
 `;
 
 export const Nav = styled.nav`
@@ -29,88 +27,25 @@ export const Nav = styled.nav`
 `;
 
 export const Logo = styled.div`
-  font-size: 2rem;
-  font-weight: bold;
-  color: #3b82f6;
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: white;
   margin: 0;
-
-  img {
-  
-    height: 40px;
-  }
-`;
-
-export const NavLinks = styled.div`
   display: flex;
   align-items: center;
-  gap: 2rem;
-  
-  @media (max-width: 768px) {
-    display: none;
+
+  img {
+    height: 24px; /* Diminuído */
+  }
+
+  span {
+    font-weight: 400;
+    margin-left: 5px;
   }
 `;
 
-export const NavLink = styled.a`
-  color: white;
-  text-decoration: none;
-  font-weight: 500;
-  transition: color 0.3s ease;
-  
-  &:hover {
-    color: #3b82f6;
-  }
-`;
-
-export const LoginButton = styled.a`
-  background: transparent;
-  color: white !important;
-  padding: 0.75rem 1.5rem;
-  border-radius: 8px;
-  text-decoration: none;
-  font-weight: 600;
-  transition: all 0.3s ease;
-  border: 1px solid gray;
-  
-  &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 10px 25px rgba(59, 130, 246, 0.3);
-  }
-`;
-
-export const RegisterButton = styled.a`
-  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
-  color: white;
-  padding: 0.75rem 1.7rem;
-  border-radius: 8px;
-  text-decoration: none;
-  font-weight: 600;
-  transition: all 0.3s ease;
-  
-  &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 10px 25px rgba(59, 130, 246, 0.3);
-  }
-`;
-
-// Mobile Menu Styles
 export const MobileMenuButton = styled.button`
-  display: none;
-  background: none;
-  border: none;
-  color: white;
-  font-size: 1.5rem;
-  cursor: pointer;
-  padding: 0.5rem;
-  border-radius: 4px;
-  transition: all 0.3s ease;
-  
-  &:hover {
-    background: rgba(255, 255, 255, 0.1);
-  }
-  
-  @media (max-width: 768px) {
-    display: block;
-  }
+  display: none !important;
 `;
 
 export const MobileSidebar = styled.div<{ isOpen: boolean }>`
@@ -243,92 +178,1021 @@ export const MobileSidebarRegisterButton = styled.a`
 
 // Hero Section
 export const HeroSection = styled.section`
-  min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
-  text-align: center;
-  padding: 0 2rem 4rem;
+  padding: 5rem 1rem 3rem;
+  background-color: #121826; /* Dark background matching reference */
+  color: white;
   position: relative;
-  overflow: hidden;
-  background: linear-gradient(135deg, #0a1628 0%, #1e3a8a 50%, #3b82f6 100%);
+  min-height: 80vh;
 
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="%233b82f6" stroke-width="0.5" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
-    opacity: 0.3;
+  @media (min-width: 992px) {
+    padding: 6rem 2rem;
+  }
+`;
+
+export const HeroContainer = styled.div`
+  max-width: 1200px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+
+  @media (min-width: 992px) {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 4rem;
   }
 `;
 
 export const HeroContent = styled.div`
-  max-width: 800px;
-  position: relative;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
   z-index: 1;
+  max-width: 500px;
+
+  @media (max-width: 991px) {
+    order: 2; /* Text below image on mobile */
+  }
+`;
+
+export const HeroImageWrapper = styled.div`
+  width: 100%;
+  height: 220px;
+  position: relative;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  margin: 0 auto;
+
+  img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;
+  }
+
+  @media (min-width: 992px) {
+    flex: 1.2;
+    height: 480px;
+    max-width: none;
+  }
+
+  @media (max-width: 991px) {
+    order: 1; /* Image above text on mobile */
+    margin-bottom: 0;
+    max-width: 343px;
+  }
+`;
+
+export const HeroImageControls = styled.div`
+  position: absolute;
+  bottom: 1rem;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: space-between;
+  padding: 0 1rem;
+  gap: 0.5rem;
+`;
+
+export const HeroSelectGroup = styled.div`
+  position: relative;
+  flex: 1;
+  
+  &::after {
+    content: '↕';
+    position: absolute;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 1rem;
+    color: #111827;
+    pointer-events: none;
+  }
+`;
+
+export const HeroSelectLabel = styled.label`
+  display: none;
+`;
+
+export const HeroSelect = styled.select`
+  width: 90%;
+  appearance: none;
+  background-color: #e5e7eb;
+  color: #111827;
+  font-weight: 600;
+  font-size: 0.875rem;
+  padding: 0.5rem 2rem 0.5rem 1rem;
+  border-radius: 0.5rem;
+  border: none;
+  cursor: pointer;
+  outline: none;
+  
+  &:hover {
+    background-color: #d1d5db;
+  }
+`;
+
+export const BadgeDev = styled.div`
+  background-color: #1f2937; /* Dark gray */
+  color: #86efac; /* Light green */
+  padding: 0.5rem 1rem;
+  border-radius: 9999px;
+  font-weight: 600;
+  font-size: 0.875rem;
+  margin-bottom: 1.5rem;
+  display: inline-block;
 `;
 
 export const Title = styled.h1`
-  font-size: 4rem;
-  font-weight: 900;
+  font-size: 2.2rem;
+  font-weight: 700;
   margin-bottom: 1rem;
-  background: linear-gradient(135deg, #ffffff, #3b82f6);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: white;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
   
-  @media (max-width: 768px) {
+  @media (min-width: 768px) {
+    font-size: 3.5rem;
+  }
+`;
+
+export const Subtitle = styled.p`
+  font-size: 1.125rem;
+  font-weight: 400;
+  margin-bottom: 2rem;
+  color: #f3f4f6;
+  line-height: 1.5;
+  
+  @media (min-width: 768px) {
+    font-size: 1.25rem;
+  }
+
+  strong {
+    font-weight: 700;
+    color: white;
+  }
+`;
+
+export const CTAButton = styled.button`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background-color: #2563eb; /* Bright blue */
+  color: white;
+  padding: 1rem 2rem;
+  border-radius: 0.75rem;
+  border: none;
+  font-weight: 700;
+  font-size: 1rem;
+  width: 100%;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  
+  @media (min-width: 768px) {
+    width: auto;
+  }
+
+  span.free {
+    color: #86efac; /* Light green */
+  }
+
+  &:hover {
+    background-color: #1d4ed8;
+  }
+`;
+
+export const CTASubtext = styled.p`
+  font-size: 0.875rem;
+  color: #d1d5db;
+  margin-top: 1rem;
+  font-weight: 500;
+  text-align: center;
+  width: 100%;
+  
+  @media (min-width: 768px) {
+    text-align: left;
+  }
+`;
+
+export const FloatingChatBtn = styled.button`
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background-color: #2563eb; /* Bright blue */
+  color: white;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 10px 25px rgba(37, 99, 235, 0.4);
+  cursor: pointer;
+  z-index: 1000;
+  transition: transform 0.2s ease, background-color 0.2s ease;
+
+  &:hover {
+    transform: scale(1.05);
+    background-color: #1d4ed8;
+  }
+
+  svg {
+    width: 32px;
+    height: 32px;
+  }
+`;
+
+// Quotes Section
+export const QuotesSection = styled.section`
+  background-color: white;
+  border-radius: 2rem 2rem 0 0;
+  padding: 4rem 1rem;
+  margin-top: -2rem; /* Overlap the dark hero */
+  position: relative;
+  z-index: 10;
+`;
+
+export const QuotesContainer = styled.div`
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding-bottom: 1rem;
+
+  @media (min-width: 1024px) {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 2rem;
+  }
+`;
+
+export const QuoteCard = styled.div`
+  background-color: #f1f5f9; /* Light grayish blue */
+  border-radius: 1rem;
+  padding: 1.5rem;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-width: 280px;
+  min-height: 200px;
+  flex: 0 0 auto;
+
+  @media (min-width: 1024px) {
+    min-width: unset;
+  }
+`;
+
+export const QuoteIconWrapper = styled.div`
+  position: absolute;
+  top: 1.5rem;
+  left: 1.5rem;
+  color: #2563eb; /* Bright blue */
+  
+  svg {
+    width: 32px;
+    height: 32px;
+  }
+`;
+
+export const QuoteText = styled.p`
+  font-size: 1.05rem;
+  color: #1e293b;
+  font-weight: 500;
+  line-height: 1.6;
+  margin-top: 2.5rem; /* Space for the absolute icon */
+  margin-bottom: 2rem;
+  position: relative;
+  z-index: 2;
+  flex: 1;
+`;
+
+export const QuoteAuthor = styled.div`
+  font-weight: 800;
+  font-size: 1.1rem;
+  color: #0f172a;
+  text-transform: uppercase;
+  letter-spacing: -0.05em;
+  position: relative;
+  z-index: 2;
+`;
+
+// Feature Grid Section
+export const FeatureGridSection = styled.section`
+  background-color: #121826;
+  border-radius: 1.5rem;
+  padding: 3rem 1.5rem;
+  margin: 4rem auto;
+  max-width: 1200px;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+
+  @media (min-width: 1024px) {
+    flex-direction: row;
+    padding: 4rem;
+    gap: 4rem;
+  }
+`;
+
+export const FeatureGridLeft = styled.div`
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+`;
+
+export const FeatureGridRight = styled.div`
+  flex: 1.5;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+
+  @media (min-width: 768px) {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+  }
+`;
+
+export const VSAIFeatureCard = styled.div`
+  background-color: #1f2937;
+  border-radius: 1rem;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+`;
+
+export const FeatureIcon = styled.div`
+  color: #86efac;
+  margin-bottom: 1rem;
+  svg {
+    width: 24px;
+    height: 24px;
+  }
+`;
+
+export const FeatureCardTitle = styled.h3`
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: white;
+  margin-bottom: 0.75rem;
+`;
+
+export const FeatureCardText = styled.p`
+  font-size: 1rem;
+  color: #d1d5db;
+  line-height: 1.5;
+  
+  strong {
+    color: white;
+    font-weight: 700;
+  }
+`;
+
+// How It Works Section
+export const HowItWorksSection = styled.section`
+  background-color: white;
+  padding: 4rem 1rem;
+  text-align: center;
+`;
+
+export const HowItWorksContainer = styled.div`
+  max-width: 1200px;
+  margin: 0 auto;
+`;
+
+export const HowItWorksBadge = styled.div`
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background-color: #bbf7d0; /* Light green */
+  color: #111827; /* Dark black */
+  padding: 0.5rem 1rem;
+  border-radius: 9999px;
+  font-weight: 700;
+  font-size: 0.875rem;
+  margin-bottom: 1.5rem;
+  
+  svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  @media (min-width: 1024px) {
+    display: none;
+  }
+`;
+
+export const HowItWorksTitle = styled.h2`
+  font-size: 2rem;
+  color: #0f172a;
+  font-weight: 400;
+  margin-bottom: 1.5rem;
+  line-height: 1.2;
+  
+  strong {
+    font-weight: 700;
+  }
+
+  @media (min-width: 768px) {
     font-size: 2.5rem;
   }
 `;
 
-export const Subtitle = styled.h2`
-  font-size: 1.5rem;
-  font-weight: 600;
-  margin-bottom: 2rem;
-  color: #93c5fd;
-  letter-spacing: 2px;
-  
-  @media (max-width: 768px) {
-    font-size: 1.2rem;
+export const HowItWorksSubtitle = styled.p`
+  font-size: 1.1rem;
+  color: #334155;
+  max-width: 700px;
+  margin: 0 auto 3rem;
+  line-height: 1.6;
+
+  strong {
+    color: #0f172a;
+    font-weight: 700;
+  }
+
+  @media (min-width: 768px) {
+    font-size: 1.125rem;
   }
 `;
 
-export const CTAButton = styled.a`
-  display: inline-block;
-  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
-  color: white;
-  padding: .8rem 2rem;
-  border-radius: 4px;
-  text-decoration: none;
-  font-weight: 700;
-  font-size: 1rem;
-  margin-top: 2rem;
-  transition: all 0.3s ease;
-  box-shadow: 0 8px 25px rgba(59, 130, 246, 0.3);
-  z-index:1000;
-  cursor:pointer;
-  position: relative;
+export const HowItWorksGrid = styled.div`
+  display: flex;
+  gap: 1rem;
+  overflow-x: auto;
+  padding-bottom: 1rem;
+  scroll-snap-type: x mandatory;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  margin-left: -1rem;
+  margin-right: -1rem;
   
-  &:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 15px 35px rgba(59, 130, 246, 0.4);
+  /* Hide scrollbar */
+  scrollbar-width: none; 
+  -ms-overflow-style: none;  
+  &::-webkit-scrollbar { 
+    display: none;  
   }
+
+  @media (min-width: 1024px) {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    overflow-x: visible;
+    padding-left: 0;
+    padding-right: 0;
+    margin-left: 0;
+    margin-right: 0;
+    gap: 1.5rem;
+  }
+`;
+
+export const HowItWorksCard = styled.div`
+  background-color: #f1f5f9;
+  border-radius: 1.5rem;
+  padding: 1.5rem;
+  text-align: left;
+  min-width: 85vw; /* Fills most of the screen, leaves a peek of the next card */
+  flex: 0 0 auto;
+  scroll-snap-align: center;
+  display: flex;
+  flex-direction: column;
+  width: 90%;
+
+  @media (min-width: 768px) {
+    min-width: 350px;
+  }
+
+  @media (min-width: 1024px) {
+    min-width: unset;
+  }
+`;
+
+export const HowItWorksCardHeader = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+`;
+
+export const HowItWorksCardTitle = styled.h3`
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0;
+`;
+
+export const HowItWorksStepNumber = styled.div`
+  width: 36px;
+  height: 36px;
+  border-radius: 50%; /* Circle */
+  background-color: transparent;
+  border: 1px solid #cbd5e1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  color: #0f172a;
+  font-size: 1.1rem;
+`;
+
+export const HowItWorksDots = styled.div`
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-top: 1.5rem;
+
+  .dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    border: 2px solid #111827;
+    background-color: transparent;
+    cursor: pointer;
+  }
+
+  .dot.active {
+    background-color: #111827;
+  }
+
+  @media (min-width: 1024px) {
+    display: none; /* Hide dots on desktop */
+  }
+`;
+
+export const HowItWorksCardText = styled.p`
+  color: #475569;
+  font-size: 1rem;
+  margin-bottom: 1.5rem;
+  line-height: 1.5;
+  flex-grow: 1;
+`;
+
+export const HowItWorksImageWrapper = styled.div`
+  position: relative;
+  border-radius: 1rem;
+  overflow: hidden;
+  height: 200px;
+  
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  @media (min-width: 768px) {
+    height: auto;
+    aspect-ratio: 4/3;
+  }
+`;
+
+export const HowItWorksOverlayBlack = styled.div`
+  position: absolute;
+  bottom: 1rem;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: rgba(15, 23, 42, 0.85);
+  backdrop-filter: blur(4px);
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  white-space: nowrap;
+
+  @media (min-width: 768px) {
+    font-size: 0.875rem;
+  }
+`;
+
+export const HowItWorksOverlayGreen = styled.div`
+  position: absolute;
+  bottom: 1rem;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #bbf7d0;
+  color: #166534;
+  padding: 0.5rem 1rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  white-space: nowrap;
+
+  @media (min-width: 768px) {
+    font-size: 0.875rem;
+  }
+`;
+
+// Comparison Section
+export const ComparisonSection = styled.section`
+  background-color: white;
+  padding: 4rem 1rem;
+  text-align: center;
+  max-width: 1200px;
+  margin: 0 auto;
+`;
+
+export const ComparisonBadge = styled.div`
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background-color: #dcfce7;
+  color: #166534;
+  padding: 0.5rem 1rem;
+  border-radius: 9999px;
+  font-weight: 700;
+  font-size: 0.875rem;
+  margin-bottom: 1.5rem;
+  
+  svg {
+    width: 18px;
+    height: 18px;
+  }
+`;
+
+export const ComparisonTitle = styled.h2`
+  font-size: 2.5rem;
+  color: #0f172a;
+  font-weight: 500;
+  margin-bottom: 3rem;
+  
+  strong {
+    font-weight: 800;
+  }
+`;
+
+export const ComparisonGrid = styled.div`
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  gap: 1.5rem;
+
+  @media (min-width: 1024px) {
+    flex-direction: row;
+    align-items: stretch;
+    gap: 1.5rem;
+  }
+`;
+
+export const ComparisonCardBlue = styled.div`
+  background-color: #254bba; /* Cor azul aproximada do print */
+  border-radius: 1.5rem;
+  padding: 1.5rem 1rem;
+  flex: 1;
+  text-align: left;
+  color: white;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  position: relative;
+
+  @media (min-width: 768px) {
+    padding: 3rem 2rem;
+  }
+`;
+
+export const ComparisonCardRed = styled.div`
+  background-color: #fff1f2; /* Fundo rosinha claro */
+  border-radius: 1.5rem;
+  padding: 1.5rem 1rem;
+  flex: 1;
+  text-align: left;
+  color: #0f172a;
+  position: relative;
+
+  @media (min-width: 768px) {
+    padding: 3rem 2rem;
+  }
+`;
+
+export const ComparisonCardTitle = styled.h3`
+  font-size: 1.25rem;
+  font-weight: 800;
+  margin-bottom: 1.5rem;
+  text-align: center;
+
+  @media (min-width: 768px) {
+    font-size: 1.75rem;
+    margin-bottom: 2.5rem;
+    text-align: left;
+  }
+`;
+
+export const ComparisonList = styled.ul`
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+
+  @media (min-width: 768px) {
+    gap: 1.5rem;
+  }
+`;
+
+export const ComparisonItem = styled.li`
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+
+  @media (min-width: 768px) {
+    gap: 1rem;
+    font-size: 1.05rem;
+  }
+
+  line-height: 1.4;
+
+  svg {
+    flex-shrink: 0;
+    width: 20px;
+    height: 20px;
+    margin-top: 0.1rem;
+  }
+`;
+
+export const ComparisonItemTitle = styled.strong`
+  font-weight: 700;
+`;
+
+export const VsBadge = styled.div`
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #111827; /* Fundo preto/escuro */
+  color: white;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 1rem;
+  border: 4px solid white;
+  z-index: 10;
+`;
+
+// FAQ Section
+export const FAQSection = styled.section`
+  background-color: white;
+  padding: 4rem 1rem;
+  max-width: 1200px;
+  margin: 0 auto;
+`;
+
+export const FAQContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
+
+  @media (min-width: 1024px) {
+    flex-direction: row;
+    align-items: flex-start;
+  }
+`;
+
+export const FAQLeft = styled.div`
+  flex: 1;
+  text-align: center;
+  
+  @media (min-width: 1024px) {
+    text-align: left;
+    position: sticky;
+    top: 2rem;
+  }
+`;
+
+export const FAQBadge = styled.div`
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background-color: #dcfce7;
+  color: #166534;
+  padding: 0.5rem 1rem;
+  border-radius: 9999px;
+  font-weight: 700;
+  font-size: 0.875rem;
+  margin-bottom: 1.5rem;
+  
+  svg {
+    width: 18px;
+    height: 18px;
+  }
+`;
+
+export const FAQTitle = styled.h2`
+  font-size: 2.5rem;
+  color: #0f172a;
+  font-weight: 800;
+  line-height: 1.2;
+  
+  span {
+    display: block;
+    font-weight: 400;
+  }
+`;
+
+export const FAQRight = styled.div`
+  flex: 1.5;
+  display: flex;
+  flex-direction: column;
+`;
+
+export const FAQItem = styled.div`
+  border-bottom: 1px solid #f1f5f9;
+  padding: 1.5rem 0;
+  
+  &:first-child {
+    border-top: 1px solid #f1f5f9;
+  }
+`;
+
+export const FAQQuestionRow = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  user-select: none;
+`;
+
+export const FAQQuestionText = styled.h3`
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0;
+  padding-right: 1rem;
+`;
+
+export const FAQIconWrapper = styled.div<{ $isOpen: boolean }>`
+  color: #0f172a;
+  transition: transform 0.3s ease;
+  transform: ${props => props.$isOpen ? 'rotate(180deg)' : 'rotate(0)'};
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  svg {
+    width: 24px;
+    height: 24px;
+  }
+`;
+
+export const FAQAnswerWrapper = styled.div<{ $isOpen: boolean }>`
+  max-height: ${props => props.$isOpen ? '500px' : '0'};
+  overflow: hidden;
+  transition: max-height 0.3s ease-in-out, opacity 0.3s ease-in-out, margin-top 0.3s ease;
+  opacity: ${props => props.$isOpen ? '1' : '0'};
+  margin-top: ${props => props.$isOpen ? '1rem' : '0'};
+`;
+
+export const FAQAnswerText = styled.p`
+  font-size: 1.05rem;
+  color: #475569;
+  line-height: 1.6;
+  margin: 0;
+`;
+
+// Pre-Launch CTA Section
+export const PreLaunchCTASection = styled.section`
+  padding: 4rem 1rem;
+  background-color: white;
+`;
+
+export const PreLaunchCTAContainer = styled.div`
+  max-width: 1200px;
+  margin: 0 auto;
+  background-color: #f8fafc;
+  border-radius: 24px;
+  padding: 2.5rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+
+  @media (min-width: 768px) {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding: 4rem;
+    gap: 4rem;
+  }
+`;
+
+export const PreLaunchCTALeft = styled.div`
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+`;
+
+export const PreLaunchCTATitle = styled.h2`
+  font-size: 2rem;
+  font-weight: 700;
+  color: #0f172a;
+  line-height: 1.2;
+
+  span {
+    font-weight: 800;
+  }
+
+  @media (min-width: 768px) {
+    font-size: 2.75rem;
+  }
+`;
+
+export const PreLaunchCTADesc = styled.p`
+  font-size: 1.1rem;
+  color: #475569;
+  line-height: 1.6;
+
+  span {
+    font-weight: 700;
+    color: #0f172a;
+  }
+`;
+
+export const PreLaunchCTAButtonContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  align-items: flex-start;
+`;
+
+export const PreLaunchCTAButton = styled.button`
+  background-color: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 12px;
+  padding: 1rem 2rem;
+  font-size: 1.125rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+
+  &:hover {
+    background-color: #2563eb;
+    transform: translateY(-2px);
+  }
+
+  svg {
+    width: 20px;
+    height: 20px;
+  }
+`;
+
+export const PreLaunchCTASubtext = styled.span`
+  font-size: 0.875rem;
+  color: #64748b;
+`;
+
+export const PreLaunchCTARight = styled.div`
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+`;
+
+export const PreLaunchCTAImage = styled.img`
+  width: 100%;
+  height: auto;
+  max-height: 400px;
+  object-fit: cover;
+  border-radius: 16px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
 `;
 
 // Products Section
 export const ProductsSection = styled.section`
-  padding: 1rem 0.5rem 3rem 0.5rem;
+  padding: 4rem 0.5rem 3rem 0.5rem;
   background: white;
-  margin-top: 170px; /* Espaço para os mockups */
 
   @media (min-width: 768px) {
-  padding: 10rem 2rem 4rem;
+    padding: 6rem 2rem 4rem;
   }
-
 `;
 
 export const SectionTitle = styled.h2`
@@ -772,8 +1636,8 @@ export const CTASection = styled.section`
   background: rgba(30, 58, 138, 0.1);
 `;
 
-// FAQ Section
-export const FAQSection = styled.section`
+// Legacy FAQ Section
+export const OldFAQSection = styled.section`
   padding: 2rem 1rem;
   background: #f8fafc;
 
@@ -783,7 +1647,7 @@ export const FAQSection = styled.section`
   }
 `;
 
-export const FAQContainer = styled.div`
+export const OldFAQContainer = styled.div`
   width: 100%;
   margin: 0 auto;
 
@@ -792,7 +1656,7 @@ export const FAQContainer = styled.div`
  }
 `;
 
-export const FAQTitle = styled.h2`
+export const OldFAQTitle = styled.h2`
   font-size: 2.5rem;
   font-weight: 800;
   text-align: left;
@@ -811,7 +1675,7 @@ export const FAQTitle = styled.h2`
   }
 `;
 
-export const FAQItem = styled.div`
+export const OldFAQItem = styled.div`
   background: white;
   border-radius: 12px;
   margin-bottom: 1rem;
@@ -824,7 +1688,7 @@ export const FAQItem = styled.div`
   }
 `;
 
-export const FAQQuestion = styled.button`
+export const OldFAQQuestion = styled.button`
   width: 100%;
   padding: 1.5rem 2rem;
   background: none;
@@ -857,7 +1721,7 @@ export const FAQQuestion = styled.button`
   }
 `;
 
-export const FAQAnswer = styled.div`
+export const OldFAQAnswer = styled.div`
   padding: 0 2rem 1.5rem;
   color: #64748b;
   line-height: 1.6;

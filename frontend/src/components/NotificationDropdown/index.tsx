@@ -9,7 +9,7 @@ import {
   clearAllNotifications
 } from '../../services/resources/notifications';
 import { formatDistanceToNow } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
+import { ptBR } from 'date-fns/locale/pt-BR';
 
 interface NotificationDropdownProps {
   className?: string;
