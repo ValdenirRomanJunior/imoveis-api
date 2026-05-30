@@ -3,16 +3,22 @@ import styled from "styled-components";
 
 export const CardWrapper = styled.div`
 width: 270px;
-height:310px;
-border-bottom: 2px solid rgb(222, 222, 222);
+height:320px;
+background: #fff;
+border-radius: 12px;
 margin-top: 20px;
 cursor: pointer;
+transition: all 0.3s ease;
+-webkit-box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+-moz-box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+border: 1px solid #f3f4f6;
 
 &:hover{
-    -webkit-box-shadow: 1px 6px 14px -9px rgba(138,138,138,1);
-    -moz-box-shadow: 1px 6px 14px -9px rgba(138,138,138,1);
-    box-shadow: 1px 6px 14px -9px rgba(138,138,138,1);
-
+    transform: translateY(-4px);
+    -webkit-box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    -moz-box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
 }
 
 
@@ -35,46 +41,39 @@ width: 100%;
 height:100%;
 display: flex;
 flex-direction: column;
-
 align-items: center;
 position:relative;
-
-
-
+overflow: hidden;
+border-radius: 12px;
 
     .image-card-property-home-wrapper{
         width:100%;
-        height:160px;
-        background:rgb(216, 216, 216);
+        height:180px;
+        background:rgb(243, 244, 246);
     }
 
   .image-card-property-home{
     width: 100%;
-    height: 160px;
+    height: 180px;
     object-fit: cover;
     aspect-ratio: 16/9;
-    border-radius:3px;
-
   }
   .default-image-card-property-home{
     width: 100%;
-    height: 160px;
+    height: 180px;
     object-fit: contain;
     aspect-ratio: 16/9;
-    border-radius:3px;
-
-
   }
 
     
     .price-wrapper{
-        -webkit-box-shadow: 0px 3px 6px -4px rgba(128,128,128,1);
-        -moz-box-shadow: 0px 3px 6px -4px rgba(128,128,128,1);
-        box-shadow: 0px 3px 6px -4px rgba(128,128,128,1);
+        -webkit-box-shadow: 0px 4px 6px rgba(0,0,0,0.05);
+        -moz-box-shadow: 0px 4px 6px rgba(0,0,0,0.05);
+        box-shadow: 0px 4px 6px rgba(0,0,0,0.05);
 
-        font-weight: 500;
-        color: rgb(74, 74, 74);
-        font-size: 11px;
+        font-weight: 600;
+        color: #1f2937;
+        font-size: 12px;
         margin-bottom: 3px;
         text-overflow: ellipsis;
         display: flex;
@@ -83,16 +82,15 @@ position:relative;
        
         white-space: nowrap;
         position:absolute;
-        top:48%;
-        left:10%;
+        top: 155px; /* Puxado mais para cima para ficar na linha da imagem */
+        left:12px;
         min-width:82px;
         max-width:125px;
-        padding:0 10px;
-        height:24px;
-        background:#fff;
+        padding:0 12px;
+        height:26px;
+        background:rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(4px);
         border-radius:20px;
-       
-
     }
 
     .type-wrapper{

@@ -1,105 +1,209 @@
-import styled from 'styled-components';
+import styled from "styled-components";
 
-export const LancamentosPage = styled.main`
-  min-height: calc(100vh - 45px);
-  background: #f6f8fa;
-  padding: 24px 16px 32px 16px;
-  font-family: 'Nunito Sans', sans-serif;
-
-  @media screen and (min-width: 1000px) {
-    padding: 28px 24px 36px 88px;
-  }
+export const EmpreendimentosBackground = styled.main`
+    width: 100%;   
+    display: flex;  
+    flex-direction: column;
+    background-color: #fafafa;
+    min-height: 100vh;
 `;
 
-export const HeaderRow = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  margin-bottom: 14px;
+export const EmpreendimentosContainer = styled.div`
+    width: 100%;
+    padding: 30px 20px 40px 20px;
+    font-family: 'Inter', 'Nunito Sans', sans-serif;
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+    max-width: 1200px;
+    margin: 0 auto;
 
-  h1 {
-    font-size: 1.5rem;
-    color: #1f2328;
-  }
+    .page-header {
+        position: relative;
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+
+        h1 {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 16px;
+            font-weight: 500;
+            color: #111;
+            margin: 0;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+
+        .btn-primary {
+            background: #000;
+            border: 1px solid #000;
+            color: #fff;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+            display: inline-block;
+
+            &:hover {
+                background: #333;
+            }
+        }
+        
+        @media screen and (max-width: 600px) {
+            justify-content: center;
+            
+            h1 {
+                position: static;
+                transform: none;
+                margin-bottom: 16px;
+            }
+            
+            .btn-primary {
+                width: 100%;
+                text-align: center;
+            }
+        }
+    }
+
+    @media screen and (min-width: 1000px){
+        padding: 40px 40px 40px 100px;
+        max-width: 1400px;
+    }
 `;
 
-export const PrimaryButton = styled.button`
-  border: 1px solid #1f883d;
-  background: #1f883d;
-  color: #fff;
-  border-radius: 6px;
-  padding: 10px 16px;
-  font-size: 0.95rem;
-  font-weight: 700;
-  cursor: pointer;
+export const EmpreendimentosGrid = styled.div`
+    display: grid;
+    grid-template-columns: repeat(1, 1fr);
+    gap: 24px;
+
+    @media screen and (min-width: 768px) {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    @media screen and (min-width: 1024px) {
+        grid-template-columns: repeat(3, 1fr);
+    }
 `;
 
-export const SectionTitle = styled.p`
-  color: #59636e;
-  margin-bottom: 16px;
-`;
-
-export const CardGrid = styled.div`
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  gap: 14px;
-`;
-
-export const LaunchCard = styled.article`
-  background: #fff;
-  border: 1px solid #d8dee4;
-  border-radius: 8px;
-  padding: 16px;
-
-  h3 {
-    color: #1f2328;
-    font-size: 1.05rem;
-    margin-bottom: 8px;
-  }
-
-  .leads {
-    color: #59636e;
-    margin: 8px 0 14px 0;
-  }
-`;
-
-export const Badge = styled.span<{ $status: 'PUBLICADA' | 'RASCUNHO' | 'GERANDO' }>`
-  display: inline-flex;
-  align-items: center;
-  border-radius: 999px;
-  padding: 4px 10px;
-  font-size: 0.8rem;
-  font-weight: 700;
-  color: ${({ $status }) => ($status === 'PUBLICADA' ? '#116329' : $status === 'RASCUNHO' ? '#9a6700' : '#1f6feb')};
-  background: ${({ $status }) => ($status === 'PUBLICADA' ? '#dafbe1' : $status === 'RASCUNHO' ? '#fff8c5' : '#ddf4ff')};
-`;
-
-export const CardActions = styled.div`
-  display: flex;
-  gap: 8px;
-
-  a,
-  button {
-    border: 1px solid #d0d7de;
+export const EmpreendimentoCard = styled.div`
     background: #fff;
-    color: #1f2328;
-    border-radius: 6px;
-    padding: 7px 10px;
-    font-size: 0.85rem;
+    border: 1px solid #eaeaea;
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    transition: all 0.2s ease;
     cursor: pointer;
-  }
+    text-decoration: none;
+    color: inherit;
+
+    &:hover {
+        border-color: #ccc;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        transform: translateY(-2px);
+    }
+
+    .card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 12px;
+
+        h3 {
+            font-size: 18px;
+            font-weight: 600;
+            color: #111;
+            margin: 0;
+            line-height: 1.3;
+        }
+
+        .badge {
+            padding: 4px 10px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 500;
+            white-space: nowrap;
+            
+            &.ativo { background: #f0fdf4; color: #15803d; border: 1px solid #bbf7d0; }
+            &.inativo { background: #f3f4f6; color: #4b5563; border: 1px solid #e5e7eb; }
+        }
+    }
+
+    .card-metrics {
+        display: flex;
+        align-items: center;
+        gap: 24px;
+        margin-top: auto;
+        padding-top: 16px;
+        border-top: 1px solid #eaeaea;
+
+        .metric-item {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+
+            span.label {
+                font-size: 12px;
+                color: #666;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+            }
+
+            span.value {
+                font-size: 20px;
+                font-weight: 600;
+                color: #111;
+            }
+        }
+    }
 `;
 
-export const EmptyState = styled.button`
-  width: 100%;
-  margin-top: 16px;
-  border: 1px dashed #8c959f;
-  background: #fff;
-  border-radius: 8px;
-  padding: 16px;
-  color: #57606a;
-  text-align: left;
-  cursor: pointer;
-  font-size: 1rem;
+export const EmptyState = styled.div`
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 64px 24px;
+    background: #fff;
+    border: 1px dashed #eaeaea;
+    border-radius: 12px;
+    text-align: center;
+    gap: 16px;
+
+    h3 {
+        font-size: 18px;
+        font-weight: 600;
+        color: #111;
+        margin: 0;
+    }
+
+    p {
+        font-size: 14px;
+        color: #666;
+        margin: 0;
+        max-width: 400px;
+    }
+
+    button {
+        margin-top: 8px;
+        background: #000;
+        color: #fff;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 6px;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: background 0.2s;
+
+        &:hover {
+            background: #333;
+        }
+    }
 `;

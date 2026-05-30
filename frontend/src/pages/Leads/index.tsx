@@ -172,25 +172,25 @@ const Leads = () => {
     },[])
     let perfilTenant=Object.values(user.perfis).some(obj => obj === 'TENANT');
 
+   // ... (mantenha os imports e funções do topo)
+
     return(
         <>
         {perfilTenant  ? 
         <ErrorBoundary FallbackComponent={ErrorHandler}>
-
         <div>
-        
-        
         <LeadsBackground>
             <Header />
             <BarTop />
             <LeadsContainer>
 
-            <div className="title-leads"><BiBorderRadius className="icon-title-lead"/><h2>Leads</h2>
-            <button className="button-add-lead" style={{display:"none"}} onClick={handleOpenModal}><BsPersonPlus className="icon-add-lead"/></button> 
+            {/* CABEÇALHO ATUALIZADO */}
+            <div className="page-header">
+                <h1>Leads</h1>
             </div>
             
-                 
             <Modal 
+// ... (mantenha o restante do código do modal)
                 isOpen={modalIsOpen}
                 onRequestClose={handleCloseModal}    
                 className='Modall'

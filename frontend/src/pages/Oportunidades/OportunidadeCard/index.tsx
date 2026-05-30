@@ -1,6 +1,6 @@
 
 import {OportunidadeContainer,ItemsContainer,MessageNoLeads, LeadSearchWrapper,ColumnsContainer} from "./styles";
-import {BsPersonFill, BsTrash} from 'react-icons/bs';
+import { BsPersonFill, BsTrash, BsListTask, BsKanban } from 'react-icons/bs';
 import {MdKeyboardArrowDown} from 'react-icons/md';
 import { useEffect, useRef, useState } from "react";
 import { Property } from "../../../types/property";
@@ -27,7 +27,7 @@ import { tokenAux } from "../../../utils/requests";
 
 
 
-const OportunidadeCard = (props:{param:string})=>{
+const OportunidadeCard = (props:{param:string, viewMode?: 'kanban' | 'list'})=>{
 
 
   const [stepsOp, setSteps] = useState<Step[]>();
@@ -259,6 +259,69 @@ const OportunidadeCard = (props:{param:string})=>{
         }                                                              
     }
 
+    const getTemperatureEmoji = (id: number) => {
+        const temp = id % 3;
+        if (temp === 0) return '🧊'; // Frio
+        if (temp === 1) return '🌤️'; // Morno
+        return '🔥'; // Quente
+    };
+
+    if (props.viewMode === 'list') {
+        return (
+            <div style={{ marginTop: '20px', background: '#fff', border: '1px solid #eaeaea', borderRadius: '8px', padding: '16px' }}>
+                {page?.length && page.length > 0 ? (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                        {page.map(lead => (
+                            <div key={lead.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 16px', border: '1px solid #eaeaea', borderRadius: '6px' }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flex: 2 }}>
+                                    <div style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                            <Link to={`/oportunidades/oportunidade/${lead.id}`} style={{ textDecoration: 'none', color: '#111', fontWeight: 600, fontSize: '15px' }}>
+                                                {capitalize(lead.nameLead)}
+                                            </Link>
+                                        </div>
+                                        <span style={{ color: '#666', fontSize: '13px', marginTop: '2px' }}><AiOutlineMail style={{marginRight: '4px'}}/>{lead.emailLead} | <FaWhatsapp style={{marginRight: '4px', marginLeft: '8px'}}/>{lead.phoneLead}</span>
+                                        <div style={{ position: 'relative', width: '100%', marginTop: '6px' }}>
+                                            {((lead as any).empreendimentoName || lead.propertyId) && (
+                                                <div style={{ width: '90%' }}>
+                                                    <span style={{ fontSize: '11px', background: '#f8fafc', color: '#475569', border: '1px solid #e2e8f0', padding: '4px 8px', borderRadius: '4px', display: 'flex', alignItems: 'center', gap: '6px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                                                        🏢 {(lead as any).empreendimentoName || `Lançamento ${lead.propertyId}`}
+                                                    </span>
+                                                </div>
+                                            )}
+                                            <span style={{ position: 'absolute', right: '0', top: '50%', transform: 'translateY(-50%)', fontSize: '20px', width: '50px', display: 'flex', justifyContent: 'center' }} title="Temperatura do Lead">
+                                                {getTemperatureEmoji(lead.idLead)}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                    <span style={{ background: '#f3f4f6', color: '#4b5563', padding: '4px 10px', borderRadius: '999px', fontSize: '12px', fontWeight: 500 }}>
+                                        {lead.stepName}
+                                    </span>
+                                </div>
+                                <div>
+                                    <VscArrowSwap onClick={() => openChangeSteps(lead.id)} style={{ cursor: 'pointer', color: '#666', fontSize: '18px' }} />
+                                    {stepsVisible && selectedIdStep === lead.id &&
+                                        <ul className="list-steps-change" style={{ top: 'auto', bottom: '100%', right: '50px' }}>
+                                            <h5>mover para:</h5>
+                                            {columnMap && columnMap.map(step => (                                                                    
+                                              <li key={step.id} onClick={() => handleSubmit(lead.idLead, step.id)}>{step.name}</li>
+                                            ))}
+                                            <IoClose onClick={handleCloseStepMove} className="icon-step-move"/>
+                                        </ul>
+                                    }
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                ) : (
+                    <MessageNoLeads><h4 className="message-no-leads">Você não possui oportunidades no momento...</h4></MessageNoLeads>
+                )}
+            </div>
+        );
+    }
+
     return(
          
         <OportunidadeContainer>
@@ -298,9 +361,26 @@ const OportunidadeCard = (props:{param:string})=>{
                             {loading &&<LoadingLogin/>}                         
                             <div className="content-first" onClick={openMessage}>             
                             <div className="data-lead-left-wrapper">
-                            <h4>{capitalize(lead.nameLead)}</h4>   
+                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
+                                <h4 style={{ display: 'flex', alignItems: 'center', gap: '4px', maxWidth: '100%' }}>
+                                    {capitalize(lead.nameLead)}
+                                </h4>
+                            </div>
                             <span><AiOutlineMail className="email-icon"/>{lead.emailLead}</span>
                             <div className="phone-date-wrapper-lead"><p className="phone-leads"><FaWhatsapp className="icon-phone-lead"/>{lead.phoneLead}</p><p className="instant-lead">{lead.instant}</p></div>
+                            
+                            <div style={{ position: 'relative', width: '100%', marginTop: '8px', marginBottom: '4px' }}>
+                                {((lead as any).empreendimentoName || lead.propertyId) && (
+                                    <div style={{ width: '90%' }}>
+                                        <span style={{ fontSize: '10px', background: '#f8fafc', color: '#475569', border: '1px solid #e2e8f0', padding: '4px 8px', borderRadius: '4px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', display: 'flex', alignItems: 'center', gap: '6px' }} title={(lead as any).empreendimentoName || `Lançamento ${lead.propertyId}`}>
+                                            🏢 {(lead as any).empreendimentoName || `Lançamento ${lead.propertyId}`}
+                                        </span>
+                                    </div>
+                                )}
+                                <span style={{ position: 'absolute', right: '0', top: '50%', transform: 'translateY(-50%)', fontSize: '16px', zIndex: 1, width: '50px', display: 'flex', justifyContent: 'center' }} title="Temperatura do Lead">
+                                    {getTemperatureEmoji(lead.idLead)}
+                                </span>
+                            </div>
                             </div>
                                                                                                                                             
                      </div>

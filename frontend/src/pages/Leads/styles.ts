@@ -1,83 +1,54 @@
 import styled from "styled-components";
 
-
-export const LeadsBackground = styled.div`
-width: 100%;   
-background-color: ${({theme}) => theme.colors.backgroundLight};
-
-@media screen and (min-width: 1000px){
-
-    display: flex;
+export const LeadsBackground = styled.main`
+    width: 100%;   
+    display: flex;  
     flex-direction: column;
-    justify-content: center;
-    align-items: center;
-}
-
-`
+    background-color: #fafafa;
+    min-height: 100vh;
+`;
 
 export const LeadsContainer = styled.div`
-width:100vw;   
-display: flex;  
-flex-direction: column;
-background-color: ${({theme}) => theme.colors.backgroundLight};
-padding: 1.5rem 1rem;
-
-.title-leads{
+    width: 100%;
+    padding: 30px 20px 40px 20px;
+    font-family: 'Inter', 'Nunito Sans', sans-serif;
     display: flex;
-    align-items: center;
-    justify-content: flex-start;
-    padding:0 10px;
-    margin-top: 40px;
-  
+    flex-direction: column;
+    gap: 24px;
+    max-width: 1200px;
+    margin: 0 auto;
+
+    .page-header {
+        position: relative;
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        min-height: 36px;
+
+        h1 {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 16px;
+            font-weight: 500;
+            color: #111;
+            margin: 0;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+    }
+
+    @media screen and (min-width: 1000px){
+        padding: 40px 40px 40px 100px;
+        max-width: 1400px;
+    }
     
-   h2{
-    color: #5d5d5d;
-    font-weight: 400 !important;
-    font-family:"Poppins",sans-serif;
-    font-size:17px;
-    color:#5d5d5d;
-    margin-bottom:0;
-    margin-left:7px;
-   }
-   .icon-title-lead{
-    color: #6475fd;
-    font-size:19px;
-   }
-
-    .button-add-lead{
-        padding:6px 8px;
-        text-align: center;
-        background: rgba(191,235,214,0.5);
-        color: green;
-        font-family:'Nunito Sans', sans-serif;
-        font-weight:600;
-        border:none;
-        margin-left:30px;
-       
-        display:flex:
-        align-itens: center;
-       
-        border-radius: 3px;
-
-        .icon-add-lead{
-            font-family:'Nunito Sans', sans-serif;
-            font-size:20px;
-
+    @media screen and (max-width: 600px) {
+        .page-header {
+            justify-content: center;
+            h1 {
+                position: static;
+                transform: none;
+            }
         }
-        }
-     
-}
-
-
-
-@media screen and (min-width: 1000px){
-    width:50%;
-    justify-content: center;
-
-
-
-
-}
-
-
-`
+    }
+`;

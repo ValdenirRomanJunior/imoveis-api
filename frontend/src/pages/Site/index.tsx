@@ -26,7 +26,11 @@ import {
   FaMapMarkerAlt,
   FaFacebook,
   FaInstagram,
-  FaWhatsapp
+  FaWhatsapp,
+  FaEnvelope,
+  FaPhoneAlt,
+  FaLinkedinIn,
+  FaPaperPlane,
 } from 'react-icons/fa';
 import { 
   HiHome, 
@@ -56,6 +60,9 @@ import {
   Banner,
   BannerContent,
   BannerTitle,
+  BannerButton,
+  BannerIndicators,
+  Dot,
   Section,
   SectionTitle,
   ServicesGrid,
@@ -85,7 +92,35 @@ import {
   ModalCloseButton,
   ModalBody,
   NavigationSection,
-  NavigationLink
+  NavigationLink,
+  UnifiedContactSection,
+  UnifiedContactContainer,
+  InfoColumn,
+  ProfileBlock,
+  ProfileText,
+  ContactDetailsGrid,
+  DetailItem,
+  SocialRow,
+  FormColumn,
+  FormField,
+  SubmitBtn,
+  MapColumn,
+  WhyChooseSection,
+  WhyChooseContainer,
+  WhyChooseLeft,
+  WhyChooseImageWrapper,
+  ReviewCard,
+  Stars,
+  ReviewText,
+  ReviewAuthor,
+  WhyChooseRight,
+  WhyChooseTitle,
+  FeatureList,
+  FeatureItem,
+  FeatureNumber,
+  FeatureTextContent,
+  FeatureTitle,
+  FeatureDesc
 } from './styles';
 import PseudoSearch from './PseudoSearch';
 import WhatsappButton from './WhatsappButton';
@@ -159,6 +194,8 @@ interface ThemeConfig {
   agentPhoto: string;
   agentQuote: string;
   agentName: string;
+  email?: string;
+  address?: string;
   footerLogo: string;
   socialLinks: {
     facebook: string;
@@ -190,6 +227,7 @@ const Site: React.FC = () => {
   const [privacyModalOpen, setPrivacyModalOpen] = useState(false);
   const [aboutModalOpen, setAboutModalOpen] = useState(false);
   const [clientSlug, setClientSlug] = useState<string | null>(null);
+  const [currentSlide, setCurrentSlide] = useState(0);
    const [url,setUrl]= useState((window.location.hostname));
 
        const [errorsLead, setErrorsLead] = useState<Error[]>([]);
@@ -513,8 +551,8 @@ function handleChange(e: any): void {
     <ThemeProvider theme={dynamicTheme}>
       <DynamicFavicon faviconUrl={themeConfig?.favicon} />
       <DynamicSEO facebookPixelId={themeConfig?.facebookPixel} keywords={themeConfig?.seoKeywords} title={themeConfig?.siteTitle} />
-      <SiteContainer>
-      {/* Bloco 1 - Header */}
+      
+      {/* Bloco 1 - Header (Agora Fora do SiteContainer e acima da imagem) */}
       <Header>
         {(() => {
           const hostname = window.location.hostname;
@@ -549,9 +587,10 @@ function handleChange(e: any): void {
             const isLocalhost = hostname === 'localhost' || hostname === '127.0.0.1';
             const slug = clientSlug || companyName || '';
             const propertiesPath = isLocalhost ? `/site/${slug}/imoveis/?goal=&type=&name=` : '/imoveis/?goal=&type=&name=';
-            return <NavLink href={propertiesPath}>Imóveis</NavLink>;
+            return <NavLink href={propertiesPath}>Property</NavLink>;
           })()}
-          <NavLink href={`tel:${themeConfig.phone}`}>{themeConfig.phone || '(85) 99999-9999'}</NavLink>
+          <NavLink href={`tel:${themeConfig.phone}`}>Agent</NavLink>
+          <a href="#contato" style={{ background: '#111', color: '#fff', padding: '10px 24px', borderRadius: '30px', textDecoration: 'none', fontWeight: 500, fontSize: '14px', fontFamily: 'Inter, sans-serif' }}>Contact Us</a>
         </Nav>
         <MobileMenuButton onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
           {mobileMenuOpen ? <HiX /> : <HiMenu />}
@@ -576,69 +615,53 @@ function handleChange(e: any): void {
           </MobileMenu>
         )}
       </Header>
+
+      <SiteContainer>
       <WhatsappButton whatsappNumber={themeConfig?.phone} />
 
       {/* Bloco 2 - Banner */}
-      <Banner id="inicio" bannerImage={themeConfig.bannerImage} defaultBanner={bannerPadrao}>
-        <BannerContent>
-          <BannerTitle titleColor={themeConfig.bannerTitleColor} titleSize={themeConfig.bannerTitleSize}>{themeConfig.bannerTitle || 'Encontre o imóvel dos seus sonhos'}</BannerTitle>
-          <PseudoSearch/> 
-        </BannerContent>
-          
-      </Banner>
+      {(() => {
+        const mockSlides = [
+          {
+            image: themeConfig.bannerImage || bannerPadrao,
+            title: themeConfig.bannerTitle || 'Apartamento espetacular no batel',
+            link: '#'
+          },
+          {
+            image: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80',
+            title: 'Casa luxuosa com piscina',
+            link: '#'
+          },
+          {
+            image: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80',
+            title: 'Cobertura duplex no centro',
+            link: '#'
+          }
+        ];
 
-      {/* Bloco 3 - Como podemos te ajudar */}
-      <Section>
-        <SectionTitle textColor={themeConfig.h2Color || themeConfig.textColor}>Como podemos te ajudar</SectionTitle>
-        <ServicesGrid>
-          {services.filter((service: any) => service.active !== false).map((service: any, index: number) => {
-            // Mapeamento completo de ícones
-            const getIconComponent = (iconName: string) => {
-              const iconMap: { [key: string]: any } = {
-                'home': AiOutlineHome,
-                'user': AiOutlineUser,
-                'phone': AiOutlinePhone,
-                'key': AiOutlineKey,
-                'calculator': AiOutlineCalculator,
-                'heart': AiOutlineHeart,
-                'search': AiOutlineSearch,
-                'file': AiOutlineFileText,
-                'dollar': AiOutlineDollar,
-                'bank': AiOutlineBank,
-                'shop': AiOutlineShop,
-                'car': AiOutlineCar,
-                'gift': AiOutlineGift,
-                'fa-key': FaKey,
-                'fa-calculator': FaCalculator,
-                'fa-handshake': FaHandshake,
-                'fa-building': FaBuilding,
-                'fa-map': FaMapMarkerAlt,
-                'hi-home': HiHome,
-                'hi-key': HiKey,
-                'hi-calculator': HiCalculator,
-                'hi-heart': HiHeart,
-                'hi-search': HiSearch,
-                'hi-document': HiDocumentText,
-                'md-agent': MdRealEstateAgent,
-                'md-money': MdAttachMoney,
-                'md-business': MdBusiness,
-                'md-location': MdLocationOn,
-                'md-security': MdSecurity
-              };
-              return iconMap[iconName] || AiOutlineHome;
-            };
-            
-            const IconComponent = getIconComponent(service.icon);
-            return (
-              <ServiceCard key={index}>
-                <ServiceIcon buttonColor={themeConfig.buttonColor}><IconComponent /></ServiceIcon>
-                <ServiceTitle textColor={themeConfig.textColor}>{service.title}</ServiceTitle>
-                <ServiceDescription textColor={themeConfig.textColor}>{service.description}</ServiceDescription>
-              </ServiceCard>
-            );
-          })}
-        </ServicesGrid>
-      </Section>
+        const activeSlide = mockSlides[currentSlide];
+
+        return (
+          <Banner id="inicio" bannerImage={activeSlide.image} defaultBanner={bannerPadrao}>
+            <BannerContent>
+              <BannerTitle titleColor={themeConfig.bannerTitleColor} titleSize={themeConfig.bannerTitleSize}>
+                {activeSlide.title}
+              </BannerTitle>
+              <BannerButton href={activeSlide.link}>Saiba mais</BannerButton>
+              <BannerIndicators>
+                {mockSlides.map((_, index) => (
+                  <Dot 
+                    key={index} 
+                    active={index === currentSlide} 
+                    onClick={() => setCurrentSlide(index)} 
+                  />
+                ))}
+              </BannerIndicators>
+              <PseudoSearch/> 
+            </BannerContent>
+          </Banner>
+        );
+      })()}
 
       {/* Bloco 4 - Imóveis em destaque */}
       <Section id="imoveis">
@@ -648,50 +671,149 @@ function handleChange(e: any): void {
           {clientSlug && <FeaturedPropertyCard url={clientSlug} properties={featuredProperties} buttonColor={themeConfig.buttonColor} />}
       </Section>
 
-      {/* Bloco 5 - Contato */}
-      <ContactSection id="contato">
-        <ContactContent>
-          <ContactImage>         
-              <img src={houseimage} alt="Contato" style={{ width: '320px', height: '320px', objectFit:'cover' }} />      
-          </ContactImage>
-          <ContactForm onSubmit={(e) => handleSubmitLead(e)}>
-            <h2 style={{color: themeConfig.h2Color || themeConfig.textColor}}>{themeConfig.contactTitle || 'Entre em Contato'}</h2>
-            <ContactInput type="text" placeholder="Seu nome" id="name" name="name" onChange={(e) => handleChange(e)} maxLength={41} onKeyUp={handleKeyUp}/>
-              {errorsLead.map(x => { if(x.fieldName === 'name') return  <p className=' formField__error error-name'>{x.message}</p>})}
-                    { emptyValue && form['name'] === '' ? <span className='formField__error error-name'>Este campo é requerido</span>: ''}
-            <ContactInput type="email" placeholder="Seu email" id="email" name="email" onChange={(e) => handleChange(e)}  maxLength={40} onKeyUp={handleKeyUp}/>
-               {errorsLead.map(x => { if(x.fieldName === 'email') return  <p className=' formField__error'>{x.message}</p>})}
-                    { emptyValue && form['email'] === '' ? <span className='formField__error'>Este campo é requerido</span>: ''}
-            <ContactInput type="tel" placeholder="Seu telefone" id="phone" name="phone" onChange={(e) => handleChange(e)} onKeyUp={handleKeyUp}/>
-               {errorsLead.map(x => { if(x.fieldName === 'phone') return  <p className=' formField__error error-phone'>{x.message}</p>})}
-                    { emptyValue && form['phone'] === '' ? <span className='formField__error error-phone'>Este campo é requerido</span>: ''}
-                    { form['phone'].length >1 && form['phone'].length <14 &&  <span className='formField__error error-phone'>Formato de telefone errado</span>}
-                
-            <ContactTextarea placeholder="Sua mensagem" rows={4} id="message" name="message" onChange={(e) => handleChange(e)} onKeyUp={handleKeyUp} />
-                  {errorsLead.map(x => { if(x.fieldName === 'message') return  <p className=' formField__error textarea-class' textarea-class>{x.message}</p>})}
-                    { emptyValue && form['message'] === '' ? <span className='formField__error textarea-class'>Este campo é requerido</span>: ''}
-            <ContactSubmitButton buttonColor={themeConfig.buttonColor} type='submit'>Enviar mensagem</ContactSubmitButton>
-          </ContactForm>
-        </ContactContent>
-      </ContactSection>
-
-      {/* Bloco 6 - Agent */}
-      <AgentSection>
-        <AgentPhoto 
-          src={themeConfig.agentPhoto || corretorPadrao} 
-          alt="Corretor" 
-        />
-        <AgentQuote textColor={themeConfig.textColor}>
-          "{themeConfig.agentQuote || "Aqui está a mensagem do corretor"}"
-          <br /><strong>- {themeConfig.agentName || "João Silva"} </strong>
-        </AgentQuote>
-      </AgentSection>
-
       {/* Bloco 7 - Navegação */}
       <NavigationSection>
         <NavigationLink href="#" onClick={(e) => { e.preventDefault(); setPrivacyModalOpen(true); }}>Políticas de Privacidade</NavigationLink>
         <NavigationLink href="#" onClick={(e) => { e.preventDefault(); setAboutModalOpen(true); }}>Sobre Nós</NavigationLink>
       </NavigationSection>
+
+      {/* Bloco Novo - Why Choose Us */}
+      <WhyChooseSection>
+        <WhyChooseContainer>
+          <WhyChooseLeft>
+            <WhyChooseImageWrapper>
+              <img src={houseimage} alt="Interior moderno" />
+              <ReviewCard>
+                <Stars>★★★★★</Stars>
+                <ReviewText>"Best agency we've ever worked with."</ReviewText>
+                <ReviewAuthor>- The Andersons</ReviewAuthor>
+              </ReviewCard>
+            </WhyChooseImageWrapper>
+          </WhyChooseLeft>
+          <WhyChooseRight>
+            <WhyChooseTitle>Why Choose EstateHorizon?</WhyChooseTitle>
+            <FeatureList>
+              <FeatureItem>
+                <FeatureNumber>1</FeatureNumber>
+                <FeatureTextContent>
+                  <FeatureTitle>Wide Ranging Properties</FeatureTitle>
+                  <FeatureDesc>From cozy condos to luxury villas, we have something for every lifestyle.</FeatureDesc>
+                </FeatureTextContent>
+              </FeatureItem>
+              <FeatureItem>
+                <FeatureNumber>2</FeatureNumber>
+                <FeatureTextContent>
+                  <FeatureTitle>Trusted Agents</FeatureTitle>
+                  <FeatureDesc>Our team of professionals is dedicated to finding you the best deal.</FeatureDesc>
+                </FeatureTextContent>
+              </FeatureItem>
+              <FeatureItem>
+                <FeatureNumber>3</FeatureNumber>
+                <FeatureTextContent>
+                  <FeatureTitle>Transparent Process</FeatureTitle>
+                  <FeatureDesc>No hidden fees or surprises. We guide you through every step.</FeatureDesc>
+                </FeatureTextContent>
+              </FeatureItem>
+            </FeatureList>
+          </WhyChooseRight>
+        </WhyChooseContainer>
+      </WhyChooseSection>
+
+      {/* Bloco Novo - Contato Unificado (Info, Form, Mapa) */}
+      <UnifiedContactSection id="contato">
+        <UnifiedContactContainer>
+          
+          {/* Coluna 1: Info */}
+          <InfoColumn>
+            <ProfileBlock>
+              <img src={themeConfig.agentPhoto || corretorPadrao} alt="Corretor" />
+              <ProfileText>
+                <h3>Fale conosco</h3>
+                <p>Estamos aqui para ajudar. Envie sua mensagem e retornaremos o mais breve possível.</p>
+              </ProfileText>
+            </ProfileBlock>
+
+            <ContactDetailsGrid>
+              <DetailItem>
+                <div className="icon-box"><FaEnvelope /></div>
+                <div className="text-box">
+                  <strong>E-mail</strong>
+                  <span>{themeConfig.email || 'contato@empresa.com.br'}</span>
+                </div>
+              </DetailItem>
+              <DetailItem>
+                <div className="icon-box"><FaPhoneAlt /></div>
+                <div className="text-box">
+                  <strong>Telefone</strong>
+                  <span>{themeConfig.phone || '(11) 98765-4321'}</span>
+                </div>
+              </DetailItem>
+              <DetailItem>
+                <div className="icon-box"><FaMapMarkerAlt /></div>
+                <div className="text-box">
+                  <strong>Endereço</strong>
+                  <span>{themeConfig.address || 'Av. Paulista, 1100\nSão Paulo, SP - 01310-100'}</span>
+                </div>
+              </DetailItem>
+            </ContactDetailsGrid>
+
+            <SocialRow>
+              <strong>Siga-nos</strong>
+              <div className="icons">
+                <a href="#"><FaLinkedinIn /></a>
+                <a href="#"><FaInstagram /></a>
+                <a href="#"><FaFacebook /></a>
+              </div>
+            </SocialRow>
+          </InfoColumn>
+
+          {/* Coluna 2: Formulário */}
+          <FormColumn onSubmit={(e: any) => handleSubmitLead(e)}>
+            <FormField>
+              <label>Nome</label>
+              <input type="text" placeholder="Digite seu nome" id="name" name="name" onChange={(e: any) => handleChange(e)} maxLength={41} onKeyUp={(e: any) => handleKeyUp(e)} />
+              {errorsLead.map((x, i) => x.fieldName === 'name' && <p key={i} className='formField__error error-name'>{x.message}</p>)}
+              {emptyValue && form['name'] === '' && <span className='formField__error error-name'>Este campo é requerido</span>}
+            </FormField>
+
+            <FormField>
+              <label>E-mail</label>
+              <input type="email" placeholder="Digite seu e-mail" id="email" name="email" onChange={(e: any) => handleChange(e)} maxLength={40} onKeyUp={(e: any) => handleKeyUp(e)} />
+              {errorsLead.map((x, i) => x.fieldName === 'email' && <p key={i} className='formField__error'>{x.message}</p>)}
+              {emptyValue && form['email'] === '' && <span className='formField__error'>Este campo é requerido</span>}
+            </FormField>
+
+            <FormField>
+              <label>Telefone</label>
+              <input type="tel" placeholder="Digite seu telefone" id="phone" name="phone" onChange={(e: any) => handleChange(e)} onKeyUp={(e: any) => handleKeyUp(e)} />
+              {errorsLead.map((x, i) => x.fieldName === 'phone' && <p key={i} className='formField__error error-phone'>{x.message}</p>)}
+              {emptyValue && form['phone'] === '' && <span className='formField__error error-phone'>Este campo é requerido</span>}
+            </FormField>
+
+            <FormField>
+              <label>Mensagem</label>
+              <textarea placeholder="Como podemos ajudar?" rows={3} id="message" name="message" onChange={(e: any) => handleChange(e)} onKeyUp={(e: any) => handleKeyUp(e)} />
+              {errorsLead.map((x, i) => x.fieldName === 'message' && <p key={i} className='formField__error textarea-class'>{x.message}</p>)}
+              {emptyValue && form['message'] === '' && <span className='formField__error textarea-class'>Este campo é requerido</span>}
+            </FormField>
+
+            <SubmitBtn type='submit'>
+              <FaPaperPlane /> Enviar Mensagem
+            </SubmitBtn>
+          </FormColumn>
+
+          {/* Coluna 3: Mapa */}
+          <MapColumn>
+            <iframe 
+              src={`https://maps.google.com/maps?q=${encodeURIComponent(themeConfig.address || 'Avenida Paulista, São Paulo')}&t=&z=14&ie=UTF8&iwloc=&output=embed`}
+              allowFullScreen 
+              loading="lazy" 
+              referrerPolicy="no-referrer-when-downgrade"
+            ></iframe>
+          </MapColumn>
+
+        </UnifiedContactContainer>
+      </UnifiedContactSection>
 
       {/* Bloco 8 - Footer */}
       <Footer backgroundColor={themeConfig.footerBackgroundColor}>

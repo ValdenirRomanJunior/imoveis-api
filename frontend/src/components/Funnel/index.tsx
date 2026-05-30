@@ -1,167 +1,94 @@
 
 import { useEffect, useState } from 'react';
-import { FunnelContainer } from './styles';
-import Funnel from "react-apexcharts";
-import { Step } from '../../types/opportunity';
-import { countstepsName, stepsName, stepsOpportunity } from '../../services/resources/lead';
-
+import { 
+    FunnelContainer, 
+    FunnelGraphic, 
+    FunnelSlice, 
+    FunnelLabels, 
+    LabelRow, 
+    LabelLine, 
+    LabelName, 
+    LabelValue 
+} from './styles';
+import { countstepsName } from '../../services/resources/lead';
 import useAuth from '../../hooks/useAuth';
 import PageNotFoundDashboard from '../PageNotFoundDashboard';
 
-
-type SeriesData = {
-    name: string;
-    data: number[];
-}
-
-type ChartData = {
-    labels: {
-        categories: string[] ;
-    };
-        series: SeriesData[];
-}
-
-
 type Counts = {
-    name:string;
-    count:number;
+    name: string;
+    count: number;
 }
 
+const sliceColors = [
+    '#111111', // Preto / Cinza bem escuro (topo)
+    '#444444', // Cinza escuro
+    '#666666', // Cinza médio
+    '#888888', // Cinza
+    '#aaaaaa', // Cinza claro
+    '#cccccc', // Cinza mais claro
+    '#eaeaea'  // Cinza muito claro (base)
+];
 
-function Funil(){
 
-    const [errors,setErrors]= useState(false);
+function Funil() {
+    const [errors, setErrors] = useState(false);
+    const { user, getCurrentUser } = useAuth();
+    const [counts, setCounts] = useState<Counts[]>([]);
 
-    const {user, getCurrentUser} = useAuth();
-    useEffect(() =>{
-        
-        getCurrentUser()
-      
-        if(user === null){
-            setErrors(true)
+    useEffect(() => {
+        getCurrentUser();
+        if (user === null) {
+            setErrors(true);
         }
-       
-    },[])
-  
-    const [chartData, setChartData]= useState<ChartData>({ 
+    }, []);
 
-        labels: {
-          categories: []
-    },
-    series: [
-        {
-            name: "funil",
-            data: []                   
-        }
-    ]
-    });
-
-    const [counts,setCounts] = useState<Counts[]>()
     const getcountSteps = async () => {     
-        const data= await countstepsName() as Counts[]
-        setCounts(data as Counts[])
-        const myLabels = data.map(x=>x.name);
-        var indices: number[]=[];
-        
-        for(let i = 0; i<data.length; i++) {  
-            indices.push(i)
-        }
-        var  meuArrayInvertido= indices.slice(0).reverse();
-       
-       
-   
-        setChartData({
-            labels: {           
-                categories:myLabels
-          },
-          series: [
-              {
-                  name: 'funil',
-                  data: [8,7,6,5,4,3,2,1]
-              }
-          ]
-        })
-
-    
-}
-    useEffect(() =>{      
- getcountSteps()
-          
-    },[])
-
-    
-    const options = {
-        
-    
-        plotOptions: {
-          
-          
-            bar: {
-                horizontal: true,
-                isFunnel: true,
-                
-                
+        try {
+            const data = await countstepsName() as Counts[];
+            if (data) {
+                setCounts(data);
             }
-        },
-        dataLabels: {
-          
-            enabled: true,
-            formatter: function (val:string, opt:any) {
-                if(opt.w.globals.labels[opt.dataPointIndex] === undefined){
-                     return ' '  +':  ' + ''
+        } catch (error) {
+            console.error("Erro ao buscar dados do funil:", error);
+        }
+    }
 
-                }else{
-                return opt.w.globals.labels[opt.dataPointIndex] + ':  ' + ''
-                }
-             
-            },
-           
-            dropShadow: {
-              enabled: true,
-            }},
-          
-              
-    };
-   
-    let perfilTenant=user?.perfis ? Object.values(user.perfis).some(obj => 
-         obj === 'TENANT'
-     ) : false;
-let perfilAdmin=user?.perfis ? Object.values(user.perfis).some(obj => 
-    obj === 'ADMIN' 
-) : false;
-    return(
-        <>
-        { perfilTenant ? 
+    useEffect(() => {      
+        if(user?.id) {
+            getcountSteps();
+        }
+    }, [user?.id]);
+
+    let perfilTenant = user?.perfis ? Object.values(user.perfis).some(obj => obj === 'TENANT') : false;
+    if (!perfilTenant || errors) return <PageNotFoundDashboard />;
+
+    return (
         <FunnelContainer>
-          <div className='counts-item'>
-                {counts && counts.map(item=>(
+            <FunnelGraphic>
+                {counts.map((_, index) => {
+                    // Distribui a paleta dinamicamente garantindo que o primeiro seja escuro e o último seja claro
+                    const colorIndex = counts.length > 1 
+                        ? Math.floor((index / (counts.length - 1)) * (sliceColors.length - 1))
+                        : 0;
                     
-                        <span>{item.count}</span>
-                    
-                )
-                    
-               
-                )}
-                </div>
-                  <Funnel
-
-                  options={{...options,xaxis:chartData?.labels}}
-                  series={chartData?.series}
-                  type="bar"
-                  height="240"
-                  
-                  
-                
-                  
-            />
-
-      
-  
-
-       </FunnelContainer>
-         : <PageNotFoundDashboard/>}
-      </>
-
+                    return (
+                        <FunnelSlice 
+                            key={`slice-${index}`} 
+                            style={{ backgroundColor: sliceColors[colorIndex] }} 
+                        />
+                    );
+                })}
+            </FunnelGraphic>
+            <FunnelLabels>
+                {counts.map((item, index) => (
+                    <LabelRow key={`label-${index}`}>
+                        <LabelLine />
+                        <LabelName>{item.name}</LabelName>
+                        <LabelValue>{item.count}</LabelValue>
+                    </LabelRow>
+                ))}
+            </FunnelLabels>
+        </FunnelContainer>
     );
 }
 

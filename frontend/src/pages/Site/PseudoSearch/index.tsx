@@ -376,7 +376,90 @@ navigateSearch(targetPath,{'goal': `${goal}`, type: `${type}`, name:`${name}`});
             <TfiLocationArrow className="arrow-location-pseudoSearch"/>        
             <button onClick={openModal}>Estado, Cidade, Tipo, Finalidade...</button>
           
-            <div className="input-rent-sale-wrapper-desktop">
+            {/* Estrutura Desktop Estilo Eastate */}
+            <div className="tabs-container" style={{ display: window.innerWidth >= 1000 ? 'flex' : 'none' }}>
+                <label className={selectedSale ? 'active' : ''} onClick={selectedAfterGoalSale}>
+                    <input type="radio" name="goal" value="2" onChange={(e)=>setGoal(e.target.value)}/>
+                    Buy
+                </label>
+                <label className={selectedRent ? 'active' : ''} onClick={selectedAfterGoalRent}>
+                    <input type="radio" name="goal" value="1" onChange={(e)=>setGoal(e.target.value)}/>
+                    Rent
+                </label>
+            </div>
+
+            <div className="search-box-main" style={{ display: window.innerWidth >= 1000 ? 'flex' : 'none' }}>
+                {/* Bloco 1: Tipo de Imóvel */}
+                <div className="search-block" style={{ flex: '1.2' }}>
+                    <div className="block-title">Property Type</div>
+                    <div className="custom-dropdown" ref={ref}>
+                        <div className="custom-dropdown-selection" onClick={e=> setIsDropDownVisible(!isDropdownVisible)} style={{ display: 'flex', justifyContent: 'space-between', width: '100%', alignItems: 'center' }}>
+                            <span style={{ color: selectedItemIndex !== null ? '#111' : '#999', fontSize: '14px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                                {selectedItemIndex !== null ? itemsList[selectedItemIndex].type : "Select Property Type"}
+                            </span>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                {selectedItemIndex !== null && <IoCloseOutline onClick={(e) => { e.stopPropagation(); cleanIndexType(); }} style={{ cursor: 'pointer', fontSize: '16px' }}/> }
+                                <IoIosArrowDown style={{ fontSize: '14px', color: '#999' }} />
+                            </div>
+                        </div>
+                        {isDropdownVisible && (
+                            <div className="items-holder">
+                                {itemsList.map((item,index) => (
+                                    <div key={item.value} className="dropdown-item" onClick={e => {
+                                        setSelectedItemIndex(index as any)
+                                        setIsDropDownVisible(false)
+                                        setType(String(item.value));
+                                    }}>
+                                        {item.type}
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                    </div> 
+                </div>
+
+                {/* Bloco 2: Localização */}
+                <div className="search-block" style={{ flex: '1.5' }}>
+                    <div className="block-title">Location</div>
+                    <input 
+                        placeholder="e.g Gambir, Jakarta Pusat" 
+                        type="text" 
+                        className="block-input"  
+                        onKeyUp={onKeyUp} 
+                        value={name.toLowerCase()} 
+                        onChange={(e)=>setSearch(e.target.value)}
+                    />
+                </div>
+
+                {/* Bloco 3: Preço */}
+                <div className="search-block" style={{ flex: '1.2' }}>
+                    <div className="block-title">Price Range</div>
+                    <input 
+                        placeholder="Min. Price - Max. Price" 
+                        type="text" 
+                        className="block-input"
+                        disabled
+                        style={{ cursor: 'not-allowed' }}
+                    />
+                </div>
+
+                {/* Botão Buscar */}
+                <button className="search-btn-dark" onClick={startLoading}>
+                    Buscar
+                </button>
+            </div>
+
+            {/* Tags Populares (Visual) */}
+            <div className="popular-tags" style={{ display: window.innerWidth >= 1000 ? 'flex' : 'none' }}>
+                <span className="popular-title">Busca Rápida:</span>
+                <div className="tag-pill">Lançamentos</div>
+                <div className="tag-pill">2+ Dormitórios</div>
+                <div className="tag-pill">Com Suíte</div>
+                <div className="tag-pill">2+ Vagas</div>
+            </div>
+
+            {/* Código Legado Oculto (Necessário para manter as variáveis e lógicas antigas sem quebrar nada) */}
+            <div className="input-rent-sale-wrapper-desktop" style={{ display: 'none' }}>
             <label  onClick={selectedAfterGoalSale} className={`selectedClass${toogleClassCheckSale} label-class`} >
                     <input type="radio" name="goal" value="2" onChange={(e)=>setGoal(e.target.value)}/>                
                     <span className="sale-span">comprar</span>
@@ -415,8 +498,8 @@ navigateSearch(targetPath,{'goal': `${goal}`, type: `${type}`, name:`${name}`});
                  
                 </div> 
                 </div>
-            <input placeholder="Estado, Cidade, Tipo, Finalidade..." type="text" className="input-search-desktop"  onKeyUp={onKeyUp} value={name.toLowerCase()} onChange={(e)=>setSearch(e.target.value)}/>
-               <BiSearchAlt2 className="search-icon-pseudo-search" onClick={startLoading} />
+            <input placeholder="Estado, Cidade, Tipo, Finalidade..." type="text" className="input-search-desktop"  onKeyUp={onKeyUp} value={name.toLowerCase()} onChange={(e)=>setSearch(e.target.value)} style={{ display: 'none' }}/>
+               <BiSearchAlt2 className="search-icon-pseudo-search" onClick={startLoading} style={{ display: 'none' }}/>
                  
 
          

@@ -1,274 +1,198 @@
-
-import {DashboardBackground,BodyContainer,UserInfo} from './styles';
+import { BodyContainer, DashboardBackground, KPICard, KPIGrid, ListContainer, ListItem, MainGrid, SectionCard } from './styles';
 import Header from '../../components/Header';
-import Card from '../../components/Card';
-import Button from '../../components/Button';
-import rightSideImage from '../../assets/images/banner-right.png';
 import BarTop from '../../components/Bartop';
 import { useEffect, useState } from 'react';
-import LoadingLogin from '../../components/LoadingLogin';
-import {BsBuilding} from 'react-icons/bs'
-import { Link, useNavigate } from 'react-router-dom';
-import { UserDto, getImageIfExist, refreshToken } from '../../services/resources/user';
+import { BsBuilding, BsRocket } from 'react-icons/bs';
+import { AiOutlineHome, AiOutlineUser } from 'react-icons/ai';
+import { IoCloudUploadOutline } from 'react-icons/io5';
+import { useNavigate } from 'react-router-dom';
+import { refreshToken } from '../../services/resources/user';
 import { getPublishedPropertiesById, getTotalPropertiesById } from '../../services/resources/property';
 import { getTotalLeadsById } from '../../services/resources/lead';
+import { fetchEmpreendimentos } from '../Empreendimentos/api';
+import { Empreendimento } from '../Empreendimentos/storage';
 
 import PageNotFoundDashboard from '../../components/PageNotFoundDashboard';
 import { ErrorBoundary } from 'react-error-boundary';
 import useAuth from '../../hooks/useAuth';
-import { IoCloudUploadOutline, IoEyeOutline } from 'react-icons/io5';
-import { RiDoorLockLine } from 'react-icons/ri';
 import Funil from '../../components/Funnel';
-import { AiOutlineHome, AiOutlineUser } from 'react-icons/ai';
 import AdminStats from '../../components/AdminStats';
-import { useSidebar } from '../../context/SidebarContext';
 import useTrialStatus from '../../hooks/useTrialStatus';
 import TrialWarningBanner from '../../components/TrialWarningBanner';
-// Helper para testes de trial (apenas desenvolvimento)
-import '../../utils/trialTestHelper';
-import whatsapp from '../../assets/images/whatsapp.png'
 
-
-
-
-const Dashboard = ()=>{
-  
+const Dashboard = () => {
     const navigate = useNavigate();
 
-    const [imageUser,setImageUser]= useState<string>("");
-    const [totalProperties,setTotalProperties]= useState();
-    const [publishedProperties,setPublishedProperties]= useState();
-    const [totalLeads,setTotalLeads]= useState();
-    const [errors,setErrors]= useState(false);
-    const [errorMessage,setErrorMessage]= useState("");
-    const [errorMessageTotalLeads,setErrorMessageTotalLeads]= useState("");
+    const [totalProperties, setTotalProperties] = useState();
+    const [publishedProperties, setPublishedProperties] = useState();
+    const [totalLeads, setTotalLeads] = useState();
+    const [empreendimentos, setEmpreendimentos] = useState<Empreendimento[]>([]);
+    const [errors, setErrors] = useState(false);
     
-    const {user, getCurrentUser} = useAuth();
-    const { sidebar, setSidebar } = useSidebar();
+    const { user, getCurrentUser } = useAuth();
     const trialStatus = useTrialStatus();
     
-    const refreshTokenUser = async ()=>{
-        const  resp = await refreshToken();    
-        if(resp === 204){  
+    const refreshTokenUser = async () => {
+        const resp = await refreshToken();    
+        if(resp === 204) {  
          navigate('/dashboard')
-        }else{         
+        } else {         
            navigate('/');
         }
     }
 
-    useEffect( () =>  {
+    useEffect(() => {
       refreshTokenUser()
-    },[])
+    }, [])
     
-
-    useEffect(() =>{
-        
+    useEffect(() => {
         getCurrentUser()
-      
         if(user === null){
             setErrors(true)
         }
-       
-    },[])
+    }, [])
 
-  
+    const getTotalProperties = async() => {
+        const data = await getTotalPropertiesById(user.id);                
+        if(data.status === 200){
+            setTotalProperties(data.data);                   
+        }
+    }  
 
-   // const getUrl = async() =>{       
-       // const data=  await getImageIfExist(user.id,user.perfis[0]);
-       //     if(data){
-               // const url=`${BASE_URL_FROM_BUCKET}cp${user.id}.jpg`;
-             //   setImageUser(data);
-             //   return data;
-         //   }
-        
-     // }  
-    
-      //useEffect(() => {  
-      //  if(user.id !== '' && user.perfis[0] !== ''){
-      //  getUrl()
-     //   } 
-      //  }, [user.id, user.perfis]);
+    const getTotalLeads = async() => {
+        const dataL = await getTotalLeadsById(user.id);
+        if(dataL.status === 200){                   
+            setTotalLeads(dataL.data);                    
+        }
+    }  
 
+    const getPublishedProperties = async() => {
+        const data = await getPublishedPropertiesById(user.id);                
+        if(data.status === 200){
+            setPublishedProperties(data.data);                   
+        }
+    }  
 
-        const getTotalProperties = async() =>{
-                    
-            const data=  await getTotalPropertiesById(user.id);                
-                if(data.status === 200){
-                   // const url=`${BASE_URL_FROM_BUCKET}cp${user.id}.jpg`;
-                    setTotalProperties(data.data);                   
-                }
-                if(data.response.data.status === 403){
-                  setErrorMessage(data.response.data.error)                 
-                 } 
-                    
-          }  
+    const getEmpreendimentos = async () => {
+        try {
+            const data = await fetchEmpreendimentos();
+            setEmpreendimentos(data);
+        } catch (err) {
+            console.error(err);
+        }
+    }
 
-        useEffect(() => {  
-             if(user.id !== ''){
+    useEffect(() => {  
+        if(user.id !== ''){
             getTotalProperties();
-             }
-            }, [user.id]);
+            getTotalLeads();
+            getPublishedProperties();
+            getEmpreendimentos();
+        }
+    }, [user.id]);
 
+    let perfilTenant = user?.perfis ? Object.values(user.perfis).some(obj => obj === 'TENANT') : false;
 
-            const getTotalLeads = async() =>{
-             
-                const dataL=  await getTotalLeadsById(user.id);
-               
-                    if(dataL.status === 200){                   
-                        setTotalLeads(dataL.data);                    
-                    }
-                    if(dataL.response.data.status === 403){
-                        setErrorMessageTotalLeads(dataL.response.data.error)
-                       }
-                           
-              }  
-    
-            useEffect(() => {  
-                if(user.id !== ''){
-                getTotalLeads();
-                }
-                }, [user.id]);
-    
-
-   
-                const getPublishedProperties = async() =>{
-                    const data=  await getPublishedPropertiesById(user.id);                
-                        if(data.status === 200){
-                           // const url=`${BASE_URL_FROM_BUCKET}cp${user.id}.jpg`;
-                            setPublishedProperties(data.data);                   
-                        }
-                        if(data.response.data.status === 403){
-                          setErrorMessage(data.response.data.error)                 
-                         }     
-                  }  
-        
-                useEffect(() => {  
-                    if(user.id !== ''){
-                    getPublishedProperties();
-                    } 
-                    }, [user.id]);
- 
-              
-    
-          let perfilTenant=user?.perfis ? Object.values(user.perfis).some(obj => obj === 'TENANT') : false;
-            let perfilAdmin=user?.perfis ? Object.values(user.perfis).some(obj => obj === 'ADMIN') : false;
-     
-    
-    return(
+    return (
         <>
-        
-        
-        <div>
-       
-        <ErrorBoundary FallbackComponent={PageNotFoundDashboard}>
-         {!errors ?    
-        <DashboardBackground>
-                 
-        <Header />     
-        <BarTop />
+            <div>
+                <ErrorBoundary FallbackComponent={PageNotFoundDashboard}>
+                    {!errors ?    
+                    <DashboardBackground>
+                        <Header />     
+                        <BarTop />
 
-      <AdminStats isVisible={user?.perfis?.includes('ADMIN')} />
-      
-      {/* Banner de Aviso do Trial - Apenas durante o período ativo */}
-      {trialStatus.isActive && !trialStatus.isExpired && (
-        <TrialWarningBanner 
-          daysRemaining={trialStatus.daysRemaining}
-          onViewPlans={() => navigate('/plans')}
-        />
-      )}
-      
-        <p className='left-side-message-user welcome-message'>Olá, <strong>{user.slug}</strong>, o que temos pra hoje?</p>
-        
-        
-        
-       { perfilTenant ? 
-        <BodyContainer>
-        
-                  
-            <div className='left-side'>
-
-           <div className='top-right-side'>               
-                               
-                  <div className='card-wrapper-top' style={{border: '1px solid #2fc900ff', background:'#00ff080e'}} >
-                    <img src={whatsapp} alt='whatsapp' className='whatsapp-image' />
-                    
-                     <p style={{fontSize:'18px',fontWeight:'bold', width:'100%', textAlign:'center', color:'#155701ff'}}>Entre no grupo e coloque sua imobiliária no topo!</p>
-                     <a href='https://chat.whatsapp.com/LsKPMsjAZTnEv9F2lQ3nxR' target='_blank' className='opportunities-link'> <button  className="button-top" style={{background: 'linear-gradient(135deg, rgba(1, 255, 5, 1), rgba(1, 139, 70, 1))', color: 'white', fontWeight:'bold'}}><IoEyeOutline className='eye-icon' style={{fontWeight:'bold'}} />Entrar no grupo</button> </a>
-                 </div>
-            </div>
-
-       
-            <div className='cards-left-side'>
-            <p className='cards-left-side-title'>O que já temos com sua conta</p>  
-                <div className='cards-wrapper'>          
-             <div className='card-wrapper-left properties-card'>
-                   <div className='card-lef-inside'>
-                     <div className='title-card-left-wrapper'><div className='icon-card-left-wrapper'><AiOutlineHome className='icon-card-left first-card' /></div><p>Imóveis Cadastrados</p></div>
-
-                     <span className='number-card-dashboard'>{totalProperties && totalProperties}</span>
-                   </div>
-                   </div>
-                            <div className='card-wrapper-left leads-card'>
-                            <div className='card-lef-inside'>
-                                <div className='title-card-left-wrapper'><div className='icon-card-left-wrapper'><AiOutlineUser className='icon-card-left second-card'/></div><p className='second-title'>Leads</p></div>
-                                <span className='number-card-dashboard'>{totalLeads && totalLeads}</span>
+                        <AdminStats isVisible={user?.perfis?.includes('ADMIN')} />
+                        
+                        {trialStatus.isActive && !trialStatus.isExpired && (
+                            <TrialWarningBanner 
+                            daysRemaining={trialStatus.daysRemaining}
+                            onViewPlans={() => navigate('/plans')}
+                            />
+                        )}
+                        
+                        {perfilTenant ? 
+                        <BodyContainer>
+                            <div className="welcome-header">
+                                <h1>Dashboard</h1>
+                                <div className="action-buttons">
+                                    <button className="btn-secondary" onClick={() => navigate('/properties')}>Imóveis</button>
+                                    <button className="btn-primary" onClick={() => navigate('/empreendimentos')}>Novo Lançamento</button>
+                                </div>
                             </div>
-                            </div>
-                          
-                            <div className='card-wrapper-left published-properties'>
-                    <div className='card-lef-inside'>
-                        <div className='title-card-left-wrapper'><div className='icon-card-left-wrapper'><IoCloudUploadOutline className='icon-card-left'/></div><p>Imóveis Publicados</p></div>
-                        <span className='number-card-dashboard'>{publishedProperties && publishedProperties}</span>
-                    </div>
-                    </div>
-                   
-                   
-                </div>
-                </div>
 
-                  
+                            <KPIGrid>
+                                <KPICard>
+                                    <div className="kpi-header"><AiOutlineHome /> Imóveis Cadastrados</div>
+                                    <div className="kpi-value">{totalProperties || 0}</div>
+                                </KPICard>
+                                <KPICard>
+                                    <div className="kpi-header"><BsRocket /> Lançamentos Ativos</div>
+                                    <div className="kpi-value">{empreendimentos.length || 0}</div>
+                                </KPICard>
+                                <KPICard>
+                                    <div className="kpi-header"><AiOutlineUser /> Total de Leads</div>
+                                    <div className="kpi-value">{totalLeads || 0}</div>
+                                </KPICard>
+                                <KPICard>
+                                    <div className="kpi-header"><IoCloudUploadOutline /> Imóveis Publicados</div>
+                                    <div className="kpi-value">{publishedProperties || 0}</div>
+                                </KPICard>
+                            </KPIGrid>
+
+                            <MainGrid>
+                                <SectionCard>
+                                    <div className="section-header">
+                                        <div className="title-block">
+                                            <h2>Oportunidades Recentes</h2>
+                                            <p>Acompanhe e gerencie seus lançamentos ativos.</p>
+                                        </div>
+                                        <button className="action-link" onClick={() => navigate('/empreendimentos')}>Ver todas</button>
+                                    </div>
+
+                                    <ListContainer>
+                                        {empreendimentos.slice(0, 5).map(emp => (
+                                            <ListItem key={emp.id}>
+                                                <div className="item-info">
+                                                    <div className="item-image"><BsBuilding /></div>
+                                                    <div className="item-text">
+                                                        <h4>{emp.nome}</h4>
+                                                        <p>Criado em: {new Date(emp.createdAt).toLocaleDateString()}</p>
+                                                    </div>
+                                                </div>
+                                                <div className="item-actions">
+                                                    <span className="badge ativo">Ativo</span>
+                                                    <button onClick={() => navigate(`/empreendimentos/${emp.id}`)}>Editar</button>
+                                                </div>
+                                            </ListItem>
+                                        ))}
+                                        {empreendimentos.length === 0 && (
+                                            <p style={{color: '#666', fontSize: '14px', textAlign: 'center', padding: '20px 0'}}>Nenhum lançamento encontrado.</p>
+                                        )}
+                                    </ListContainer>
+                                </SectionCard>
+
+                                <SectionCard>
+                                    <div className="section-header">
+                                        <div className="title-block">
+                                            <h2>Funil de Vendas</h2>
+                                            <p>Visualize o estágio atual das suas oportunidades.</p>
+                                        </div>
+                                    </div>
+                                    <div className="funnel-wrapper">
+                                        <Funil />
+                                    </div>
+                                </SectionCard>
+                            </MainGrid>
+
+                        </BodyContainer>
+                        : ''}
+
+                    </DashboardBackground> 
+                    : <Dashboard/>}  
+                </ErrorBoundary>
             </div>
-
-
-
-            <div className='right-side'>
-
-            <div  className='card-right-bottom funnel-section'>    
-                <h2 ><RiDoorLockLine className='icon-portais'/>Oportunidades</h2>
-                <Funil/>              
-            </div>
-            
-
-            <Card width='100%' height='100%' noShadow={true} border='1px solid #e6e9ed' borderRadius='2px'>
-            <h2 className='title-perfil-card'><RiDoorLockLine className='icon-portais'/>Corretor</h2>
-                <UserInfo>
-                    <div className='user-image-wrapper-dashboard'>
-                    {imageUser !== '' ? <img src={imageUser} alt='Foto Perfil'/>:<p className='initials'>{user ? user.slug.substring(0,1)+ user.email?.substring(0,1) as string: 'sem nome'}</p>}
-                    </div>
-                    <p className='name-perfil-dashboard'>{user.slug}</p>
-                    <p className='name-perfil-dashboard'>{user.lastName}</p>
-                    <p className='message-welcome-perfil'><BsBuilding className='builder-icon'/> Seja bem vindo!</p>
-                </UserInfo>
-                
-            </Card>
-
-      
-         
-            </div>
-            
-            {/* Componente de estatísticas administrativas */}
-           
-            
-        </BodyContainer>
-    : ''}
-
-        </DashboardBackground> 
-        : <Dashboard/>}  
-        </ErrorBoundary>
-      
-        </div>
-     
-      </>
+        </>
     )
 }
 

@@ -7,7 +7,7 @@ import Input from "../../components/Input";
 import Button from "../../components/Button";
 import {IoCloseOutline} from 'react-icons/io5'
 import "./ModalStyle.css";
-import { BsFillGearFill, BsPersonPlus } from "react-icons/bs";
+import { BsFillGearFill, BsPersonPlus, BsKanban, BsListTask } from "react-icons/bs";
 import { currency, number, phone } from "../Registration/masks";
 import { newLead, newStep } from "../../services/resources/lead";
 import { Link, useNavigate } from "react-router-dom";
@@ -80,6 +80,7 @@ const Oportunidades = () => {
     const [param, setParam]= useState("");
     const [loadingAddLead, setLoadingAddLead]=useState(false);
     const [otherErrorRegister, setOtherErrorRegister]=useState(false);
+    const [viewMode, setViewMode] = useState<'kanban' | 'list'>('kanban');
 
 
     const handleChange = (e:any) => {
@@ -271,9 +272,32 @@ useEffect(() => {
             <BarTop />
             <OportunidadesContainer>
         
-            <div className="title-leads"><BiBorderRadius className="icon-title-lead"/><h2>Oportunidades</h2>
-            <button className="button-add-lead" onClick={handleOpenModal}><BsPersonPlus className="icon-add-lead"/></button>
-            <Link to={`/steps`} className="etapa-config-wrapper"><BsFillGearFill className="icon-step-config"/><span className="etapa-text">Etapas</span></Link>
+            <div className="title-leads">
+                <h1 className="page-title">Oportunidades</h1>
+                <div className="right-section">
+                    <div style={{ display: 'flex', background: '#f3f4f6', padding: '2px', borderRadius: '6px', marginRight: '8px' }}>
+                        <button 
+                            onClick={() => setViewMode('kanban')}
+                            style={{ background: viewMode === 'kanban' ? '#fff' : 'transparent', border: 'none', padding: '6px 12px', borderRadius: '4px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px', fontSize: '13px', fontWeight: 500, color: viewMode === 'kanban' ? '#111' : '#666', boxShadow: viewMode === 'kanban' ? '0 1px 2px rgba(0,0,0,0.05)' : 'none' }}
+                        >
+                            <BsKanban /> Kanban
+                        </button>
+                        <button 
+                            onClick={() => setViewMode('list')}
+                            style={{ background: viewMode === 'list' ? '#fff' : 'transparent', border: 'none', padding: '6px 12px', borderRadius: '4px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px', fontSize: '13px', fontWeight: 500, color: viewMode === 'list' ? '#111' : '#666', boxShadow: viewMode === 'list' ? '0 1px 2px rgba(0,0,0,0.05)' : 'none' }}
+                        >
+                            <BsListTask /> Lista
+                        </button>
+                    </div>
+
+                    <button className="button-add-lead" onClick={handleOpenModal} title="Adicionar Contato">
+                        <BsPersonPlus className="icon-add-lead"/>
+                    </button>
+                    <Link to={`/steps`} className="etapa-config-wrapper" title="Etapas">
+                        <BsFillGearFill className="icon-step-config"/>
+                        <span className="etapa-text">Etapas</span>
+                    </Link>
+                </div>
             </div>
             
                  
@@ -369,7 +393,7 @@ useEffect(() => {
                     </div>
                   
             </Modal>                      
-            <OportunidadeCard  param={param as string}/>
+            <OportunidadeCard param={param as string} viewMode={viewMode} />
             
             </OportunidadesContainer>
         </OportunidadesBackground>

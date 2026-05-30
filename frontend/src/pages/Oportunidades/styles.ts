@@ -3,112 +3,126 @@ import styled from "styled-components";
 
 export const OportunidadesBackground = styled.div`
 width: 100%;   
-background-color: ${({theme}) => theme.colors.backgroundLight};
+background-color: #fafafa;
+min-height: 100vh;
 
 @media screen and (min-width: 1000px){
-
     display: flex;
     flex-direction: column;
-    justify-content: center;
     align-items: center;
 }
-
 `
 
 export const OportunidadesContainer = styled.div`
-width:100vw;   
+width: 100%;   
 display: flex;  
 flex-direction: column;
-background-color: ${({theme}) => theme.colors.backgroundLight};
-padding: 1.5rem 1rem;
+background-color: transparent;
+padding: 30px 20px 40px 20px;
+font-family: 'Inter', 'Nunito Sans', sans-serif;
+max-width: 1200px;
+margin: 0 auto;
 
-.title-leads{
-
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-    padding:3px 10px;
-    margin-top: 8px;
-
+.title-leads {
     position: relative;
-    border-bottom: 1px solid #e6e9ed;
-
     display: flex;
     align-items: center;
-  
+    justify-content: space-between;
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid #eaeaea;
+    width: 100%;
+    min-height: 48px;
     
-   h2{
-    color: #5d5d5d;
-    font-weight: 400 !important;
-    font-family:"Poppins",sans-serif;
-    font-size:15px;
-    color:#5d5d5d;
-    margin-bottom:0;
-    margin-left:7px;
-   }
-   .icon-title-lead{
-    color: #6475fd;
-    font-size:19px;
-   }
+    .left-section {
+        /* Escondido porque o título agora é centralizado absoluto */
+        display: none;
+    }
 
-    .button-add-lead{
-        padding:6px 6px;
-        text-align: center;
-        background: rgba(191,235,214,0.5);
-        color: green;
-        font-family:'Nunito Sans', sans-serif;
-        font-weight:600;
-        border:none;
-        margin-left:30px;
-        font-size:10px;
-       
-        display:flex:
-        align-itens: center;
-       
-        border-radius: 3px;
-
-        .icon-add-lead{
-            font-family:'Nunito Sans', sans-serif;
-            font-size:17px;
-
-        }
-        }
-
-        .button-add-etapa{
-             
-        background: #49599f;
-        padding: 2px 7px;
-        color: #fff;
-        border-radius: 3px;
-        font-size: 14px;
-        border:none;
-        -webkit-box-shadow: 6px 10px 4px -10px rgba(138, 138, 138, 0.63);
-        -moz-box-shadow: 6px 10px 4px -10px rgba(138, 138, 138, 0.63);
-        box-shadow: 6px 10px 4px -10px rgba(138, 138, 138, 0.63);
+    /* Novo título centralizado */
+    h1.page-title {
         position: absolute;
-        top:50%;
-        right:0;
-        
-        }
-  
-       .etapa-config-wrapper{
-      position: relative;
-      margin-left:20px;
-       
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: 16px;
+        font-weight: 500;
+        color: #111;
+        margin: 0;
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     }
-    .etapa-text{
-    font-size:13px;
-    margin-left:3px;
-    }
-        .icon-step-config{
-        color:gray;
-        font-size: 20px;
-        -webkit-box-shadow: 6px 10px 4px -10px rgba(138, 138, 138, 0.63);
-        -moz-box-shadow: 6px 10px 4px -10px rgba(138, 138, 138, 0.63);
-        box-shadow: 6px 10px 4px -10px rgba(138, 138, 138, 0.63);
 
+    .right-section {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-left: auto; /* Empurra para a direita */
+
+        .button-add-lead {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 8px 12px;
+            background: #f0fdf4;
+            color: #15803d;
+            border: 1px solid #bbf7d0;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+
+            &:hover {
+                background: #dcfce7;
+            }
+
+            .icon-add-lead {
+                font-size: 16px;
+            }
         }
-     
+
+        .etapa-config-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 12px;
+            background: #fff;
+            color: #444;
+            border: 1px solid #eaeaea;
+            border-radius: 6px;
+            text-decoration: none;
+            transition: all 0.2s;
+
+            &:hover {
+                background: #fafafa;
+                border-color: #ccc;
+                color: #111;
+            }
+
+            .icon-step-config {
+                font-size: 16px;
+            }
+
+            .etapa-text {
+                font-size: 13px;
+                font-weight: 500;
+            }
+        }
+    @media screen and (max-width: 768px) {
+            flex-direction: column;
+            align-items: stretch;
+            gap: 16px;
+
+            h1.page-title {
+                position: static;
+                transform: none;
+                text-align: center;
+                margin-bottom: 16px;
+            }
+
+            .right-section {
+                margin-left: 0;
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+    }    }
 }
 
 
@@ -118,95 +132,8 @@ padding: 1.5rem 1rem;
 }
 
 @media screen and (min-width: 1000px){
-    width:88%;
-
-   .title-leads{
-
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-    padding:3px 30px;
-    margin-top: 8px;
-
-    position: relative;
-    border-bottom: 1px solid #e6e9ed;
-
-    display: flex;
-    align-items: center;
-  
-    
-   h2{
-    color: #5d5d5d;
-    font-weight: 400 !important;
-    font-family:"Poppins",sans-serif;
-    font-size:15px;
-    color:#5d5d5d;
-    margin-bottom:0;
-    margin-left:7px;
-   }
-   .icon-title-lead{
-    color: #6475fd;
-    font-size:19px;
-   }
-
-    .button-add-lead{
-        padding:6px 6px;
-        text-align: center;
-        background: rgba(191,235,214,0.5);
-        color: green;
-        font-family:'Nunito Sans', sans-serif;
-        font-weight:600;
-        border:none;
-        margin-left:30px;
-        font-size:10px;
-       
-        display:flex:
-        align-itens: center;
-       
-        border-radius: 3px;
-
-        .icon-add-lead{
-            font-family:'Nunito Sans', sans-serif;
-            font-size:17px;
-
-        }
-        }
-
-        .button-add-etapa{
-             
-        background: #49599f;
-        padding: 2px 7px;
-        color: #fff;
-        border-radius: 3px;
-        font-size: 14px;
-        border:none;
-        -webkit-box-shadow: 6px 10px 4px -10px rgba(138, 138, 138, 0.63);
-        -moz-box-shadow: 6px 10px 4px -10px rgba(138, 138, 138, 0.63);
-        box-shadow: 6px 10px 4px -10px rgba(138, 138, 138, 0.63);
-        position: absolute;
-        top:50%;
-        right:0;
-        
-        }
-  
-       .etapa-config-wrapper{
-      position: relative;
-      margin-left:20px;
-       
-    }
-    .etapa-text{
-    font-size:13px;
-    margin-left:3px;
-    }
-        .icon-step-config{
-        color:gray;
-        font-size: 20px;
-        -webkit-box-shadow: 6px 10px 4px -10px rgba(138, 138, 138, 0.63);
-        -moz-box-shadow: 6px 10px 4px -10px rgba(138, 138, 138, 0.63);
-        box-shadow: 6px 10px 4px -10px rgba(138, 138, 138, 0.63);
-
-        }
-     
+    padding: 40px 40px 40px 100px;
+    max-width: 1400px;
 }
 
 

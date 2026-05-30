@@ -1,123 +1,57 @@
-
-import {LeadItemContainer, LeadWrapper,PropertyItemLeadContainer,MessageNoLeads, LeadSearchWrapper} from "./styles";
-import {BsPersonFill, BsTrash} from 'react-icons/bs';
-import {MdKeyboardArrowDown} from 'react-icons/md';
+import { LeadCardContainer, LeadList, LeadListItem, LeadSearchWrapper, MessageNoLeads } from "./styles";
 import { useEffect, useState } from "react";
-import { Property } from "../../../types/property";
-import { findProperty, findPropertyLead } from "../../../services/resources/property";
 import { Link } from "react-router-dom";
-import {FaWhatsapp} from 'react-icons/fa'
-import {FiCornerDownRight} from 'react-icons/fi'
+import { FaWhatsapp } from 'react-icons/fa';
+import { AiOutlineMail } from 'react-icons/ai';
+import { BiSearch, BiFilterAlt } from "react-icons/bi";
 import { Lead, LeadPage } from "../../../types/lead";
-import { deleteLead, leadsPageable } from "../../../services/resources/lead";
-import {AiOutlineMail} from 'react-icons/ai';
-import Modal from 'react-modal';
-import { IoCloseOutline } from "react-icons/io5";
-import "./ModalStyleLeadCard.css";
-import LoadingLogin from "../../../components/LoadingLogin";
-import PageNotFound from "../../../components/PageNotFound";
+import { leadsPageable } from "../../../services/resources/lead";
 import PaginationLead from "../../../components/PaginationLead";
-import { BiSearch } from "react-icons/bi";
-import { BiFilterAlt } from "react-icons/bi";
 
+const LeadCardItem = ({ id, name, email, phone, instant, opportunityId }: Lead) => {
+    const capitalize = (string: string) => {
+        return string?.toLowerCase().replace(/(^|\s)\S/g, l => l.toUpperCase()) || '';
+    };
 
+    const initial = name ? name.substring(0, 1) : '?';
 
-const LeadCardItem = ({id,name,lastName,email,phone, message,instant, propertyId,opportunityId, onChange,close,error}: Lead)  => {
-
-    const [property,setProperty]=useState<Property>();
-    const [loading,setLoading]= useState(false);
-    const [errors,setErrors]=useState();
-  
-
-  
-    const getProperty = async() => {  
-        if(propertyId != null){
-
-                 
-        const data = await findPropertyLead(String(propertyId));          
-        if(data.status === 200){  
-            console.log(data.status) 
-            setProperty(data.data as Property) 
-          } else if(data.response.status === 404){ 
-         
-            setErrors(data.response.data.error);
-             
-          }  
-                          
-    }
-    }      
-     
-    useEffect(() => {
-        getProperty();
-
-    },
-     []);
-
-
-    const [hiddenMessage, setHiddenMessage]= useState(false);
-  
-
-    const openMessage = () =>{
-    
-        setHiddenMessage(true);
-        
-        closeMessage()
-    }
-
-    const closeMessage = () => {
-        if(hiddenMessage === true ){
-            setHiddenMessage(false)
-        }
-    }
-
-    const capitalize = (string:string)=> {
-        return string.toLowerCase().replace(/(^|\s)\S/g, l => l.toUpperCase())
-      }
-
-
-    return(
-        
-       
-    // {errors && <div><PageNotFound/></div> }
-    <Link to={`/leadDetail/${id}`} >
-        <LeadWrapper prop={hiddenMessage}>    
-                {loading &&<LoadingLogin/>}            
-                <div className="content-first" onClick={openMessage}>
-                
-                <div className="data-lead-left-wrapper">
-                <h4>{capitalize(name)}</h4>   
-                <span><AiOutlineMail className="email-icon"/>{email}</span>
-                <div className="phone-date-wrapper-lead"><p className="phone-leads"><FaWhatsapp className="icon-phone-lead"/>{phone}</p><p className="instant-lead">{instant}</p></div>
+    return (
+        <LeadListItem>
+            <div className="lead-info">
+                <div className="avatar">{initial}</div>
+                <div className="details">
+                    <Link to={`/leadDetail/${id}`} className="name-link">
+                        {capitalize(name)}
+                    </Link>
+                    <div className="contact-info">
+                        <span><AiOutlineMail /> {email}</span>
+                        <span><FaWhatsapp /> {phone}</span>
+                        <span>{instant}</span>
+                    </div>
                 </div>
-                <div className="lead-oportunity-wrapper">
-                { opportunityId !== null &&
-                <Link to={`/oportunidades/oportunidade/${opportunityId}`} className="link-opportunidade-leads"><BiFilterAlt className="icon-funil"/></Link>}
-                  {opportunityId  ===null &&  <div className='span-status' style={{background:"#e5fce5"}}> resolvido</div>
-                    }
-                    {opportunityId  !==null &&  <div className='span-status' style={{background:"#ffe6b857"}}> em aberto</div>}
-                </div>                        
-                </div>                  
-            <div>                             
-         </div> 
-                           
-       </LeadWrapper>
-       </Link>  
-       
-   
+            </div>
+            
+            <div className="lead-status">
+                {opportunityId === null ? (
+                    <span className="badge resolvido">Resolvido</span>
+                ) : (
+                    <span className="badge aberto">Em aberto</span>
+                )}
 
-    )
-}
+                {opportunityId !== null && (
+                    <Link to={`/oportunidades/oportunidade/${opportunityId}`} className="action-link" title="Ver Oportunidade">
+                        <BiFilterAlt size={18} />
+                    </Link>
+                )}
+            </div>
+        </LeadListItem>
+    );
+};
 
-
-const LeadCard = (props:{param:string})=>{
-
-    const[closeModalLead, setCloseModalLead]= useState(true);
+const LeadCard = ({ param }: { param: string }) => {
     const [pageNumber, setPageNumber] = useState(0);
-    const[name,setName]= useState('');
-    const [error,setError]=useState('');
-
+    const [name, setName] = useState('');
     const [page, setPage] = useState<LeadPage>({
-
         content: [],
         last: true,
         totalPages: 0,
@@ -129,78 +63,62 @@ const LeadCard = (props:{param:string})=>{
         empty: true
     });
 
-    
-   
-   
-     const getLeads = async () => {
-     
-        const {data}= await leadsPageable(name.toLowerCase(),pageNumber);
-        setPage(data as LeadPage) ;
-        localStorage.removeItem('images')
-          
-    }
-    useEffect(() =>{       
+    const getLeads = async () => {
+        try {
+            const { data } = await leadsPageable(name.toLowerCase(), pageNumber);
+            setPage(data as LeadPage);
+            localStorage.removeItem('images');
+        } catch (error) {
+            console.error("Erro ao buscar leads", error);
+        }
+    };
+
+    useEffect(() => {       
         getLeads();     
-    },[pageNumber,name])
+    }, [pageNumber, name]);
 
-
-    useEffect(() =>{
-        if(props.param !==''){
-       getLeads();
+    useEffect(() => {
+        if(param !== '') {
+            getLeads();
         }
-    },[props.param])
-   
-   
-    const handleToDelete = async(id: number) => {
-        setTimeout(async ()=> {
-        setCloseModalLead(false);
+    }, [param]);
 
-        const data =  await deleteLead(String(id));
-        if(data !== '204'){
-            setError(data)
-        }
-
-        setPageNumber(0);
-          
-        getLeads();
-    },1000)
-      }
-
-      const handlePageChange = (newPageNumber : number)=>{
+    const handlePageChange = (newPageNumber: number) => {
         setPageNumber(newPageNumber);
-    }   
-    
+    };
 
-
-    return(
-      
-         
-      
-        <LeadItemContainer>
+    return (
+        <LeadCardContainer>
             <LeadSearchWrapper>
-            <BiSearch className='icon-search-leads' />
-             <input type="search"  placeholder="Busca por nome" onChange={(e)=>setName(e.target.value)} maxLength={35}/>
-          
-             </LeadSearchWrapper>
+                <div className="search-input-container">
+                    <BiSearch />
+                    <input 
+                        type="search"  
+                        placeholder="Buscar lead por nome..." 
+                        onChange={(e) => setName(e.target.value)} 
+                        maxLength={35}
+                    />
+                </div>
+            </LeadSearchWrapper>
 
-             <div className="lead-header-title">               
-                    <span>Dados</span>
-                    <span className="span-oportunidade">Oportunidade</span>
-                    <span className="span-status">Status</span>                    
-             </div>
-
-             { page.content.length && page.content.length ?
-               <>
-            {page.content.map(lead => <LeadCardItem {...lead} onChange={handleToDelete} close={closeModalLead} error={error}/>)}
-            <PaginationLead page={page} onChange={handlePageChange}/> 
-            </>
-            : <MessageNoLeads><h4 className="message-no-leads">Você não possui leads no momento...</h4></MessageNoLeads>}
-           
-            </LeadItemContainer>
-    
-      
-    )
-    
-}
+            {page.content && page.content.length > 0 ? (
+                <>
+                    <LeadList>
+                        {page.content.map(lead => (
+                            <LeadCardItem key={lead.id} {...lead} />
+                        ))}
+                    </LeadList>
+                    <div style={{ padding: '16px 24px', borderTop: '1px solid #eaeaea', display: 'flex', justifyContent: 'center' }}>
+                        <PaginationLead page={page} onChange={handlePageChange} /> 
+                    </div>
+                </>
+            ) : (
+                <MessageNoLeads>
+                    <h4>Nenhum lead encontrado com estes critérios.</h4>
+                </MessageNoLeads>
+            )}
+        </LeadCardContainer>
+    );
+};
 
 export default LeadCard;

@@ -1,349 +1,191 @@
-import styled, { css } from "styled-components";
+import styled from "styled-components";
 
-
-export const LeadWrapper = styled.div<{prop:boolean}>`
-    width: 100%;   
-    display: flex; 
-    flex-direction:column;
-    justify-content: space-between;
-  
-    
-    background-color: ${({theme}) => theme.colors.background};
-    margin-top: 20px;
-    border-bottom: 1px solid rgb(222,222,222);
-    padding:0 5px;
-    font-family:'Nunito Sans', sans-serif;
-
-    .content-first{
-        max-width:100%;
-        display: flex;
-        align-items: center;
-        padding:8px 0;
-        cursor: pointer;
-            
-    }
-
-
-    .data-lead-left-wrapper{
-        width: 50%;
-        position: relative;
-        display: flex;
-        align-items: start;
-        flex-direction: column;
-        margin-left:8px;
-        justify-content: space-between;
-      
-     
-
-        h4{    
-            font-size: .7rem;
-            margin-bottom:0;
-            line-break: anywhere;
-            width:100%
-            overflow: hidden;
-            text-overflow: ellipsis;
-             white-space: nowrap;
-
-           
-                     
-        }
-
-        h4:first-letter{
-        text-transform: capitalize;
-
-        }
-        span{
-            color: gray;
-            font-size: .7rem;
-            
-
-            line-break: anywhere;
-            width:100%;
-            overflow: hidden;
-            text-overflow: ellipsis;
-             white-space: nowrap;
-            
-        }
-        .email-icon{
-            margin-right:3px;
-            font-size:12px;
-            
-
-        }
-       
-        .phone-date-wrapper-lead{
-            width:100%;
-          
-
-            display: flex;
-            flex-direction: column;
-            align-items: left;
-            
-        }
-        .phone-leads{
-          
-            font-size: .7rem;
-            margin-bottom:0;
-            width:auto;
-          
-            border-radius:2px;
-            display: flex;
-
-            align-items: center;
-    
-            .icon-phone-lead{
-                color:#595959cc;
-                margin-right:3px;
-                font-size:12px;
-            }
-    
-    }
-    .instant-lead{
-       
-        font-size: .5rem;
-        margin-bottom:0;
-        color:gray;
-        width:90px;
-    }
-       
-    }
- 
-    .link-detail-property-lead{
-        border-top: .5px solid #ebebeb;
-    }
-
-    .lead-oportunity-wrapper{
-        width:50%;
-        min-width:50%;
-        display: flex;
-
-        justify-content:start;
-        padding: 0 10px;
-    }
-         .lead-oportunity-wrapper .span-status{
-        font-size: 10px;
-        position: absolute;
-        right:10%;
-    }
-      
-    .lead-oportunity-wrapper .icon-funil{
-        z-index: 1;
-        margin-left:20px;
-        
-    }
-
-    @media screen and (min-width:390px){
-        width: 100%;   
-        display: flex; 
-        flex-direction:column;
-        justify-content: space-between;
-        position:relative;
-    
-        
-        
-        
-        background-color: ${({theme}) => theme.colors.background};
-        margin-top: 20px;
-        border-bottom: 1px solid rgb(222,222,222);
-        padding:0 5px;
-        font-family:'Nunito Sans', sans-serif;
-    
-        .content-first{
-            max-width:100%;
-            display: flex;
-            align-items: center;
-            padding:8px 0;
-            cursor: pointer;
-                
-        }
-    
-    
-        .data-lead-left-wrapper{
-            width:100%;
-         
-            display: flex;
-            align-items: start;
-            flex-direction: column;
-            margin-left:8px;
-            justify-content: space-between;
-          
-          
-    
-            h4{    
-                font-size: .8rem;
-                margin-bottom:0;
-                line-break: anywhere;
-               
-                         
-            }
-    
-            h4:first-letter{
-            text-transform: capitalize;
-    
-            }
-            span{
-                color: gray;
-                font-size: .8rem;
-                display: flex;
-                align-items: center;
-                
-            }
-            .email-icon{
-                margin-right:3px;
-                font-size:12px;
-    
-            }
-           
-    
-            .phone-leads{
-              
-                font-size: .8rem;
-                margin-bottom:0;
-                width:auto;
-              
-                border-radius:2px;
-                display: flex;
-    
-                align-items: center;
-        
-                .icon-phone-lead{
-                    color:#595959cc;
-                    margin-right:3px;
-                    font-size:12px;
-                }
-          
-      
-        }
-                
-        }
-    
-    
-        .link-detail-property-lead{
-            border-top: .5px solid #ebebeb;
-        }
-    }
-
-
-`
-
-
-export const LeadItemContainer = styled.div`
-    width: 100%;
-    height: auto;
-
-    .lead-header-title{
-        background:#fff;
-        padding: 5px 12px;
-        margin-top:10px;
-
-        display: flex;
-        justify-content: space-between;
-
-    }
-    .lead-header-title span{
-       font-size:12px; 
-    }
-    .lead-header-title .span-oportunidade{
-      margin-left:95px;  
-    }
-       .lead-header-title .span-status{
-      margin-right:15px;  
-    }
-`
-
-export const PropertyItemLeadContainer = styled.div<{prop:boolean}>`
-      
-      width:100%;
-      margin-top:10px;
-      padding:5px 0;
-      position:relative;
-
-      display: flex;
-      align-items: center;
-
-     
-
-
-
-    .image-property-lead-wrapper{
-        width: 50px;
-        height: 50px;
-
-
-        img{
-            width:100%;
-            height:100%;
-            object-fit: contain;
-            border-radius:8px;
-        }
-
-       
-
-    }
-    .data-property-lead-wrapper{
-        margin-left: 20px;
-        font-family:'Nunito Sans', sans-serif;
-        font-size:14px;
-        color:#686895;
-
-        display: flex;
-        flex-direction: column;
-
-      
-    }
-
-  
-
-   
-`
-
-export const MessageNoLeads = styled.div`
-width:100%;
-height:100vh;
-
-text- align center;
-
-h4{
-    position: absolute;
-    top:50%;
-    left: 50%;
-    transform: translate(-50%,-50%);
-    
-    color: gray;
-    font-size:12px;
-    width:100%;
-    text-align: center;
-}
-
-`
+export const LeadCardContainer = styled.div`
+    background: #fff;
+    border: 1px solid #eaeaea;
+    border-radius: 12px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    font-family: 'Inter', 'Nunito Sans', sans-serif;
+`;
 
 export const LeadSearchWrapper = styled.div`
-    width: 100%;
-    height: 35px;
-    margin-top:15px;
-    background:#fff;
-
+    padding: 16px 24px;
+    border-bottom: 1px solid #eaeaea;
     display: flex;
     align-items: center;
+    background: #fff;
 
-    .icon-search-leads{
-        color: #88888894;
-        font-size:20px;
-        margin-left:5px;
-    }
-    input{
-        width:100%;
-        height:100%;
-        border: none;
-        padding:0 10px;
+    .search-input-container {
+        display: flex;
+        align-items: center;
+        background: #fafafa;
+        border: 1px solid #eaeaea;
+        border-radius: 6px;
+        padding: 0 12px;
+        width: 100%;
+        max-width: 400px;
+        transition: all 0.2s;
 
+        &:focus-within {
+            border-color: #999;
+            background: #fff;
+        }
+
+        svg {
+            color: #888;
+            font-size: 18px;
+        }
+
+        input {
+            width: 100%;
+            border: none;
+            background: transparent;
+            padding: 10px 8px;
+            font-size: 14px;
+            color: #111;
+            outline: none;
+
+            &::placeholder {
+                color: #888;
+            }
+        }
+    }
+`;
+
+export const LeadList = styled.div`
+    display: flex;
+    flex-direction: column;
+`;
+
+export const LeadListItem = styled.div`
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 24px;
+    border-bottom: 1px solid #eaeaea;
+    transition: background 0.2s;
+    text-decoration: none;
+    color: inherit;
+
+    &:hover {
+        background: #fafafa;
     }
 
-    button{
-        background: ${({theme}) => theme.colors.primary}; 
-        border: 1px solid transparent;
-        color: #fff;
-        padding: 3px 12px;
-        border-radius: 20px;
+    &:last-child {
+        border-bottom: none;
     }
-`
+
+    .lead-info {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        flex: 2;
+
+        .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #f0f0f0;
+            color: #666;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 14px;
+            border: 1px solid #e5e5e5;
+            text-transform: uppercase;
+        }
+
+        .details {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            
+            .name-link {
+                text-decoration: none;
+                color: #111;
+                font-size: 14px;
+                font-weight: 600;
+                
+                &:hover {
+                    text-decoration: underline;
+                }
+            }
+            
+            .contact-info {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                font-size: 13px;
+                color: #666;
+
+                span {
+                    display: flex;
+                    align-items: center;
+                    gap: 4px;
+                }
+            }
+        }
+    }
+
+    .lead-status {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 16px;
+
+        .badge {
+            padding: 4px 10px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 500;
+            white-space: nowrap;
+            
+            &.resolvido { background: #f0fdf4; color: #15803d; border: 1px solid #bbf7d0; }
+            &.aberto { background: #fffbeb; color: #b45309; border: 1px solid #fde68a; }
+        }
+
+        .action-link {
+            color: #666;
+            padding: 6px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            text-decoration: none;
+
+            &:hover {
+                background: #eaeaea;
+                color: #111;
+            }
+        }
+    }
+
+    @media screen and (max-width: 768px) {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 16px;
+
+        .lead-status {
+            width: 100%;
+            justify-content: space-between;
+        }
+    }
+`;
+
+export const MessageNoLeads = styled.div`
+    padding: 48px 24px;
+    text-align: center;
+    color: #666;
+    font-size: 14px;
+    
+    h4 {
+        font-weight: 400;
+        margin: 0;
+    }
+`;

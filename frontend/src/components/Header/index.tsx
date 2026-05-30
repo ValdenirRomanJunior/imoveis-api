@@ -285,9 +285,9 @@ const Header = () =>{
             <p className='description-icon-op '>Oportunidades</p>
             </NavIcon>
 
-            <NavIcon style={{display: 'none'}} to="/temaEdit" onClick={() => setSidebar(false)}>
+            <NavIcon  to="/temaEdit" onClick={() => setSidebar(false)}>
            <MdDesignServices className='icon-sidebar'/>
-           <p className='description-icon'>Editor de Tema</p>
+           <p className='description-icon'>Site principal</p>
             </NavIcon>
 
             <NavIcon to="/empreendimentos" onClick={() => setSidebar(false)}>
