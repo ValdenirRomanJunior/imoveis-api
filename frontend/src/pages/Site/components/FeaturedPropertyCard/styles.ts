@@ -2,38 +2,30 @@ import styled from "styled-components";
 
 
 export const CardWrapper = styled.div`
-width: 270px;
-height:320px;
+width: 100%;
+max-width: 380px;
+height: 480px;
 background: #fff;
-border-radius: 12px;
+border-radius: 8px;
 margin-top: 20px;
 cursor: pointer;
 transition: all 0.3s ease;
--webkit-box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
--moz-box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
-box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
 border: 1px solid #f3f4f6;
+box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+margin-bottom: 20px;
 
 &:hover{
     transform: translateY(-4px);
-    -webkit-box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-    -moz-box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
 }
 
-
-
 @media screen and (min-width: 700px){
-    width: 260px;
-   
+    width: 100%;
 }
 
 @media screen and (min-width: 1300px){
-    width: 250px;
-   
+    width: 100%;
 }
-
-
 `
 
 export const CardContent = styled.div`
@@ -44,79 +36,48 @@ flex-direction: column;
 align-items: center;
 position:relative;
 overflow: hidden;
-border-radius: 12px;
+border-radius: 8px;
 
     .image-card-property-home-wrapper{
         width:100%;
-        height:180px;
+        height: 220px;
         background:rgb(243, 244, 246);
+        position: relative;
+
+        .phase-tag {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            background: rgba(255, 107, 53, 0.95);
+            color: #fff;
+            padding: 6px 14px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 700;
+            z-index: 10;
+            text-transform: uppercase;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+            backdrop-filter: blur(4px);
+        }
     }
 
   .image-card-property-home{
     width: 100%;
-    height: 180px;
+    height: 220px;
     object-fit: cover;
-    aspect-ratio: 16/9;
   }
   .default-image-card-property-home{
     width: 100%;
-    height: 180px;
+    height: 220px;
     object-fit: contain;
-    aspect-ratio: 16/9;
   }
 
-    
     .price-wrapper{
-        -webkit-box-shadow: 0px 4px 6px rgba(0,0,0,0.05);
-        -moz-box-shadow: 0px 4px 6px rgba(0,0,0,0.05);
-        box-shadow: 0px 4px 6px rgba(0,0,0,0.05);
-
-        font-weight: 600;
-        color: #1f2937;
-        font-size: 12px;
-        margin-bottom: 3px;
-        text-overflow: ellipsis;
-        display: flex;
-        align-items: center;
-        justify-content: left;
-       
-        white-space: nowrap;
-        position:absolute;
-        top: 155px; /* Puxado mais para cima para ficar na linha da imagem */
-        left:12px;
-        min-width:82px;
-        max-width:125px;
-        padding:0 12px;
-        height:26px;
-        background:rgba(255, 255, 255, 0.95);
-        backdrop-filter: blur(4px);
-        border-radius:20px;
+        display: none; /* Removed from image overlay to match the new design */
     }
 
     .type-wrapper{
-        -webkit-box-shadow: 0px 3px 6px -4px rgba(128,128,128,1);
-        -moz-box-shadow: 0px 3px 6px -4px rgba(128,128,128,1);
-        box-shadow: 0px 3px 6px -4px rgba(128,128,128,1);
-
-        font-weight: 500;
-        color:#9B9B9B;
-        font-size: 16px;
-        margin-bottom: 3px;
-        text-overflow: ellipsis;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-       
-        white-space: nowrap;
-        position:absolute;
-        top:46%;
-        right:10%;
-        width:35px;
-        height:35px;
-        background:#fff;
-        border-radius:50%;
-       
-
+        display: none; /* Removed the house icon circle */
     }
 
     .text-wrapper-card{
@@ -124,79 +85,59 @@ border-radius: 12px;
         display:flex;
         flex-direction: column;
         justify-content: center;
-       
-      
-        padding: 5px 5px;
-       
+        padding: 5px 20px;
         overflow: hidden;
 
         .title-wrapper-card-property{
             display: flex;
             width:100%;
-            margin-bottom: 3px;
+            margin-top: 15px;
             justify-content: space-between;
-            padding:20px 15px 0 15px;
+            align-items: center;
+            text-decoration: none;
         }
         .title-card-property{
-           
-            font-size:14px;
-            color: rgb(74, 74, 74)  !important;
-         
-            font-weight:500;
+            font-size:16px;
+            color: #333 !important;
+            font-weight:700;
             overflow: hidden;
             text-overflow: ellipsis;
-            display: block;
             white-space: nowrap;
-            cursor: pointer;
-            outline: none;
-            
         }
         .title-card-property-cod{
-          
-            font-size:11px;
-            color: rgb(74, 74, 74)  !important;
-            font-weight:200;
-            padding-right:5px;
-            display:flex;
+            font-size:12px;
+            color: #999 !important;
+            font-weight:400;
+            display: flex;
             align-items: center;
         }
    
         p{
             margin-bottom: 0;
-            
         }
 
         .localization-wrapper{
-            
-            font-weight:200;
+            font-weight:400;
             display:flex;
             width:100%;
             overflow:hidden;
-            line-break: anywhere;
-            text-overflow: ellipsis;
             align-items:center;
-            padding-top:9px;
-            padding-left:10px;
-            
+            padding-top:8px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #f0f0f0;
         }
         .localization{
-        
-            font-weight:200 !important;
-            color: rgb(153, 153, 153);
-            font-size: 11px;
-            
-            align-items: center;
+            color: #888;
+            font-size: 12px;
             margin-bottom: 0;
-          
-            line-break: anywhere;
-            text-overflow: ellipsis;
-            display: block;
             white-space: nowrap;
-            max-width: 40%;
             overflow: hidden;
-           
+            text-overflow: ellipsis;
         }
         .localization-icon{
+            display: none;
+        }
+    }
             font-size:15px;
             color:#A4B7E9;
         }
@@ -304,37 +245,77 @@ export const CardContainer = styled.main`
  
 `
 export const DetailsCardWrapper = styled.div`
-        width:80%;
+        width: 100%;
         display: flex;
         align-items: center;
-        justify-content: space-between;
-        margin-top:22px;
+        justify-content: space-around;
+        padding: 15px 20px;
       
-
         .details-bottom-card{
             display:flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;     
-            width:25%;
+            gap: 4px;
            
+            .icon-detail {
+                color: #ff6b35; /* Orange icon color */
+                font-size: 20px;
+                margin-bottom: 4px;
+            }
+
             .value-detail-bottom{
-                font-size:9px;
-                font-weight:600;
-              
+                font-size: 14px;
+                font-weight: 700;
+                color: #333;
             }
 
             .title-detail-bottom{         
-                font-weight:300;
-                font-size:9px;
-                color:#979797;
-              
-               
+                font-weight: 400;
+                font-size: 12px;
+                color: #888;
             }
         }
-        .left-border{
-            border-left:1px solid rgb(230, 233, 237);
-        }
+`
 
+export const CardFooter = styled.div`
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    margin-top: auto;
+
+    .price-block {
+        display: flex;
+        flex-direction: column;
+        
+        .price-label {
+            font-size: 11px;
+            color: #888;
+            margin-bottom: 2px;
+        }
+        
+        .price-value {
+            font-size: 18px;
+            font-weight: 800;
+            color: #ff6b35; /* Orange price */
+        }
+    }
+
+    .btn-conheca {
+        background: #1e1b4b; /* Dark navy blue */
+        color: white;
+        padding: 8px 24px;
+        border-radius: 6px;
+        font-size: 14px;
+        font-weight: 600;
+        text-decoration: none;
+        transition: background 0.2s;
+
+        &:hover {
+            background: #312e81;
+        }
+    }
 `
     

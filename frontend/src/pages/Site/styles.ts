@@ -9,10 +9,12 @@ export const Header = styled.header`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1rem 3rem 0.5rem 3rem;
+  padding: 1rem 5rem 0.5rem 5rem;
   background: transparent;
   position: relative;
   transition: all 0.3s ease;
+  border-bottom: 1px solid #dededeff;
+  margin-bottom: 0.5rem;
 
   @media (max-width: 768px) {
     padding: 1rem;
@@ -110,7 +112,7 @@ export const MobileMenu = styled.div`
 `;
 
 export const Banner = styled.section<{ bannerImage?: string; defaultBanner: string }>`
-  height: 85vh;
+  height: 65vh;
   width: 100%;
   position: relative;
   background: ${props => props.bannerImage ? `url('${props.bannerImage}') center/cover no-repeat` : `url('${props.defaultBanner}') center/cover no-repeat`};
@@ -121,6 +123,9 @@ export const Banner = styled.section<{ bannerImage?: string; defaultBanner: stri
   color: white;
   overflow: visible;
   transition: background 0.5s ease-in-out;
+  
+ 
+    
 
   /* Overlay sutil estilo Eastate */
   &::before {
@@ -148,7 +153,8 @@ export const BannerContent = styled.div`
   z-index: 2;
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
+  align-items: center;
+
 
   @media (max-width: 768px) {
     padding: 0 1.5rem 6rem 1.5rem;
@@ -257,7 +263,7 @@ export const SearchButton = styled.button<{ buttonColor?: string }>`
 `;
 
 export const Section = styled.section`
-  padding: 8rem 2rem 4rem 2rem; /* Aumentado padding top para compensar a busca sobreposta */
+  padding: 8rem 1rem 1rem 1rem; /* Diminuído padding bottom de 4rem para 1rem */
   max-width: 1200px;
   margin: 0 auto;
 `;
@@ -1005,4 +1011,154 @@ export const FeatureDesc = styled.p`
   line-height: 1.5;
   margin: 0;
   font-family: 'Inter', sans-serif;
+`;
+
+export const AnnounceSection = styled.section`
+  max-width: 1200px;
+  margin: 4rem auto;
+  padding: 0 2rem;
+  position: relative;
+`;
+
+export const AnnounceBackground = styled.div`
+  background-color: #f5f5f0;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  position: relative;
+  min-height: 250px;
+  margin-top: 40px; /* Space for the image to stick out */
+
+  @media (max-width: 900px) {
+    flex-direction: column;
+    padding-top: 200px; /* Make room for absolute image */
+  }
+`;
+
+export const AnnounceImageWrapper = styled.div`
+  position: absolute;
+  left: -20px;
+  bottom: -20px;
+  width: 320px;
+  height: 380px;
+  background-color: #f97316; /* Orange background */
+  border-radius: 16px;
+  border-bottom-right-radius: 60px;
+  overflow: hidden;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+  z-index: 2;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  @media (max-width: 900px) {
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: auto;
+    top: -40px;
+    height: 250px;
+    width: 250px;
+  }
+`;
+
+export const AnnounceContent = styled.div`
+  margin-left: 340px;
+  padding: 40px 40px 40px 20px;
+  flex: 1;
+
+  @media (max-width: 900px) {
+    margin-left: 0;
+    padding: 20px;
+    text-align: center;
+  }
+`;
+
+export const AnnounceTitle = styled.h2`
+  color: #ff5722;
+  font-size: 2.8rem;
+  font-weight: 800;
+  margin-bottom: 10px;
+  font-family: 'Inter', sans-serif;
+
+  @media (max-width: 768px) {
+    font-size: 2rem;
+  }
+`;
+
+export const AnnounceSubtitle = styled.p`
+  color: #4b5563;
+  font-size: 1rem;
+  line-height: 1.5;
+  margin-bottom: 30px;
+  max-width: 600px;
+`;
+
+export const AnnounceFormRow = styled.div`
+  display: flex;
+  gap: 15px;
+  margin-bottom: 20px;
+
+  input {
+    flex: 1;
+    padding: 12px 15px;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    outline: none;
+    font-family: 'Inter', sans-serif;
+
+    &:focus {
+      border-color: #ff5722;
+    }
+  }
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+  }
+`;
+
+export const AnnounceButtonRow = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 15px;
+
+  .dots-blue {
+    width: 20px;
+    height: 20px;
+    background-color: #3b82f6;
+    border-radius: 50%;
+  }
+
+  .dots-green {
+    width: 20px;
+    height: 20px;
+    background-color: #86efac;
+    border-radius: 50%;
+  }
+
+  button {
+    background-color: #ff5722;
+    color: white;
+    border: none;
+    padding: 12px 30px;
+    border-radius: 30px;
+    font-weight: 600;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    transition: background 0.3s;
+
+    &:hover {
+      background-color: #e64a19;
+    }
+  }
+
+  @media (max-width: 768px) {
+    justify-content: center;
+  }
 `;

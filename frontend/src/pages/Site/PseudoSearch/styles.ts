@@ -112,8 +112,8 @@ export const PseudoSearchContainer = styled.div`
             display: flex;
             width: 100%;
             background: #fff;
-            border-radius: 20px;
-            padding: 12px;
+            border-radius: 50px;
+            padding: 15px;
             align-items: center;
             box-shadow: 0 10px 30px rgba(0,0,0,0.1);
         }
@@ -184,7 +184,7 @@ export const PseudoSearchContainer = styled.div`
             color: #fff;
             border: none;
             padding: 14px 32px;
-            border-radius: 12px;
+            border-radius: 30px;
             font-size: 15px;
             font-weight: 500;
             font-family: 'Inter', sans-serif;
@@ -215,9 +215,10 @@ export const PseudoSearchContainer = styled.div`
         }
 
         .tag-pill {
-            background: rgba(255, 255, 255, 0.9);
+         
             color: #111;
             padding: 6px 16px;
+            border:1px solid #e3e3e3ff;
             border-radius: 20px;
             font-size: 13px;
             font-weight: 500;
@@ -314,6 +315,7 @@ export const PseudoSearchContainer = styled.div`
    @media screen and (min-width:1300px){
     width: 100%;
     height:3rem;
+       bottom: 32%;
 
     button{
         display:none;

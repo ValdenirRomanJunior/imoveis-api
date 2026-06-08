@@ -451,7 +451,7 @@ navigateSearch(targetPath,{'goal': `${goal}`, type: `${type}`, name:`${name}`});
 
             {/* Tags Populares (Visual) */}
             <div className="popular-tags" style={{ display: window.innerWidth >= 1000 ? 'flex' : 'none' }}>
-                <span className="popular-title">Busca Rápida:</span>
+    
                 <div className="tag-pill">Lançamentos</div>
                 <div className="tag-pill">2+ Dormitórios</div>
                 <div className="tag-pill">Com Suíte</div>

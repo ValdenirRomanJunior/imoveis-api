@@ -120,7 +120,15 @@ import {
   FeatureNumber,
   FeatureTextContent,
   FeatureTitle,
-  FeatureDesc
+  FeatureDesc,
+  AnnounceSection,
+  AnnounceBackground,
+  AnnounceImageWrapper,
+  AnnounceContent,
+  AnnounceTitle,
+  AnnounceSubtitle,
+  AnnounceFormRow,
+  AnnounceButtonRow
 } from './styles';
 import PseudoSearch from './PseudoSearch';
 import WhatsappButton from './WhatsappButton';
@@ -666,9 +674,45 @@ function handleChange(e: any): void {
       {/* Bloco 4 - Imóveis em destaque */}
       <Section id="imoveis">
         
-      <SectionTitle textColor={themeConfig.h2Color || themeConfig.textColor}>Imóveis em destaque</SectionTitle>
+      <SectionTitle textColor={'#888'}>Imóveis com alta procura</SectionTitle>
       
           {clientSlug && <FeaturedPropertyCard url={clientSlug} properties={featuredProperties} buttonColor={themeConfig.buttonColor} />}
+      </Section>
+
+      {/* Bloco Novo - Anuncie seu imóvel */}
+      <AnnounceSection>
+        <AnnounceBackground>
+          <AnnounceImageWrapper>
+            <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Especialista" />
+          </AnnounceImageWrapper>
+          <AnnounceContent>
+            <AnnounceTitle>Anuncie seu imóvel</AnnounceTitle>
+            <AnnounceSubtitle>
+              Escolha a imobiliária especialista no mercado há mais de 70 anos e tenha a maior segurança e rentabilidade do mercado.
+            </AnnounceSubtitle>
+            
+            <form onSubmit={(e) => { e.preventDefault(); alert('Solicitação enviada!'); }}>
+              <AnnounceFormRow>
+                <input type="text" placeholder="Seu nome:" required />
+                <input type="tel" placeholder="Seu telefone:" required />
+                <input type="email" placeholder="Seu e-mail:" required />
+              </AnnounceFormRow>
+              <AnnounceButtonRow>
+                <div className="dots-blue"></div>
+                <button type="submit">
+                  Solicitar Contato &rarr;
+                </button>
+                <div className="dots-green"></div>
+              </AnnounceButtonRow>
+            </form>
+          </AnnounceContent>
+        </AnnounceBackground>
+      </AnnounceSection>
+
+      {/* Bloco 5 - Lançamentos */}
+      <Section id="lancamentos" style={{ paddingTop: '2rem' }}>
+        <SectionTitle textColor={'#888'}>Lançamentos</SectionTitle>
+        {clientSlug && <FeaturedPropertyCard url={clientSlug} properties={featuredProperties} buttonColor={themeConfig.buttonColor} isLancamento={true} />}
       </Section>
 
       {/* Bloco 7 - Navegação */}
