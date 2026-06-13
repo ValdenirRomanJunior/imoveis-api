@@ -72,6 +72,7 @@ const LazyNovoLancamento = React.lazy(() => import('../pages/Empreendimentos/Nov
 const LazyEmpreendimentoDetalhe = React.lazy(() => import('../pages/Empreendimentos/Detalhe'));
 const LazyEditorLP = React.lazy(() => import('../pages/Empreendimentos/EditorLP'));
 const LazyLancamentoPublico = React.lazy(() => import('../pages/LancamentoPublico'));
+const LazyOldHome = React.lazy(() => import('../pages/OldHome'));
 
 
 
@@ -111,6 +112,8 @@ const TrialGuard: React.FC = () => {
             <Routes>
            
                 <Route path="/"  element={<React.Suspense fallback={<div>Carregando...</div>}><LazyHome/></React.Suspense>} />
+                 <Route path="/oldhome"  element={<React.Suspense fallback={<div>Carregando...</div>}><LazyOldHome/></React.Suspense>} />
+
                 <Route path="/login"  element={<SignIn />} />
                 <Route path="/dashboard"  element={<React.Suspense fallback={<LoadingLogin/>}><LazyDashboard/></React.Suspense>} />                            
                 <Route path="/properties"  element={<React.Suspense fallback={<LoadingLogin/>}><LazyProperties/></React.Suspense>} />
