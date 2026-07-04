@@ -181,7 +181,7 @@ const Detail  = () => {
             setThemeConfig({
                 name: 'Site Padrão',
                 logo: '',
-                logoSize: 'medium',
+                logoSize: 'media',
                 menuLinks: [],
                 phone: '',
                 bannerImage: bannerPadrao,

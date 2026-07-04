@@ -1,6 +1,7 @@
 package com.dynamous.imoveis.controllers;
 
 import com.dynamous.imoveis.dto.FeatureDTO;
+import com.dynamous.imoveis.dto.PropertyFilterOptionsDTO;
 import com.dynamous.imoveis.dto.PropertyNewDTO;
 import com.dynamous.imoveis.dto.PropertyUpdateDTO;
 import com.dynamous.imoveis.entities.Account;
@@ -39,6 +40,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import javax.validation.Valid;
+import java.math.BigDecimal;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -222,33 +224,35 @@ public class PropertyController {
 		   @RequestParam(value = "name",defaultValue = "",required = false) String name,   
 		   @RequestParam(value = "goal",defaultValue = "",required = false) Integer goal,
 		   @RequestParam(value = "typeProperty",defaultValue = "",required = false) Integer typeProperty,               
+		   @RequestParam(value = "city", defaultValue = "", required = false) String city,
+		   @RequestParam(value = "district", defaultValue = "", required = false) String district,
+		   @RequestParam(value = "minPrice", defaultValue = "", required = false) BigDecimal minPrice,
+		   @RequestParam(value = "maxPrice", defaultValue = "", required = false) BigDecimal maxPrice,
+		   @RequestParam(value = "minRooms", defaultValue = "", required = false) Integer minRooms,
+		   @RequestParam(value = "minSuites", defaultValue = "", required = false) Integer minSuites,
+		   @RequestParam(value = "minVacancies", defaultValue = "", required = false) Integer minVacancies,
 		   @RequestParam(value = "nameUrl",defaultValue = "",required = false) String nameUrl,   
             @RequestParam(value = "page",defaultValue = "0") Integer page,
             @RequestParam(value = "linesPerPage",defaultValue = "12")  Integer linesPerPage,
             @RequestParam(value = "orderBy",defaultValue = "name")String orderBy,
             @RequestParam(value = "direction",defaultValue = "ASC")  String direction){
-        //verificar se vem nulo nos parametros e dar suporte a hífen com ID (ex.: 'slug-3')
-        String resolvedKey = nameUrl;
-        Long accountId = null;
-        int lastHyphen = nameUrl != null ? nameUrl.lastIndexOf('-') : -1;
-        if (lastHyphen > 0 && lastHyphen < nameUrl.length() - 1) {
-            String suffix = nameUrl.substring(lastHyphen + 1);
-            if (suffix.matches("\\d+")) {
-                try {
-                    accountId = Long.parseLong(suffix);
-                } catch (NumberFormatException ignored) {}
-                resolvedKey = nameUrl.substring(0, lastHyphen);
-            }
-        }
-
-        Page<Property> list;
-        if (accountId != null) {
-            Account account = accountService.find(accountId);
-            org.springframework.data.domain.PageRequest pageRequest = org.springframework.data.domain.PageRequest.of(page, linesPerPage, org.springframework.data.domain.Sort.Direction.valueOf(direction), orderBy);
-            list = propertyRepository.findByGoalAndAccountPropertiesIn(name, goal, typeProperty, account, pageRequest);
-        } else {
-            list = service.findByTenantMatchAnyParam(goal, typeProperty, name, resolvedKey, page, linesPerPage, orderBy, direction);
-        }
+        Page<Property> list = service.findByTenantMatchAnyParam(
+                goal,
+                typeProperty,
+                name,
+                city,
+                district,
+                minPrice,
+                maxPrice,
+                minRooms,
+                minSuites,
+                minVacancies,
+                nameUrl,
+                page,
+                linesPerPage,
+                orderBy,
+                direction
+        );
 
          Image imgux=null;
          Set<Image> OneImg=null;
@@ -263,9 +267,7 @@ public class PropertyController {
        		
        		}
        	} 
-       	Page<Property> pageWithFilteredData = new PageImpl<Property>(list.stream().filter(p -> !p.getStatusProperty().getDescription().contains("NÃO"))
-       		    .collect(Collectors.toList()), list.getPageable(), list.getTotalElements());
-        return ResponseEntity.ok().body(pageWithFilteredData);
+        return ResponseEntity.ok().body(list);
     }
     
     
@@ -284,6 +286,12 @@ public class PropertyController {
 		return ResponseEntity.ok().body(list);
 		
 	}
+
+    @GetMapping(value = "/filter-options/{nameUrl:.+}", produces = {MediaType.APPLICATION_JSON_VALUE})
+    public ResponseEntity<PropertyFilterOptionsDTO> getFilterOptions(@PathVariable String nameUrl) {
+        PropertyFilterOptionsDTO options = service.getPublicFilterOptions(nameUrl);
+        return ResponseEntity.ok().body(options);
+    }
     //busca home site
     @GetMapping(value= "/findAll/{nameUrl}", produces = {MediaType.APPLICATION_JSON_VALUE})
 	public ResponseEntity <List<Property>> findAll(@PathVariable String nameUrl){

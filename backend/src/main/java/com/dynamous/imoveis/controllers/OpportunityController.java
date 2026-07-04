@@ -8,6 +8,7 @@ import com.dynamous.imoveis.dto.OpportunityDTO;
 import com.dynamous.imoveis.dto.OpportunityNewDTOCRM;
 import com.dynamous.imoveis.dto.OpportunityNewHomeSiteDTO;
 import com.dynamous.imoveis.dto.OpportunityNewSiteDetailDTO;
+import com.dynamous.imoveis.dto.OpportunityLPDTO;
 import com.dynamous.imoveis.dto.StateDTO;
 import com.dynamous.imoveis.entities.Lead;
 import com.dynamous.imoveis.entities.Opportunity;
@@ -90,7 +91,16 @@ public class OpportunityController {
                   buildAndExpand(obj.getId()).toUri();
         return ResponseEntity.created(uri).build();
     }
-      
+    
+    @PostMapping(value="/saveLp", produces = {MediaType.APPLICATION_JSON_VALUE})
+    public ResponseEntity<Void> saveLp(@Valid @RequestBody OpportunityLPDTO objDto){   	
+        Opportunity obj = service.fromDTOLP(objDto);
+        service.insert(obj);       
+        URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").
+                  buildAndExpand(obj.getId()).toUri();
+        return ResponseEntity.created(uri).build();
+    }
+
     @PreAuthorize("hasAnyRole('TENANT')")
     @DeleteMapping(value = "/delete/{id}", produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<Void> delete(@PathVariable Long id){

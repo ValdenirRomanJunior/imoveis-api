@@ -2,6 +2,9 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
 import { ThemeProvider } from 'styled-components';
 import { useSubdomain } from '../../components/SubdomainRouter';
+import Slider from 'react-slick';
+import 'slick-carousel/slick/slick.css';
+import 'slick-carousel/slick/slick-theme.css';
 import { phone } from "./masks";
 import { 
   AiOutlineHome, 
@@ -31,6 +34,7 @@ import {
   FaPhoneAlt,
   FaLinkedinIn,
   FaPaperPlane,
+  FaYoutube,
 } from 'react-icons/fa';
 import { 
   HiHome, 
@@ -49,6 +53,7 @@ import {
   MdLocationOn, 
   MdSecurity 
 } from 'react-icons/md';
+import { PiCaretLeftBold, PiCaretRightBold, PiArrowUpBold } from 'react-icons/pi';
 import {
   SiteContainer,
   Header,
@@ -57,6 +62,9 @@ import {
   NavLink,
   MobileMenuButton,
   MobileMenu,
+  MenuLinkItem,
+  MenuButtonOutline,
+  MenuButtonSolid,
   Banner,
   BannerContent,
   BannerTitle,
@@ -81,10 +89,6 @@ import {
   AgentPhoto,
   AgentQuote,
   Footer,
-  FooterLogo,
-  SocialLinks,
-  SocialLink,
-  FooterText,
   ModalOverlay,
   ModalContent,
   ModalHeader,
@@ -128,19 +132,108 @@ import {
   AnnounceTitle,
   AnnounceSubtitle,
   AnnounceFormRow,
-  AnnounceButtonRow
+  AnnounceButtonRow,
+  FooterContainer,
+  FooterLogoColumn,
+  FooterLinksColumn,
+  FooterLinkGroup,
+  FooterContactColumn,
+  SocialLinksRow,
+  FooterBottomLine,
+  ScrollToTopBtn,
+  AboutModalSection,
+  AboutHeroImage,
+  AboutHistoryText,
+  AboutTeamSection,
+  AboutTeamHeader,
+  AboutTeamSlider,
+  AboutTeamSlide,
+  AboutTeamCard,
+  AboutTeamImage,
+  AboutTeamOverlay,
+  AboutCarouselArrow
 } from './styles';
 import PseudoSearch from './PseudoSearch';
 import WhatsappButton from './WhatsappButton';
 import api from './utils/requests';
 import corretorPadrao from './assets/corretor-padrao.jpg';
-import bannerPadrao from '../../assets/images/bg-principal.png';
+import bannerPadrao from '../../assets/images/banner-padrao-desktop.png';
 import FeaturedPropertyCard from './components/FeaturedPropertyCard';
 import { getPropertiesHome } from './Services/property';
-import houseimage from '../../assets/house-image.png';
+import team from '../../assets/images/team.jpg';
 import { newLeadHome } from './Services/lead';
 import DynamicFavicon from '../../components/DynamicFavicon';
 import DynamicSEO from '../../components/DynamicSEO';
+import camaleonLogo from '../../assets/images/logo-padrao.png';
+  
+interface TeamMember {
+  id: number;
+  name: string;
+  role: string;
+  image: string;
+}
+
+const defaultAboutHeroImage =
+  'https://images.unsplash.com/photo-1497366754035-f200968a6e72?ixlib=rb-4.0.3&auto=format&fit=crop&w=1400&q=80';
+
+const teamMembers: TeamMember[] = [
+  {
+    id: 1,
+    name: 'Mariana Souza',
+    role: 'Corretora especialista',
+    image: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-4.0.3&auto=format&fit=crop&w=900&q=80'
+  },
+  {
+    id: 2,
+    name: 'Rafael Lima',
+    role: 'Consultor imobiliario',
+    image: corretorPadrao
+  },
+  {
+    id: 3,
+    name: 'Camila Rocha',
+    role: 'Atendimento e vendas',
+    image: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?ixlib=rb-4.0.3&auto=format&fit=crop&w=900&q=80'
+  },
+  {
+    id: 4,
+    name: 'Bruno Martins',
+    role: 'Especialista em locacao',
+    image: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-4.0.3&auto=format&fit=crop&w=900&q=80'
+  },
+  {
+    id: 5,
+    name: 'Juliana Costa',
+    role: 'Relacionamento com clientes',
+    image: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.0.3&auto=format&fit=crop&w=900&q=80'
+  }
+];
+
+const teamSliderSettings = {
+  dots: false,
+  infinite: teamMembers.length > 3,
+  speed: 500,
+  slidesToShow: 3,
+  slidesToScroll: 1,
+  arrows: true,
+  responsive: [
+    {
+      breakpoint: 992,
+      settings: {
+        slidesToShow: 2,
+        slidesToScroll: 1
+      }
+    },
+    {
+      breakpoint: 768,
+      settings: {
+        slidesToShow: 1,
+        slidesToScroll: 1
+      }
+    }
+  ]
+};
+
 
 interface Property {
   id: number;
@@ -185,6 +278,8 @@ interface Service {
 }
 
 interface ThemeConfig {
+  creci: string;
+  companyName: string;
   id?: number;
   name: string;
   logo: string;
@@ -206,6 +301,9 @@ interface ThemeConfig {
   address?: string;
   footerLogo: string;
   socialLinks: {
+    youtube: string;
+    linkedin: string;
+    twitter: string;
     facebook: string;
     instagram: string;
     whatsapp: string;
@@ -224,6 +322,54 @@ interface ThemeConfig {
   siteTitle?: string;
 }
 
+function AboutNextArrow(props: any) {
+  const { className, style, onClick } = props;
+
+  return (
+    <AboutCarouselArrow
+      type="button"
+      className={className}
+      style={{
+        ...style,
+        display: 'flex',
+        position: 'absolute',
+        top: '50%',
+        right: '-12px',
+        transform: 'translateY(-50%)',
+        zIndex: 2
+      }}
+      onClick={onClick}
+      aria-label="Próximo corretor"
+    >
+      <PiCaretRightBold size={18} />
+    </AboutCarouselArrow>
+  );
+}
+
+function AboutPrevArrow(props: any) {
+  const { className, style, onClick } = props;
+
+  return (
+    <AboutCarouselArrow
+      type="button"
+      className={className}
+      style={{
+        ...style,
+        display: 'flex',
+        position: 'absolute',
+        top: '50%',
+        left: '-12px',
+        transform: 'translateY(-50%)',
+        zIndex: 2
+      }}
+      onClick={onClick}
+      aria-label="Corretor anterior"
+    >
+      <PiCaretLeftBold size={18} />
+    </AboutCarouselArrow>
+  );
+}
+
 const Site: React.FC = () => {
   const { companyName } = useParams<{ companyName: string }>();
   const { companyName: subdomainCompanyName } = useSubdomain();
@@ -236,6 +382,23 @@ const Site: React.FC = () => {
   const [aboutModalOpen, setAboutModalOpen] = useState(false);
   const [clientSlug, setClientSlug] = useState<string | null>(null);
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [currentWhyChooseImage, setCurrentWhyChooseImage] = useState(0);
+
+  const whyChooseImages = [
+    team, // Primeira imagem atual (ou team se importado)
+    "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+    "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+    "https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+  ];
+
+  const nextWhyChooseImage = () => {
+    setCurrentWhyChooseImage((prev) => (prev + 1) % whyChooseImages.length);
+  };
+
+  const prevWhyChooseImage = () => {
+    setCurrentWhyChooseImage((prev) => (prev === 0 ? whyChooseImages.length - 1 : prev - 1));
+  };
+
    const [url,setUrl]= useState((window.location.hostname));
 
        const [errorsLead, setErrorsLead] = useState<Error[]>([]);
@@ -251,8 +414,29 @@ const Site: React.FC = () => {
     email:'',
     phone:'',
     message:''
-    
 });
+
+  const [announceForm, setAnnounceForm] = useState<any>({
+    name: '',
+    email: '',
+    phone: '',
+    message: '[Captação] Gostaria de anunciar meu imóvel'
+  });
+  const [successAnnounceMessage, setSuccessAnnounceMessage] = useState(false);
+  const [loadingAnnounceLead, setLoadingAnnounceLead] = useState(false);
+  const aboutDescription = themeConfig?.aboutUs?.trim()
+    ? themeConfig.aboutUs
+    : `${themeConfig?.companyName || 'Nossa imobiliaria'} nasceu com o compromisso de aproximar pessoas, bairros e oportunidades. Ao longo da nossa historia, construimos um atendimento consultivo, transparente e humano para ajudar cada cliente a comprar, vender ou alugar com mais seguranca e confianca.`;
+  const aboutParagraphs = aboutDescription
+    .split(/\n+/)
+    .map((paragraph) => paragraph.trim())
+    .filter(Boolean);
+  const aboutHeroImage = defaultAboutHeroImage;
+  const aboutTeamCarouselSettings = {
+    ...teamSliderSettings,
+    nextArrow: <AboutNextArrow />,
+    prevArrow: <AboutPrevArrow />
+  };
   // Set client slug from subdomain context or URL parameter
   useEffect(() => {
     const detectedSlug = subdomainCompanyName || companyName;
@@ -332,9 +516,11 @@ const Site: React.FC = () => {
       console.error('Erro ao carregar configuração do tema:', error);
       // Fallback para configuração padrão se não encontrar
       setThemeConfig({
+        creci: '',
+        companyName: '',
         name: 'Site Padrão',
         logo: '',
-        logoSize: 'medium',
+        logoSize: 'media',
         menuLinks: [],
         phone: '',
         bannerImage: bannerPadrao,
@@ -350,6 +536,9 @@ const Site: React.FC = () => {
         agentName: 'Corretor',
         footerLogo: '',
         socialLinks: {
+          youtube: '',
+          linkedin: '',
+          twitter: '',
           facebook: '',
           instagram: '',
           whatsapp: ''
@@ -481,12 +670,58 @@ function handleChange(e: any): void {
         }
         
         const handleKeyUp = (e: React.FormEvent<HTMLInputElement | any>) =>{      
-            if(e.currentTarget.name === 'phone'){  
+            if(e.currentTarget.name === 'phone' || e.currentTarget.name === 'announcePhone'){  
                phone(e);
               
             }        
         
         }
+
+        function handleAnnounceChange(e: any): void {
+          const field = e.target.getAttribute('name');
+          const value = e.target.value;
+          setAnnounceForm({ ...announceForm, [field]: value });
+        }
+
+        const handleSubmitAnnounceLead = async (e:any) => {
+          e.preventDefault();
+          if(!announceForm.name || !announceForm.email || !announceForm.phone) return;
+          
+          setLoadingAnnounceLead(true);
+          
+          const hostname = window.location.hostname;
+          const isLocalhost = hostname === 'localhost' || hostname === '127.0.0.1';
+          let identifierCompanyName = '';
+          let domainValue = '';
+          
+          if (isLocalhost) {
+            identifierCompanyName = clientSlug || companyName || '';
+          } else {
+            const parts = hostname.split('.');
+            if (parts.length >= 3 && parts.slice(1).join('.') === 'standi.com.br') {
+              identifierCompanyName = parts[0];
+            } else {
+              domainValue = hostname;
+            }
+          }
+            
+          const stripIdSuffix = (val: string) => val ? val.replace(/-\d+$/, '') : '';
+          identifierCompanyName = stripIdSuffix(identifierCompanyName);
+              
+          const data = await newLeadHome(announceForm.name, announceForm.email, announceForm.phone, announceForm.message, identifierCompanyName, domainValue); 
+          
+          if(data?.status === 201) {
+            setAnnounceForm({ ...announceForm, name: '', email: '', phone: '', message: '[Captação] Gostaria de anunciar meu imóvel' });
+            setSuccessAnnounceMessage(true);
+            setTimeout(()=> {
+                setSuccessAnnounceMessage(false);
+            }, 3000);
+          } else {
+             console.error("Erro ao enviar lead", data);
+             alert("Ocorreu um erro ao enviar sua solicitação. Tente novamente mais tarde.");
+          }
+          setLoadingAnnounceLead(false);
+        };
      
        //submete fortmulario do lead
   const handleSubmitLead = async (e:any) =>{   
@@ -576,52 +811,76 @@ function handleChange(e: any): void {
                     alt="Logo" 
                   />
                 ) : (
-                  'ImóveisLogo'
+                  <img 
+                    src={require('../../assets/images/logo-padrao.png')} 
+                    alt="Logo Padrão" 
+                  />
                 )}
               </Logo>
             </NavLink>
           );
         })()}
         <Nav>
-          {(() => {
-            const hostname = window.location.hostname;
-            const isLocalhost = hostname === 'localhost' || hostname === '127.0.0.1';
-            const slug = clientSlug || companyName || '';
-            const homePath = isLocalhost ? `/site/${slug}` : '/';
-            return <NavLink href={homePath}>Início</NavLink>;
-          })()}
-          {(() => {
-            const hostname = window.location.hostname;
-            const isLocalhost = hostname === 'localhost' || hostname === '127.0.0.1';
-            const slug = clientSlug || companyName || '';
-            const propertiesPath = isLocalhost ? `/site/${slug}/imoveis/?goal=&type=&name=` : '/imoveis/?goal=&type=&name=';
-            return <NavLink href={propertiesPath}>Property</NavLink>;
-          })()}
-          <NavLink href={`tel:${themeConfig.phone}`}>Agent</NavLink>
-          <a href="#contato" style={{ background: '#111', color: '#fff', padding: '10px 24px', borderRadius: '30px', textDecoration: 'none', fontWeight: 500, fontSize: '14px', fontFamily: 'Inter, sans-serif' }}>Contact Us</a>
+          <div className="header-search-bar" style={{ 
+            display: 'flex', 
+            alignItems: 'center', 
+            border: '1px solid #d8d8d8ff', 
+            borderRadius: '6px', 
+            padding: '11px 12px',
+            width: '350px'
+          }}>
+            <HiSearch style={{ color: '#666', fontSize: '27px', marginRight: '8px' }} />
+            <input 
+              type="text" 
+              placeholder="Tipo, bairro, rua, edifício ou código" 
+              style={{ border: 'none', outline: 'none', width: '100%', fontSize: '15px', color: '#666', fontFamily: 'Inter, sans-serif' }}
+            />
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center' }}>
+          <div style={{ height: '35px', width: '1px', backgroundColor: '#eaeaea', marginLeft: '20px', marginRight: '20px' }}></div>
+          <div onClick={() => setMobileMenuOpen(!mobileMenuOpen)} style={{ cursor: 'pointer', display: 'flex', alignItems: 'center' }}>
+            {mobileMenuOpen ? <HiX style={{ fontSize: '36px', color: '#ff6b35' }} /> : <svg width="36" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M3 6H21M3 12H17M3 18H21" stroke="#ff6b35" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>}
+          </div>
+        </div>
         </Nav>
-        <MobileMenuButton onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
-          {mobileMenuOpen ? <HiX /> : <HiMenu />}
-        </MobileMenuButton>
+        
         {mobileMenuOpen && (
-          <MobileMenu>
-            {(() => {
-              const hostname = window.location.hostname;
-              const isLocalhost = hostname === 'localhost' || hostname === '127.0.0.1';
-              const slug = clientSlug || companyName || '';
-              const homePath = isLocalhost ? `/site/${slug}` : '/';
-              return <NavLink href={homePath} onClick={() => setMobileMenuOpen(false)}>Início</NavLink>;
-            })()}
-            {(() => {
-              const hostname = window.location.hostname;
-              const isLocalhost = hostname === 'localhost' || hostname === '127.0.0.1';
-              const slug = clientSlug || companyName || '';
-              const propertiesPath = isLocalhost ? `/site/${slug}/imoveis/?goal=&type=&name=` : '/imoveis/?goal=&type=&name=';
-              return <NavLink href={propertiesPath} onClick={() => setMobileMenuOpen(false)}>Imóveis</NavLink>;
-            })()}
-            <NavLink href={`tel:${themeConfig.phone}`} onClick={() => setMobileMenuOpen(false)}>{themeConfig.phone}</NavLink>
-          </MobileMenu>
-        )}
+            <MobileMenu>
+              {(() => {
+                const hostname = window.location.hostname;
+                const isLocalhost = hostname === 'localhost' || hostname === '127.0.0.1';
+                const slug = clientSlug || companyName || '';
+                const propertiesPath = isLocalhost ? `/site/${slug}/imoveis/?goal=&type=&name=` : '/imoveis/?goal=&type=&name=';
+                return (
+                  <>
+                    <MenuLinkItem href={propertiesPath} onClick={() => setMobileMenuOpen(false)}>Comprar imóvel</MenuLinkItem>
+                    <MenuLinkItem href={propertiesPath} onClick={() => setMobileMenuOpen(false)}>Alugar imóvel</MenuLinkItem>
+                  </>
+                );
+              })()}
+              <MenuLinkItem href="#contato" onClick={() => setMobileMenuOpen(false)}>Lançamentos</MenuLinkItem>
+              <MenuLinkItem href="#sobre" onClick={() => setMobileMenuOpen(false)}>Sobre Nós</MenuLinkItem>
+              
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginLeft: '1rem' }}>
+                <MenuButtonSolid href={`https://wa.me/${themeConfig.phone?.replace(/\D/g, '')}`} target="_blank" rel="noopener noreferrer">Suporte ao cliente</MenuButtonSolid>
+                <MenuButtonOutline href="#contato" onClick={() => setMobileMenuOpen(false)}>Fale conosco</MenuButtonOutline>
+              </div>
+
+              <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginLeft: '1rem' }}>
+                <a href={`https://wa.me/${themeConfig.phone?.replace(/\D/g, '')}`} target="_blank" rel="noopener noreferrer" style={{ color: '#fff' }}>
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
+                </a>
+                <a href={`tel:${themeConfig.phone}`} style={{ color: '#fff' }}>
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+                </a>
+                <a href="#contato" style={{ color: '#fff' }}>
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                </a>
+              </div>
+            </MobileMenu>
+          )}
       </Header>
 
       <SiteContainer>
@@ -691,16 +950,16 @@ function handleChange(e: any): void {
               Escolha a imobiliária especialista no mercado há mais de 70 anos e tenha a maior segurança e rentabilidade do mercado.
             </AnnounceSubtitle>
             
-            <form onSubmit={(e) => { e.preventDefault(); alert('Solicitação enviada!'); }}>
+            <form onSubmit={handleSubmitAnnounceLead}>
               <AnnounceFormRow>
-                <input type="text" placeholder="Seu nome:" required />
-                <input type="tel" placeholder="Seu telefone:" required />
-                <input type="email" placeholder="Seu e-mail:" required />
+                <input type="text" name="name" value={announceForm.name} onChange={handleAnnounceChange} placeholder="Seu nome:" required />
+                <input type="tel" name="phone" value={announceForm.phone} onChange={handleAnnounceChange} onKeyUp={handleKeyUp} placeholder="Seu telefone:" required />
+                <input type="email" name="email" value={announceForm.email} onChange={handleAnnounceChange} placeholder="Seu e-mail:" required />
               </AnnounceFormRow>
               <AnnounceButtonRow>
                 <div className="dots-blue"></div>
-                <button type="submit">
-                  Solicitar Contato &rarr;
+                <button type="submit" disabled={loadingAnnounceLead}>
+                  {loadingAnnounceLead ? 'Enviando...' : successAnnounceMessage ? 'Enviado!' : 'Solicitar Contato \u2192'}
                 </button>
                 <div className="dots-green"></div>
               </AnnounceButtonRow>
@@ -715,47 +974,51 @@ function handleChange(e: any): void {
         {clientSlug && <FeaturedPropertyCard url={clientSlug} properties={featuredProperties} buttonColor={themeConfig.buttonColor} isLancamento={true} />}
       </Section>
 
-      {/* Bloco 7 - Navegação */}
-      <NavigationSection>
-        <NavigationLink href="#" onClick={(e) => { e.preventDefault(); setPrivacyModalOpen(true); }}>Políticas de Privacidade</NavigationLink>
-        <NavigationLink href="#" onClick={(e) => { e.preventDefault(); setAboutModalOpen(true); }}>Sobre Nós</NavigationLink>
-      </NavigationSection>
+  
 
       {/* Bloco Novo - Why Choose Us */}
       <WhyChooseSection>
         <WhyChooseContainer>
           <WhyChooseLeft>
             <WhyChooseImageWrapper>
-              <img src={houseimage} alt="Interior moderno" />
+              <img src={whyChooseImages[currentWhyChooseImage]} alt="Interior moderno" />
+              
+              <button className="slider-arrow prev" onClick={prevWhyChooseImage}>
+                <PiCaretLeftBold size={20} style={{backgroundColor: '#1C1C38'}}/>
+              </button>
+              <button className="slider-arrow next" onClick={nextWhyChooseImage}>
+                <PiCaretRightBold size={20} style={{backgroundColor: '#1C1C38'}}/>
+              </button>
+
               <ReviewCard>
                 <Stars>★★★★★</Stars>
-                <ReviewText>"Best agency we've ever worked with."</ReviewText>
-                <ReviewAuthor>- The Andersons</ReviewAuthor>
+                <ReviewText>"A melhor agência com a qual já trabalhamos."</ReviewText>
+                <ReviewAuthor>- Camaleon</ReviewAuthor>
               </ReviewCard>
             </WhyChooseImageWrapper>
           </WhyChooseLeft>
           <WhyChooseRight>
-            <WhyChooseTitle>Why Choose EstateHorizon?</WhyChooseTitle>
+            <WhyChooseTitle>Porque escolher a Camaleon?</WhyChooseTitle>
             <FeatureList>
               <FeatureItem>
                 <FeatureNumber>1</FeatureNumber>
                 <FeatureTextContent>
-                  <FeatureTitle>Wide Ranging Properties</FeatureTitle>
-                  <FeatureDesc>From cozy condos to luxury villas, we have something for every lifestyle.</FeatureDesc>
+                  <FeatureTitle>Propriedades de Ampla Variedade</FeatureTitle>
+                  <FeatureDesc>De apartamentos aconchegantes a vilas de luxo, temos opções para todos os estilos de vida..</FeatureDesc>
                 </FeatureTextContent>
               </FeatureItem>
               <FeatureItem>
                 <FeatureNumber>2</FeatureNumber>
                 <FeatureTextContent>
-                  <FeatureTitle>Trusted Agents</FeatureTitle>
-                  <FeatureDesc>Our team of professionals is dedicated to finding you the best deal.</FeatureDesc>
+                  <FeatureTitle>Corretores de Confiança</FeatureTitle>
+                  <FeatureDesc>Nossa equipe de profissionais dedica-se a encontrar a melhor oferta para vocês.</FeatureDesc>
                 </FeatureTextContent>
               </FeatureItem>
               <FeatureItem>
                 <FeatureNumber>3</FeatureNumber>
                 <FeatureTextContent>
-                  <FeatureTitle>Transparent Process</FeatureTitle>
-                  <FeatureDesc>No hidden fees or surprises. We guide you through every step.</FeatureDesc>
+                  <FeatureTitle>Processo transparente</FeatureTitle>
+                  <FeatureDesc>Sem taxas ocultas ou surpresas. Acompanhamos você em cada etapa.</FeatureDesc>
                 </FeatureTextContent>
               </FeatureItem>
             </FeatureList>
@@ -801,14 +1064,7 @@ function handleChange(e: any): void {
               </DetailItem>
             </ContactDetailsGrid>
 
-            <SocialRow>
-              <strong>Siga-nos</strong>
-              <div className="icons">
-                <a href="#"><FaLinkedinIn /></a>
-                <a href="#"><FaInstagram /></a>
-                <a href="#"><FaFacebook /></a>
-              </div>
-            </SocialRow>
+         
           </InfoColumn>
 
           {/* Coluna 2: Formulário */}
@@ -860,30 +1116,70 @@ function handleChange(e: any): void {
       </UnifiedContactSection>
 
       {/* Bloco 8 - Footer */}
-      <Footer backgroundColor={themeConfig.footerBackgroundColor}>
-        <FooterLogo>
-          {themeConfig.footerLogo ? (
-            <img src={themeConfig.footerLogo} alt="Logo" style={{ height: '32px' }} />
-          ) : themeConfig.logo ? (
-            <img src={themeConfig.logo} alt="Logo" style={{ height: '32px' }} />
-          ) : (
-            'ImóveisLogo'
-          )}
-        </FooterLogo>
-        <SocialLinks>
-          {socialLinks.map((social: any, index: number) => {
-            const IconComponent = social.platform === 'facebook' ? FaFacebook : 
-                               social.platform === 'instagram' ? FaInstagram : FaWhatsapp;
-            return (
-              <SocialLink key={index} href={social.url}>
-                <IconComponent />
-              </SocialLink>
-            );
-          })}
-        </SocialLinks>
-        <FooterText textColor={themeConfig.textColor}>
-          {themeConfig.footerText}
-        </FooterText>
+      <Footer backgroundColor={themeConfig.footerBackgroundColor || '#1C1C38'}>
+        <FooterContainer>
+          <FooterLogoColumn>
+            {themeConfig.footerLogo ? (
+              <img src={themeConfig.footerLogo} alt="Logo" />
+            ) : themeConfig.logo ? (
+              <img src={themeConfig.logo} alt="Logo" />
+            ) : (
+              <img src={camaleonLogo} alt="Logo" />
+            )}
+          </FooterLogoColumn>
+
+          <FooterLinksColumn>
+            <FooterLinkGroup>
+              <h4>Filtros</h4>
+              <a href="#">Lançamentos</a>
+              <a href="#">2+ Dormitórios</a>
+              <a href="#">Com Suite</a>
+              <a href="#">2+ Vagas</a>
+            </FooterLinkGroup>
+      
+          </FooterLinksColumn>
+
+          <FooterLinksColumn>
+            <FooterLinkGroup>
+              <h4>Navegação</h4>
+              <a href="#">Comprar um imóvel</a>
+              <a href="#">Alugar um imóvel</a>
+              <a href="#">Vender um imóvel</a>
+            </FooterLinkGroup>
+          
+          </FooterLinksColumn>
+
+          <FooterLinksColumn>
+            <FooterLinkGroup>
+              <h4>Institucional</h4>
+              <a href="#">Área do Cliente</a>
+              <a href="#" onClick={(e) => { e.preventDefault(); setPrivacyModalOpen(true); }}>Política de Privacidade</a>
+              <a href="#" onClick={(e) => { e.preventDefault(); setAboutModalOpen(true); }}>Sobre nós</a>
+              <a href="#contato">Suporte ao cliente</a>
+          
+            </FooterLinkGroup>
+          
+          </FooterLinksColumn>
+
+          <FooterContactColumn>
+            <h3 className="footer-phone">{themeConfig.phone || '(00) 0000-0000'}</h3>
+            <SocialLinksRow>
+              <a href={themeConfig.socialLinks?.facebook || '#'}><FaFacebook /></a>
+              <a href={themeConfig.socialLinks?.instagram || '#'}><FaInstagram /></a>
+              <a href={themeConfig.socialLinks?.linkedin || '#'}><FaLinkedinIn /></a>
+              <a href={themeConfig.socialLinks?.youtube || '#'}><FaYoutube /></a>
+            </SocialLinksRow>
+            <p className="footer-creci">CRECI {themeConfig.creci || 'J00000'}</p>
+          </FooterContactColumn>
+        </FooterContainer>
+        
+        <FooterBottomLine>
+          <p>&copy; {new Date().getFullYear()} {themeConfig.companyName || 'Nossa Imobiliária'}. Todos os direitos reservados.</p>
+        </FooterBottomLine>
+        
+        <ScrollToTopBtn onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
+          <PiArrowUpBold size={20} />
+        </ScrollToTopBtn>
       </Footer>
 
       {/* Modais */}
@@ -905,11 +1201,45 @@ function handleChange(e: any): void {
         <ModalOverlay onClick={() => setAboutModalOpen(false)}>
           <ModalContent onClick={(e) => e.stopPropagation()}>
             <ModalHeader>
-              <ModalTitle textColor={themeConfig.textColor}>Sobre Nós</ModalTitle>
+              <ModalTitle as="h1" textColor={themeConfig.textColor}>Sobre nós</ModalTitle>
               <ModalCloseButton textColor={themeConfig.textColor} onClick={() => setAboutModalOpen(false)}>×</ModalCloseButton>
             </ModalHeader>
             <ModalBody textColor={themeConfig.textColor}>
-              <p>{themeConfig.aboutUs || 'Conteúdo sobre nós não configurado.'}</p>
+              <AboutModalSection>
+                <AboutHeroImage
+                  src={aboutHeroImage}
+                  alt={`Ambiente da ${themeConfig.companyName || 'imobiliaria'}`}
+                />
+
+                <AboutHistoryText textColor={themeConfig.textColor}>
+                  {aboutParagraphs.map((paragraph, index) => (
+                    <p key={`${paragraph}-${index}`}>{paragraph}</p>
+                  ))}
+                </AboutHistoryText>
+
+                <AboutTeamSection>
+                  <AboutTeamHeader>
+                    <span>Nosso time</span>
+                    <h2>Conheca os corretores que fazem parte da equipe</h2>
+                  </AboutTeamHeader>
+
+                  <AboutTeamSlider>
+                    <Slider {...aboutTeamCarouselSettings}>
+                      {teamMembers.map((member) => (
+                        <AboutTeamSlide key={member.id}>
+                          <AboutTeamCard>
+                            <AboutTeamImage src={member.image} alt={member.name} />
+                            <AboutTeamOverlay>
+                              <h3>{member.name}</h3>
+                              <p>{member.role}</p>
+                            </AboutTeamOverlay>
+                          </AboutTeamCard>
+                        </AboutTeamSlide>
+                      ))}
+                    </Slider>
+                  </AboutTeamSlider>
+                </AboutTeamSection>
+              </AboutModalSection>
             </ModalBody>
           </ModalContent>
         </ModalOverlay>

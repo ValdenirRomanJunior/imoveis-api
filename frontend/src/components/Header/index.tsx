@@ -266,7 +266,7 @@ const Header = () =>{
             </NavIcon>
    
 
-            <NavIcon style={{display: 'none'}} to="/properties" onClick={() => setSidebar(false)}>
+            <NavIcon to="/properties" onClick={() => setSidebar(false)}>
             <AiOutlineHome className='icon-sidebar'/>
             <p className='description-icon'>Imóveis</p>
             </NavIcon>

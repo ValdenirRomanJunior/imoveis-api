@@ -1,614 +1,696 @@
 import { PseudoSearchContainer } from "./styles";
-import { BiSearchAlt2 } from "react-icons/bi";
-import {TfiLocationArrow} from 'react-icons/tfi';
+import { TfiLocationArrow } from 'react-icons/tfi';
 import Modal from 'react-modal';
-import { MouseEventHandler, useEffect, useRef, useState } from "react";
-import {IoIosArrowBack, IoIosArrowDown} from 'react-icons/io'
-import './styles.css'
+import { useEffect, useMemo, useRef, useState } from "react";
+import { IoIosArrowBack, IoIosArrowDown } from 'react-icons/io';
+import { PiBuildingsLight, PiCurrencyDollarLight, PiHouseLineLight, PiKeyLight, PiMapPinLight } from 'react-icons/pi';
+import './styles.css';
 
-import { createSearchParams, Link, useNavigate, useSearchParams, useParams } from "react-router-dom";
-import { getTAllAddressRequest} from '../Services/property';
+import { createSearchParams, useNavigate, useParams } from "react-router-dom";
 import Loading from "../Loading";
 import { IoCloseOutline } from "react-icons/io5";
 import { useSubdomain } from '../../../components/SubdomainRouter';
+import { getPropertyFilterOptions, getTAllAddressRequest, PropertyFilterOptions } from '../Services/property';
 
-type Address={
-  
-        id: number,
-        street: string,
-        number: string,
-        district: string,
-        cep: string,
-        city:{
-            id: number,
-            name: string,
-            state:{
-                id: number,
-                name: string,
-            }
-        },
-       
-    
-}
+type GoalValue = '1' | '2' | '';
 
-type City={
-     id: number,
-     name: string,
-     state:{
-     id: number,
-     name: string,
-}
-}
+type SearchFilters = {
+  goal: GoalValue;
+  typeProperty: string;
+  location: string;
+  city: string;
+  district: string;
+  minPrice: string;
+  maxPrice: string;
+  minRooms: string;
+  minSuites: string;
+  minVacancies: string;
+};
+
+type PriceRangeOption = {
+  label: string;
+  minPrice: string;
+  maxPrice: string;
+};
+
+type QuickFilter = {
+  key: 'launch' | 'rooms' | 'suites' | 'vacancies';
+  label: string;
+  apply: (filters: SearchFilters) => SearchFilters;
+  isActive: (filters: SearchFilters) => boolean;
+};
+
+type AddressOption = {
+  district?: string;
+  city?: {
+    name?: string;
+    state?: {
+      name?: string;
+    };
+  };
+};
+
+type LocationSuggestion = {
+  type: 'city' | 'district';
+  label: string;
+  value: string;
+};
+
+const defaultFilters: SearchFilters = {
+  goal: '2',
+  typeProperty: '',
+  location: '',
+  city: '',
+  district: '',
+  minPrice: '',
+  maxPrice: '',
+  minRooms: '',
+  minSuites: '',
+  minVacancies: '',
+};
+
+const fallbackPropertyTypes: PropertyFilterOptions['types'] = [
+  { value: 1, label: 'Casa' },
+  { value: 2, label: 'Apartamento' },
+  { value: 3, label: 'Terreno' },
+  { value: 4, label: 'Casa Comercial' },
+  { value: 5, label: 'Casa de Condomínio' },
+  { value: 6, label: 'Flat' },
+  { value: 7, label: 'Chácara' },
+  { value: 8, label: 'Sítio' },
+  { value: 9, label: 'Fazenda' },
+  { value: 10, label: 'Galpão/Barracão' },
+  { value: 11, label: 'Pousada' },
+  { value: 12, label: 'Studio' },
+  { value: 13, label: 'Sala Comercial' },
+  { value: 14, label: 'Sobrado' },
+  { value: 15, label: 'Lançamento' },
+];
+
+const emptyFilterOptions: PropertyFilterOptions = {
+  types: [],
+  cities: [],
+  districts: [],
+};
+
+const normalizeFilterOptions = (data: any): PropertyFilterOptions => ({
+  types: Array.isArray(data?.types)
+    ? data.types
+        .map((item: any) => ({
+          value: Number(item?.value ?? item?.cod ?? item?.id ?? ''),
+          label: String(item?.label ?? item?.description ?? item?.name ?? ''),
+        }))
+        .filter((item: { value: number; label: string }) => Number.isFinite(item.value) && item.label)
+    : [],
+  cities: Array.isArray(data?.cities) ? data.cities.filter(Boolean) : [],
+  districts: Array.isArray(data?.districts) ? data.districts.filter(Boolean) : [],
+  minPrice: typeof data?.minPrice === 'number' ? data.minPrice : Number(data?.minPrice) || undefined,
+  maxPrice: typeof data?.maxPrice === 'number' ? data.maxPrice : Number(data?.maxPrice) || undefined,
+});
+
+const buildPriceRanges = (): PriceRangeOption[] => {
+  return [
+    { label: 'Todos os preços', minPrice: '', maxPrice: '' },
+    { label: 'Até 500 mil', minPrice: '', maxPrice: '500000' },
+    { label: 'De 500 Mil a 1 Milhão', minPrice: '500000', maxPrice: '1000000' },
+    { label: 'Acima de 1 Milhão', minPrice: '1000000', maxPrice: '' },
+  ];
+};
+
+const quickFilters: QuickFilter[] = [
+  {
+    key: 'launch',
+    label: 'Lançamentos',
+    apply: (filters) => ({
+      ...filters,
+      typeProperty: filters.typeProperty === '15' ? '' : '15',
+    }),
+    isActive: (filters) => filters.typeProperty === '15',
+  },
+  {
+    key: 'rooms',
+    label: '2+ Dormitórios',
+    apply: (filters) => ({
+      ...filters,
+      minRooms: filters.minRooms === '2' ? '' : '2',
+    }),
+    isActive: (filters) => filters.minRooms === '2',
+  },
+  {
+    key: 'suites',
+    label: 'Com Suíte',
+    apply: (filters) => ({
+      ...filters,
+      minSuites: filters.minSuites === '1' ? '' : '1',
+    }),
+    isActive: (filters) => filters.minSuites === '1',
+  },
+  {
+    key: 'vacancies',
+    label: '2+ Vagas',
+    apply: (filters) => ({
+      ...filters,
+      minVacancies: filters.minVacancies === '2' ? '' : '2',
+    }),
+    isActive: (filters) => filters.minVacancies === '2',
+  },
+];
 
 const useNavigateSearch = () => {
-    const navigate = useNavigate();
-    return (pathname:any, params:any) =>
-      navigate(`${pathname}/?${createSearchParams(params)}`);
-  };
-  
-const PseudoSearch = () =>{
-    const { companyName } = useParams<{ companyName: string }>();
-    const { companyName: subdomainCompanyName } = useSubdomain();
-    const clientSlug = subdomainCompanyName || companyName;
-    const isLocalhost = window.location.hostname.includes('localhost') || window.location.hostname.startsWith('127.');
-    const navigateSearch = useNavigateSearch();
+  const navigate = useNavigate();
 
+  return (pathname: string, params: Record<string, string>) =>
+    navigate(`${pathname}/?${createSearchParams(params)}`);
+};
 
-    const[goal,setGoal]=useState('');
-    const[type,setType]= useState('');
-    const[name,setSearch]= useState('');
+const PseudoSearch = () => {
+  const { companyName } = useParams<{ companyName: string }>();
+  const { companyName: subdomainCompanyName } = useSubdomain();
+  const hostname = window.location.hostname;
+  const clientSlug = subdomainCompanyName || companyName || '';
+  const isLocalhost = hostname.includes('localhost') || hostname.startsWith('127.');
+  const filterOptionIdentifiers = useMemo(() => {
+    const identifiers = new Set<string>();
 
-    const [address,setAddress]= useState<Address[]>([]);   
-    const [cities,setCities]= useState<City[]>([]);
+    if (subdomainCompanyName) identifiers.add(subdomainCompanyName);
+    if (companyName) identifiers.add(companyName);
 
-    const[loading, setLoading]=useState(false);
-    
+    if (!isLocalhost) {
+      identifiers.add(hostname);
 
-
-    const [modalIsOpen, setIsOpen] = useState(false);
-
-    const  openModal=()=> {
-      setIsOpen(true);
+      const hostnameParts = hostname.split('.');
+      if (hostnameParts.length >= 3) {
+        identifiers.add(hostnameParts[0]);
+      }
     }
 
-  
-   const  handleCloseModal=()=> {
-    setSearch('');
-    setSelectedSale(true)
-    setSelectedRent(false)
-  
-      setIsOpen(false);
-    }
-    
-    const [selectedRent,setSelectedRent]=useState(false);
-    const [selectedSale,setSelectedSale]=useState(true);
+    return Array.from(identifiers).filter(Boolean);
+  }, [companyName, hostname, isLocalhost, subdomainCompanyName]);
+  const navigateSearch = useNavigateSearch();
 
-   function selectedAfterGoalRent(e:any){
-   setSelectedRent(true)
-   setSelectedSale(false)
-      
-    }
+  const [filters, setFilters] = useState<SearchFilters>(defaultFilters);
+  const [filterOptions, setFilterOptions] = useState<PropertyFilterOptions>(emptyFilterOptions);
+  const [addressOptions, setAddressOptions] = useState<AddressOption[]>([]);
+  const [modalIsOpen, setModalIsOpen] = useState(false);
+  const [loadingOptions, setLoadingOptions] = useState(false);
+  const [loadingSearch, setLoadingSearch] = useState(false);
+  const [isTypeDropdownVisible, setIsTypeDropdownVisible] = useState(false);
+  const [isPriceDropdownVisible, setIsPriceDropdownVisible] = useState(false);
+  const [showLocationSuggestions, setShowLocationSuggestions] = useState(false);
 
-    
-   function selectedAfterGoalSale(e:any){
-    setSelectedSale(true)
-    setSelectedRent(false)
-       
-     }
+  const typeRef = useRef<HTMLDivElement>(null);
+  const priceRef = useRef<HTMLDivElement>(null);
+  const locationRef = useRef<HTMLDivElement>(null);
 
-    let toogleClassCheckRent = selectedRent ? ' activeRent': '';
-    let toogleClassCheckSale = selectedSale ? ' activeSale':  '';
+  const priceRanges = useMemo(() => buildPriceRanges(), []);
 
-    const [url,setUrl]= useState(clientSlug || window.location.hostname);
-    const getAllAddress = async () => {
-        let params = new URLSearchParams(document.location.search);
-        const data = await getTAllAddressRequest(url);
-        setAddress(data.data);
-    }
+  const availableTypes = useMemo(
+    () => (filterOptions.types.length > 0 ? filterOptions.types : fallbackPropertyTypes),
+    [filterOptions.types]
+  );
 
-     useEffect(()=> {
-        setUrl(clientSlug || window.location.hostname);
-     },[clientSlug])
+  const selectedType = useMemo(
+    () => availableTypes.find((item) => String(item.value) === filters.typeProperty),
+    [availableTypes, filters.typeProperty]
+  );
 
-     useEffect(()=> {
-        getAllAddress()
-     },[url])
+  const selectedPriceLabel = useMemo(
+    () => priceRanges.find(
+      (range) => range.minPrice === filters.minPrice && range.maxPrice === filters.maxPrice
+    )?.label || 'Faixa de Preço',
+    [filters.maxPrice, filters.minPrice, priceRanges]
+  );
 
-
-     const getOnlyCities = () => {
-        let newlist:City[]= [];
-        address && address.map(x => {
-            newlist.push({
-                id: x.city.id,
-                name: x.city.name,
-                state:{
-                    id: x.city.state.id,
-                    name: x.city.state.name
-                }
-            });
-            setCities(newlist);
-
-        })
-     }
-
-     useEffect(()=> {
-        getOnlyCities()
-     },[address])
-
-    
-   
-     
-   
-     //pega cidade da lista de sujestão 
-     const [showCompomentSelectCity,setshowComponentSelectCity]= useState(false);
-     const getCityFromList = (e:any) => {
-       const value=e.currentTarget.value;
-    
-        setSearch(value)
-        setshowComponentSelectCity(showCompomentSelectCity => !showCompomentSelectCity); 
-        setshowComponentSelectDistrict(showCompomentSelectDistrict=> !showCompomentSelectDistrict);  
-     }
-
-    const onKeyUp = (e: React.FormEvent<HTMLInputElement>) => {
-        setshowComponentSelectCity(true)
-        setshowComponentSelectDistrict(true)
-
+  const locationSuggestions = useMemo(() => {
+    const query = filters.location.trim().toLowerCase();
+    if (!query) {
+      return { cities: [] as LocationSuggestion[], districts: [] as LocationSuggestion[] };
     }
 
-     //pega bairro da lista de sujestão 
-    const [showCompomentSelectDistrict,setshowComponentSelectDistrict]= useState(false);
-    const getDistrictFromList = (e:any) => {
-        const value=e.currentTarget.value;
-        const newValue  = value.substr(0, value.indexOf(','));
-       
-         setSearch(newValue)
-         setshowComponentSelectDistrict(showCompomentSelectDistrict=> !showCompomentSelectDistrict); 
-         setshowComponentSelectCity(showCompomentSelectCity => !showCompomentSelectCity);   
+    const cityMap = new Map<string, LocationSuggestion>();
+    const districtMap = new Map<string, LocationSuggestion>();
+
+    addressOptions.forEach((address) => {
+      const cityName = address.city?.name?.trim();
+      const stateName = address.city?.state?.name?.trim();
+      const districtName = address.district?.trim();
+
+      if (cityName && cityName.toLowerCase().includes(query) && !cityMap.has(cityName.toLowerCase())) {
+        cityMap.set(cityName.toLowerCase(), { type: 'city', label: cityName, value: cityName });
       }
 
-
-     
-     const getTypingSearch = () => {
-        const lowerCased = name.toLowerCase();
-    let newResult: City[]= [];
-      newResult= cities.filter(city => (city.name.toLowerCase().match(lowerCased )));
-    
-      const uniqueCities= new Map();
-
-      newResult.forEach((ct) => {
-        if(!uniqueCities.has(ct.name)){
-            uniqueCities.set(ct.name,ct);
-
-        }
-        if(name === '' || name === ct.name){
-            uniqueCities.clear()
-              
-      }
-
-
-      });
-   
-      if(uniqueCities.size>0){
-      const a=[uniqueCities.keys()].map(x => {
-        return(
-           <>
-
-           <input id="cityCheck" type="text" className="city-search"
-            onClick={getCityFromList} value={x.next().value}/>
-           </>
-         
-        )}) 
-     return a;
-
-        }else{
-            return <li className="district-search">Não encontramos cidades com este nome</li>
-        }
-     }
-
-
-
-     //bairro
-     const getTypingDistrict = () => {
-        const lowerCased = name.toLowerCase();
-        let newResult: Address[]= [];
-          newResult= address?.filter(adr => (adr.district.toLowerCase().match(lowerCased)));
-        
-          const uniqueDistricts= new Map();
-    
-          newResult?.forEach((ct) => {
-            if(!uniqueDistricts.has(ct.district)){
-                uniqueDistricts.set(ct.district,ct);
-                uniqueDistricts.set(ct.city.name,ct);
-                uniqueDistricts.set(ct.city.state.name,ct);
-    
-            }
-       
-            if(name === '' || name === ct.district){
-                uniqueDistricts.clear()
-                
-          }
+      if (districtName && districtName.toLowerCase().includes(query)) {
+        const key = `${districtName.toLowerCase()}-${cityName?.toLowerCase() || ''}`;
+        if (!districtMap.has(key)) {
+          districtMap.set(key, {
+            type: 'district',
+            label: [districtName, cityName, stateName].filter(Boolean).join(', '),
+            value: districtName,
           });
-       
-          if(uniqueDistricts.size>0){
-
-         
-          const a=[uniqueDistricts.keys()].map(x  => {
-            if(uniqueDistricts.size<0){
-                         
-            } 
-                
-            return( 
-                <>
-                <div className="district-wrapper">
-                <input id="cityCheck" type="text" className="district-search"
-                onClick={getDistrictFromList} value={`${x.next().value},${x.next().value},${x.next().value}`}/> 
-             
-                </div>
-                </>
-                     
-            )})
-        
-         return a;
-        }else{
-            return <li className="district-search">Não encontramos bairros com este nome</li>
-         
         }
-       
-         }
+      }
+    });
 
+    return {
+      cities: Array.from(cityMap.values()).slice(0, 6),
+      districts: Array.from(districtMap.values()).slice(0, 6),
+    };
+  }, [addressOptions, filters.location]);
 
-     useEffect(()=> {
-        getTypingDistrict()
-     },[name])
+  const targetPath = isLocalhost ? `/site/${clientSlug}/imoveis` : '/imoveis';
 
-     
- 
-     const startLoading = () => {    
-        const targetPath = isLocalhost ? `/site/${clientSlug}/imoveis` : `/imoveis`;
-navigateSearch(targetPath,{'goal': `${goal}`, type: `${type}`, name:`${name}`});
-   
-    
-        setLoading(true)
-        setTimeout(()=> {
-          
-           // navigate(`/properties/${name}/${goal}/${type}`)
-           // <Link  to={`/properties/${name}/${goal}/${type}`}></Link>
-           setLoading(false);
-         
-        },1000)
-     }
+  const loadFilterOptions = async () => {
+    if (filterOptionIdentifiers.length === 0) {
+      setFilterOptions({ ...emptyFilterOptions, types: fallbackPropertyTypes });
+      setAddressOptions([]);
+      return;
+    }
 
+    setLoadingOptions(true);
 
+    try {
+      for (const identifier of filterOptionIdentifiers) {
+        const [filterResponse, addressResponse] = await Promise.all([
+          getPropertyFilterOptions(identifier),
+          getTAllAddressRequest(identifier),
+        ]);
 
-     const [isDropdownVisible,setIsDropDownVisible]=useState(false)
-     const [itemsList,setItemsList]= useState([
-      
-         {
-             type:"Casa",
-             value:"1"
-         },
-         {
-             type:"Apartamento",
-             value:"2"
-         },
-         {
-             type:"Terreno",
-             value:"3"
-         },
-         {
-             type:"Casa Comercial",
-             value:"4"
-         },
-         {
-             type:"Casa de Condomínio",
-             value:"5"
-         },
-     
-         {
-             type:"Flat",
-             value:"6"
-         },
-         {
-             type:"Chácara",
-             value:"7"
-         },
-         {
-             type:"Sítio",
-             value:"8"
-         },
-         {
-             type:"Fazenda",
-             value:"9"
-         },
-         {
-             type:"Galpão/Barracão",
-             value:"10"
-         },
-         {
-             type:"Pousada",
-             value:"11"
-         },
-         {
-             type:"Studio",
-             value:"12"
-         },
-         {
-             type:"Sala Comercial",
-             value:"13"
-         },
-         {
-             type:"Sobrado",
-             value:"14"
-         },
-         {
-             type:"Lançamento",
-             value:"15"
-         }
-     ])
-       //selected index typeProperty
-       const [selectedItemIndex,setSelectedItemIndex]=useState(null);
-       const ref = useRef<HTMLDivElement>(null);
-     
- 
-       useEffect(() => {
-           document.addEventListener("click", handleClickOutside, false);
-           return () => {
-             document.removeEventListener("click", handleClickOutside, false);
-           };
-         }, []);
-       
-         const handleClickOutside = (event:any) => {
-           if (ref.current && !ref.current.contains(event.target)) {
-             setIsDropDownVisible(false)
-           
-                      
-           }
-         };
-         const cleanIndexType = ()=>{
-           setSelectedItemIndex(null)
-           setType('')
-           
-         }
+        const normalizedOptions = filterResponse?.data ? normalizeFilterOptions(filterResponse.data) : null;
+        const normalizedAddresses = Array.isArray(addressResponse?.data) ? addressResponse.data : [];
 
-         console.log(type)
-    return(
-        <PseudoSearchContainer className="container"> 
-            <TfiLocationArrow className="arrow-location-pseudoSearch"/>        
-            <button onClick={openModal}>Estado, Cidade, Tipo, Finalidade...</button>
-          
-            {/* Estrutura Desktop Estilo Eastate */}
-            <div className="tabs-container" style={{ display: window.innerWidth >= 1000 ? 'flex' : 'none' }}>
-                <label className={selectedSale ? 'active' : ''} onClick={selectedAfterGoalSale}>
-                    <input type="radio" name="goal" value="2" onChange={(e)=>setGoal(e.target.value)}/>
-                    Buy
-                </label>
-                <label className={selectedRent ? 'active' : ''} onClick={selectedAfterGoalRent}>
-                    <input type="radio" name="goal" value="1" onChange={(e)=>setGoal(e.target.value)}/>
-                    Rent
-                </label>
-            </div>
+        if (normalizedAddresses.length > 0) {
+          setAddressOptions(normalizedAddresses);
+        }
 
-            <div className="search-box-main" style={{ display: window.innerWidth >= 1000 ? 'flex' : 'none' }}>
-                {/* Bloco 1: Tipo de Imóvel */}
-                <div className="search-block" style={{ flex: '1.2' }}>
-                    <div className="block-title">Property Type</div>
-                    <div className="custom-dropdown" ref={ref}>
-                        <div className="custom-dropdown-selection" onClick={e=> setIsDropDownVisible(!isDropdownVisible)} style={{ display: 'flex', justifyContent: 'space-between', width: '100%', alignItems: 'center' }}>
-                            <span style={{ color: selectedItemIndex !== null ? '#111' : '#999', fontSize: '14px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                                {selectedItemIndex !== null ? itemsList[selectedItemIndex].type : "Select Property Type"}
-                            </span>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                                {selectedItemIndex !== null && <IoCloseOutline onClick={(e) => { e.stopPropagation(); cleanIndexType(); }} style={{ cursor: 'pointer', fontSize: '16px' }}/> }
-                                <IoIosArrowDown style={{ fontSize: '14px', color: '#999' }} />
-                            </div>
-                        </div>
-                        {isDropdownVisible && (
-                            <div className="items-holder">
-                                {itemsList.map((item,index) => (
-                                    <div key={item.value} className="dropdown-item" onClick={e => {
-                                        setSelectedItemIndex(index as any)
-                                        setIsDropDownVisible(false)
-                                        setType(String(item.value));
-                                    }}>
-                                        {item.type}
-                                    </div>
-                                ))}
-                            </div>
-                        )}
-                    </div> 
-                </div>
+        if (normalizedOptions && normalizedOptions.types.length > 0) {
+          setFilterOptions(normalizedOptions);
+          return;
+        }
+      }
 
-                {/* Bloco 2: Localização */}
-                <div className="search-block" style={{ flex: '1.5' }}>
-                    <div className="block-title">Location</div>
-                    <input 
-                        placeholder="e.g Gambir, Jakarta Pusat" 
-                        type="text" 
-                        className="block-input"  
-                        onKeyUp={onKeyUp} 
-                        value={name.toLowerCase()} 
-                        onChange={(e)=>setSearch(e.target.value)}
-                    />
-                </div>
+      setFilterOptions({ ...emptyFilterOptions, types: fallbackPropertyTypes });
+    } finally {
+      setLoadingOptions(false);
+    }
+  };
 
-                {/* Bloco 3: Preço */}
-                <div className="search-block" style={{ flex: '1.2' }}>
-                    <div className="block-title">Price Range</div>
-                    <input 
-                        placeholder="Min. Price - Max. Price" 
-                        type="text" 
-                        className="block-input"
-                        disabled
-                        style={{ cursor: 'not-allowed' }}
-                    />
-                </div>
+  useEffect(() => {
+    loadFilterOptions();
+  }, [filterOptionIdentifiers]);
 
-                {/* Botão Buscar */}
-                <button className="search-btn-dark" onClick={startLoading}>
-                    Buscar
-                </button>
-            </div>
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as Node;
 
-            {/* Tags Populares (Visual) */}
-            <div className="popular-tags" style={{ display: window.innerWidth >= 1000 ? 'flex' : 'none' }}>
-    
-                <div className="tag-pill">Lançamentos</div>
-                <div className="tag-pill">2+ Dormitórios</div>
-                <div className="tag-pill">Com Suíte</div>
-                <div className="tag-pill">2+ Vagas</div>
-            </div>
+      if (typeRef.current && !typeRef.current.contains(target)) {
+        setIsTypeDropdownVisible(false);
+      }
 
-            {/* Código Legado Oculto (Necessário para manter as variáveis e lógicas antigas sem quebrar nada) */}
-            <div className="input-rent-sale-wrapper-desktop" style={{ display: 'none' }}>
-            <label  onClick={selectedAfterGoalSale} className={`selectedClass${toogleClassCheckSale} label-class`} >
-                    <input type="radio" name="goal" value="2" onChange={(e)=>setGoal(e.target.value)}/>                
-                    <span className="sale-span">comprar</span>
-                </label>
+      if (priceRef.current && !priceRef.current.contains(target)) {
+        setIsPriceDropdownVisible(false);
+      }
 
-                <label  onClick={selectedAfterGoalRent} className={`selectedClass${toogleClassCheckRent} label-class`} >
-                <input type="radio" name="goal" value="1"  onChange={(e)=>setGoal(e.target.value)}/>
-                    <span className="rent-span">alugar</span>
-                 
-                </label>
-           
-                <div className="custom-dropdown" ref={ref}>
-                    <div className="custom-dropdown-selection" onClick={e=> {
-                        setIsDropDownVisible(!isDropdownVisible);
-                    }}>
-                        {selectedItemIndex !== null ? itemsList[selectedItemIndex].type :" Tipo"}
-                        {selectedItemIndex !== null && <IoCloseOutline  onClick={cleanIndexType} className="icon-clean-type"/> }
+      if (locationRef.current && !locationRef.current.contains(target)) {
+        setShowLocationSuggestions(false);
+      }
+    };
 
-                        <IoIosArrowDown className="arrow-type" />
-                    </div>
-                    {isDropdownVisible ? 
-                    <div className="items-holder">
-                        {
-                            itemsList.map((item,index) => (
-                                <div key={item.value} className="dropdown-item" onClick={e => {
-                                    setSelectedItemIndex(index as any)
-                                    setIsDropDownVisible(false)
-                                    setType(String(item.value));
-                                    }}>
-                                    {item.type}
-                                                               
-                                </div>
-                            ))
-                        }
-                    </div>: <></>}
-                 
-                </div> 
-                </div>
-            <input placeholder="Estado, Cidade, Tipo, Finalidade..." type="text" className="input-search-desktop"  onKeyUp={onKeyUp} value={name.toLowerCase()} onChange={(e)=>setSearch(e.target.value)} style={{ display: 'none' }}/>
-               <BiSearchAlt2 className="search-icon-pseudo-search" onClick={startLoading} style={{ display: 'none' }}/>
-                 
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
-         
-            <Modal
-            isOpen={modalIsOpen}                  
-            onRequestClose={handleCloseModal}                     
-            className="Modal container"
+  const updateFilters = (partial: Partial<SearchFilters>) => {
+    setFilters((current) => ({
+      ...current,
+      ...partial,
+    }));
+  };
+
+  const handleGoalChange = (goal: GoalValue) => {
+    updateFilters({ goal });
+  };
+
+  const handleLocationChange = (value: string) => {
+    updateFilters({
+      location: value,
+      city: '',
+      district: '',
+    });
+    setShowLocationSuggestions(value.trim().length > 0);
+  };
+
+  const handleSelectSuggestion = (suggestion: LocationSuggestion) => {
+    updateFilters({
+      location: suggestion.value,
+      city: suggestion.type === 'city' ? suggestion.value : '',
+      district: suggestion.type === 'district' ? suggestion.value : '',
+    });
+    setShowLocationSuggestions(false);
+  };
+
+  const handleSelectType = (value: string) => {
+    updateFilters({ typeProperty: value });
+    setIsTypeDropdownVisible(false);
+  };
+
+  const handleSelectPriceRange = (range: PriceRangeOption) => {
+    updateFilters({
+      minPrice: range.minPrice,
+      maxPrice: range.maxPrice,
+    });
+    setIsPriceDropdownVisible(false);
+  };
+
+  const executeSearch = async (overrideFilters?: Partial<SearchFilters>) => {
+    const nextFilters = {
+      ...filters,
+      ...overrideFilters,
+    };
+
+    setFilters(nextFilters);
+    setLoadingSearch(true);
+
+    const params: Record<string, string> = {
+      goal: nextFilters.goal || '',
+      type: nextFilters.typeProperty || '',
+      name: nextFilters.location || '',
+      city: nextFilters.city || '',
+      district: nextFilters.district || '',
+      minPrice: nextFilters.minPrice || '',
+      maxPrice: nextFilters.maxPrice || '',
+      minRooms: nextFilters.minRooms || '',
+      minSuites: nextFilters.minSuites || '',
+      minVacancies: nextFilters.minVacancies || '',
+    };
+
+    navigateSearch(targetPath, params);
+    setModalIsOpen(false);
+
+    setTimeout(() => {
+      setLoadingSearch(false);
+    }, 400);
+  };
+
+  const handleQuickFilter = (quickFilter: QuickFilter) => {
+    const nextFilters = quickFilter.apply(filters);
+    executeSearch(nextFilters);
+  };
+
+  const renderLocationSuggestions = (isDesktop = false) => {
+    if (!filters.location || !showLocationSuggestions) {
+      return null;
+    }
+
+    if (locationSuggestions.cities.length === 0 && locationSuggestions.districts.length === 0) {
+      return (
+        <ul>
+          <li>Nenhuma localidade encontrada</li>
+        </ul>
+      );
+    }
+
+    return (
+      <>
+        {locationSuggestions.cities.length > 0 && (
+          <ul>
+            <h2 className="subtitle-search-list">Cidades</h2>
+            {locationSuggestions.cities.map((suggestion) => (
+              <input
+                key={`city-${suggestion.label}`}
+                type="text"
+                className={isDesktop ? 'city-search desktop-input-result' : 'city-search'}
+                readOnly
+                onMouseDown={(e) => {
+                  e.preventDefault();
+                  handleSelectSuggestion(suggestion);
+                }}
+                value={suggestion.label}
+              />
+            ))}
+          </ul>
+        )}
+
+        {locationSuggestions.districts.length > 0 && (
+          <ul>
+            <h2 className="subtitle-search-list">Bairros</h2>
+            {locationSuggestions.districts.map((suggestion) => (
+              <input
+                key={`district-${suggestion.label}`}
+                type="text"
+                className={isDesktop ? 'district-search desktop-input-result' : 'district-search'}
+                readOnly
+                onMouseDown={(e) => {
+                  e.preventDefault();
+                  handleSelectSuggestion(suggestion);
+                }}
+                value={suggestion.label}
+              />
+            ))}
+          </ul>
+        )}
+      </>
+    );
+  };
+
+  return (
+    <PseudoSearchContainer className="container">
+      <TfiLocationArrow className="arrow-location-pseudoSearch" />
+      <button onClick={() => setModalIsOpen(true)}>Estado, Cidade, Tipo, Finalidade...</button>
+
+      <div className="search-box-main" style={{ display: window.innerWidth >= 1000 ? 'flex' : 'none' }}>
+        <div className="search-block" style={{ flex: '1', paddingLeft: '10px' }}>
+          <div className="goal-inline-tabs" style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+            <label
+              className={filters.goal === '2' ? 'active' : ''}
+              onClick={() => handleGoalChange('2')}
+              style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', position: 'relative', paddingBottom: '4px' }}
             >
+              <PiHouseLineLight style={{ fontSize: '20px', color: filters.goal === '2' ? '#FF5317' : '#999' }} />
+              <span style={{ color: filters.goal === '2' ? '#111' : '#999', fontWeight: 600, fontSize: '15px' }}>Comprar</span>
+              {filters.goal === '2' && <div style={{ position: 'absolute', bottom: 0, left: 0, width: '100%', height: '2px', backgroundColor: '#e67e22' }} />}
+            </label>
+            <label
+              className={filters.goal === '1' ? 'active' : ''}
+              onClick={() => handleGoalChange('1')}
+              style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', position: 'relative', paddingBottom: '4px' }}
+            >
+              <PiKeyLight style={{ fontSize: '20px', color: filters.goal === '1' ? '#FF5317' : '#999' }} />
+              <span style={{ color: filters.goal === '1' ? '#111' : '#999', fontWeight: 600, fontSize: '15px' }}>Alugar</span>
+              {filters.goal === '1' && <div style={{ position: 'absolute', bottom: 0, left: 0, width: '100%', height: '2px', backgroundColor: '#e67e22' }} />}
+            </label>
+          </div>
+        </div>
 
-            <div className="header-modal-search">
-                 <IoIosArrowBack  className="button-close-search-modal"  onClick={handleCloseModal}/>
-                 <p>pesquisar</p>
+        <div className="search-block" style={{ flex: '1.2' }}>
+          <div className="custom-dropdown" ref={typeRef}>
+            <div
+              className="custom-dropdown-selection"
+              onClick={() => setIsTypeDropdownVisible((current) => !current)}
+              style={{ display: 'flex', justifyContent: 'space-between', width: '100%', alignItems: 'center', cursor: 'pointer' }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <PiBuildingsLight style={{ fontSize: '20px', color: '#999' }} />
+                <span style={{ color: filters.typeProperty ? '#111' : '#666', fontSize: '15px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                  {selectedType?.label || 'Tipo do imóvel'}
+                </span>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                {filters.typeProperty && (
+                  <IoCloseOutline
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      updateFilters({ typeProperty: '' });
+                    }}
+                    style={{ cursor: 'pointer', fontSize: '16px' }}
+                  />
+                )}
+                <IoIosArrowDown style={{ fontSize: '14px', color: '#666' }} />
+              </div>
             </div>
-            <div className="input-rent-sale-wrapper">
-                <label onClick={selectedAfterGoalSale} className={`selectedClass${toogleClassCheckSale}`}>
-                    <input type="radio" name="goal" value="1" onChange={(e)=>setGoal(e.target.value)}/>
-                    
-                    <span className="sale-span">comprar</span>
-                </label>
-
-                <label  onClick={selectedAfterGoalRent} className={`selectedClass${toogleClassCheckRent}`} >
-                <input type="radio" name="goal" value="2"  onChange={(e)=>setGoal(e.target.value)}/>
-                    <span className="rent-span">alugar</span>
-                </label>
-
-                <div className="custom-dropdown" ref={ref}>
-                    <div className="custom-dropdown-selection" onClick={e=> {
-                        setIsDropDownVisible(!isDropdownVisible);
-                    }}>
-                        {selectedItemIndex !== null ? itemsList[selectedItemIndex].type :" Tipo"}
-                        {selectedItemIndex !== null && <IoCloseOutline  onClick={cleanIndexType} className="icon-clean-type"/> }
-
-                        <IoIosArrowDown className="arrow-type" />
+            {isTypeDropdownVisible && (
+              <div className="items-holder">
+                {loadingOptions ? (
+                  <div className="dropdown-item">Carregando tipos...</div>
+                ) : (
+                  availableTypes.map((item) => (
+                    <div key={item.value} className="dropdown-item" onClick={() => handleSelectType(String(item.value))}>
+                      {item.label}
                     </div>
-                    {isDropdownVisible ? 
-                    <div className="items-holder">
-                        {
-                            itemsList.map((item,index) => (
-                                <div key={item.value} className="dropdown-item" onClick={e => {
-                                    setSelectedItemIndex(index as any)
-                                    setIsDropDownVisible(false)
-                                    setType(String(item.value));
-                                    }}>
-                                    {item.type}
-                                                               
-                                </div>
-                            ))
-                        }
-                    </div>: <></>}
-                 
-                </div> 
-            </div>
-            <div className="search-wrapper">
-                <input type="text" placeholder="Digite um bairro ou cidade"  onKeyUp={onKeyUp} value={name} onChange={(e)=>setSearch(e.target.value)}/>
-            </div>
-            <div className="result-list-wrapper">
+                  ))
+                )}
+              </div>
+            )}
+          </div>
+        </div>
 
-            { (name !== '' && showCompomentSelectCity) ?  
-                <ul>           
-                    <h2 className="subtitle-search-list">Cidades</h2>
-             
-                {getTypingSearch()}  
-                                        
-                </ul>
-                : ''}
-   
-                { (name !== '' && showCompomentSelectDistrict) ?          
-                <ul>                     
-                    <h2 className="subtitle-search-list">Bairros</h2>
-                {getTypingDistrict()}         
-                </ul>            
-           :'' }
+        <div className="search-block" style={{ flex: '1.5' }} ref={locationRef}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', width: '100%' }}>
+            <PiMapPinLight style={{ fontSize: '20px', color: '#999' }} />
+            <input
+              placeholder="Localização"
+              type="text"
+              className="block-input"
+              value={filters.location}
+              onFocus={() => setShowLocationSuggestions(filters.location.trim().length > 0)}
+              onChange={(event) => handleLocationChange(event.target.value)}
+              style={{ flex: 1, fontSize: '15px', color: '#666' }}
+            />
+            <IoIosArrowDown style={{ fontSize: '14px', color: '#666' }} />
+          </div>
+        </div>
 
-            </div>
-               <div className="button-send-search-wrapper">
-                {!loading?
-                    <button onClick={startLoading} >pesquisar</button>
-   
-                :
-                <button className="button-loading"><Loading/></button>
-                }
-           
-               </div>
-            </Modal>
-
-
-                     <div className="result-list-wrapper-desktop">
-
-                    { (name !== '' && showCompomentSelectCity) ?  
-                    <ul>           
-                        <h2 className="subtitle-search-list">Cidades</h2>
-                
-                    {getTypingSearch()}  
-                                            
-                    </ul>
-                    : ''}
-
-                    { (name !== '' && showCompomentSelectDistrict) ?          
-                    <ul>                     
-                        <h2 className="subtitle-search-list">Bairros</h2>
-                    {getTypingDistrict()}         
-                    </ul>            
-                :'' }
-
+        <div className="search-block" style={{ flex: '1.2' }}>
+          <div className="custom-dropdown" ref={priceRef}>
+            <div
+              className="custom-dropdown-selection"
+              onClick={() => setIsPriceDropdownVisible((current) => !current)}
+              style={{ display: 'flex', justifyContent: 'space-between', width: '100%', alignItems: 'center', cursor: 'pointer' }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', minWidth: 0 }}>
+                <div style={{ width: '20px', height: '20px', borderRadius: '50%', border: '1.5px solid #999', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                  <PiCurrencyDollarLight style={{ fontSize: '14px', color: '#999' }} />
                 </div>
-            
-            </PseudoSearchContainer>
-            
-    )
-}
+                <span style={{ flex: 1, fontSize: '15px', color: filters.maxPrice || filters.minPrice ? '#111' : '#666', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                  {selectedPriceLabel}
+                </span>
+              </div>
+              <IoIosArrowDown style={{ fontSize: '14px', color: '#666' }} />
+            </div>
+            {isPriceDropdownVisible && (
+              <div className="items-holder">
+                {priceRanges.map((range) => (
+                  <div key={`${range.minPrice}-${range.maxPrice}-${range.label}`} className="dropdown-item" onClick={() => handleSelectPriceRange(range)}>
+                    {range.label}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
 
-export default  PseudoSearch;
+        <button className="search-btn-dark" onClick={() => executeSearch()} style={{ backgroundColor: '#e67e22' }}>
+          Buscar
+        </button>
+      </div>
+
+      <div className="popular-tags" style={{ display: window.innerWidth >= 1000 ? 'flex' : 'none' }}>
+        {quickFilters.map((quickFilter) => (
+          <div
+            key={quickFilter.key}
+            className="tag-pill"
+            onClick={() => handleQuickFilter(quickFilter)}
+            style={quickFilter.isActive(filters) ? { background: '#ffffff', borderColor: '#111', color: '#111' } : undefined}
+          >
+            {quickFilter.label}
+          </div>
+        ))}
+      </div>
+
+      <Modal
+        isOpen={modalIsOpen}
+        onRequestClose={() => setModalIsOpen(false)}
+        className="Modal container"
+      >
+        <div className="header-modal-search">
+          <IoIosArrowBack className="button-close-search-modal" onClick={() => setModalIsOpen(false)} />
+          <p>pesquisar</p>
+        </div>
+
+        <div className="input-rent-sale-wrapper">
+          <label onClick={() => handleGoalChange('2')} className={`selectedClass${filters.goal === '2' ? ' activeSale' : ''}`}>
+            <input type="radio" name="goal" value="2" readOnly checked={filters.goal === '2'} />
+            <span className="sale-span">comprar</span>
+          </label>
+
+          <label onClick={() => handleGoalChange('1')} className={`selectedClass${filters.goal === '1' ? ' activeRent' : ''}`}>
+            <input type="radio" name="goal" value="1" readOnly checked={filters.goal === '1'} />
+            <span className="rent-span">alugar</span>
+          </label>
+
+          <div className="custom-dropdown" ref={typeRef}>
+            <div className="custom-dropdown-selection" onClick={() => setIsTypeDropdownVisible((current) => !current)}>
+              {selectedType?.label || ' Tipo'}
+              {filters.typeProperty && (
+                <IoCloseOutline
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    updateFilters({ typeProperty: '' });
+                  }}
+                  className="icon-clean-type"
+                />
+              )}
+
+              <IoIosArrowDown className="arrow-type" />
+            </div>
+            {isTypeDropdownVisible && (
+              <div className="items-holder">
+                {loadingOptions ? (
+                  <div className="dropdown-item">Carregando tipos...</div>
+                ) : (
+                  availableTypes.map((item) => (
+                    <div key={item.value} className="dropdown-item" onClick={() => handleSelectType(String(item.value))}>
+                      {item.label}
+                    </div>
+                  ))
+                )}
+              </div>
+            )}
+          </div>
+        </div>
+
+        <div className="search-wrapper">
+          <input type="text" placeholder="Digite um bairro ou cidade" value={filters.location} onFocus={() => setShowLocationSuggestions(filters.location.trim().length > 0)} onChange={(event) => handleLocationChange(event.target.value)} />
+        </div>
+
+        <div className="search-wrapper">
+          <div className="custom-dropdown" ref={priceRef} style={{ width: '100%', marginLeft: 0, borderLeft: 'none', padding: 0 }}>
+            <div className="custom-dropdown-selection" onClick={() => setIsPriceDropdownVisible((current) => !current)}>
+              {selectedPriceLabel}
+              <IoIosArrowDown className="arrow-type" />
+            </div>
+            {isPriceDropdownVisible && (
+              <div className="items-holder" style={{ left: 0, width: '100%' }}>
+                {priceRanges.map((range) => (
+                  <div key={`${range.minPrice}-${range.maxPrice}-${range.label}`} className="dropdown-item" onClick={() => handleSelectPriceRange(range)}>
+                    {range.label}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+
+        <div className="popular-tags mobile-popular-tags">
+          {quickFilters.map((quickFilter) => (
+            <div
+              key={quickFilter.key}
+              className="tag-pill"
+              onClick={() => updateFilters(quickFilter.apply(filters))}
+              style={quickFilter.isActive(filters) ? { background: '#ffffff', borderColor: '#111', color: '#111' } : undefined}
+            >
+              {quickFilter.label}
+            </div>
+          ))}
+        </div>
+
+        <div className="result-list-wrapper">
+          {renderLocationSuggestions()}
+        </div>
+
+        <div className="button-send-search-wrapper">
+          {!loadingSearch ? (
+            <button onClick={() => executeSearch()}>pesquisar</button>
+          ) : (
+            <button className="button-loading"><Loading /></button>
+          )}
+        </div>
+      </Modal>
+
+      <div className="result-list-wrapper-desktop">
+        {renderLocationSuggestions(true)}
+      </div>
+    </PseudoSearchContainer>
+  );
+};
+
+export default PseudoSearch;

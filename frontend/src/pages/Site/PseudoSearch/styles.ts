@@ -62,48 +62,50 @@ export const PseudoSearchContainer = styled.div`
         box-shadow: none;
         padding: 0;
         position: absolute;
-        bottom: 0;
+        bottom: -10%;
         left: 50%;
         transform: translate(-50%, 50%);
         z-index: 10;
         display: flex;
         flex-direction: column;
         align-items: flex-start;
+   
 
         button{
             display:none;
         }
 
-        /* Estrutura das Abas Flutuantes (Buy / Rent / Sell) */
+        /* Estrutura das Abas Flutuantes (Buy / Rent / Sell) - Ocultado */
         .tabs-container {
-            display: flex;
-            background: rgba(0, 0, 0, 0.4);
-            backdrop-filter: blur(8px);
-            border-radius: 12px 12px 0 0;
-            padding: 8px 12px;
-            width: fit-content;
-            margin-bottom: 0; /* Gruda na caixa de baixo */
-            margin-left: 20px;
-            z-index: 2;
+            display: none;
         }
 
-        .tabs-container label {
-            padding: 8px 24px;
-            color: #fff;
-            font-size: 14px;
+        /* Estrutura Inline das Abas (Goal) */
+        .goal-inline-tabs {
+            display: flex;
+            background: transparent;
+            padding: 0;
+            width: fit-content;
+            margin-top: 0;
+        }
+
+        .goal-inline-tabs label {
+            padding: 0;
+            color: #999;
+            font-size: 15px;
             font-family: 'Inter', sans-serif;
-            font-weight: 500;
+            font-weight: 600;
             cursor: pointer;
-            border-radius: 8px;
             transition: all 0.2s ease;
         }
 
-        .tabs-container label.active {
-            background: #fff;
+        .goal-inline-tabs label.active {
+            background: transparent;
             color: #111;
+            box-shadow: none;
         }
 
-        .tabs-container input {
+        .goal-inline-tabs input {
             display: none;
         }
 
@@ -112,7 +114,7 @@ export const PseudoSearchContainer = styled.div`
             display: flex;
             width: 100%;
             background: #fff;
-            border-radius: 50px;
+            border-radius: 10px;
             padding: 15px;
             align-items: center;
             box-shadow: 0 10px 30px rgba(0,0,0,0.1);
@@ -137,8 +139,9 @@ export const PseudoSearchContainer = styled.div`
             content: '';
             position: absolute;
             left: 0;
-            top: 10%;
-            height: 80%;
+            top: 50%;
+            transform: translateY(-50%);
+            height: 30px;
             width: 1px;
             background: #eaeaea;
         }
@@ -180,21 +183,21 @@ export const PseudoSearchContainer = styled.div`
         /* Botão de Busca Escuro */
         .search-btn-dark {
             display: block !important;
-            background: #111;
+            background:#FF5317 !important;
             color: #fff;
             border: none;
-            padding: 14px 32px;
-            border-radius: 30px;
+            padding: 14px 45px;
+            border-radius: 8px;
             font-size: 15px;
-            font-weight: 500;
+            font-weight: 600;
             font-family: 'Inter', sans-serif;
             cursor: pointer;
-            transition: background 0.2s;
+            transition: opacity 0.2s;
             margin-left: 12px;
         }
 
         .search-btn-dark:hover {
-            background: #333;
+            opacity: 0.9;
         }
 
         /* Tags Populares */
@@ -219,7 +222,7 @@ export const PseudoSearchContainer = styled.div`
             color: #111;
             padding: 6px 16px;
             border:1px solid #e3e3e3ff;
-            border-radius: 20px;
+            border-radius: 5px;
             font-size: 13px;
             font-weight: 500;
             font-family: 'Inter', sans-serif;
@@ -315,7 +318,7 @@ export const PseudoSearchContainer = styled.div`
    @media screen and (min-width:1300px){
     width: 100%;
     height:3rem;
-       bottom: 32%;
+       bottom: 10%;
 
     button{
         display:none;

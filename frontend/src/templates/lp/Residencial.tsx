@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import api from '../../utils/requests';
 import { Lancamento, DEFAULT_LP_SECTIONS } from '../../pages/Empreendimentos/storage';
 import { MapPin, CheckCircle2, BedDouble, Car, Maximize, Phone, Building2, Calendar, ShieldCheck, ChevronLeft, ChevronRight, Home, Gem, Plus, Minus } from 'lucide-react';
+import { saveLandingPageLead } from '../../services/resources/lead';
 import PlantaImg from '../../assets/images/planta.png';
 import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
@@ -172,7 +173,7 @@ const HeroInfoBar = styled.div<{ $alignment?: 'left' | 'center', $bgColor?: stri
   text-align: left;
   max-width: 800px;
   box-shadow: none;
-  margin-bottom: 40px; /* Empurra o bloco todo um pouco mais pra cima na tela */
+  margin-bottom: 20px; /* Empurra o bloco todo um pouco mais pra cima na tela */
   align-self: ${props => props.$alignment === 'center' ? 'center' : 'flex-start'};
 
   .info-item {
@@ -233,7 +234,7 @@ const HeroInfoBar = styled.div<{ $alignment?: 'left' | 'center', $bgColor?: stri
 const Container = styled.div`
   max-width: 1200px;
   margin: 0 auto;
-  padding: 80px 20px;
+  padding: 20px 20px;
 `;
 
 const TwoColumns = styled.div`
@@ -254,8 +255,12 @@ const TwoColumns = styled.div`
 `;
 
 const Section = styled.section`
-  padding: 80px 0;
+  padding: 30px 0;
   border-bottom: 1px solid #e2e8f0;
+
+  @media (max-width: 768px) {
+    padding: 20px 0;
+  }
 `;
 
 const SectionDark = styled(Section)`
@@ -266,9 +271,9 @@ const SectionDark = styled(Section)`
 
 const SectionTitle = styled.h2`
   font-family: "Belfast Grotesk", sans-serif;
-  font-size: 2.5rem;
+  font-size: 2.2rem;
   color: #1a202c;
-  margin-bottom: 40px;
+  margin-bottom: 25px;
   position: relative;
   display: inline-block;
 
@@ -284,10 +289,10 @@ const SectionTitle = styled.h2`
 `;
 
 const TextContent = styled.div`
-  font-size: 1.15rem;
-  line-height: 1.8;
+  font-size: 1.1rem;
+  line-height: 1.6;
   color: #4a5568;
-  margin-bottom: 40px;
+  margin-bottom: 25px;
   white-space: pre-line;
 `;
 
@@ -465,7 +470,7 @@ const FormCard = styled.form`
 
 // === NOVOS ESTILOS: PARCEIROS (Estilo Puerto Madero) ===
 const PartnerSliderWrapper = styled.div`
-  margin-bottom: 100px;
+  margin-bottom: 30px;
   width: 100%;
   display: block;
   
@@ -641,7 +646,7 @@ const AccordionWrapper = styled.div`
   display: flex;
   flex-direction: column;
   gap: 16px;
-  margin-bottom: 80px;
+  margin-bottom: 40px;
 `;
 
 const AccordionItem = styled.div`
@@ -825,7 +830,7 @@ const FeaturesGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 20px;
-  margin-bottom: 80px;
+  margin-bottom: 30px;
 `;
 
 const FeatureCard = styled.div`
@@ -866,7 +871,7 @@ const TipologiasList = styled.div`
   display: flex;
   flex-direction: column;
   gap: 16px;
-  margin-bottom: 80px;
+  margin-bottom: 40px;
 `;
 
 const TipologiaCard = styled.div`
@@ -1007,6 +1012,7 @@ const Residencial = ({ lancamento }: Props) => {
     nome: '',
     tipologia: '',
     intencao: '',
+    pagamento: '',
     whatsapp: '',
     mensagem: ''
   });
@@ -1058,31 +1064,33 @@ const Residencial = ({ lancamento }: Props) => {
 
   const handleNextStep = (e: React.FormEvent) => {
     e.preventDefault();
-    setFormStep(prev => prev + 1);
+    const stepsLength = lancamento.lpConfig?.formSteps?.length || 2;
+    
+    if (formStep >= stepsLength) {
+      handleFinalSubmit(e);
+    } else {
+      setFormStep(prev => prev + 1);
+    }
   };
 
-  const handleFinalSubmit = (e: React.FormEvent) => {
+  const handleFinalSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     const timeOnPage = Math.floor((Date.now() - behavior.startTime) / 1000);
 
-    const payload = {
-      sessionId: sessionId, // Usa o Fingerprint gerado na abertura da página
-      dadosPessoais: formData,
-      dadosComportamentais: {
-        tempoPaginaSegundos: timeOnPage,
-        scrollDepthPercent: behavior.maxScroll,
-        interacoes: behavior.interactions
-      }
-    };
-
     // --- SIMULAÇÃO DE LEAD SCORING (MOTOR DO CRM BACKEND) ---
     let score = 0;
     
-    // Pontuação por Intenção
-    if (formData.intencao === 'À vista (Com desconto)') score += 30;
-    if (formData.intencao === 'Financiamento Bancário') score += 10;
-    if (formData.intencao === 'Investimento / Revenda') score += 20;
+    // Pontuação por Intenção (Nova estrutura separada)
+    const intencao = formData.intencao || '';
+    const pagamento = (formData as any).pagamento || '';
+
+    if (intencao === 'Investimento' || intencao === 'Revenda') score += 15;
+    if (intencao === 'Moradia') score += 10;
+
+    if (pagamento.includes('vista')) score += 30;
+    if (pagamento === 'Financiamento Bancário') score += 10;
+    if (pagamento === 'FGTS') score += 15;
     
     // Pontuação Comportamental
     if (timeOnPage > 60) score += 15;
@@ -1093,12 +1101,41 @@ const Residencial = ({ lancamento }: Props) => {
 
     const temperatura = score >= 50 ? 'Quente 🔥' : score >= 25 ? 'Morno 🌤️' : 'Frio ❄️';
 
-    console.log("=========================================");
-    console.log("🚀 PAYLOAD ENVIADO AO CRM:", JSON.stringify(payload, null, 2));
-    console.log(`📊 LEAD SCORE: ${score} pontos (${temperatura})`);
-    console.log("=========================================");
+    const payload = {
+      sessionId: sessionId,
+      dadosOrigem: {
+        landingPageId: lancamento.id,
+        empreendimentoNome: lancamento.nome,
+      },
+      dadosPessoais: formData,
+      dadosComportamentais: {
+        tempoPaginaSegundos: timeOnPage,
+        scrollDepthPercent: behavior.maxScroll,
+        interacoes: behavior.interactions
+      },
+      leadScoring: {
+        score,
+        temperatura
+      }
+    };
 
-    setFormStep(4); // Vai para a tela de Sucesso
+    console.log("🚀 PAYLOAD ENVIADO AO CRM:", JSON.stringify(payload, null, 2));
+
+    try {
+      if (lancamento.id) {
+        await saveLandingPageLead(
+          formData.nome, 
+          formData.whatsapp, 
+          Number(lancamento.id), 
+          JSON.stringify(payload)
+        );
+      }
+    } catch (err) {
+      console.error("Erro ao salvar lead da LP", err);
+    }
+
+    const stepsLength = lancamento.lpConfig?.formSteps?.length || 2;
+    setFormStep(stepsLength + 1); // Vai para a tela de Sucesso
   };
 
   const NextArrow = (props: any) => {
@@ -1258,7 +1295,7 @@ const Residencial = ({ lancamento }: Props) => {
   const renderSectionById = (id: string) => {
     switch (id) {
       case 'sobre': return (
-        <Section key="sobre" style={{ marginBottom: '80px' }}>
+        <Section key="sobre" style={{ marginBottom: '40px' }}>
           <SectionTitle>O Empreendimento</SectionTitle>
           <TextContent>
             {lancamento.conteudoGerado.descricaoEmpreendimento}
@@ -1272,7 +1309,7 @@ const Residencial = ({ lancamento }: Props) => {
         </Section>
       );
       case 'galeria': return (
-        <Section key="galeria" style={{ marginBottom: '80px', marginTop: '80px' }}>
+        <Section key="galeria" style={{ marginBottom: '10px', marginTop: '10px' }}>
           <SectionTitle>Galeria</SectionTitle>
           <CarouselWrapper 
             onMouseEnter={() => trackInteraction('view_gallery')} 
@@ -1289,18 +1326,18 @@ const Residencial = ({ lancamento }: Props) => {
         </Section>
       );
       case 'tipologias': return (
-        <Section key="tipologias" style={{ marginBottom: '80px', background: '#f8fafc' }}>
+        <Section key="tipologias" style={{ marginBottom: '10px', background: '#f8fafc' }}>
           <SectionTitle>Plantas e Tipologias</SectionTitle>
           <TipologiasList>
             {lancamento.briefing.tipologias.map((item) => (
               <TipologiaCard 
-                key={item.id}
+                key={item.id || Math.random().toString()}
                 onMouseEnter={() => trackInteraction('view_floorplan')}
                 onTouchStart={() => trackInteraction('view_floorplan')}
                 style={{ borderColor: '#e2e8f0' }}
               >
                 <img 
-                  src={PlantaImg} 
+                  src={item.plantaImg || PlantaImg} 
                   alt={`Planta ${item.nome}`} 
                   className="planta-img" 
                 />
@@ -1323,7 +1360,7 @@ const Residencial = ({ lancamento }: Props) => {
         </Section>
       );
       case 'proximidades': return (
-        <Section key="proximidades" style={{ marginBottom: '80px' }}>
+        <Section key="proximidades" style={{ marginBottom: '10px' }}>
           <SectionTitle>Nas Proximidades</SectionTitle>
           <TextContent>Tudo o que você precisa a poucos passos do {lancamento.nome}.</TextContent>
           
@@ -1351,7 +1388,7 @@ const Residencial = ({ lancamento }: Props) => {
         </Section>
       );
       case 'assinaturas': return (
-        <Section key="assinaturas" style={{ marginBottom: '80px', background: '#f8fafc' }}>
+        <Section key="assinaturas" style={{ marginBottom: '10px', background: '#f8fafc' }}>
           <SectionTitle>Assinaturas</SectionTitle>
           <TextContent>Os talentos por trás de cada detalhe do {lancamento.nome}</TextContent>
           
@@ -1375,7 +1412,7 @@ const Residencial = ({ lancamento }: Props) => {
         </Section>
       );
       case 'diferenciais': return (
-        <Section key="diferenciais" style={{ marginBottom: '80px' }}>
+        <Section key="diferenciais" style={{ marginBottom: '30px' }}>
           <SectionTitle>Diferenciais Exclusivos</SectionTitle>
           <FeaturesGrid>
             {lancamento.conteudoGerado.bulletsDiferenciais.map((item, idx) => (
@@ -1390,7 +1427,7 @@ const Residencial = ({ lancamento }: Props) => {
         </Section>
       );
       case 'localizacao': return (
-        <Section key="localizacao" style={{ marginBottom: '80px' }}>
+        <Section key="localizacao" style={{ marginBottom: '10px' }}>
           <SectionTitle>Localização Privilegiada</SectionTitle>
           <MapContainer>
             <iframe
@@ -1424,77 +1461,140 @@ const Residencial = ({ lancamento }: Props) => {
     }
   };
 
-  const renderForm = () => (
-    <StickySidebar id="lead-form">
-      <FormCard onSubmit={formStep === 3 ? handleFinalSubmit : handleNextStep}>
-        {formStep === 1 && (
-          <div className="step-content">
-            <h3>Fale com um Especialista</h3>
-            <p>Descubra as condições exclusivas do {lancamento.nome}.</p>
-            <div className="input-group">
-              <input type="text" placeholder="Seu nome completo" required 
-                value={formData.nome} onChange={e => setFormData({...formData, nome: e.target.value})} />
-            </div>
-            <div className="input-group">
-              <select required value={formData.tipologia} onChange={e => setFormData({...formData, tipologia: e.target.value})}>
-                <option value="" disabled>Qual tipologia mais te interessa?</option>
-                {lancamento.briefing.tipologias.map(t => (
-                  <option key={t.id} value={t.nome}>{t.nome}</option>
-                ))}
-                <option value="Ainda não sei">Ainda não tenho certeza</option>
-              </select>
-            </div>
-            <button type="submit">Continuar</button>
-          </div>
-        )}
+  const renderForm = () => {
+    const steps = lancamento.lpConfig?.formSteps || [
+      {
+        id: 'step_1',
+        tipo: 'dados_iniciais',
+        titulo: 'Fale com um Especialista',
+        subtitulo: `Descubra as condições exclusivas do ${lancamento.nome}.`,
+        inputPlaceholder: 'Seu nome completo',
+        selectLabel: 'Qual tipologia mais te interessa?'
+      },
+      {
+        id: 'step_2',
+        tipo: 'multipla_escolha',
+        titulo: `Qual a intenção/finalidade de compra?`,
+        subtitulo: 'Para entendermos melhor o que você busca.',
+        opcoes: [
+          { label: 'Moradia', value: 'Moradia' },
+          { label: 'Investimento', value: 'Investimento' },
+          { label: 'Revenda', value: 'Revenda' }
+        ]
+      },
+      {
+        id: 'step_3',
+        tipo: 'multipla_escolha',
+        titulo: `Como deseja pagar?`,
+        subtitulo: 'Para oferecer as melhores condições.',
+        opcoes: [
+          { label: 'Financiamento Bancário', value: 'Financiamento Bancário' },
+          { label: 'À vista (Com desconto)', value: 'À vista' },
+          { label: 'FGTS', value: 'FGTS' }
+        ]
+      },
+      {
+        id: 'step_4',
+        tipo: 'dados_contato',
+        titulo: 'Falta pouco!',
+        subtitulo: 'Informe seu WhatsApp para receber o material.',
+        inputPlaceholder: 'Seu WhatsApp (com DDD)'
+      }
+    ];
 
-        {formStep === 2 && (
-          <div className="step-content">
-            <h3>Quase lá, {formData.nome.split(' ')[0]}</h3>
-            <p>Como você planeja seu investimento?</p>
-            <div className="input-group radio-group">
-              {['À vista (Com desconto)', 'Financiamento Bancário', 'Investimento / Revenda'].map(op => (
-                <label key={op} className={`radio-label ${formData.intencao === op ? 'selected' : ''}`}>
-                  <input type="radio" name="intencao" value={op} required
-                    checked={formData.intencao === op}
-                    onChange={e => setFormData({...formData, intencao: e.target.value})} />
-                  {op}
-                </label>
-              ))}
-            </div>
-            <button type="submit">Próxima etapa</button>
-          </div>
-        )}
+    const currentStepConfig = steps[formStep - 1];
+    const isSuccessStep = formStep > steps.length;
 
-        {formStep === 3 && (
-          <div className="step-content">
-            <h3>Fale com nossa equipe</h3>
-            <p>Deixe seu WhatsApp e uma mensagem para continuarmos o atendimento.</p>
-            <div className="input-group">
-              <input type="tel" placeholder="Seu WhatsApp (com DDD)" required 
-                value={formData.whatsapp} onChange={e => setFormData({...formData, whatsapp: e.target.value})} />
-            </div>
-            <div className="input-group">
-              <textarea placeholder="Sua mensagem (opcional)" rows={3} style={{ resize: 'vertical' }}
-                value={formData.mensagem} onChange={e => setFormData({...formData, mensagem: e.target.value})} />
-            </div>
-            <button type="submit">Falar com Especialista</button>
-          </div>
-        )}
+    return (
+      <StickySidebar id="lead-form">
+        <FormCard onSubmit={isSuccessStep ? handleFinalSubmit : handleNextStep}>
+          {!isSuccessStep && currentStepConfig && (
+            <div className="step-content">
+              <h3>{currentStepConfig.titulo}</h3>
+              {currentStepConfig.subtitulo && <p>{currentStepConfig.subtitulo}</p>}
 
-        {formStep === 4 && (
-          <div className="step-success">
-            <CheckCircle2 size={48} color="#c5a880" />
-            <h3>Tudo certo!</h3>
-            <p>Nossa equipe premium já recebeu seu contato e um especialista entrará em contato em breve.</p>
-            <p style={{fontSize: '0.8rem', color: '#a0aec0', marginTop: '15px'}}>
-              (Simulação CRM: Abra o console F12 para ver o Payload Inteligente e o Lead Score)
-            </p>
-          </div>
-        )}
-      </FormCard>
-    </StickySidebar>
-  );
+              {currentStepConfig.tipo === 'dados_iniciais' && (
+                <>
+                  <div className="input-group">
+                    <input type="text" placeholder={currentStepConfig.inputPlaceholder || "Seu nome completo"} required 
+                      value={formData.nome} onChange={e => setFormData({...formData, nome: e.target.value})} />
+                  </div>
+                  <div className="input-group">
+                    <select required value={formData.tipologia} onChange={e => setFormData({...formData, tipologia: e.target.value})}>
+                      <option value="" disabled>{currentStepConfig.selectLabel || "Qual tipologia mais te interessa?"}</option>
+                      {lancamento.briefing.tipologias.map(t => (
+                        <option key={t.id} value={t.nome}>{t.nome}</option>
+                      ))}
+                      <option value="Ainda não sei">Ainda não tenho certeza</option>
+                    </select>
+                  </div>
+                </>
+              )}
+
+              {currentStepConfig.tipo === 'dados_contato' && (
+                <div className="input-group">
+                  <input type="tel" placeholder={currentStepConfig.inputPlaceholder || "Seu WhatsApp (com DDD)"} required 
+                    value={formData.whatsapp} onChange={e => setFormData({...formData, whatsapp: e.target.value})} />
+                </div>
+              )}
+
+              {currentStepConfig.tipo === 'multipla_escolha' && (
+                <div className="input-group radio-group">
+                  {(currentStepConfig.opcoes || []).map((op: any) => {
+                    const isPaymentStep = currentStepConfig.titulo.includes('pagar');
+                    const fieldName = isPaymentStep ? 'pagamento' : 'intencao';
+                    const currentValue = isPaymentStep ? formData.pagamento : formData.intencao;
+                    
+                    return (
+                    <label key={op.value} className={`radio-label ${currentValue === op.value ? 'selected' : ''}`}>
+                      <input type="radio" name={`step_${currentStepConfig.id}`} value={op.value} required
+                        checked={currentValue === op.value}
+                        onChange={e => {
+                          setFormData({...formData, [fieldName]: e.target.value});
+                          // Avança automaticamente ao selecionar
+                          setTimeout(() => {
+                            if (formStep < steps.length) {
+                              setFormStep(formStep + 1);
+                            } else {
+                              // Trigger submit if it's the last step
+                              const form = e.target.closest('form');
+                              if (form) form.requestSubmit();
+                            }
+                          }, 300);
+                        }} />
+                      {op.label}
+                    </label>
+                  )})}
+                </div>
+              )}
+
+              {currentStepConfig.tipo === 'texto' && (
+                <div className="input-group">
+                  <textarea placeholder="Sua resposta" rows={3} style={{ resize: 'vertical' }} required
+                    value={formData.mensagem} onChange={e => setFormData({...formData, mensagem: e.target.value})} />
+                </div>
+              )}
+
+              <button type="submit" style={{ display: currentStepConfig.tipo === 'multipla_escolha' ? 'none' : 'block' }}>
+                {formStep === steps.length ? 'Finalizar' : 'Continuar'}
+              </button>
+            </div>
+          )}
+
+          {isSuccessStep && (
+            <div className="step-success">
+              <CheckCircle2 size={48} color="#c5a880" />
+              <h3>Tudo certo!</h3>
+              <p>Nossa equipe premium já recebeu seu contato e um especialista entrará em contato em breve.</p>
+              <p style={{fontSize: '0.8rem', color: '#a0aec0', marginTop: '15px'}}>
+                (Simulação CRM: Abra o console F12 para ver o Payload Inteligente e o Lead Score)
+              </p>
+            </div>
+          )}
+        </FormCard>
+      </StickySidebar>
+    );
+  };
 
   const renderHero = () => {
     const alignment = (lancamento.conteudoGerado.heroAlignment as 'left' | 'center') || 'left';

@@ -20,15 +20,23 @@ import { Opportunity, Step } from '../../types/opportunity';
 import defaultImage from '../../assets/images/no-pictures.png'
 import LeadMessageOpp from './LeadMessageOpp';
 import { VscDebugStepOver } from 'react-icons/vsc';
+import { MdDashboard, MdOutlineCopyAll } from 'react-icons/md';
 import PageNotFound from '../../components/PageNotFound';
 import { ErrorBoundary } from 'react-error-boundary';
 import useAuth from '../../hooks/useAuth';
-import { MdOutlineCopyAll } from 'react-icons/md';
 import { IoCloseOutline } from 'react-icons/io5';
 import Modal from 'react-modal';
 import "./styleModaldelOpp.css";
 import LoadingLogin from '../../components/LoadingLogin';
 
+const parseLpPayload = (payloadString?: string) => {
+  if (!payloadString) return null;
+  try {
+    return JSON.parse(payloadString);
+  } catch (e) {
+    return null;
+  }
+};
 
 const Oportunidade = () => {
 
@@ -190,6 +198,18 @@ const Oportunidade = () => {
 }
 let perfilTenant=Object.values(user.perfis).some(obj => obj === 'TENANT');
 
+const parseLpPayload = (payloadString?: string) => {
+    if (!payloadString) return null;
+    try {
+        return JSON.parse(payloadString);
+    } catch (e) {
+        return null;
+    }
+};
+
+const lpData = parseLpPayload(Opportunity?.lpPayload);
+
+
    
     return(
 
@@ -280,7 +300,128 @@ let perfilTenant=Object.values(user.perfis).some(obj => obj === 'TENANT');
            
               </PropertyItemOportunityContainer>
              
-              <LeadMessageOpp message={Opportunity?.messageLead as string}/>
+               {Opportunity?.lpPayload ? (() => {
+                  const lpData = parseLpPayload(Opportunity.lpPayload);
+                  if (!lpData) return <LeadMessageOpp message={Opportunity?.messageLead as string}/>;
+                  return (
+                      <div style={{ 
+                          marginTop: '24px', 
+                          background: '#ffffff', 
+                          border: '1px solid #eaeaea', 
+                          borderRadius: '8px', 
+                          boxShadow: '0 2px 4px rgba(0,0,0,0.02)',
+                          fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif'
+                      }}>
+                          {/* Header Vercel Style */}
+                          <div style={{
+                              padding: '16px 24px',
+                              borderBottom: '1px solid #eaeaea',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'space-between',
+                              flexWrap: 'wrap',
+                              gap: '12px'
+                          }}>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                  <MdDashboard style={{ color: '#666', fontSize: '18px' }} />
+                                  <h3 style={{ margin: 0, fontSize: '14px', fontWeight: 600, color: '#111', letterSpacing: '-0.01em' }}>
+                                      Dados da Landing Page
+                                  </h3>
+                              </div>
+                              {lpData.leadScoring?.temperatura && (
+                                  <div style={{
+                                      display: 'flex',
+                                      alignItems: 'center',
+                                      gap: '6px',
+                                      background: '#fafafa',
+                                      border: '1px solid #eaeaea',
+                                      padding: '4px 10px',
+                                      borderRadius: '9999px',
+                                      fontSize: '12px',
+                                      fontWeight: 500,
+                                      color: '#444'
+                                  }}>
+                                      <span style={{ 
+                                          width: '8px', 
+                                          height: '8px', 
+                                          borderRadius: '50%', 
+                                          background: lpData.leadScoring.temperatura.includes('Quente') ? '#e00' : lpData.leadScoring.temperatura.includes('Morno') ? '#f5a623' : '#0070f3'
+                                      }} />
+                                      {lpData.leadScoring.temperatura.replace(/[^a-zA-Z]/g, '').trim()} • {lpData.leadScoring.score} pts
+                                  </div>
+                              )}
+                          </div>
+
+                          {/* Content Grid Vercel Style */}
+                          <div style={{ padding: '24px', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '24px' }}>
+                              {lpData.dadosOrigem?.empreendimentoNome && (
+                                  <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                                      <span style={{ fontSize: '11px', fontWeight: 600, color: '#666', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Origem / Empreendimento</span>
+                                      <span style={{ fontSize: '14px', color: '#111', fontWeight: 500 }}>{lpData.dadosOrigem.empreendimentoNome}</span>
+                                  </div>
+                              )}
+                              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                                  <span style={{ fontSize: '11px', fontWeight: 600, color: '#666', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Tipologia</span>
+                                  <span style={{ fontSize: '14px', color: '#111', fontWeight: 400 }}>{lpData.dadosPessoais?.tipologia || 'Não informado'}</span>
+                              </div>
+                              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                                  <span style={{ fontSize: '11px', fontWeight: 600, color: '#666', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Finalidade</span>
+                                  <span style={{ fontSize: '14px', color: '#111', fontWeight: 400 }}>{lpData.dadosPessoais?.intencao || 'Não informado'}</span>
+                              </div>
+                              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                                  <span style={{ fontSize: '11px', fontWeight: 600, color: '#666', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Pagamento</span>
+                                  <span style={{ fontSize: '14px', color: '#111', fontWeight: 400 }}>{lpData.dadosPessoais?.pagamento || 'Não informado'}</span>
+                              </div>
+                              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                                  <span style={{ fontSize: '11px', fontWeight: 600, color: '#666', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Tempo na Página</span>
+                                  <span style={{ fontSize: '14px', color: '#111', fontWeight: 400 }}>{lpData.dadosComportamentais?.tempoPaginaSegundos}s</span>
+                              </div>
+                              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                                  <span style={{ fontSize: '11px', fontWeight: 600, color: '#666', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Navegação (Scroll)</span>
+                                  <span style={{ fontSize: '14px', color: '#111', fontWeight: 400 }}>{lpData.dadosComportamentais?.scrollDepthPercent}%</span>
+                              </div>
+                          </div>
+
+                          {/* Footer / Interações Vercel Style */}
+                          <div style={{
+                              padding: '16px 24px',
+                              borderTop: '1px solid #eaeaea',
+                              background: '#fafafa',
+                              borderBottomLeftRadius: '8px',
+                              borderBottomRightRadius: '8px'
+                          }}>
+                              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                                  <span style={{ fontSize: '11px', fontWeight: 600, color: '#666', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Interações do Usuário</span>
+                                  <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                                      {lpData.dadosComportamentais?.interacoes?.map((int: string, i: number) => {
+                                          let label = int;
+                                          if (int === 'view_gallery') label = 'Abriu a galeria (+5 pts)';
+                                          else if (int === 'view_floorplan') label = 'Viu as plantas (+10 pts)';
+                                          else if (int === 'view_proximidades') label = 'Viu o mapa (+5 pts)';
+
+                                          return (
+                                              <span key={i} style={{ 
+                                                  background: '#fff', 
+                                                  border: '1px solid #eaeaea', 
+                                                  color: '#111', 
+                                                  fontSize: '12px', 
+                                                  fontWeight: 500,
+                                                  padding: '4px 10px', 
+                                                  borderRadius: '6px',
+                                                  boxShadow: '0 1px 2px rgba(0,0,0,0.02)'
+                                              }}>
+                                                  {label}
+                                              </span>
+                                          );
+                                      }) || <span style={{ fontSize: '13px', color: '#888' }}>Nenhuma interação rastreada</span>}
+                                  </div>
+                              </div>
+                          </div>
+                      </div>
+                  );
+              })() : (
+                  <LeadMessageOpp message={Opportunity?.messageLead as string}/>
+              )}
             
                </MessagePropertyContainer>    
                <UserInfoContainer copy={copyUrl}>
@@ -318,6 +459,7 @@ let perfilTenant=Object.values(user.perfis).some(obj => obj === 'TENANT');
                  
   
                </UserInfoContainer>
+               
                </UserPropertyWrapper>
             </OportunidadeContainer>
         </OportunidadeBackground>

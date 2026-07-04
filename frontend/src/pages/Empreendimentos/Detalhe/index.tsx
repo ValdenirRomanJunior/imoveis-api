@@ -1,4 +1,7 @@
 import { Link, useNavigate, useParams } from 'react-router-dom';
+import { FiEye } from 'react-icons/fi';
+import { IoRocketOutline } from 'react-icons/io5';
+import { MdOutlineTimer } from 'react-icons/md';
 import Header from '../../../components/Header';
 import { Lancamento, createDefaultLancamentoObject } from '../storage';
 import { fetchEmpreendimentoById, fetchPaginasByEmpreendimento, createPaginaApi } from '../api';
@@ -43,10 +46,15 @@ const EmpreendimentoDetalhe = () => {
   }, [id]);
 
   const handleCreatePageClick = () => {
-    setNewPageName(`Página ${empreendimento?.nome || ''}`);
-    setNewPageFase('Lançamento');
+    setNewPageName(`${empreendimento?.nome || ''} — Pré-lançamento`);
+    setNewPageFase('Pré-lançamento');
     setNewPagePadrao('Médio Padrão');
     setIsModalOpen(true);
+  };
+
+  const handleFaseChange = (fase: string) => {
+    setNewPageFase(fase);
+    setNewPageName(`${empreendimento?.nome || ''} — ${fase}`);
   };
 
   const handleConfirmCreatePage = async () => {
@@ -166,9 +174,9 @@ const EmpreendimentoDetalhe = () => {
                     <div>
                       <h3 style={{ fontSize: '16px', fontWeight: 700, margin: '0 0 2px 0', color: '#fff' }}>{item.nome}</h3>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                        <p style={{ margin: 0, color: '#e2e8f0', fontSize: '12px' }}>standi.com.br/p/{item.slug}</p>
+                        <p style={{ margin: 0, color: '#e2e8f0', fontSize: '12px' }}>{item.tenantSlug || 'imobiliaria'}.standi.com.br/lp/{item.slug}</p>
                         <button 
-                          onClick={(e) => { e.preventDefault(); navigator.clipboard.writeText(`https://standi.com.br/p/${item.slug}`); alert('Link copiado!'); }}
+                          onClick={(e) => { e.preventDefault(); navigator.clipboard.writeText(`https://${item.tenantSlug || 'imobiliaria'}.standi.com.br/lp/${item.slug}`); alert('Link copiado!'); }}
                           style={{ background: 'rgba(255,255,255,0.2)', border: 'none', borderRadius: '4px', padding: '2px 6px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px', transition: 'background 0.2s' }}
                           title="Copiar link"
                         >
@@ -232,12 +240,22 @@ const EmpreendimentoDetalhe = () => {
                     <div style={{ height: '1px', background: '#eaeaea', marginBottom: '16px' }} />
 
                     {/* Botões de Ação */}
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+                      <button 
+                        onClick={() => window.open(`/${item.tenantSlug || 'imobiliaria'}/lp/${item.slug}`, '_blank')}
+                        style={{ width: '100%', background: '#fff', border: '1px solid #eaeaea', borderRadius: '8px', padding: '10px', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '6px', cursor: 'pointer', fontSize: '13px', fontWeight: 600, color: '#111', transition: 'all 0.2s' }}
+                        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f9fafb'}
+                        onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#fff'}
+                      >
+                        <FiEye /> Visualizar
+                      </button>
                       <button 
                         onClick={() => navigate(`/empreendimentos/${id}/pagina/${item.id}/editar`)}
-                        style={{ width: '100%', background: '#fff', border: '1px solid #eaeaea', borderRadius: '8px', padding: '10px', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '6px', cursor: 'pointer', fontSize: '13px', fontWeight: 600, color: '#111', transition: 'all 0.2s' }}
+                        style={{ width: '100%', background: '#111', border: '1px solid #111', borderRadius: '8px', padding: '10px', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '6px', cursor: 'pointer', fontSize: '13px', fontWeight: 600, color: '#fff', transition: 'all 0.2s' }}
+                        onMouseEnter={(e) => e.currentTarget.style.opacity = '0.9'}
+                        onMouseLeave={(e) => e.currentTarget.style.opacity = '1'}
                       >
-                        ✏️ Editar página
+                        ✏️ Editar
                       </button>
                     </div>
 
@@ -262,62 +280,178 @@ const EmpreendimentoDetalhe = () => {
       {/* Modal de Criação de Página */}
       {isModalOpen && (
         <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000, padding: '20px' }}>
-          <div style={{ background: '#fff', padding: '32px', borderRadius: '12px', width: '100%', maxWidth: '400px', boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)' }}>
-            <h2 style={{ margin: '0 0 20px 0', fontSize: '20px', fontWeight: 600, color: '#111' }}>Criar Nova Página</h2>
+          <div style={{ background: '#fff', padding: '24px', borderRadius: '16px', width: '100%', maxWidth: '540px', boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)', fontFamily: '"Inter", sans-serif' }}>
             
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#65a30d', fontSize: '10px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '6px' }}>
+              <div style={{ width: '5px', height: '5px', borderRadius: '50%', backgroundColor: '#65a30d' }} />
+              Módulo de Lançamento
+            </div>
+            
+            <h2 style={{ fontSize: '18px', fontWeight: 600, color: '#111', margin: '0 0 6px 0' }}>
+              Criar página para este empreendimento
+            </h2>
+            <p style={{ fontSize: '12px', color: '#666', margin: '0 0 16px 0', lineHeight: 1.4 }}>
+              Escolha a fase do lançamento. Cada fase tem estrutura, copy e conversão otimizados para o momento certo.
+            </p>
+
+            {/* Fases */}
             <div style={{ marginBottom: '16px' }}>
-              <label style={{ display: 'block', fontSize: '14px', fontWeight: 500, color: '#444', marginBottom: '8px' }}>Nome da Página</label>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px' }}>
+                {['Pré-lançamento', 'Lançamento', 'Pós-lançamento'].map(fase => {
+                  const isSelected = newPageFase === fase;
+                  const desc = fase === 'Pré-lançamento' ? 'Capte interesse antes de abrir' : fase === 'Lançamento' ? 'LP completa para conversão ativa' : 'Feche as unidades restantes';
+                  
+                  let Icon = FiEye;
+                  if (fase === 'Lançamento') Icon = IoRocketOutline;
+                  if (fase === 'Pós-lançamento') Icon = MdOutlineTimer;
+
+                  return (
+                    <div 
+                      key={fase}
+                      onClick={() => handleFaseChange(fase)}
+                      style={{ 
+                        border: isSelected ? '1px solid #65a30d' : '1px solid #e5e7eb',
+                        backgroundColor: isSelected ? '#f7fee7' : '#fff',
+                        borderRadius: '8px',
+                        padding: '12px 8px',
+                        cursor: 'pointer',
+                        position: 'relative',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        textAlign: 'center',
+                        transition: 'all 0.2s'
+                      }}
+                    >
+                      <div style={{ 
+                        position: 'absolute', 
+                        top: '8px', 
+                        right: '8px', 
+                        width: '12px', 
+                        height: '12px', 
+                        borderRadius: '50%', 
+                        border: isSelected ? '3.5px solid #65a30d' : '1px solid #ccc',
+                        backgroundColor: '#fff'
+                      }} />
+                      <div style={{ fontSize: '18px', marginBottom: '4px', opacity: isSelected ? 1 : 0.4, color: isSelected ? '#3f6212' : '#9ca3af', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <Icon />
+                      </div>
+                      <div style={{ fontWeight: 500, color: isSelected ? '#3f6212' : '#111', fontSize: '12px', marginBottom: '2px' }}>{fase}</div>
+                      <div style={{ fontSize: '10px', color: isSelected ? '#4d7c0f' : '#9ca3af', lineHeight: 1.2 }}>{desc}</div>
+                    </div>
+                  )
+                })}
+              </div>
+
+              {/* Info Box */}
+              <div style={{ marginTop: '10px', backgroundColor: '#f7fee7', border: '1px solid #d9f99d', borderRadius: '6px', padding: '10px 12px', display: 'flex', gap: '8px', alignItems: 'flex-start' }}>
+                <div style={{ color: '#65a30d', fontSize: '14px', display: 'flex', alignItems: 'center', marginTop: '1px' }}>
+                  {newPageFase === 'Pré-lançamento' && <FiEye />}
+                  {newPageFase === 'Lançamento' && <IoRocketOutline />}
+                  {newPageFase === 'Pós-lançamento' && <MdOutlineTimer />}
+                </div>
+                <p style={{ margin: 0, fontSize: '11px', color: '#3f6212', lineHeight: 1.4 }}>
+                  {newPageFase === 'Pré-lançamento' && <>Página de captação de interesse com teaser do empreendimento. Leads entram no CRM com tag <strong>Pré-lançamento</strong> e recebem WhatsApp de boas-vindas com prioridade de acesso.</>}
+                  {newPageFase === 'Lançamento' && <>Página completa com galeria, plantas e formulário otimizado. Leads entram no CRM com tag <strong>Lançamento</strong> e recebem fluxo de vendas ativo.</>}
+                  {newPageFase === 'Pós-lançamento' && <>Página focada em escassez e últimas unidades. Leads entram no CRM com tag <strong>Estoque</strong> para fechamento rápido.</>}
+                </p>
+              </div>
+            </div>
+
+            {/* Nome da Página */}
+            <div style={{ marginBottom: '16px' }}>
+              <label style={{ display: 'block', fontSize: '12px', fontWeight: 500, color: '#111', marginBottom: '4px' }}>
+                Nome da página
+              </label>
               <input 
                 type="text" 
                 value={newPageName}
                 onChange={(e) => setNewPageName(e.target.value)}
-                placeholder="Ex: Campanha de Lançamento"
-                style={{ width: '100%', padding: '10px 12px', borderRadius: '6px', border: '1px solid #ccc', fontSize: '14px', outline: 'none' }}
+                style={{ width: '100%', padding: '8px 12px', borderRadius: '6px', border: '1px solid #d1d5db', fontSize: '13px', color: '#111', outline: 'none' }}
               />
             </div>
 
-            <div style={{ marginBottom: '16px' }}>
-              <label style={{ display: 'block', fontSize: '14px', fontWeight: 500, color: '#444', marginBottom: '8px' }}>Fase do Empreendimento</label>
-              <select 
-                value={newPageFase}
-                onChange={(e) => setNewPageFase(e.target.value)}
-                style={{ width: '100%', padding: '10px 12px', borderRadius: '6px', border: '1px solid #ccc', fontSize: '14px', backgroundColor: '#fff', outline: 'none' }}
-              >
-                <option value="Breve Lançamento">Pré-Lançamento (Breve Lançamento)</option>
-                <option value="Lançamento">Lançamento</option>
-                <option value="Em Obras">Em Obras</option>
-                <option value="Pronto para Morar">Pronto para Morar</option>
-              </select>
+            {/* Padrão */}
+            <div style={{ marginBottom: '20px' }}>
+              <label style={{ display: 'block', fontSize: '12px', fontWeight: 500, color: '#111', marginBottom: '6px' }}>
+                Padrão do empreendimento
+              </label>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px' }}>
+                {['Popular', 'Médio', 'Alto Padrão'].map(padrao => {
+                  const mappedValue = padrao === 'Popular' ? 'Econômico / MCMV' : padrao === 'Médio' ? 'Médio Padrão' : 'Alto Padrão';
+                  const isSelected = newPagePadrao === mappedValue;
+                  const desc = padrao === 'Popular' ? 'Até R$350k' : padrao === 'Médio' ? 'R$350k–800k' : 'Acima R$800k';
+                  return (
+                    <div 
+                      key={padrao}
+                      onClick={() => setNewPagePadrao(mappedValue)}
+                      style={{ 
+                        border: isSelected ? '1px solid #65a30d' : '1px solid #e5e7eb',
+                        backgroundColor: isSelected ? '#f7fee7' : '#fff',
+                        borderRadius: '6px',
+                        padding: '8px',
+                        cursor: 'pointer',
+                        textAlign: 'center',
+                        transition: 'all 0.2s'
+                      }}
+                    >
+                      <div style={{ fontWeight: 500, color: isSelected ? '#3f6212' : '#111', fontSize: '12px', marginBottom: '2px' }}>{padrao}</div>
+                      <div style={{ fontSize: '10px', color: isSelected ? '#65a30d' : '#9ca3af' }}>{desc}</div>
+                    </div>
+                  )
+                })}
+              </div>
             </div>
 
-            <div style={{ marginBottom: '24px' }}>
-              <label style={{ display: 'block', fontSize: '14px', fontWeight: 500, color: '#444', marginBottom: '8px' }}>Padrão (Segmento)</label>
-              <select 
-                value={newPagePadrao}
-                onChange={(e) => setNewPagePadrao(e.target.value)}
-                style={{ width: '100%', padding: '10px 12px', borderRadius: '6px', border: '1px solid #ccc', fontSize: '14px', backgroundColor: '#fff', outline: 'none' }}
-              >
-                <option value="Econômico / MCMV">Econômico / MCMV</option>
-                <option value="Médio Padrão">Médio Padrão</option>
-                <option value="Alto Padrão">Alto Padrão</option>
-              </select>
+            {/* Footer */}
+            <div style={{ borderTop: '1px solid #e5e7eb', paddingTop: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div style={{ fontSize: '11px', color: '#9ca3af', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                <span style={{ fontSize: '12px' }}>✓</span> WhatsApp e CRM configurados automaticamente
+              </div>
+              <div style={{ display: 'flex', gap: '8px' }}>
+                <button 
+                  onClick={() => alert('Visualização do modelo indisponível no momento.')}
+                  style={{ padding: '6px 16px', borderRadius: '6px', border: 'none', background: 'transparent', color: '#4b5563', cursor: 'pointer', fontWeight: 500, fontSize: '12px', display: 'flex', alignItems: 'center', gap: '6px', transition: 'background 0.2s' }}
+                  onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f3f4f6'}
+                  onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+                >
+                  <FiEye /> Visualizar página
+                </button>
+                <button 
+                  onClick={() => setIsModalOpen(false)}
+                  style={{ padding: '6px 16px', borderRadius: '6px', border: '1px solid #d1d5db', background: '#fff', color: '#111', cursor: 'pointer', fontWeight: 500, fontSize: '12px', transition: 'background 0.2s' }}
+                  onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f9fafb'}
+                  onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#fff'}
+                >
+                  Cancelar
+                </button>
+                <button 
+                  onClick={handleConfirmCreatePage}
+                  disabled={!newPageName.trim()}
+                  style={{ 
+                    padding: '6px 16px', 
+                    borderRadius: '6px', 
+                    border: newPageName.trim() ? '1px solid #d1d5db' : '1px solid transparent', 
+                    background: newPageName.trim() ? '#fff' : '#f3f4f6', 
+                    color: newPageName.trim() ? '#111' : '#9ca3af', 
+                    cursor: newPageName.trim() ? 'pointer' : 'not-allowed', 
+                    fontWeight: 500, 
+                    fontSize: '12px', 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    gap: '6px', 
+                    boxShadow: newPageName.trim() ? '0 1px 2px rgba(0,0,0,0.05)' : 'none',
+                    transition: 'all 0.2s'
+                  }}
+                  onMouseEnter={(e) => { if(newPageName.trim()) e.currentTarget.style.backgroundColor = '#f9fafb' }}
+                  onMouseLeave={(e) => { if(newPageName.trim()) e.currentTarget.style.backgroundColor = '#fff' }}
+                >
+                  <span style={{ display: 'inline-block', width: '10px', height: '10px', border: '1.5px solid currentColor', borderRadius: '2px', opacity: 0.8 }}></span>
+                  Criar Página
+                </button>
+              </div>
             </div>
-
-            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px' }}>
-              <button 
-                onClick={() => setIsModalOpen(false)}
-                style={{ padding: '10px 16px', borderRadius: '6px', border: '1px solid #eaeaea', background: '#fff', color: '#666', cursor: 'pointer', fontWeight: 500 }}
-              >
-                Cancelar
-              </button>
-              <button 
-                onClick={handleConfirmCreatePage}
-                disabled={!newPageName.trim()}
-                style={{ padding: '10px 16px', borderRadius: '6px', border: 'none', background: newPageName.trim() ? '#000' : '#ccc', color: '#fff', cursor: newPageName.trim() ? 'pointer' : 'not-allowed', fontWeight: 500 }}
-              >
-                Criar Página
-              </button>
-            </div>
+            
           </div>
         </div>
       )}

@@ -158,7 +158,7 @@ const Properties = ()=>{
         setThemeConfig({
           name: 'Site Padrão',
           logo: '',
-          logoSize: 'medium',
+          logoSize: 'media',
           phone: '',
           bannerImage: bannerPadrao,
           bannerTitle: 'Para cada imóvel uma nova história se levanta',

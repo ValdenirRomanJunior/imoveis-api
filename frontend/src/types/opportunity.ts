@@ -16,7 +16,8 @@ export type Opportunity ={
     propertyId?:number;
     idLead:number;
     tenantId:number;
-    step:Column
+    step:Column;
+    lpPayload?:string;
 
 }
 

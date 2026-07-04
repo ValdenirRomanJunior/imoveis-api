@@ -35,6 +35,8 @@ public class LeadDTO implements Serializable {
     
     private Long opportunityId;
 
+    private String lpPayload;
+
     public LeadDTO(){
 
     }
@@ -49,6 +51,7 @@ public class LeadDTO implements Serializable {
         accountId=lead.getAccount().getId();
         instant=lead.getInstant();
         opportunityId=(lead.getOpportunity()== null) ? null : lead.getOpportunity().getId();
+        lpPayload=lead.getLpPayload();
     }
 
     public Long getId() {
@@ -90,6 +93,14 @@ public class LeadDTO implements Serializable {
 
 	public void setMessage(String message) {
 		this.message = message;
+	}
+
+	public String getLpPayload() {
+		return lpPayload;
+	}
+
+	public void setLpPayload(String lpPayload) {
+		this.lpPayload = lpPayload;
 	}
 	
 	

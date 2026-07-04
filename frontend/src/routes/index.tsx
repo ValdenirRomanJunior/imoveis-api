@@ -58,6 +58,7 @@ const LazyPaymentSuccess = React.lazy(() => import('../pages/PaymentSuccess'));
 const LazyPaymentCancel = React.lazy(() => import('../pages/PaymentCancel'));
 const LazyPaymentExpired = React.lazy(() => import('../pages/PaymentExpired'));
 const LazySite = React.lazy(() => import('../pages/Site'));
+const LazyPremiumPreview = React.lazy(() => import('../templates/lp/Premium'));
 const LazyImoveis = React.lazy(() => import('../pages/Site/Properties'));
 const LazyDetail = React.lazy(() => import('../pages/Site/Detail'));
 const LazyUsersList = React.lazy(() => import('../components/UsersList'));
@@ -187,6 +188,7 @@ const TrialGuard: React.FC = () => {
                 <Route path="/site/:companyName/imoveis"  element={<React.Suspense fallback={<div>Carregando...</div>}><LazyImoveis/></React.Suspense>} />
                 <Route path="/site/:companyName/detail/:propertyId"  element={<React.Suspense fallback={<LoadingPage/>}> <LazyDetail /> </React.Suspense>} /> 
                 <Route path="/detail/:propertyId"  element={<React.Suspense fallback={<LoadingPage/>}> <LazyDetail /> </React.Suspense>} />
+                <Route path="/premium-preview" element={<React.Suspense fallback={<LoadingPage/>}><LazyPremiumPreview/></React.Suspense>} />
                 <Route path='*' element={<PageNotFound/>}/>
             </Routes>
         </>

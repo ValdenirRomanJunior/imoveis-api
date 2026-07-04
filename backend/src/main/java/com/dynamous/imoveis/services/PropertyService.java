@@ -3,7 +3,9 @@ package com.dynamous.imoveis.services;
 
 import com.amazonaws.services.s3.AmazonS3;
 import com.dynamous.imoveis.dto.FeatureDTO;
+import com.dynamous.imoveis.dto.PropertyFilterOptionsDTO;
 import com.dynamous.imoveis.dto.PropertyNewDTO;
+import com.dynamous.imoveis.dto.PropertyTypeOptionDTO;
 import com.dynamous.imoveis.dto.PropertyUpdateDTO;
 import com.dynamous.imoveis.entities.Account;
 import com.dynamous.imoveis.entities.Address;
@@ -118,37 +120,84 @@ public class PropertyService {
 		if (key == null || key.trim().isEmpty()) {
 			return null;
 		}
+		String normalizedKey = key.trim();
+		int lastHyphen = normalizedKey.lastIndexOf('-');
+		if (lastHyphen > 0 && lastHyphen < normalizedKey.length() - 1) {
+			String suffix = normalizedKey.substring(lastHyphen + 1);
+			if (suffix.matches("\\d+")) {
+				try {
+					return accountService.find(Long.parseLong(suffix));
+				} catch (RuntimeException ignored) {
+					normalizedKey = normalizedKey.substring(0, lastHyphen);
+				}
+			}
+		}
 		// Try custom domain
-		Optional<Account> accountOpt = accountService.findByCustomDomain(key);
+		Optional<Account> accountOpt = accountService.findByCustomDomain(normalizedKey);
 		if (accountOpt.isPresent()) {
 			return accountOpt.get();
 		}
 		// Try tenant slug
-		Optional<Tenant> tenantOpt = tenantRepository.findBySlug(key);
+		Optional<Tenant> tenantOpt = tenantRepository.findBySlug(normalizedKey);
 		if (tenantOpt.isPresent()) {
 			Tenant tenant = tenantOpt.get();
 			return accountService.find(tenant.getAccount().getId());
 		}
 		// Try account domain
 		try {
-			return accountService.findByDomain(key);
+			return accountService.findByDomain(normalizedKey);
 		} catch (ObjectNotFoundException e) {
 			// ignore
 		}
 		// Try company name
 		try {
-			return accountService.findByCompanyName(key);
+			return accountService.findByCompanyName(normalizedKey);
 		} catch (ObjectNotFoundException e) {
 			// ignore
 		}
 		// Try tenant service by domain
 		try {
-			Tenant tenant = tenantService.findByDomain(key);
+			Tenant tenant = tenantService.findByDomain(normalizedKey);
 			return accountService.find(tenant.getAccount().getId());
 		} catch (ObjectNotFoundException e) {
 			// ignore
 		}
 		return null;
+	}
+
+	private String normalizeText(String value) {
+		if (value == null) {
+			return "";
+		}
+		return value.trim().toLowerCase(java.util.Locale.ROOT);
+	}
+
+	private Integer parseIntegerValue(String rawValue) {
+		java.math.BigDecimal parsed = parseDecimalValue(rawValue);
+		return parsed == null ? null : parsed.intValue();
+	}
+
+	private java.math.BigDecimal parseDecimalValue(Object value) {
+		if (value == null) return null;
+		try {
+			String strVal = value.toString().replaceAll("[^\\d.]", "");
+			if (strVal.isEmpty()) return null;
+			return new java.math.BigDecimal(strVal);
+		} catch (Exception e) {
+			return null;
+		}
+	}
+
+	private Page<Property> paginate(List<Property> properties, Integer page, Integer linesPerPage, String orderBy, String direction) {
+		PageRequest pageRequest = PageRequest.of(page, linesPerPage, Direction.valueOf(direction), orderBy);
+		int start = (int) pageRequest.getOffset();
+		int end = Math.min(start + pageRequest.getPageSize(), properties.size());
+
+		if (start >= properties.size()) {
+			return new PageImpl<>(Collections.emptyList(), pageRequest, properties.size());
+		}
+
+		return new PageImpl<>(properties.subList(start, end), pageRequest, properties.size());
 	}
 
     //PROCURA POR ID
@@ -429,14 +478,57 @@ public class PropertyService {
 
 	//busca paginada por tenant 20/05/2024
 	 @Transactional(readOnly = true)
-	 public Page<Property> findByTenantMatchAnyParam(Integer goal,Integer typeProperty, String name, String domain, Integer page, Integer linesPerPage, String orderBy, String direction){
-		  PageRequest pageRequest = PageRequest.of(page, linesPerPage, Direction.valueOf(direction), orderBy);
-		  Account account = resolveAccountKey(domain);
-		  if (account == null) {
-		      return new PageImpl<>(java.util.Collections.emptyList(), pageRequest, 0);
-		  }
-		  return propertyRepository.findByGoalAndAccountPropertiesIn(name,goal, typeProperty, account, pageRequest);
+	 public Page<Property> findByTenantMatchAnyParam(Integer goal, Integer typeProperty, String name, String city, String district,
+	 												java.math.BigDecimal minPrice, java.math.BigDecimal maxPrice, Integer minRooms, Integer minSuites,
+	 												Integer minVacancies, String domain, Integer page, Integer linesPerPage,
+	 												String orderBy, String direction){
+		  String normalizedName = normalizeText(name);
+		  String normalizedCity = normalizeText(city);
+		  String normalizedDistrict = normalizeText(district);
 
+		  List<Property> filteredProperties = findPublicPropertiesByTenant(domain).stream()
+		  		.filter(property -> goal == null || (property.getGoal() != null && property.getGoal().getCod() == goal))
+		  		.filter(property -> typeProperty == null || (property.getTypeProperty() != null && property.getTypeProperty().getCod() == typeProperty))
+		  		.filter(property -> {
+		  			if (normalizedCity.isEmpty()) {
+		  				return true;
+		  			}
+		  			return property.getAddress() != null
+		  					&& property.getAddress().getCity() != null
+		  					&& normalizeText(property.getAddress().getCity().getName()).equals(normalizedCity);
+		  		})
+		  		.filter(property -> {
+		  			if (normalizedDistrict.isEmpty()) {
+		  				return true;
+		  			}
+		  			return property.getAddress() != null
+		  					&& normalizeText(property.getAddress().getDistrict()).equals(normalizedDistrict);
+		  		})
+		  		.filter(property -> {
+		  			if (normalizedName.isEmpty()) {
+		  				return true;
+		  			}
+		  			String propertyCity = property.getAddress() != null && property.getAddress().getCity() != null
+		  					? normalizeText(property.getAddress().getCity().getName()) : "";
+		  			String propertyDistrict = property.getAddress() != null ? normalizeText(property.getAddress().getDistrict()) : "";
+		  			return propertyCity.contains(normalizedName) || propertyDistrict.contains(normalizedName);
+		  		})
+		  		.filter(property -> {
+		  			java.math.BigDecimal propertyPrice = parseDecimalValue(property.getPrice());
+		  			if (minPrice != null && (propertyPrice == null || propertyPrice.compareTo(minPrice) < 0)) {
+		  				return false;
+		  			}
+		  			if (maxPrice != null && (propertyPrice == null || propertyPrice.compareTo(maxPrice) > 0)) {
+		  				return false;
+		  			}
+		  			return true;
+		  		})
+		  		.filter(property -> minRooms == null || (parseIntegerValue(property.getNumberRooms()) != null && parseIntegerValue(property.getNumberRooms()) >= minRooms))
+		  		.filter(property -> minSuites == null || (parseIntegerValue(property.getSuites()) != null && parseIntegerValue(property.getSuites()) >= minSuites))
+		  		.filter(property -> minVacancies == null || (parseIntegerValue(property.getVacancies()) != null && parseIntegerValue(property.getVacancies()) >= minVacancies))
+		  		.collect(Collectors.toList());
+
+		  return paginate(filteredProperties, page, linesPerPage, orderBy, direction);
 	}
 	 	
 	 @Transactional
@@ -565,6 +657,69 @@ public class PropertyService {
 				.stream()
 				.filter(property -> property.getStatusFeatured() == com.dynamous.imoveis.enums.StatusFeatured.DESTACADO)
 				.collect(java.util.stream.Collectors.toList());
+	}
+
+	private List<Property> findPublicPropertiesByTenant(String domain) {
+		Account account = resolveAccountKey(domain);
+		if (account == null) {
+			return Collections.emptyList();
+		}
+
+		return propertyRepository.findAllByAccount(account).stream()
+				.filter(property -> property.getStatusProperty() != null && property.getStatusProperty().getCod() == StatusProperty.PUBLICADO.getCod())
+				.sorted(java.util.Comparator.comparing(property -> property.getName() == null ? "" : property.getName().toLowerCase(java.util.Locale.ROOT)))
+				.collect(Collectors.toList());
+	}
+
+	private List<Property> findPropertiesForFilterOptions(String domain) {
+		Account account = resolveAccountKey(domain);
+		if (account == null) {
+			return Collections.emptyList();
+		}
+
+		return propertyRepository.findAllByAccount(account).stream()
+				.sorted(java.util.Comparator.comparing(property -> property.getName() == null ? "" : property.getName().toLowerCase(java.util.Locale.ROOT)))
+				.collect(Collectors.toList());
+	}
+
+	public PropertyFilterOptionsDTO getPublicFilterOptions(String domain) {
+		List<Property> publicProperties = findPropertiesForFilterOptions(domain);
+		PropertyFilterOptionsDTO options = new PropertyFilterOptionsDTO();
+
+		options.setTypes(java.util.Arrays.stream(TypeProperty.values())
+				.map(type -> new PropertyTypeOptionDTO(type.getCod(), type.getDescription()))
+				.sorted(java.util.Comparator.comparing(PropertyTypeOptionDTO::getLabel))
+				.collect(Collectors.toList()));
+
+		options.setCities(publicProperties.stream()
+				.map(Property::getAddress)
+				.filter(address -> address != null && address.getCity() != null && address.getCity().getName() != null && !address.getCity().getName().trim().isEmpty())
+				.map(address -> address.getCity().getName().trim())
+				.distinct()
+				.sorted(String.CASE_INSENSITIVE_ORDER)
+				.collect(Collectors.toList()));
+
+		options.setDistricts(publicProperties.stream()
+				.map(Property::getAddress)
+				.filter(address -> address != null && address.getDistrict() != null && !address.getDistrict().trim().isEmpty())
+				.map(address -> address.getDistrict().trim())
+				.distinct()
+				.sorted(String.CASE_INSENSITIVE_ORDER)
+				.collect(Collectors.toList()));
+
+		List<java.math.BigDecimal> prices = publicProperties.stream()
+				.map(Property::getPrice)
+				.map(this::parseDecimalValue)
+				.filter(price -> price != null && price.compareTo(java.math.BigDecimal.ZERO) >= 0)
+				.sorted()
+				.collect(Collectors.toList());
+
+		if (!prices.isEmpty()) {
+			options.setMinPrice(prices.get(0));
+			options.setMaxPrice(prices.get(prices.size() - 1));
+		}
+
+		return options;
 	}
 }
 	

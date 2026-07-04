@@ -39,7 +39,7 @@ public class OpportunityDTO implements Serializable {
     
     private Long accountId;
     
- 
+    private String lpPayload;
 
     public OpportunityDTO(){
 
@@ -57,6 +57,7 @@ public class OpportunityDTO implements Serializable {
         accountId=opportunity.getAccount().getId();
         instant=opportunity.getInstant();
         idLead=opportunity.getLead().getId();
+        lpPayload=opportunity.getLead().getLpPayload();
        
     }
 
@@ -151,5 +152,12 @@ public class OpportunityDTO implements Serializable {
 		this.idLead = idLead;
 	}
 
- 
+	public String getLpPayload() {
+		return lpPayload;
+	}
+
+	public void setLpPayload(String lpPayload) {
+		this.lpPayload = lpPayload;
+	}
+
 }

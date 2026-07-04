@@ -33,6 +33,12 @@ export const newLead = (name:string, email: string, phone:string,propertyId:numb
                                                 });
 }
 
+export const saveLandingPageLead = (name: string, phone: string, landingPageId: number, lpPayload: string) => {
+  return api.post('/opportunities/saveLp', { name, phone, landingPageId, lpPayload })
+    .then(response => response)
+    .catch(error => error);
+}
+
 export const editLead = (name:string, email:string, phone:String,id:number) => {
   return api.put(`/leads/update/${id}`,{name,email,phone})
                                            
@@ -89,7 +95,6 @@ export const editLeadStep = (id:number,stepId: number) => {
                    
                 });
   }
-
 
 export const opportunitiesPageable = () => {
     return api.get(`/opportunities/page`)

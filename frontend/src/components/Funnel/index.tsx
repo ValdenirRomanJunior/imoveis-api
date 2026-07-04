@@ -20,13 +20,13 @@ type Counts = {
 }
 
 const sliceColors = [
-    '#111111', // Preto / Cinza bem escuro (topo)
-    '#444444', // Cinza escuro
-    '#666666', // Cinza médio
-    '#888888', // Cinza
-    '#aaaaaa', // Cinza claro
-    '#cccccc', // Cinza mais claro
-    '#eaeaea'  // Cinza muito claro (base)
+    '#0d47a1', // Azul muito escuro (topo)
+    '#1976d2', // Azul escuro
+    '#2196f3', // Azul médio escuro
+    '#42a5f5', // Azul médio
+    '#90caf9', // Azul claro
+    '#bbdefb', // Azul muito claro
+    '#e3f2fd'  // Azul quase branco (base)
 ];
 
 

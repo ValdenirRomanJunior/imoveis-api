@@ -147,6 +147,7 @@ export const LeadListItem = styled.div`
             
             &.resolvido { background: #f0fdf4; color: #15803d; border: 1px solid #bbf7d0; }
             &.aberto { background: #fffbeb; color: #b45309; border: 1px solid #fde68a; }
+            &.captacao { background: #f5f3ff; color: #6d28d9; border: 1px solid #ddd6fe; }
         }
 
         .action-link {

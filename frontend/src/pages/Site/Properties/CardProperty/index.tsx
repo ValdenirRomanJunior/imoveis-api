@@ -83,11 +83,25 @@ const CardProperty = (props:{goal:string})=>{
     const goalParam = params.get('goal');
     const typeParam = params.get('type');
     const  nameParam = params.get('name');
+    const cityParam = params.get('city');
+    const districtParam = params.get('district');
+    const minPriceParam = params.get('minPrice');
+    const maxPriceParam = params.get('maxPrice');
+    const minRoomsParam = params.get('minRooms');
+    const minSuitesParam = params.get('minSuites');
+    const minVacanciesParam = params.get('minVacancies');
 
     //states para mandar os parametros da pesquisa
     const[goal,setGoal]= useState(goalParam || props.goal);
     const [type,setType]=useState(typeParam)
     const [name,setName]=useState(nameParam);
+    const [city, setCity] = useState(cityParam);
+    const [district, setDistrict] = useState(districtParam);
+    const [minPrice, setMinPrice] = useState(minPriceParam);
+    const [maxPrice, setMaxPrice] = useState(maxPriceParam);
+    const [minRooms, setMinRooms] = useState(minRoomsParam);
+    const [minSuites, setMinSuites] = useState(minSuitesParam);
+    const [minVacancies, setMinVacancies] = useState(minVacanciesParam);
 
     const [url,setUrl]= useState(clientSlug || window.location.hostname);
 
@@ -116,7 +130,20 @@ const CardProperty = (props:{goal:string})=>{
 
 
     const getProperties = async () => {   
-        const data= await searchProperties(name as string,goal as string,type as string,  url as string ,pageNumber);  
+        const data= await searchProperties({
+            name: name as string,
+            goal: goal as string,
+            typeProperty: type as string,
+            city: city as string,
+            district: district as string,
+            minPrice: minPrice as string,
+            maxPrice: maxPrice as string,
+            minRooms: minRooms as string,
+            minSuites: minSuites as string,
+            minVacancies: minVacancies as string,
+            url: url as string,
+            pageNumber
+        });  
        
         if(data.data){     
             setPage(data.data as PropertyPage);
@@ -129,7 +156,7 @@ const CardProperty = (props:{goal:string})=>{
     useEffect (() =>{ 
  
         getProperties(); 
-    },[pageNumber,name,goal,type,props,url])
+    },[pageNumber,name,goal,type,city,district,minPrice,maxPrice,minRooms,minSuites,minVacancies,props,url])
    
 
     const handlePageChange = (newPageNumber : number)=>{          

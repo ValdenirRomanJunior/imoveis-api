@@ -10,6 +10,8 @@ import com.dynamous.imoveis.dto.OpportunityDTO;
 import com.dynamous.imoveis.dto.OpportunityNewDTOCRM;
 import com.dynamous.imoveis.dto.OpportunityNewHomeSiteDTO;
 import com.dynamous.imoveis.dto.OpportunityNewSiteDetailDTO;
+import com.dynamous.imoveis.dto.OpportunityLPDTO;
+import com.dynamous.imoveis.dto.OpportunityLPDTO;
 import com.dynamous.imoveis.dto.TenantDTO;
 import com.dynamous.imoveis.dto.TenantNewDTO;
 import com.dynamous.imoveis.entities.Account;
@@ -29,6 +31,9 @@ import com.dynamous.imoveis.security.UserSS;
 import com.dynamous.imoveis.services.exceptions.AuthorizationException;
 import com.dynamous.imoveis.services.exceptions.DataIntegrityException;
 import com.dynamous.imoveis.services.exceptions.ObjectNotFoundException;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.hibernate.StaleStateException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -70,6 +75,12 @@ public class OpportunityService {
     
 	@Autowired
 	private AccountService accountService;
+
+    @Autowired
+    private com.dynamous.imoveis.repositories.LandingPageRepository landingPageRepository;
+    
+    @Autowired
+    private TenantRepository tenantRepository;
 	
   private final List<SseEmitter> emitters=new CopyOnWriteArrayList<SseEmitter>();
     
@@ -183,15 +194,58 @@ public class OpportunityService {
     	        return opportunity; 		   
     }
 
+    //oportunidade que vem da Landing Page (Residencial)
+    public Opportunity fromDTOLP(OpportunityLPDTO objDto){  
+        com.dynamous.imoveis.entities.LandingPage lp = landingPageRepository.findById(objDto.getLandingPageId())
+                .orElseThrow(() -> new ObjectNotFoundException("Landing Page não encontrada"));
+                
+        Account account = accountService.find(lp.getTenant().getAccount().getId());
+        
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");  		
+        String newDate= sdf.format(new Date());
+        
+        Opportunity opportunity = new Opportunity(null, newDate);
+        opportunity.setAccount(account);  		 
+        Step firtsStep = stepRepository.findFirstByAccount(account);
+        if(firtsStep != null ) {
+            opportunity.setStep(firtsStep);
+        } else {
+             throw new DataIntegrityException("Precisa ter pelo menos 1 etapa cadastrada");
+        }
+        
+        Lead lead = new Lead(null, objDto.getName(), "naoinformado@lp.com", objDto.getPhone(), "Lead da Landing Page", newDate);
+        lead.setLpPayload(objDto.getLpPayload());
+        lead.setAccount(account);
+        leadService.insert(lead);
+        
+        opportunity.setLead(lead);
+        lead.setOpportunity(opportunity);
+        
+        return opportunity; 		   
+    }
+    
     //oportunidade que vem da home do site do cliente
     public Opportunity fromDTOHomeSite(OpportunityNewHomeSiteDTO objDto){ 
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
         String newDate = sdf.format(new Date());
         Opportunity opportunity = new Opportunity(null, newDate);
 
-        Account account;
+        Account account = null;
         if (objDto.getCompanyName() != null && !objDto.getCompanyName().isEmpty()) {
-            account = accountService.findByCompanyName(objDto.getCompanyName());
+            String companyOrSlug = objDto.getCompanyName();
+            
+            // Tenta buscar por slug do tenant primeiro
+            Optional<Tenant> tenantOpt = tenantRepository.findBySlug(companyOrSlug);
+            if (tenantOpt.isPresent()) {
+                account = accountService.find(tenantOpt.get().getAccount().getId());
+            } else {
+                try {
+                    // Fallback para buscar pelo nome exato da empresa
+                    account = accountService.findByCompanyName(companyOrSlug);
+                } catch (ObjectNotFoundException e) {
+                    throw new DataIntegrityException("Empresa não encontrada: " + companyOrSlug);
+                }
+            }
         } else {
             String domainInput = objDto.getDomain();
             if (domainInput == null || domainInput.trim().isEmpty()) {

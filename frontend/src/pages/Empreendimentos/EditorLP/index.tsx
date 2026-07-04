@@ -404,6 +404,47 @@ const EditorLP = () => {
     handleBriefingChange('proximidades', newProximidades);
   };
 
+  const addTipologia = () => {
+    const current = briefing?.tipologias || [];
+    if (current.length >= 3) return;
+    const newItem = {
+      id: Math.random().toString(36).substring(2, 9),
+      nome: 'Nova Planta',
+      area: 50,
+      quartos: 2,
+      vagas: 1,
+      preco: 250000,
+      plantaImg: ''
+    };
+    handleBriefingChange('tipologias', [...current, newItem]);
+  };
+
+  const removeTipologia = (indexToRemove: number) => {
+    const current = briefing?.tipologias || [];
+    const newTipologias = current.filter((_: any, idx: number) => idx !== indexToRemove);
+    handleBriefingChange('tipologias', newTipologias);
+  };
+
+  const updateTipologia = (index: number, field: string, value: any) => {
+    const current = briefing?.tipologias || [];
+    const newTipologias = [...current];
+    newTipologias[index] = { ...newTipologias[index], [field]: value };
+    handleBriefingChange('tipologias', newTipologias);
+  };
+
+  const handleTipologiaImageUpload = async (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      try {
+        const url = await uploadImagemApi(file);
+        updateTipologia(index, 'plantaImg', url);
+      } catch (err) {
+        console.error(err);
+        alert('Erro ao fazer upload da imagem da planta');
+      }
+    }
+  };
+
   const addDiferencial = () => {
     const current = conteudo?.bulletsDiferenciais || [];
     handleChange('bulletsDiferenciais', [...current, 'Novo Diferencial']);
@@ -911,10 +952,62 @@ const EditorLP = () => {
                         </div>
                       )}
 
-                      {['tipologias'].includes(section.id) && (
-                        <p style={{ fontSize: '0.9rem', color: '#718096', margin: 0 }}>
-                          Os dados deste bloco são alimentados diretamente pelo Briefing do Imóvel.
-                        </p>
+                      {section.id === 'tipologias' && (
+                        <div>
+                          <p style={{ fontSize: '0.9rem', color: '#718096', margin: '0 0 16px 0' }}>
+                            Gerencie as opções de plantas do empreendimento.
+                          </p>
+                          {(briefing.tipologias || []).map((tipologia: any, i: number) => (
+                            <div key={tipologia.id} style={{ marginBottom: '16px', padding: '12px', border: '1px solid #e2e8f0', borderRadius: '8px', background: '#f8fafc' }}>
+                              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+                                <strong style={{ fontSize: '0.9rem', color: '#1a202c' }}>Planta {i + 1}</strong>
+                                <button onClick={() => removeTipologia(i)} style={{ color: '#dc2626', background: 'none', border: 'none', cursor: 'pointer', fontSize: '0.85rem', fontWeight: 500 }}>Remover</button>
+                              </div>
+                              <FormGroup>
+                                <label>Nome / Título da Planta</label>
+                                <input value={tipologia.nome} onChange={e => updateTipologia(i, 'nome', e.target.value)} placeholder="Ex: 2 Dormitórios com Suíte" />
+                              </FormGroup>
+                              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+                                <FormGroup>
+                                  <label>Área (m²)</label>
+                                  <input type="number" value={tipologia.area} onChange={e => updateTipologia(i, 'area', Number(e.target.value))} />
+                                </FormGroup>
+                                <FormGroup>
+                                  <label>Quartos</label>
+                                  <input type="number" value={tipologia.quartos} onChange={e => updateTipologia(i, 'quartos', Number(e.target.value))} />
+                                </FormGroup>
+                                <FormGroup>
+                                  <label>Vagas</label>
+                                  <input type="number" value={tipologia.vagas} onChange={e => updateTipologia(i, 'vagas', Number(e.target.value))} />
+                                </FormGroup>
+                                <FormGroup>
+                                  <label>Preço (R$)</label>
+                                  <input type="number" value={tipologia.preco} onChange={e => updateTipologia(i, 'preco', Number(e.target.value))} />
+                                </FormGroup>
+                              </div>
+                              <div>
+                                <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: '#24292e', marginBottom: '8px' }}>Imagem da Planta</label>
+                                {tipologia.plantaImg ? (
+                                  <div style={{ position: 'relative', width: '100%', height: '120px' }}>
+                                    <img src={tipologia.plantaImg} alt={tipologia.nome} style={{ width: '100%', height: '100%', objectFit: 'contain', background: '#fff', borderRadius: '6px', border: '1px solid #e2e8f0' }} />
+                                    <button onClick={() => updateTipologia(i, 'plantaImg', '')} style={{ position: 'absolute', top: 4, right: 4, background: 'rgba(220,38,38,0.9)', color: 'white', border: 'none', borderRadius: '50%', width: 24, height: 24, cursor: 'pointer' }}>×</button>
+                                  </div>
+                                ) : (
+                                  <UploadBox style={{ padding: '12px', marginBottom: 0 }}>
+                                    <Upload size={20} />
+                                    <span>Enviar Imagem</span>
+                                    <input type="file" accept="image/*" onChange={(e) => handleTipologiaImageUpload(e, i)} />
+                                  </UploadBox>
+                                )}
+                              </div>
+                            </div>
+                          ))}
+                          {(briefing.tipologias || []).length < 3 && (
+                            <button onClick={addTipologia} style={{ width: '100%', padding: '12px', background: '#0f172a', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 600 }}>
+                              + Adicionar Planta (Máx 3)
+                            </button>
+                          )}
+                        </div>
                       )}
                     </AccordionContent>
                   </AccordionBlock>
@@ -957,6 +1050,126 @@ const EditorLP = () => {
                       />
                     </div>
                   </FormGroup>
+                </div>
+
+                <div style={{ marginTop: '40px', paddingTop: '30px', borderTop: '1px solid #e2e8f0' }}>
+                  <h3 style={{ marginBottom: '20px', color: '#1a202c', fontSize: '1.2rem' }}>Formulário de Captação</h3>
+                  <p style={{ marginBottom: '20px', color: '#718096', fontSize: '0.95rem' }}>
+                    Gerencie as etapas do formulário de captação de leads.
+                  </p>
+                  {(lpConfig.formSteps || []).map((step, index) => (
+                    <div key={step.id} style={{ marginBottom: '16px', padding: '16px', border: '1px solid #e2e8f0', borderRadius: '8px', background: '#f8fafc' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+                        <strong style={{ fontSize: '0.95rem', color: '#1a202c' }}>Etapa {index + 1}: {step.tipo === 'dados_iniciais' ? 'Dados Iniciais' : step.tipo === 'multipla_escolha' ? 'Múltipla Escolha' : step.tipo === 'dados_contato' ? 'Contato (WhatsApp)' : 'Texto'}</strong>
+                      </div>
+
+                      {step.tipo !== 'dados_iniciais' && step.tipo !== 'multipla_escolha' && (
+                        <>
+                          <FormGroup>
+                            <label>Título (Pergunta)</label>
+                            <input 
+                              value={step.titulo} 
+                              onChange={e => {
+                                const newSteps = [...(lpConfig.formSteps || [])];
+                                newSteps[index].titulo = e.target.value;
+                                setLpConfig({ ...lpConfig, formSteps: newSteps });
+                              }} 
+                            />
+                          </FormGroup>
+
+                          <FormGroup>
+                            <label>Subtítulo (Opcional)</label>
+                            <input 
+                              value={step.subtitulo || ''} 
+                              onChange={e => {
+                                const newSteps = [...(lpConfig.formSteps || [])];
+                                newSteps[index].subtitulo = e.target.value;
+                                setLpConfig({ ...lpConfig, formSteps: newSteps });
+                              }} 
+                            />
+                          </FormGroup>
+                        </>
+                      )}
+
+                      {step.tipo === 'multipla_escolha' && (
+                        <>
+                          <FormGroup>
+                            <label>Título (Fixo)</label>
+                            <input 
+                              value={step.titulo} 
+                              disabled
+                              style={{ backgroundColor: '#f1f5f9', color: '#94a3b8', cursor: 'not-allowed' }}
+                            />
+                          </FormGroup>
+
+                          <FormGroup>
+                            <label>Subtítulo (Fixo)</label>
+                            <input 
+                              value={step.subtitulo || ''} 
+                              disabled
+                              style={{ backgroundColor: '#f1f5f9', color: '#94a3b8', cursor: 'not-allowed' }}
+                            />
+                          </FormGroup>
+                        </>
+                      )}
+
+                      {step.tipo === 'dados_iniciais' && (
+                        <>
+                          <p style={{ fontSize: '0.9rem', color: '#64748b', marginBottom: '16px' }}>
+                            Nesta etapa, o usuário preencherá seu Nome e a Tipologia de interesse. Estes campos são fixos e não editáveis.
+                          </p>
+                          <FormGroup>
+                            <label>Campo Nome (Fixo)</label>
+                            <input 
+                              value={step.inputPlaceholder || 'Seu nome completo'} 
+                              disabled
+                              style={{ backgroundColor: '#f1f5f9', color: '#94a3b8', cursor: 'not-allowed' }}
+                            />
+                          </FormGroup>
+                          <FormGroup>
+                            <label>Campo Tipologia (Fixo)</label>
+                            <input 
+                              value={step.selectLabel || 'Qual tipologia mais te interessa?'} 
+                              disabled
+                              style={{ backgroundColor: '#f1f5f9', color: '#94a3b8', cursor: 'not-allowed' }}
+                            />
+                          </FormGroup>
+                        </>
+                      )}
+
+                      {step.tipo === 'dados_contato' && (
+                        <FormGroup>
+                          <label>Texto do campo WhatsApp</label>
+                          <input 
+                            value={step.inputPlaceholder || 'Seu WhatsApp (com DDD)'} 
+                            onChange={e => {
+                              const newSteps = [...(lpConfig.formSteps || [])];
+                              newSteps[index].inputPlaceholder = e.target.value;
+                              setLpConfig({ ...lpConfig, formSteps: newSteps });
+                            }} 
+                          />
+                        </FormGroup>
+                      )}
+
+                      {step.tipo === 'multipla_escolha' && (
+                        <div style={{ marginTop: '16px', padding: '12px', background: 'white', borderRadius: '6px', border: '1px solid #e2e8f0' }}>
+                          <p style={{ fontSize: '0.9rem', color: '#64748b', marginBottom: '16px' }}>
+                            As opções de resposta desta etapa são fixas para garantir que a inteligência de qualificação de leads (Lead Scoring) funcione corretamente.
+                          </p>
+                          <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: '#24292e', marginBottom: '8px' }}>Opções de Resposta (Fixo)</label>
+                          {(step.opcoes || []).map((opcao, optIndex) => (
+                            <div key={optIndex} style={{ display: 'flex', gap: '8px', marginBottom: '8px' }}>
+                              <input 
+                                value={opcao.label} 
+                                disabled
+                                style={{ flex: 1, backgroundColor: '#f1f5f9', color: '#94a3b8', cursor: 'not-allowed' }}
+                              />
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  ))}
                 </div>
               </>
             )}

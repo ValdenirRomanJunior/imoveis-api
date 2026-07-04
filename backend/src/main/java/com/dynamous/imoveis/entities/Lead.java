@@ -30,9 +30,10 @@ public class Lead implements Serializable {
     private String message;  
     private String instant;
  
+    @Column(columnDefinition = "TEXT")
+    private String lpPayload;
     
     private Long propertyId;
-    
    
     	
     @OneToOne(mappedBy = "lead")  
@@ -55,6 +56,16 @@ public class Lead implements Serializable {
         this.phone=phone;
         this.message=message;
         this.instant=instant;
+    }
+    
+    public Lead(Long id, String name, String email, String phone, String message,String instant, String lpPayload) {
+        this.id = id;
+        this.name=name;
+        this.email = email;    
+        this.phone=phone;
+        this.message=message;
+        this.instant=instant;
+        this.lpPayload = lpPayload;
     }
 
 
@@ -109,6 +120,14 @@ public class Lead implements Serializable {
 		this.instant = instant;
 	}
 
+	public String getLpPayload() {
+		return lpPayload;
+	}
+
+	public void setLpPayload(String lpPayload) {
+		this.lpPayload = lpPayload;
+	}
+
 	public Long getPropertyId() {
 		return propertyId;
 	}
@@ -116,12 +135,6 @@ public class Lead implements Serializable {
 	public void setPropertyId(Long property) {
 		this.propertyId = property;
 	}
-	
-	
-
-
-
-	
 
     public Account getAccount() {
 		return account;

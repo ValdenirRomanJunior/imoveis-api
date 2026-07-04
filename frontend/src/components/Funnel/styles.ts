@@ -14,7 +14,7 @@ export const FunnelGraphic = styled.div`
     width: 45%;
     display: flex;
     flex-direction: column;
-    clip-path: polygon(0 0, 100% 0, 70% 100%, 30% 100%);
+    clip-path: polygon(0 0, 100% 0, 65% 100%, 35% 100%);
     background: transparent;
 `;
 

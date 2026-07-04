@@ -83,9 +83,65 @@ export interface LpSection {
   order: number;
 }
 
+export interface FormStepOption {
+  label: string;
+  value: string;
+}
+
+export interface FormStep {
+  id: string;
+  tipo: 'dados_iniciais' | 'multipla_escolha' | 'dados_contato' | 'texto';
+  titulo: string;
+  subtitulo?: string;
+  opcoes?: FormStepOption[];
+  inputPlaceholder?: string;
+  selectLabel?: string;
+}
+
 export interface LpConfig {
   sections: LpSection[];
+  formSteps?: FormStep[];
 }
+
+export const DEFAULT_FORM_STEPS: FormStep[] = [
+  {
+    id: 'step_1',
+    tipo: 'dados_iniciais',
+    titulo: 'Fale com um Especialista',
+    subtitulo: 'Descubra as condições exclusivas.',
+    inputPlaceholder: 'Seu nome completo',
+    selectLabel: 'Qual tipologia mais te interessa?'
+  },
+  {
+    id: 'step_2',
+    tipo: 'multipla_escolha',
+    titulo: 'Qual a intenção/finalidade de compra?',
+    subtitulo: 'Para entendermos melhor o que você busca.',
+    opcoes: [
+      { label: 'Moradia', value: 'Moradia' },
+      { label: 'Investimento', value: 'Investimento' },
+      { label: 'Revenda', value: 'Revenda' }
+    ]
+  },
+  {
+    id: 'step_3',
+    tipo: 'multipla_escolha',
+    titulo: 'Como deseja pagar?',
+    subtitulo: 'Para oferecer as melhores condições.',
+    opcoes: [
+      { label: 'Financiamento Bancário', value: 'Financiamento Bancário' },
+      { label: 'À vista (Com desconto)', value: 'À vista' },
+      { label: 'FGTS', value: 'FGTS' }
+    ]
+  },
+  {
+    id: 'step_4',
+    tipo: 'dados_contato',
+    titulo: 'Falta pouco!',
+    subtitulo: 'Informe seu WhatsApp para receber o material.',
+    inputPlaceholder: 'Seu WhatsApp (com DDD)'
+  }
+];
 
 export const DEFAULT_LP_SECTIONS: LpSection[] = [
   { id: 'hero', visible: true, order: 0 },
@@ -236,6 +292,7 @@ export const createLancamentoFromBriefing = (
     tenantSlug,
     briefing,
     conteudoGerado: defaultConteudo(nome, briefing.cidade, briefing.bairro),
+    lpConfig: { sections: [...DEFAULT_LP_SECTIONS], formSteps: [...DEFAULT_FORM_STEPS] },
     createdAt: new Date().toISOString(),
   };
 };
@@ -306,7 +363,7 @@ export const createDefaultLancamentoObject = (empreendimentoId: string, nomeEmpr
     templateId: 'residencial',
     briefing,
     conteudoGerado: defaultConteudo('Nova Página', briefing.cidade, briefing.bairro),
-    lpConfig: { sections: [...DEFAULT_LP_SECTIONS] }
+    lpConfig: { sections: [...DEFAULT_LP_SECTIONS], formSteps: [...DEFAULT_FORM_STEPS] }
   };
   
   return novoLancamento;
@@ -406,7 +463,7 @@ export const getMockLancamentos = (): Lancamento[] => {
         ],
       },
       conteudoGerado: defaultConteudo('Origem Jardins', 'Curitiba', 'Água Verde'),
-      lpConfig: { sections: [...DEFAULT_LP_SECTIONS] },
+      lpConfig: { sections: [...DEFAULT_LP_SECTIONS], formSteps: [...DEFAULT_FORM_STEPS] },
     },
     {
       id: '1002',
@@ -472,7 +529,7 @@ export const getMockLancamentos = (): Lancamento[] => {
         ],
       },
       conteudoGerado: defaultConteudo('Vila Nova', 'Curitiba', 'Portão'),
-      lpConfig: { sections: [...DEFAULT_LP_SECTIONS] },
+      lpConfig: { sections: [...DEFAULT_LP_SECTIONS], formSteps: [...DEFAULT_FORM_STEPS] },
     },
   ];
 

@@ -8,12 +8,13 @@ import { Lead, LeadPage } from "../../../types/lead";
 import { leadsPageable } from "../../../services/resources/lead";
 import PaginationLead from "../../../components/PaginationLead";
 
-const LeadCardItem = ({ id, name, email, phone, instant, opportunityId }: Lead) => {
+const LeadCardItem = ({ id, name, email, phone, instant, opportunityId, message }: Lead) => {
     const capitalize = (string: string) => {
         return string?.toLowerCase().replace(/(^|\s)\S/g, l => l.toUpperCase()) || '';
     };
 
     const initial = name ? name.substring(0, 1) : '?';
+    const isCaptacao = message?.startsWith('[Captação]');
 
     return (
         <LeadListItem>
@@ -32,6 +33,9 @@ const LeadCardItem = ({ id, name, email, phone, instant, opportunityId }: Lead) 
             </div>
             
             <div className="lead-status">
+                {isCaptacao && (
+                    <span className="badge captacao" style={{ background: '#f5f3ff', color: '#6d28d9', border: '1px solid #ddd6fe' }}>Captação</span>
+                )}
                 {opportunityId === null ? (
                     <span className="badge resolvido">Resolvido</span>
                 ) : (

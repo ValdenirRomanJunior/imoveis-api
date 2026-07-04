@@ -3,16 +3,17 @@ import styled from "styled-components";
 
 export const CardWrapper = styled.div`
 width: 100%;
-max-width: 380px;
-height: 480px;
+max-width: 480px;
+height: 500px;
 background: #fff;
 border-radius: 8px;
 margin-top: 20px;
 cursor: pointer;
 transition: all 0.3s ease;
-border: 1px solid #f3f4f6;
+border: 1px solid #dfdfdfff;
 box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
 margin-bottom: 20px;
+padding:0.3rem;
 
 &:hover{
     transform: translateY(-4px);
@@ -36,13 +37,21 @@ flex-direction: column;
 align-items: center;
 position:relative;
 overflow: hidden;
-border-radius: 8px;
+border-radius: 5px;
 
     .image-card-property-home-wrapper{
         width:100%;
-        height: 220px;
+        height: 250px;
         background:rgb(243, 244, 246);
         position: relative;
+        overflow: hidden;
+
+        /* Força a tag lazy-load-image-wrapper a ocupar 100% */
+        .lazy-load-image-background {
+            width: 100% !important;
+            height: 100% !important;
+            display: block !important;
+        }
 
         .phase-tag {
             position: absolute;
@@ -63,13 +72,15 @@ border-radius: 8px;
 
   .image-card-property-home{
     width: 100%;
-    height: 220px;
+    height: 250px;
     object-fit: cover;
+    display: block;
   }
   .default-image-card-property-home{
     width: 100%;
-    height: 220px;
+    height: 250px;
     object-fit: contain;
+    display: block;
   }
 
     .price-wrapper{
@@ -98,11 +109,16 @@ border-radius: 8px;
         }
         .title-card-property{
             font-size:16px;
-            color: #333 !important;
-            font-weight:700;
+            color: #565656ff !important;
+           
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
+
+                    font-weight: 400;
+                font-family: 'Parkinsans', sans-serif;
+                font-optical-sizing: auto;
+                font-style: normal;
         }
         .title-card-property-cod{
             font-size:12px;
@@ -179,9 +195,9 @@ export const CardContainer = styled.main`
     width:100%;
     display: flex;
     justify-content: center;
-    
-
-    `
+       padding: 0 5px;
+`
+  
 
     export const MessageNoProperties = styled.div`
     width:100%;
@@ -259,9 +275,14 @@ export const DetailsCardWrapper = styled.div`
             gap: 4px;
            
             .icon-detail {
-                color: #ff6b35; /* Orange icon color */
-                font-size: 20px;
+                color: #ff6b35be !important; /* Orange icon color */
+                font-size: 25px;
                 margin-bottom: 4px;
+            
+
+          
+                
+
             }
 
             .value-detail-bottom{
@@ -274,6 +295,11 @@ export const DetailsCardWrapper = styled.div`
                 font-weight: 400;
                 font-size: 12px;
                 color: #888;
+
+                        font-weight: 300;
+                font-family: 'Parkinsans', sans-serif;
+                font-optical-sizing: auto;
+                font-style: normal;
             }
         }
 `
@@ -283,7 +309,7 @@ export const CardFooter = styled.div`
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 15px 20px;
+    padding: 15px 30px;
     margin-top: auto;
 
     .price-block {
@@ -297,16 +323,20 @@ export const CardFooter = styled.div`
         }
         
         .price-value {
-            font-size: 18px;
-            font-weight: 800;
-            color: #ff6b35; /* Orange price */
+            font-size: 22px;
+            
+            color: #FF5317 !important; /* Orange price */
+            font-weight: 400;
+            font-family: 'Parkinsans', sans-serif;
+            font-optical-sizing: auto;
+            font-style: normal;
         }
     }
 
     .btn-conheca {
         background: #1e1b4b; /* Dark navy blue */
         color: white;
-        padding: 8px 24px;
+        padding: 8px 42px;
         border-radius: 6px;
         font-size: 14px;
         font-weight: 600;
