@@ -1,8 +1,122 @@
 import styled from 'styled-components';
 
+export const EditorTopBar = styled.div`
+  height: 60px;
+  background: #ffffff;
+  border-bottom: 1px solid #e1e4e8;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  box-sizing: border-box;
+
+  .left-section {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    
+    .close-btn {
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #24292e;
+      padding: 4px;
+      
+      &:hover {
+        opacity: 0.7;
+      }
+    }
+
+    .title {
+      font-size: 14px;
+      font-weight: 500;
+      color: #24292e;
+    }
+
+    .status-badge {
+      background: #e6ffed;
+      color: #22863a;
+      font-size: 12px;
+      font-weight: 500;
+      padding: 4px 12px;
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+
+      &::before {
+        content: '';
+        display: block;
+        width: 6px;
+        height: 6px;
+        background: #22863a;
+        border-radius: 50%;
+      }
+    }
+  }
+
+  .center-section {
+    display: flex;
+    align-items: center;
+    background: #f6f8fa;
+    padding: 4px;
+    border-radius: 8px;
+    border: 1px solid #e1e4e8;
+
+    button {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 16px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 500;
+      transition: all 0.2s;
+      color: #586069;
+      background: transparent;
+
+      &.active {
+        background: #ffffff;
+        color: #0366d6;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      }
+
+      &:not(.active):hover {
+        color: #24292e;
+      }
+    }
+  }
+
+  .right-section {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+
+    .action-link {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: #586069;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
+
+      &:hover {
+        color: #24292e;
+      }
+    }
+  }
+`;
+
 export const EditorContainer = styled.div`
   display: flex;
-  height: calc(100vh - 45px); // descontando header
+  flex-direction: row;
+  height: calc(100vh - 60px); /* Adjusting for the new top bar */
   background: #f8f9fa;
   overflow: hidden;
 `;
@@ -137,4 +251,5 @@ export const PreviewWrapper = styled.div`
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   position: relative;
   min-height: 800px;
+  overflow: hidden;
 `;

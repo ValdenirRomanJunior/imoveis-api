@@ -22,6 +22,8 @@ const EmpreendimentoDetalhe = () => {
 
   // Estados do Modal de Criação
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalStep, setModalStep] = useState(1);
+  const [newPageTemplate, setNewPageTemplate] = useState('residencial');
   const [newPageName, setNewPageName] = useState('');
   const [newPageFase, setNewPageFase] = useState('Lançamento');
   const [newPagePadrao, setNewPagePadrao] = useState('Médio Padrão');
@@ -46,6 +48,8 @@ const EmpreendimentoDetalhe = () => {
   }, [id]);
 
   const handleCreatePageClick = () => {
+    setModalStep(1);
+    setNewPageTemplate('residencial');
     setNewPageName(`${empreendimento?.nome || ''} — Pré-lançamento`);
     setNewPageFase('Pré-lançamento');
     setNewPagePadrao('Médio Padrão');
@@ -60,7 +64,7 @@ const EmpreendimentoDetalhe = () => {
   const handleConfirmCreatePage = async () => {
     if (empreendimento && id) {
       try {
-        const defaultData = createDefaultLancamentoObject(id, empreendimento.nome);
+        const defaultData = createDefaultLancamentoObject(id, empreendimento.nome, newPageTemplate as 'residencial' | 'mcmv' | 'premium');
         defaultData.nome = newPageName;
         if (defaultData.briefing) {
           defaultData.briefing.fase = newPageFase;
@@ -288,12 +292,69 @@ const EmpreendimentoDetalhe = () => {
             </div>
             
             <h2 style={{ fontSize: '18px', fontWeight: 600, color: '#111', margin: '0 0 6px 0' }}>
-              Criar página para este empreendimento
+              {modalStep === 1 ? 'Escolha o template' : 'Criar página para este empreendimento'}
             </h2>
             <p style={{ fontSize: '12px', color: '#666', margin: '0 0 16px 0', lineHeight: 1.4 }}>
-              Escolha a fase do lançamento. Cada fase tem estrutura, copy e conversão otimizados para o momento certo.
+              {modalStep === 1 
+                ? 'Selecione o estilo visual que melhor se adapta ao seu empreendimento.' 
+                : 'Escolha a fase do lançamento. Cada fase tem estrutura, copy e conversão otimizados para o momento certo.'}
             </p>
 
+            {modalStep === 1 ? (
+              <>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '24px' }}>
+                  <div 
+                    onClick={() => setNewPageTemplate('residencial')}
+                    style={{ 
+                      border: newPageTemplate === 'residencial' ? '2px solid #65a30d' : '1px solid #eaeaea',
+                      backgroundColor: newPageTemplate === 'residencial' ? '#f7fee7' : '#fff',
+                      borderRadius: '12px',
+                      padding: '16px',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s',
+                      position: 'relative'
+                    }}
+                  >
+                    <div style={{ width: '100%', height: '120px', backgroundColor: '#f3f4f6', borderRadius: '8px', marginBottom: '12px', backgroundImage: 'url(https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80)', backgroundSize: 'cover', backgroundPosition: 'center' }} />
+                    <h3 style={{ fontSize: '14px', fontWeight: 600, margin: '0 0 4px 0', color: newPageTemplate === 'residencial' ? '#3f6212' : '#111' }}>Residencial Padrão</h3>
+                    <p style={{ fontSize: '11px', color: newPageTemplate === 'residencial' ? '#4d7c0f' : '#666', margin: 0, lineHeight: 1.4 }}>Ideal para empreendimentos MCMV e médio padrão. Foco em conversão rápida e clareza.</p>
+                  </div>
+
+                  <div 
+                    onClick={() => setNewPageTemplate('premium')}
+                    style={{ 
+                      border: newPageTemplate === 'premium' ? '2px solid #65a30d' : '1px solid #eaeaea',
+                      backgroundColor: newPageTemplate === 'premium' ? '#f7fee7' : '#fff',
+                      borderRadius: '12px',
+                      padding: '16px',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s',
+                      position: 'relative'
+                    }}
+                  >
+                    <div style={{ width: '100%', height: '120px', backgroundColor: '#f3f4f6', borderRadius: '8px', marginBottom: '12px', backgroundImage: 'url(https://images.unsplash.com/photo-1512917774080-9991f1c4c750?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80)', backgroundSize: 'cover', backgroundPosition: 'center' }} />
+                    <h3 style={{ fontSize: '14px', fontWeight: 600, margin: '0 0 4px 0', color: newPageTemplate === 'premium' ? '#3f6212' : '#111' }}>Premium</h3>
+                    <p style={{ fontSize: '11px', color: newPageTemplate === 'premium' ? '#4d7c0f' : '#666', margin: 0, lineHeight: 1.4 }}>Design sofisticado, ideal para alto padrão. Valoriza as imagens e o conceito do projeto.</p>
+                  </div>
+                </div>
+
+                <div style={{ borderTop: '1px solid #e5e7eb', paddingTop: '16px', display: 'flex', justifyContent: 'flex-end', gap: '8px' }}>
+                  <button 
+                    onClick={() => setIsModalOpen(false)}
+                    style={{ padding: '8px 16px', borderRadius: '6px', border: '1px solid #d1d5db', background: '#fff', color: '#111', cursor: 'pointer', fontWeight: 500, fontSize: '13px' }}
+                  >
+                    Cancelar
+                  </button>
+                  <button 
+                    onClick={() => setModalStep(2)}
+                    style={{ padding: '8px 16px', borderRadius: '6px', border: 'none', background: '#111', color: '#fff', cursor: 'pointer', fontWeight: 500, fontSize: '13px' }}
+                  >
+                    Continuar →
+                  </button>
+                </div>
+              </>
+            ) : (
+              <>
             {/* Fases */}
             <div style={{ marginBottom: '16px' }}>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px' }}>
@@ -451,7 +512,8 @@ const EmpreendimentoDetalhe = () => {
                 </button>
               </div>
             </div>
-            
+            </>
+            )}
           </div>
         </div>
       )}

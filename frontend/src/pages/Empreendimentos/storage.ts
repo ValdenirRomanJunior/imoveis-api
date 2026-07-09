@@ -162,11 +162,12 @@ export interface Lancamento {
   slug: string;
   status: LancamentoStatus;
   leads: number;
-  templateId: 'residencial' | 'mcmv';
+  templateId: 'residencial' | 'mcmv' | 'premium';
   tenantSlug: string;
   briefing: BriefingData;
   conteudoGerado: ConteudoGerado;
   lpConfig?: LpConfig;
+  premiumConfig?: any; // To store premium specific config
   createdAt: string;
 }
 
@@ -275,7 +276,7 @@ export const findLancamentoBySlug = (slug: string): Lancamento | undefined =>
 export const createLancamentoFromBriefing = (
   empreendimentoId: string,
   briefing: BriefingData,
-  templateId: 'residencial' | 'mcmv',
+  templateId: 'residencial' | 'mcmv' | 'premium',
   tenantSlug = 'imobiliaria'
 ): Lancamento => {
   const nome = briefing.nomeEmpreendimento || 'Novo Lançamento';
@@ -297,7 +298,7 @@ export const createLancamentoFromBriefing = (
   };
 };
 
-export const createDefaultLancamentoObject = (empreendimentoId: string, nomeEmpreendimento: string): Partial<Lancamento> => {
+export const createDefaultLancamentoObject = (empreendimentoId: string, nomeEmpreendimento: string, templateId: 'residencial' | 'mcmv' | 'premium' = 'residencial'): Partial<Lancamento> => {
   const briefing: BriefingData = {
     nomeEmpreendimento,
     cidade: 'Cidade',
@@ -360,7 +361,7 @@ export const createDefaultLancamentoObject = (empreendimentoId: string, nomeEmpr
     nome: 'Nova Página',
     slug: toSlug(`Nova Página ${Date.now()}`),
     status: 'RASCUNHO',
-    templateId: 'residencial',
+    templateId,
     briefing,
     conteudoGerado: defaultConteudo('Nova Página', briefing.cidade, briefing.bairro),
     lpConfig: { sections: [...DEFAULT_LP_SECTIONS], formSteps: [...DEFAULT_FORM_STEPS] }

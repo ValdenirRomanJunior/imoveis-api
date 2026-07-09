@@ -198,6 +198,10 @@ export const Banner = styled.section<{ bannerImage?: string; defaultBanner: stri
   overflow: visible;
   transition: background 0.5s ease-in-out;
 
+  &::before {
+    display: none;
+  }
+
   @media (max-width: 768px) {
     height: 75vh;
   }

@@ -18,6 +18,9 @@ public class ThemeDTO {
     
     // Banner configuration
     private String bannerImage;
+    private String bannerImage2;
+    private String bannerImage3;
+    private Integer bannerOverlayOpacity;
     private String bannerColor;
     private String bannerTitle;
     private String bannerTitleColor;
@@ -32,6 +35,9 @@ public class ThemeDTO {
     private String agentPhoto;
     private String agentQuote;
     private String agentName;
+    private String email;
+    private String address;
+    private String mapIframe;
     
     // Footer configuration
     private String footerLogo;
@@ -48,6 +54,14 @@ public class ThemeDTO {
     // Legal pages
     private String privacyPolicy;
     private String aboutUs;
+    
+    // Agencia (Why Choose)
+    private String agencia; // JSON string
+    
+    // Announce Section
+    private String announceImage;
+    private String announceBackground;
+    private String announceText;
     
     // SEO and Marketing
     private String customDomain;
@@ -74,6 +88,9 @@ public class ThemeDTO {
         
         // Banner configuration
         this.bannerImage = theme.getBannerImage();
+        this.bannerImage2 = theme.getBannerImage2();
+        this.bannerImage3 = theme.getBannerImage3();
+        this.bannerOverlayOpacity = theme.getBannerOverlayOpacity();
         this.bannerColor = theme.getBannerColor();
         this.bannerTitle = theme.getBannerTitle();
         this.bannerTitleColor = theme.getBannerTitleColor();
@@ -88,7 +105,10 @@ public class ThemeDTO {
         this.agentPhoto = theme.getAgentPhoto();
         this.agentQuote = theme.getAgentQuote();
         this.agentName = theme.getAgentName();
-        
+        this.email = theme.getEmail();
+        this.address = theme.getAddress();
+        this.mapIframe = theme.getMapIframe();
+
         // Footer configuration
         this.footerLogo = theme.getFooterLogo();
         this.socialLinks = theme.getSocialLinks();
@@ -104,6 +124,14 @@ public class ThemeDTO {
         // Legal pages
         this.privacyPolicy = theme.getPrivacyPolicy();
         this.aboutUs = theme.getAboutUs();
+        
+        // Agencia (Why Choose)
+        this.agencia = theme.getAgencia();
+        
+        // Announce Section
+        this.announceImage = theme.getAnnounceImage();
+        this.announceBackground = theme.getAnnounceBackground();
+        this.announceText = theme.getAnnounceText();
         
         // SEO and Marketing
         this.customDomain = theme.getCustomDomain();
@@ -189,6 +217,30 @@ public class ThemeDTO {
         this.bannerImage = bannerImage;
     }
 
+    public String getBannerImage2() {
+        return bannerImage2;
+    }
+
+    public void setBannerImage2(String bannerImage2) {
+        this.bannerImage2 = bannerImage2;
+    }
+
+    public String getBannerImage3() {
+        return bannerImage3;
+    }
+
+    public void setBannerImage3(String bannerImage3) {
+        this.bannerImage3 = bannerImage3;
+    }
+
+    public Integer getBannerOverlayOpacity() {
+        return bannerOverlayOpacity;
+    }
+
+    public void setBannerOverlayOpacity(Integer bannerOverlayOpacity) {
+        this.bannerOverlayOpacity = bannerOverlayOpacity;
+    }
+
     public String getBannerColor() {
         return bannerColor;
     }
@@ -271,6 +323,30 @@ public class ThemeDTO {
         this.agentName = agentName;
     }
 
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public String getMapIframe() {
+        return mapIframe;
+    }
+
+    public void setMapIframe(String mapIframe) {
+        this.mapIframe = mapIframe;
+    }
+
     public String getFooterLogo() {
         return footerLogo;
     }
@@ -349,6 +425,38 @@ public class ThemeDTO {
 
     public void setAboutUs(String aboutUs) {
         this.aboutUs = aboutUs;
+    }
+
+    public String getAgencia() {
+        return agencia;
+    }
+
+    public void setAgencia(String agencia) {
+        this.agencia = agencia;
+    }
+
+    public String getAnnounceImage() {
+        return announceImage;
+    }
+
+    public void setAnnounceImage(String announceImage) {
+        this.announceImage = announceImage;
+    }
+
+    public String getAnnounceBackground() {
+        return announceBackground;
+    }
+
+    public void setAnnounceBackground(String announceBackground) {
+        this.announceBackground = announceBackground;
+    }
+
+    public String getAnnounceText() {
+        return announceText;
+    }
+
+    public void setAnnounceText(String announceText) {
+        this.announceText = announceText;
     }
 
     public String getCustomDomain() {

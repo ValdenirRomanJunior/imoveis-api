@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import bannerPadrao from '../../assets/images/banner-padrao-desktop.png';
 import axios from 'axios';
 import { FiSave, FiExternalLink, FiGlobe, FiCheck, FiX } from 'react-icons/fi';
 import useAuth from '../../hooks/useAuth';
@@ -58,6 +59,16 @@ interface Service {
   active: boolean;
 }
 
+interface AgenciaFeature {
+  title: string;
+  description: string;
+}
+
+interface AgenciaConfig {
+  features: AgenciaFeature[];
+  images: string[];
+}
+
 interface ThemeConfig {
   id?: number;
   name: string;
@@ -67,11 +78,17 @@ interface ThemeConfig {
   menuLinks: MenuLink[];
   phone: string;
   bannerImage: string;
+  bannerImage2?: string;
+  bannerImage3?: string;
+  bannerOverlayOpacity?: number;
   bannerColor: string;
   bannerTitle: string;
   bannerTitleColor: string;
   bannerTitleSize: number;
-  services: Service[];
+  agencia?: AgenciaConfig;
+  announceImage?: string;
+  announceBackground?: string;
+  announceText?: string;
   contactTitle: string;
   contactImage: string;
   agentPhoto: string;
@@ -82,6 +99,9 @@ interface ThemeConfig {
     facebook: string;
     instagram: string;
     whatsapp: string;
+    youtube?: string;
+    linkedin?: string;
+    twitter?: string;
   };
   footerText: string;
   textColor: string;
@@ -91,6 +111,9 @@ interface ThemeConfig {
   h3Color: string;
   privacyPolicy: string;
   aboutUs: string;
+  email?: string;
+  address?: string;
+  mapIframe?: string;
   customDomain: string;
   facebookPixel: string;
   seoKeywords: string;
@@ -112,7 +135,11 @@ const TemaEdit: React.FC = () => {
   // Estados para arquivos selecionados (não enviados ainda)
   const [selectedLogoFile, setSelectedLogoFile] = useState<File | null>(null);
   const [selectedBannerFile, setSelectedBannerFile] = useState<File | null>(null);
+  const [selectedBannerFile2, setSelectedBannerFile2] = useState<File | null>(null);
+  const [selectedBannerFile3, setSelectedBannerFile3] = useState<File | null>(null);
   const [selectedAgentPhotoFile, setSelectedAgentPhotoFile] = useState<File | null>(null);
+  const [selectedAnnounceImageFile, setSelectedAnnounceImageFile] = useState<File | null>(null);
+  const [selectedFooterLogoFile, setSelectedFooterLogoFile] = useState<File | null>(null);
   
   // Estados para gerenciamento de domínio
   const [domainInfo, setDomainInfo] = useState<any>(null);
@@ -130,21 +157,44 @@ const TemaEdit: React.FC = () => {
     menuLinks: [{ label: 'Início', url: '/' }, { label: 'Imóveis', url: '/imoveis' }, { label: 'Contato', url: '/contato' }],
     phone: '(85) 9999-6895',
     bannerImage: '',
-    bannerColor: '#f8fafc',
+    bannerImage2: '',
+    bannerImage3: '',
+    bannerOverlayOpacity: 50,
+    bannerColor: '#000000',
     bannerTitle: 'Sempre entregando o imóvel do seu sonho.',
     bannerTitleColor: '#ffffff',
     bannerTitleSize: 48,
-    services: [{ icon: 'home', title: 'Venda de Imóveis', description: 'Encontre o imóvel perfeito para você', active: true }, { icon: 'key', title: 'Locação', description: 'Alugue com segurança e praticidade', active: true }, { icon: 'calculator', title: 'Financiamento', description: 'Facilitamos seu financiamento imobiliário', active: true }],
+    agencia: {
+      features: [
+        { title: 'Propriedades de Ampla Variedade', description: 'De apartamentos aconchegantes a vilas de luxo, temos opções para todos os estilos de vida..' },
+        { title: 'Corretores de Confiança', description: 'Nossa equipe de profissionais dedica-se a encontrar a melhor oferta para vocês.' },
+        { title: 'Processo transparente', description: 'Sem taxas ocultas ou surpresas. Acompanhamos você em cada etapa.' }
+      ],
+      images: [
+        'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+        'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+        'https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
+      ]
+    },
     contactTitle: 'Entre em contato conosco',
+    announceImage: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80',
+    announceBackground: '#000000',
+    announceText: 'Escolha a imobiliária especialista no mercado há mais de 70 anos e tenha a maior segurança e rentabilidade do mercado.',
     contactImage: '',
     agentPhoto: '',
     agentQuote: 'Mais de 10 anos ajudando pessoas a encontrar o lar dos seus sonhos.',
     agentName: 'João Silva',
+    email: 'contato@empresa.com.br',
+    address: 'Av. Paulista, 1100\nSão Paulo, SP - 01310-100',
+    mapIframe: '',
     footerLogo: '',
     socialLinks: {
       facebook: '#',
       instagram: '#',
-      whatsapp: '#'
+      whatsapp: '#',
+      youtube: '',
+      linkedin: '',
+      twitter: ''
     },
     footerText: '© 2024 Imobiliária. Todos os direitos reservados.',
     textColor: '#2563eb',
@@ -172,7 +222,7 @@ const TemaEdit: React.FC = () => {
       const previewData = {
         ...themeConfig,
         menuLinks: JSON.stringify(themeConfig.menuLinks),
-        services: JSON.stringify(themeConfig.services),
+        agencia: JSON.stringify(themeConfig.agencia),
         socialLinks: JSON.stringify(themeConfig.socialLinks),
         isPreview: true,
         timestamp: Date.now()
@@ -215,24 +265,42 @@ const TemaEdit: React.FC = () => {
       console.log('TemaEdit - favicon recebido:', data.favicon);
       
       // Parse JSON strings from backend
-      const defaultServices = [
-        { icon: 'home', title: 'Venda de Imóveis', description: 'Encontre o imóvel perfeito para você', active: true },
-        { icon: 'key', title: 'Locação', description: 'Alugue com segurança e praticidade', active: true },
-        { icon: 'calculator', title: 'Financiamento', description: 'Facilitamos seu financiamento imobiliário', active: true }
-      ];
+      const defaultAgencia: AgenciaConfig = {
+        features: [
+          { title: 'Propriedades de Ampla Variedade', description: 'De apartamentos aconchegantes a vilas de luxo, temos opções para todos os estilos de vida..' },
+          { title: 'Corretores de Confiança', description: 'Nossa equipe de profissionais dedica-se a encontrar a melhor oferta para vocês.' },
+          { title: 'Processo transparente', description: 'Sem taxas ocultas ou surpresas. Acompanhamos você em cada etapa.' }
+        ],
+        images: [
+          'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+          'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+          'https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
+        ]
+      };
       
-      const parsedServices = typeof data.services === 'string' ? JSON.parse(data.services || '[]') : (Array.isArray(data.services) ? data.services : []);
+      let parsedAgencia = defaultAgencia;
+      if (data.agencia) {
+        try {
+          parsedAgencia = typeof data.agencia === 'string' ? JSON.parse(data.agencia) : data.agencia;
+        } catch (e) {
+          console.error('Error parsing agencia', e);
+        }
+      }
+      
       const parsedSocialLinks = typeof data.socialLinks === 'string' ? JSON.parse(data.socialLinks || '{}') : (data.socialLinks || {});
       
       const parsedData = {
         ...data,
         tenantId: data.tenantId, // Ensure tenantId is included for saving
         menuLinks: typeof data.menuLinks === 'string' ? JSON.parse(data.menuLinks || '[]') : data.menuLinks || [],
-        services: parsedServices.length > 0 ? parsedServices : defaultServices,
+        agencia: parsedAgencia,
         socialLinks: {
           facebook: parsedSocialLinks.facebook || '#',
           instagram: parsedSocialLinks.instagram || '#',
-          whatsapp: parsedSocialLinks.whatsapp || '#'
+          whatsapp: parsedSocialLinks.whatsapp || '#',
+          youtube: parsedSocialLinks.youtube || '',
+          linkedin: parsedSocialLinks.linkedin || '',
+          twitter: parsedSocialLinks.twitter || ''
         },
         siteTitle: data.siteTitle || 'Imobiliária - Encontre seu imóvel',
         facebookPixel: data.facebookPixel || '',
@@ -392,14 +460,62 @@ const TemaEdit: React.FC = () => {
     }));
   };
 
-  const handleServiceChange = (index: number, field: string, value: string | boolean) => {
-    const newServices = [...themeConfig.services];
-    if (field === 'active') {
-      newServices[index] = { ...newServices[index], [field]: typeof value === 'string' ? value === 'true' : value };
-    } else {
-      newServices[index] = { ...newServices[index], [field]: value };
+  const handleAgenciaFeatureChange = (index: number, field: string, value: string) => {
+    if (!themeConfig.agencia) return;
+    const newFeatures = [...themeConfig.agencia.features];
+    newFeatures[index] = { ...newFeatures[index], [field]: value };
+    setThemeConfig(prev => ({ ...prev, agencia: { ...prev.agencia!, features: newFeatures } }));
+  };
+
+  const handleAgenciaImageUpload = async (file: File | undefined, index: number) => {
+    if (!file || !themeConfig.agencia) return;
+    try {
+      setSaving(true);
+      setToastMessage('Fazendo upload da imagem da Agência...');
+      setToastVisible(true);
+      
+      const formData = new FormData();
+      formData.append('file', file);
+      
+      const accountId = user?.account?.id;
+      const response = await api.post(`/api/themes/upload-banner/${accountId}`, formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+      
+      const newImages = [...themeConfig.agencia.images];
+      newImages[index] = response.data;
+      setThemeConfig(prev => ({ ...prev, agencia: { ...prev.agencia!, images: newImages } }));
+      
+      setToastType('success');
+      setToastMessage('Upload concluído!');
+    } catch (error) {
+      console.error('Error uploading agencia image:', error);
+      setToastType('error');
+      setToastMessage('Erro no upload.');
+    } finally {
+      setSaving(false);
+      setTimeout(() => setToastVisible(false), 3000);
     }
-    setThemeConfig(prev => ({ ...prev, services: newServices }));
+  };
+
+  const handleRemoveAgenciaImage = (index: number) => {
+    if (!themeConfig.agencia) return;
+    const newImages = [...themeConfig.agencia.images];
+    newImages.splice(index, 1);
+    setThemeConfig(prev => ({ ...prev, agencia: { ...prev.agencia!, images: newImages } }));
+  };
+
+  const handleAddAgenciaImage = () => {
+    if (!themeConfig.agencia) return;
+    if (themeConfig.agencia.images.length >= 5) {
+      setToastType('error');
+      setToastMessage('Máximo de 5 imagens permitidas.');
+      setToastVisible(true);
+      setTimeout(() => setToastVisible(false), 3000);
+      return;
+    }
+    const newImages = [...themeConfig.agencia.images, ''];
+    setThemeConfig(prev => ({ ...prev, agencia: { ...prev.agencia!, images: newImages } }));
   };
 
   const handleMenuLinkChange = (index: number, field: string, value: string) => {
@@ -427,17 +543,20 @@ const TemaEdit: React.FC = () => {
     alert('Logo selecionada! Clique em "Salvar" para fazer o upload.');
   };
 
-  const handleBannerUpload = (file: File | undefined) => {
+  const handleBannerUpload = (file: File | undefined, index: number = 1) => {
     if (!file) return;
     
     // Armazenar arquivo localmente para envio posterior
-    setSelectedBannerFile(file);
+    if (index === 1) setSelectedBannerFile(file);
+    else if (index === 2) setSelectedBannerFile2(file);
+    else if (index === 3) setSelectedBannerFile3(file);
     
     // Criar URL temporária para preview
     const tempUrl = URL.createObjectURL(file);
-    handleDirectChange('bannerImage', tempUrl);
+    const fieldName = index === 1 ? 'bannerImage' : index === 2 ? 'bannerImage2' : 'bannerImage3';
+    handleDirectChange(fieldName, tempUrl);
     
-    alert('Banner selecionado! Clique em "Salvar" para fazer o upload.');
+    alert(`Banner ${index} selecionado! Clique em "Salvar" para fazer o upload.`);
   };
 
   const handleAgentPhotoUpload = (file: File | undefined) => {
@@ -451,6 +570,32 @@ const TemaEdit: React.FC = () => {
     handleDirectChange('agentPhoto', tempUrl);
     
     alert('Foto do corretor selecionada! Clique em "Salvar" para fazer o upload.');
+  };
+
+  const handleAnnounceImageUpload = (file: File | undefined) => {
+    if (!file) return;
+    
+    setSelectedAnnounceImageFile(file);
+    const tempUrl = URL.createObjectURL(file);
+    handleDirectChange('announceImage', tempUrl);
+    
+    alert('Imagem de anúncio selecionada! Clique em "Salvar" para fazer o upload.');
+  };
+
+  const handleFooterLogoUpload = (file: File | undefined) => {
+    if (!file) return;
+    
+    // Validate that the file is PNG
+    if (!file.type.includes('png')) {
+      alert('Apenas arquivos PNG são permitidos para a logo do rodapé.');
+      return;
+    }
+    
+    setSelectedFooterLogoFile(file);
+    const tempUrl = URL.createObjectURL(file);
+    handleDirectChange('footerLogo', tempUrl);
+    
+    alert('Logo do rodapé selecionada! Clique em "Salvar" para fazer o upload.');
   };
 
   const handleSave = async () => {
@@ -473,7 +618,11 @@ const TemaEdit: React.FC = () => {
       // Upload das imagens selecionadas primeiro
       let logoUrl = themeConfig.logo;
       let bannerUrl = themeConfig.bannerImage;
+      let bannerUrl2 = themeConfig.bannerImage2;
+      let bannerUrl3 = themeConfig.bannerImage3;
       let agentPhotoUrl = themeConfig.agentPhoto;
+      let announceImageUrl = themeConfig.announceImage;
+      let footerLogoUrl = themeConfig.footerLogo;
       
       // Upload da logo se foi selecion
       if (selectedLogoFile) {
@@ -515,12 +664,43 @@ const TemaEdit: React.FC = () => {
           bannerUrl = response.data;
           setSelectedBannerFile(null); // Limpar arquivo selecionado
         } catch (error) {
-          console.error('Error uploading banner:', error);
-          setToastType('error');
-          setToastMessage('Erro ao fazer upload do banner. Salvamento cancelado.');
-          setToastVisible(true);
-          setTimeout(() => setToastVisible(false), 4000);
-          return;
+          console.error('Error uploading banner 1:', error);
+        }
+      }
+
+      if (selectedBannerFile2) {
+        try {
+          const formData = new FormData();
+          formData.append('file', selectedBannerFile2);
+          
+          const response = await api.post(`/api/themes/upload-banner/${accountId}` , formData, {
+            headers: {
+              'Content-Type': 'multipart/form-data'
+            }
+          });
+          
+          bannerUrl2 = response.data;
+          setSelectedBannerFile2(null); // Limpar arquivo selecionado
+        } catch (error) {
+          console.error('Error uploading banner 2:', error);
+        }
+      }
+
+      if (selectedBannerFile3) {
+        try {
+          const formData = new FormData();
+          formData.append('file', selectedBannerFile3);
+          
+          const response = await api.post(`/api/themes/upload-banner/${accountId}` , formData, {
+            headers: {
+              'Content-Type': 'multipart/form-data'
+            }
+          });
+          
+          bannerUrl3 = response.data;
+          setSelectedBannerFile3(null); // Limpar arquivo selecionado
+        } catch (error) {
+          console.error('Error uploading banner 3:', error);
         }
       }
       
@@ -547,16 +727,68 @@ const TemaEdit: React.FC = () => {
           return;
         }
       }
+
+      // Upload da imagem do anúncio se foi selecionada
+      if (selectedAnnounceImageFile) {
+        try {
+          const formData = new FormData();
+          formData.append('file', selectedAnnounceImageFile);
+          
+          const response = await api.post(`/api/themes/upload-banner/${accountId}`, formData, {
+            headers: {
+              'Content-Type': 'multipart/form-data'
+            }
+          });
+          
+          announceImageUrl = response.data;
+          setSelectedAnnounceImageFile(null); // Limpar arquivo selecionado
+        } catch (error) {
+          console.error('Error uploading announce image:', error);
+          setToastType('error');
+          setToastMessage('Erro ao fazer upload da imagem de anúncio. Salvamento cancelado.');
+          setToastVisible(true);
+          setTimeout(() => setToastVisible(false), 4000);
+          return;
+        }
+      }
+
+      // Upload da logo do footer se foi selecionada
+      if (selectedFooterLogoFile) {
+        try {
+          const formData = new FormData();
+          formData.append('file', selectedFooterLogoFile);
+          
+          const response = await api.post('/paginas/upload', formData, {
+            headers: {
+              'Content-Type': 'multipart/form-data'
+            }
+          });
+          
+          footerLogoUrl = response.data.url;
+          setSelectedFooterLogoFile(null); // Limpar arquivo selecionado
+        } catch (error) {
+          console.error('Error uploading footer logo:', error);
+          setToastType('error');
+          setToastMessage('Erro ao fazer upload da logo do rodapé. Salvamento cancelado.');
+          setToastVisible(true);
+          setTimeout(() => setToastVisible(false), 4000);
+          return;
+        }
+      }
       
       // Convert arrays and objects to JSON strings for backend
       const dataToSave = {
         ...themeConfig,
         logo: logoUrl,
         bannerImage: bannerUrl,
+        bannerImage2: bannerUrl2,
+        bannerImage3: bannerUrl3,
         agentPhoto: agentPhotoUrl,
+        announceImage: announceImageUrl,
+        footerLogo: footerLogoUrl,
         favicon: themeConfig.favicon,
         menuLinks: JSON.stringify(themeConfig.menuLinks),
-        services: JSON.stringify(themeConfig.services),
+        agencia: JSON.stringify(themeConfig.agencia),
         socialLinks: JSON.stringify(themeConfig.socialLinks)
       };
       
@@ -575,7 +807,11 @@ const TemaEdit: React.FC = () => {
         tenantId: savedTheme.tenantId,
         logo: logoUrl,
         bannerImage: bannerUrl,
-        agentPhoto: agentPhotoUrl
+        bannerImage2: bannerUrl2,
+        bannerImage3: bannerUrl3,
+        agentPhoto: agentPhotoUrl,
+        announceImage: announceImageUrl,
+        footerLogo: footerLogoUrl
       }));
       
       // Update preview after saving
@@ -662,20 +898,24 @@ const TemaEdit: React.FC = () => {
               </select>
             </FormGroup>
             <FormGroup>
-              <Label>Telefone</Label>
+              <Label>Telefone do Header</Label>
               <Input
-                value={themeConfig.phone}
+                value={themeConfig.phone || ''}
                 onChange={(e) => handleDirectChange('phone', e.target.value)}
                 onKeyUp={(e) => phone(e)}
-                placeholder="Telefone"
+                placeholder="Ex: (11) 99999-9999"
               />
+              <small style={{ color: '#6c757d', fontSize: '12px' }}>Aparecerá ao lado do ícone de telefone no menu do site.</small>
             </FormGroup>
             <FormGroup>
               <Label>Menu (Fixo)</Label>
               <div style={{ padding: '10px', backgroundColor: '#f8f9fa', border: '1px solid #dee2e6', borderRadius: '4px' }}>
-                <p style={{ margin: '5px 0', fontWeight: 'bold' }}>Início</p>
-                <p style={{ margin: '5px 0', fontWeight: 'bold' }}>Imóveis</p>
-                <p style={{ margin: '5px 0', fontWeight: 'bold' }}>Contato</p>
+                <p style={{ margin: '5px 0', fontWeight: 'bold' }}>Comprar imóvel</p>
+                <p style={{ margin: '5px 0', fontWeight: 'bold' }}>Alugar imóvel</p>
+                <p style={{ margin: '5px 0', fontWeight: 'bold' }}>Lançamentos</p>
+                <p style={{ margin: '5px 0', fontWeight: 'bold' }}>Sobre Nós</p>
+                <p style={{ margin: '5px 0', fontWeight: 'bold' }}>Suporte ao cliente</p>
+                <p style={{ margin: '5px 0', fontWeight: 'bold' }}>Fale conosco</p>
                 <small style={{ color: '#6c757d', fontSize: '12px' }}>Os links do menu são fixos e não podem ser editados</small>
               </div>
             </FormGroup>
@@ -720,19 +960,11 @@ const TemaEdit: React.FC = () => {
                 }}
               />
             </FormGroup>
-            <FormGroup style={{display: 'none'}}>
-              <Label>Cor de Fundo</Label>
-              <ColorInput
-                type="color"
-                value={themeConfig.bannerColor}
-                onChange={(e) => handleDirectChange('bannerColor', e.target.value)}
-              />
-            </FormGroup>
             <FormGroup>
-              <Label>Imagem de Fundo</Label>
-              {themeConfig.bannerImage ? (
-                <div style={{ marginBottom: '10px' }}>
-                  <img src={themeConfig.bannerImage} alt="Banner" style={{ maxWidth: '300px', maxHeight: '150px' }} />
+              <Label>Imagem de Fundo 1</Label>
+              <div style={{ marginBottom: '10px' }}>
+                <img src={themeConfig.bannerImage || bannerPadrao} alt="Banner 1" style={{ maxWidth: '300px', maxHeight: '150px' }} />
+                {themeConfig.bannerImage && (
                   <button 
                     type="button" 
                     onClick={() => handleDirectChange('bannerImage', '')}
@@ -740,228 +972,402 @@ const TemaEdit: React.FC = () => {
                   >
                     Remover
                   </button>
-                </div>
-              ) : (
-                <div style={{ padding: '40px', border: '2px dashed #ccc', textAlign: 'center', marginBottom: '10px', backgroundColor: '#f8f9fa' }}>
-                  Nenhuma imagem selecionada
-                </div>
-              )}
+                )}
+              </div>
               <FileInput 
                 type="file" 
                 accept="image/png,image/jpeg,image/jpg" 
-                onChange={(e) => handleBannerUpload(e.target.files?.[0])}
+                onChange={(e) => handleBannerUpload(e.target.files?.[0], 1)}
               />
             </FormGroup>
-          </TabContent>
-        );
-      
-      case 'services':
-        return (
-          <TabContent>
-            {themeConfig.services.map((service, index) => (
-              <FormGroup key={index}>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px' }}>
-                  <Label>Serviço {index + 1}</Label>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <input
-                      type="checkbox"
-                      checked={service.active}
-                      onChange={(e) => handleServiceChange(index, 'active', e.target.checked)}
-                      style={{ transform: 'scale(1.2)' }}
-                    />
-                    <span style={{ fontSize: '14px', color: service.active ? '#10b981' : '#6b7280' }}>
-                      {service.active ? 'Ativo' : 'Inativo'}
-                    </span>
-                  </div>
-                </div>
-                <Input
-                  value={service.title}
-                  onChange={(e) => handleServiceChange(index, 'title', e.target.value)}
-                  placeholder="Título do serviço"
-                  disabled={!service.active}
-                  style={{ opacity: service.active ? 1 : 0.6 }}
-                />
-                
-                {/* Seletor de Ícones */}
-                <div style={{ marginBottom: '15px' }}>
-                  <Label>Ícone do Serviço</Label>
-                  <div style={{ 
-                    display: 'grid', 
-                    gridTemplateColumns: 'repeat(6, 1fr)', 
-                    gap: '8px', 
-                    marginTop: '8px',
-                    opacity: service.active ? 1 : 0.6,
-                    pointerEvents: service.active ? 'auto' : 'none'
-                  }}>
-                    {[
-                      { key: 'home', icon: AiOutlineHome, label: 'Casa' },
-                      { key: 'key', icon: AiOutlineKey, label: 'Chave' },
-                      { key: 'calculator', icon: AiOutlineCalculator, label: 'Calculadora' },
-                      { key: 'heart', icon: AiOutlineHeart, label: 'Coração' },
-                      { key: 'search', icon: AiOutlineSearch, label: 'Busca' },
-                      { key: 'dollar', icon: AiOutlineDollar, label: 'Dinheiro' },
-                      { key: 'bank', icon: AiOutlineBank, label: 'Banco' },
-                      { key: 'shop', icon: AiOutlineShop, label: 'Loja' },
-                      { key: 'car', icon: AiOutlineCar, label: 'Carro' },
-                      { key: 'fa-handshake', icon: FaHandshake, label: 'Aperto de mão' },
-                      { key: 'fa-building', icon: FaBuilding, label: 'Prédio' },
-                      { key: 'md-agent', icon: MdRealEstateAgent, label: 'Corretor' },
-                      { key: 'md-money', icon: MdAttachMoney, label: 'Dinheiro' },
-                      { key: 'md-business', icon: MdBusiness, label: 'Negócio' },
-                      { key: 'md-location', icon: MdLocationOn, label: 'Localização' },
-                      { key: 'md-security', icon: MdSecurity, label: 'Segurança' }
-                    ].map(({ key, icon: IconComponent, label }) => (
-                      <button
-                        key={key}
-                        type="button"
-                        onClick={() => handleServiceChange(index, 'icon', key)}
-                        style={{
-                          padding: '12px',
-                          border: service.icon === key ? '2px solid #007bff' : '1px solid #ddd',
-                          borderRadius: '8px',
-                          background: service.icon === key ? '#f0f8ff' : 'white',
-                          cursor: 'pointer',
-                          display: 'flex',
-                          flexDirection: 'column',
-                          alignItems: 'center',
-                          gap: '4px',
-                          fontSize: '10px',
-                          transition: 'all 0.2s'
-                        }}
-                        title={label}
-                      >
-                        <IconComponent size={20} color={service.icon === key ? '#007bff' : '#666'} />
-                        <span style={{ color: service.icon === key ? '#007bff' : '#666' }}>{label}</span>
-                      </button>
-                    ))}
-                  </div>
-                </div>
-                
-                <Textarea
-                  value={service.description}
-                  onChange={(e) => handleServiceChange(index, 'description', e.target.value)}
-                  placeholder="Descrição do serviço"
-                  rows={3}
-                  disabled={!service.active}
-                  style={{ opacity: service.active ? 1 : 0.6 }}
-                />
-              </FormGroup>
-            ))}
-          </TabContent>
-        );
-      
-      case 'contact':
-        return (
-          <TabContent>
+
             <FormGroup>
-              <Label>Título do Contato</Label>
-              <Input
-                value={themeConfig.contactTitle}
-                onChange={(e) => handleDirectChange('contactTitle', e.target.value)}
-                placeholder="Título da seção de contato"
-              />
-            </FormGroup>
-          </TabContent>
-        );
-      
-      case 'agent':
-        return (
-          <TabContent>
-            <FormGroup>
-              <Label>Foto do Corretor</Label>
-              {themeConfig.agentPhoto ? (
-                <div style={{ marginBottom: '10px' }}>
-                  <img src={themeConfig.agentPhoto} alt="Foto do Corretor" style={{ maxWidth: '200px', maxHeight: '100px' }} />
+              <Label>Imagem de Fundo 2</Label>
+              <div style={{ marginBottom: '10px' }}>
+                <img src={themeConfig.bannerImage2 || 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80'} alt="Banner 2" style={{ maxWidth: '300px', maxHeight: '150px' }} />
+                {themeConfig.bannerImage2 && (
                   <button 
                     type="button" 
-                    onClick={() => handleDirectChange('agentPhoto', '')}
+                    onClick={() => handleDirectChange('bannerImage2', '')}
                     style={{ marginLeft: '10px', padding: '5px 10px', background: '#dc3545', color: 'white', border: 'none', borderRadius: '4px' }}
                   >
                     Remover
                   </button>
-                </div>
-              ) : (
-                <div style={{ padding: '20px', border: '2px dashed #ccc', textAlign: 'center', marginBottom: '10px' }}>
-                  Nenhuma foto selecionada
-                </div>
-              )}
+                )}
+              </div>
               <FileInput 
                 type="file" 
                 accept="image/png,image/jpeg,image/jpg" 
-                onChange={(e) => handleAgentPhotoUpload(e.target.files?.[0])}
+                onChange={(e) => handleBannerUpload(e.target.files?.[0], 2)}
+              />
+            </FormGroup>
+
+            <FormGroup>
+              <Label>Imagem de Fundo 3</Label>
+              <div style={{ marginBottom: '10px' }}>
+                <img src={themeConfig.bannerImage3 || 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80'} alt="Banner 3" style={{ maxWidth: '300px', maxHeight: '150px' }} />
+                {themeConfig.bannerImage3 && (
+                  <button 
+                    type="button" 
+                    onClick={() => handleDirectChange('bannerImage3', '')}
+                    style={{ marginLeft: '10px', padding: '5px 10px', background: '#dc3545', color: 'white', border: 'none', borderRadius: '4px' }}
+                  >
+                    Remover
+                  </button>
+                )}
+              </div>
+              <FileInput 
+                type="file" 
+                accept="image/png,image/jpeg,image/jpg" 
+                onChange={(e) => handleBannerUpload(e.target.files?.[0], 3)}
+              />
+            </FormGroup>
+
+            <FormGroup>
+              <Label>Cor do Overlay</Label>
+              <ColorInput
+                type="color"
+                value={themeConfig.bannerColor || '#000000'}
+                onChange={(e) => handleDirectChange('bannerColor', e.target.value)}
+              />
+              <small style={{ color: '#6c757d', fontSize: '12px', display: 'block', marginTop: '4px' }}>Cor da película sobre as imagens.</small>
+            </FormGroup>
+
+            <FormGroup>
+              <Label>Intensidade do Overlay: {themeConfig.bannerOverlayOpacity ?? 50}%</Label>
+              <input
+                type="range"
+                min="0"
+                max="100"
+                value={themeConfig.bannerOverlayOpacity ?? 50}
+                onChange={(e) => handleDirectChange('bannerOverlayOpacity', parseInt(e.target.value))}
+                style={{
+                  width: '100%',
+                  height: '6px',
+                  borderRadius: '3px',
+                  background: '#e2e8f0',
+                  outline: 'none',
+                  cursor: 'pointer'
+                }}
+              />
+              <small style={{ color: '#6c757d', fontSize: '12px', display: 'block', marginTop: '4px' }}>Controla a transparência da película (0 = invisível, 100 = cor sólida).</small>
+            </FormGroup>
+          </TabContent>
+        );
+      
+      case 'agencia':
+        return (
+          <TabContent>
+            <h3 style={{ marginBottom: '15px' }}>Porque escolher a Camaleon? (Agência)</h3>
+            
+            {/* Imagens (Slide) */}
+            <div style={{ marginBottom: '30px' }}>
+              <Label>Imagens do Slide (1 a 5 fotos)</Label>
+              <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', marginTop: '10px' }}>
+                {themeConfig.agencia?.images.map((imgUrl, index) => (
+                  <div key={index} style={{ position: 'relative', width: '120px', height: '120px', border: '1px solid #ddd', borderRadius: '8px', overflow: 'hidden' }}>
+                    {imgUrl ? (
+                      <>
+                        <img src={imgUrl} alt={`Slide ${index + 1}`} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveAgenciaImage(index)}
+                          style={{ position: 'absolute', top: '5px', right: '5px', background: '#dc3545', color: 'white', border: 'none', borderRadius: '50%', width: '24px', height: '24px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px' }}
+                        >
+                          X
+                        </button>
+                      </>
+                    ) : (
+                      <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: '#f8f9fa' }}>
+                        <span style={{ fontSize: '12px', color: '#666', textAlign: 'center', padding: '5px' }}>Sem imagem</span>
+                      </div>
+                    )}
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => handleAgenciaImageUpload(e.target.files?.[0], index)}
+                      style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', opacity: 0, cursor: 'pointer' }}
+                    />
+                  </div>
+                ))}
+                
+                {(themeConfig.agencia?.images.length || 0) < 5 && (
+                  <button
+                    type="button"
+                    onClick={handleAddAgenciaImage}
+                    style={{ width: '120px', height: '120px', border: '2px dashed #007bff', borderRadius: '8px', background: 'transparent', color: '#007bff', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}
+                  >
+                    <span style={{ fontSize: '24px' }}>+</span>
+                    <span style={{ fontSize: '12px', marginTop: '5px' }}>Adicionar</span>
+                  </button>
+                )}
+              </div>
+              <small style={{ color: '#6c757d', fontSize: '12px', display: 'block', marginTop: '5px' }}>
+                Clique nas caixas para alterar a imagem ou clique no botão + para adicionar (máximo 5).
+              </small>
+            </div>
+
+            {/* Textos */}
+            <div>
+              <Label>Textos dos Diferenciais (Obrigatórios)</Label>
+              {themeConfig.agencia?.features.map((feature, index) => (
+                <div key={index} style={{ marginBottom: '20px', padding: '15px', border: '1px solid #eee', borderRadius: '8px', background: '#f8f9fa' }}>
+                  <FormGroup style={{ marginBottom: '10px' }}>
+                    <Label>Título {index + 1}</Label>
+                    <Input
+                      value={feature.title}
+                      onChange={(e) => handleAgenciaFeatureChange(index, 'title', e.target.value)}
+                      placeholder="Ex: Corretores de Confiança"
+                    />
+                  </FormGroup>
+                  <FormGroup style={{ marginBottom: '0' }}>
+                    <Label>Descrição {index + 1}</Label>
+                    <Textarea
+                      value={feature.description}
+                      onChange={(e) => handleAgenciaFeatureChange(index, 'description', e.target.value)}
+                      placeholder="Descrição do diferencial"
+                      rows={2}
+                    />
+                  </FormGroup>
+                </div>
+              ))}
+            </div>
+          </TabContent>
+        );
+      
+      case 'announce':
+        return (
+          <TabContent>
+            <h3 style={{ marginBottom: '15px' }}>Anuncie seu Imóvel</h3>
+            <FormGroup>
+              <Label>Cor de Fundo (Background)</Label>
+              <ColorInput
+                type="color"
+                value={themeConfig.announceBackground || '#000000'}
+                onChange={(e) => handleDirectChange('announceBackground', e.target.value)}
               />
             </FormGroup>
             <FormGroup>
-              <Label>Frase do Corretor</Label>
+              <Label>Texto Principal</Label>
               <Textarea
-                value={themeConfig.agentQuote}
-                onChange={(e) => handleDirectChange('agentQuote', e.target.value)}
-                placeholder="Frase do corretor"
+                value={themeConfig.announceText || ''}
+                onChange={(e) => handleDirectChange('announceText', e.target.value)}
+                placeholder="Ex: Escolha a imobiliária especialista..."
                 rows={3}
               />
             </FormGroup>
             <FormGroup>
-              <Label>Nome do Corretor</Label>
-              <Input
-                value={themeConfig.agentName}
-                onChange={(e) => handleDirectChange('agentName', e.target.value)}
-                placeholder="Nome do corretor"
+              <Label>Imagem de Destaque</Label>
+              <div style={{ marginBottom: '10px' }}>
+                <img src={themeConfig.announceImage || 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80'} alt="Imagem Anúncio" style={{ maxWidth: '300px', maxHeight: '150px' }} />
+                {themeConfig.announceImage && (
+                  <button 
+                    type="button" 
+                    onClick={() => handleDirectChange('announceImage', '')}
+                    style={{ marginLeft: '10px', padding: '5px 10px', background: '#dc3545', color: 'white', border: 'none', borderRadius: '4px' }}
+                  >
+                    Remover
+                  </button>
+                )}
+              </div>
+              <FileInput 
+                type="file" 
+                accept="image/*" 
+                onChange={(e) => handleAnnounceImageUpload(e.target.files?.[0])}
               />
             </FormGroup>
+          </TabContent>
+        );
+
+      case 'contact':
+        return (
+          <TabContent>
+            <h3 style={{ marginBottom: '15px' }}>Seção de Contato</h3>
+            
+            <div style={{ marginBottom: '20px', padding: '15px', border: '1px solid #eee', borderRadius: '8px', background: '#f8f9fa' }}>
+              <h4 style={{ marginBottom: '10px', fontSize: '14px', color: '#495057' }}>1. Informações Principais</h4>
+              <FormGroup>
+                <Label>Título do Contato</Label>
+                <Input
+                  value={themeConfig.contactTitle}
+                  onChange={(e) => handleDirectChange('contactTitle', e.target.value)}
+                  placeholder="Ex: Fale conosco"
+                />
+              </FormGroup>
+              <FormGroup>
+                <Label>Mensagem / Subtítulo</Label>
+                <Textarea
+                  value={themeConfig.agentQuote}
+                  onChange={(e) => handleDirectChange('agentQuote', e.target.value)}
+                  placeholder="Ex: Estamos aqui para ajudar. Envie sua mensagem..."
+                  rows={2}
+                />
+              </FormGroup>
+              <FormGroup>
+                <Label>Nome de Exibição do Corretor / Atendente</Label>
+                <Input
+                  value={themeConfig.agentName}
+                  onChange={(e) => handleDirectChange('agentName', e.target.value)}
+                  placeholder="Ex: João Silva"
+                />
+              </FormGroup>
+              <FormGroup>
+                <Label>Foto do Corretor / Atendimento</Label>
+                <div style={{ marginBottom: '10px' }}>
+                  <img src={themeConfig.agentPhoto || 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80'} alt="Foto Contato" style={{ maxWidth: '100px', maxHeight: '100px', borderRadius: '50%', objectFit: 'cover' }} />
+                  {themeConfig.agentPhoto && (
+                    <button 
+                      type="button" 
+                      onClick={() => handleDirectChange('agentPhoto', '')}
+                      style={{ marginLeft: '10px', padding: '5px 10px', background: '#dc3545', color: 'white', border: 'none', borderRadius: '4px' }}
+                    >
+                      Remover
+                    </button>
+                  )}
+                </div>
+                <FileInput 
+                  type="file" 
+                  accept="image/png,image/jpeg,image/jpg" 
+                  onChange={(e) => handleAgentPhotoUpload(e.target.files?.[0])}
+                />
+                <small style={{ color: '#6c757d', fontSize: '12px' }}>Aparecerá no bloco de perfil ao lado do formulário.</small>
+              </FormGroup>
+            </div>
+
+            <div style={{ marginBottom: '20px', padding: '15px', border: '1px solid #eee', borderRadius: '8px', background: '#f8f9fa' }}>
+              <h4 style={{ marginBottom: '10px', fontSize: '14px', color: '#495057' }}>2. Dados de Contato</h4>
+              <FormGroup>
+                <Label>E-mail</Label>
+                <Input
+                  value={themeConfig.email || ''}
+                  onChange={(e) => handleDirectChange('email', e.target.value)}
+                  placeholder="ex: contato@imobiliaria.com.br"
+                />
+              </FormGroup>
+              <FormGroup>
+                <Label>Endereço</Label>
+                <Textarea
+                  value={themeConfig.address || ''}
+                  onChange={(e) => handleDirectChange('address', e.target.value)}
+                  placeholder="ex: Av. Paulista, 1100 - São Paulo, SP"
+                  rows={2}
+                />
+                <small style={{ color: '#6c757d', fontSize: '12px', display: 'block', marginTop: '5px' }}>
+                  Usado também para gerar o mapa automaticamente caso o Iframe do Mapa esteja vazio.
+                </small>
+              </FormGroup>
+            </div>
+
+            <div style={{ padding: '15px', border: '1px solid #eee', borderRadius: '8px', background: '#f8f9fa' }}>
+              <h4 style={{ marginBottom: '10px', fontSize: '14px', color: '#495057' }}>3. Mapa Personalizado (Google Maps)</h4>
+              <FormGroup>
+                <Label>Código Iframe do Mapa (Opcional)</Label>
+                <Textarea
+                  value={themeConfig.mapIframe || ''}
+                  onChange={(e) => handleDirectChange('mapIframe', e.target.value)}
+                  placeholder='Ex: <iframe src="https://www.google.com/maps/embed?pb=..." width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy"></iframe>'
+                  rows={4}
+                />
+                <small style={{ color: '#6c757d', fontSize: '12px', display: 'block', marginTop: '5px' }}>
+                  Vá no Google Maps, pesquise seu endereço, clique em "Compartilhar", depois em "Incorporar um mapa", copie o código HTML e cole aqui.
+                  Se deixar vazio, geraremos um mapa automaticamente usando o endereço acima.
+                </small>
+              </FormGroup>
+            </div>
           </TabContent>
         );
       
       case 'footer':
         return (
           <TabContent>
-            <FormGroup style={{display: 'none'}}>
-              <Label>Logo do Footer</Label>
-              <Input
-                value={themeConfig.footerLogo}
-                onChange={(e) => handleDirectChange('footerLogo', e.target.value)}
-                placeholder="Logo do footer"
-              />
-            </FormGroup>
-            <FormGroup>
-              <Label>Facebook</Label>
-              <Input
-                value={themeConfig.socialLinks.facebook}
-                onChange={(e) => handleInputChange('socialLinks', 'facebook', e.target.value)}
-                placeholder="Link do Facebook"
-              />
-            </FormGroup>
-            <FormGroup>
-              <Label>Instagram</Label>
-              <Input
-                value={themeConfig.socialLinks.instagram}
-                onChange={(e) => handleInputChange('socialLinks', 'instagram', e.target.value)}
-                placeholder="Link do Instagram"
-              />
-            </FormGroup>
-            <FormGroup>
-              <Label>WhatsApp</Label>
-              <Input
-                value={themeConfig.socialLinks.whatsapp}
-                onChange={(e) => handleInputChange('socialLinks', 'whatsapp', e.target.value)}
-                placeholder="Link do WhatsApp"
-              />
-            </FormGroup>
-            <FormGroup>
-              <Label>Texto do Footer</Label>
-              <Input
-                value={themeConfig.footerText}
-                onChange={(e) => handleDirectChange('footerText', e.target.value)}
-                placeholder="Texto do footer"
-              />
-            </FormGroup>
-            <FormGroup>
-              <Label>Cor de Fundo do Footer</Label>
-              <ColorInput
-                type="color"
-                value={themeConfig.footerBackgroundColor}
-                onChange={(e) => handleDirectChange('footerBackgroundColor', e.target.value)}
-              />
-            </FormGroup>
+            <h3 style={{ marginBottom: '15px' }}>Seção do Rodapé (Footer)</h3>
+            
+            <div style={{ marginBottom: '20px', padding: '15px', border: '1px solid #eee', borderRadius: '8px', background: '#f8f9fa' }}>
+              <h4 style={{ marginBottom: '10px', fontSize: '14px', color: '#495057' }}>1. Cores e Logo</h4>
+              <FormGroup>
+                <Label>Cor de Fundo do Footer</Label>
+                <ColorInput
+                  type="color"
+                  value={themeConfig.footerBackgroundColor || '#1C1C38'}
+                  onChange={(e) => handleDirectChange('footerBackgroundColor', e.target.value)}
+                />
+              </FormGroup>
+              <FormGroup>
+                <Label>Logo do Footer</Label>
+                <div style={{ marginBottom: '10px' }}>
+                  {themeConfig.footerLogo ? (
+                    <div style={{ position: 'relative', display: 'inline-block' }}>
+                      <img src={themeConfig.footerLogo} alt="Logo Footer" style={{ maxWidth: '200px', maxHeight: '100px', background: themeConfig.footerBackgroundColor || '#1C1C38', padding: '10px', borderRadius: '4px' }} />
+                      <button 
+                        type="button" 
+                        onClick={() => handleDirectChange('footerLogo', '')}
+                        style={{ position: 'absolute', top: -5, right: -10, background: '#dc3545', color: 'white', border: 'none', borderRadius: '50%', width: '24px', height: '24px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                      >
+                        ×
+                      </button>
+                    </div>
+                  ) : (
+                    <div style={{ padding: '20px', border: '2px dashed #ccc', textAlign: 'center', marginBottom: '10px' }}>
+                      Usando a logo principal do site
+                    </div>
+                  )}
+                </div>
+                <FileInput 
+                  type="file" 
+                  accept="image/png" 
+                  onChange={(e) => handleFooterLogoUpload(e.target.files?.[0])}
+                />
+                <small style={{ color: '#6c757d', fontSize: '12px' }}>Envie uma imagem PNG com fundo transparente. Recomendado para contraste caso o fundo do rodapé seja escuro.</small>
+              </FormGroup>
+            </div>
+
+            <div style={{ padding: '15px', border: '1px solid #eee', borderRadius: '8px', background: '#f8f9fa' }}>
+              <h4 style={{ marginBottom: '10px', fontSize: '14px', color: '#495057' }}>2. Redes Sociais</h4>
+              <p style={{ fontSize: '12px', color: '#666', marginBottom: '15px' }}>Deixe o campo vazio para não exibir o ícone no site.</p>
+              
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' }}>
+                <FormGroup style={{ marginBottom: '0' }}>
+                  <Label>Facebook</Label>
+                  <Input
+                    value={themeConfig.socialLinks.facebook || ''}
+                    onChange={(e) => handleInputChange('socialLinks', 'facebook', e.target.value)}
+                    placeholder="https://facebook.com/..."
+                  />
+                </FormGroup>
+                <FormGroup style={{ marginBottom: '0' }}>
+                  <Label>Instagram</Label>
+                  <Input
+                    value={themeConfig.socialLinks.instagram || ''}
+                    onChange={(e) => handleInputChange('socialLinks', 'instagram', e.target.value)}
+                    placeholder="https://instagram.com/..."
+                  />
+                </FormGroup>
+                <FormGroup style={{ marginBottom: '0' }}>
+                  <Label>LinkedIn</Label>
+                  <Input
+                    value={themeConfig.socialLinks.linkedin || ''}
+                    onChange={(e) => handleInputChange('socialLinks', 'linkedin', e.target.value)}
+                    placeholder="https://linkedin.com/..."
+                  />
+                </FormGroup>
+                <FormGroup style={{ marginBottom: '0' }}>
+                  <Label>YouTube</Label>
+                  <Input
+                    value={themeConfig.socialLinks.youtube || ''}
+                    onChange={(e) => handleInputChange('socialLinks', 'youtube', e.target.value)}
+                    placeholder="https://youtube.com/..."
+                  />
+                </FormGroup>
+                <FormGroup style={{ marginBottom: '0' }}>
+                  <Label>Twitter (X)</Label>
+                  <Input
+                    value={themeConfig.socialLinks.twitter || ''}
+                    onChange={(e) => handleInputChange('socialLinks', 'twitter', e.target.value)}
+                    placeholder="https://twitter.com/..."
+                  />
+                </FormGroup>
+              </div>
+            </div>
           </TabContent>
         );
       
@@ -1300,22 +1706,22 @@ const TemaEdit: React.FC = () => {
             Banner
           </Tab>
           <Tab
-            active={activeTab === 'services'}
-            onClick={() => setActiveTab('services')}
+            active={activeTab === 'agencia'}
+            onClick={() => setActiveTab('agencia')}
           >
-            Serviços
+            Agência
+          </Tab>
+          <Tab
+            active={activeTab === 'announce'}
+            onClick={() => setActiveTab('announce')}
+          >
+            Anúncio
           </Tab>
           <Tab
             active={activeTab === 'contact'}
             onClick={() => setActiveTab('contact')}
           >
             Contato
-          </Tab>
-          <Tab
-            active={activeTab === 'agent'}
-            onClick={() => setActiveTab('agent')}
-          >
-            Corretor
           </Tab>
           <Tab
             active={activeTab === 'footer'}

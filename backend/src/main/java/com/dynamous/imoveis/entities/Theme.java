@@ -23,6 +23,9 @@ public class Theme {
     
     // Banner configuration
     private String bannerImage;
+    private String bannerImage2;
+    private String bannerImage3;
+    private Integer bannerOverlayOpacity;
     private String bannerColor;
     private String bannerTitle;
     private String bannerTitleColor;
@@ -38,6 +41,10 @@ public class Theme {
     private String agentPhoto;
     private String agentQuote;
     private String agentName;
+    private String email;
+    private String address;
+    @Column(columnDefinition = "TEXT")
+    private String mapIframe;
     
     // Footer configuration
     private String footerLogo;
@@ -57,6 +64,16 @@ public class Theme {
     private String privacyPolicy;
     @Column(columnDefinition = "TEXT")
     private String aboutUs;
+    
+    // Agencia (Why Choose)
+    @Column(columnDefinition = "TEXT")
+    private String agencia; // JSON string
+    
+    // Announce Section
+    private String announceImage;
+    private String announceBackground;
+    @Column(columnDefinition = "TEXT")
+    private String announceText;
     
     // SEO and Marketing
     private String customDomain;
@@ -170,6 +187,30 @@ public class Theme {
         this.bannerImage = bannerImage;
     }
 
+    public String getBannerImage2() {
+        return bannerImage2;
+    }
+
+    public void setBannerImage2(String bannerImage2) {
+        this.bannerImage2 = bannerImage2;
+    }
+
+    public String getBannerImage3() {
+        return bannerImage3;
+    }
+
+    public void setBannerImage3(String bannerImage3) {
+        this.bannerImage3 = bannerImage3;
+    }
+
+    public Integer getBannerOverlayOpacity() {
+        return bannerOverlayOpacity;
+    }
+
+    public void setBannerOverlayOpacity(Integer bannerOverlayOpacity) {
+        this.bannerOverlayOpacity = bannerOverlayOpacity;
+    }
+
     public String getBannerColor() {
         return bannerColor;
     }
@@ -248,6 +289,30 @@ public class Theme {
 
     public void setAgentName(String agentName) {
         this.agentName = agentName;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public String getMapIframe() {
+        return mapIframe;
+    }
+
+    public void setMapIframe(String mapIframe) {
+        this.mapIframe = mapIframe;
     }
 
     public String getFooterLogo() {
@@ -336,6 +401,38 @@ public class Theme {
 
     public void setTenant(Tenant tenant) {
         this.tenant = tenant;
+    }
+
+    public String getAgencia() {
+        return agencia;
+    }
+
+    public void setAgencia(String agencia) {
+        this.agencia = agencia;
+    }
+
+    public String getAnnounceImage() {
+        return announceImage;
+    }
+
+    public void setAnnounceImage(String announceImage) {
+        this.announceImage = announceImage;
+    }
+
+    public String getAnnounceBackground() {
+        return announceBackground;
+    }
+
+    public void setAnnounceBackground(String announceBackground) {
+        this.announceBackground = announceBackground;
+    }
+
+    public String getAnnounceText() {
+        return announceText;
+    }
+
+    public void setAnnounceText(String announceText) {
+        this.announceText = announceText;
     }
 
     public String getCustomDomain() {

@@ -78,6 +78,9 @@ public class ThemeService {
         
         // Banner configuration
         theme.setBannerImage(themeDTO.getBannerImage());
+        theme.setBannerImage2(themeDTO.getBannerImage2());
+        theme.setBannerImage3(themeDTO.getBannerImage3());
+        theme.setBannerOverlayOpacity(themeDTO.getBannerOverlayOpacity());
         theme.setBannerColor(themeDTO.getBannerColor());
         theme.setBannerTitle(themeDTO.getBannerTitle());
         theme.setBannerTitleColor(themeDTO.getBannerTitleColor());
@@ -92,6 +95,9 @@ public class ThemeService {
         theme.setAgentPhoto(themeDTO.getAgentPhoto());
         theme.setAgentQuote(themeDTO.getAgentQuote());
         theme.setAgentName(themeDTO.getAgentName());
+        theme.setEmail(themeDTO.getEmail());
+        theme.setAddress(themeDTO.getAddress());
+        theme.setMapIframe(themeDTO.getMapIframe());
         
         // Footer configuration
         theme.setFooterLogo(themeDTO.getFooterLogo());
@@ -108,6 +114,14 @@ public class ThemeService {
         // Legal pages
         theme.setPrivacyPolicy(themeDTO.getPrivacyPolicy());
         theme.setAboutUs(themeDTO.getAboutUs());
+        
+        // Agencia (Why Choose)
+        theme.setAgencia(themeDTO.getAgencia());
+        
+        // Announce Section
+        theme.setAnnounceImage(themeDTO.getAnnounceImage());
+        theme.setAnnounceBackground(themeDTO.getAnnounceBackground());
+        theme.setAnnounceText(themeDTO.getAnnounceText());
         
         // SEO and Marketing
         theme.setFacebookPixel(themeDTO.getFacebookPixel());
@@ -141,7 +155,10 @@ public class ThemeService {
         theme.setMenuLinks("[{\"label\":\"Início\",\"url\":\"/\"},{\"label\":\"Imóveis\",\"url\":\"/imoveis\"},{\"label\":\"Contato\",\"url\":\"/contato\"}]");
         theme.setPhone("(85) 9999-6895");
         theme.setBannerImage("");
-        theme.setBannerColor("#f8fafc");
+        theme.setBannerImage2("");
+        theme.setBannerImage3("");
+        theme.setBannerOverlayOpacity(50);
+        theme.setBannerColor("#000000");
         theme.setBannerTitle("Sempre entregando o imóvel do seu sonho.");
         theme.setBannerTitleColor("#ffffff");
         theme.setBannerTitleSize(48);
@@ -151,6 +168,8 @@ public class ThemeService {
         theme.setAgentPhoto("");
         theme.setAgentQuote("Mais de 10 anos ajudando pessoas a encontrar o lar dos seus sonhos.");
         theme.setAgentName("João Silva");
+        theme.setEmail("contato@empresa.com.br");
+        theme.setAddress("Av. Paulista, 1100\nSão Paulo, SP - 01310-100");
         theme.setFooterLogo("");
         theme.setSocialLinks("{\"facebook\":\"#\",\"instagram\":\"#\",\"whatsapp\":\"#\"}");
         theme.setFooterText("© 2024 Imobiliária. Todos os direitos reservados.");
@@ -161,6 +180,10 @@ public class ThemeService {
         theme.setH3Color("#374151");
         theme.setPrivacyPolicy("Política de privacidade padrão.");
         theme.setAboutUs("Sobre nós padrão.");
+        theme.setAgencia("{\"features\":[{\"title\":\"Propriedades de Ampla Variedade\",\"description\":\"De apartamentos aconchegantes a vilas de luxo, temos opções para todos os estilos de vida..\"},{\"title\":\"Corretores de Confiança\",\"description\":\"Nossa equipe de profissionais dedica-se a encontrar a melhor oferta para vocês.\"},{\"title\":\"Processo transparente\",\"description\":\"Sem taxas ocultas ou surpresas. Acompanhamos você em cada etapa.\"}],\"images\":[\"https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80\",\"https://images.unsplash.com/photo-1512917774080-9991f1c4c750?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80\",\"https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80\"]}");
+        theme.setAnnounceImage("https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80");
+        theme.setAnnounceBackground("#000000");
+        theme.setAnnounceText("Escolha a imobiliária especialista no mercado há mais de 70 anos e tenha a maior segurança e rentabilidade do mercado.");
         theme.setFacebookPixel("");
         theme.setSeoKeywords("");
         theme.setSiteTitle("Imobiliária - Encontre seu imóvel");

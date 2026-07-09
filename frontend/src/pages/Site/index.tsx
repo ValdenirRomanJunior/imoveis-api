@@ -277,6 +277,16 @@ interface Service {
   active: boolean;
 }
 
+interface AgenciaFeature {
+  title: string;
+  description: string;
+}
+
+interface AgenciaConfig {
+  features: AgenciaFeature[];
+  images: string[];
+}
+
 interface ThemeConfig {
   creci: string;
   companyName: string;
@@ -287,11 +297,17 @@ interface ThemeConfig {
   menuLinks: MenuLink[];
   phone: string;
   bannerImage: string;
+  bannerImage2?: string;
+  bannerImage3?: string;
+  bannerOverlayOpacity?: number;
   bannerTitle: string;
   bannerTitleColor: string;
   bannerTitleSize: number;
   bannerColor: string;
-  services: Service[];
+  agencia?: AgenciaConfig;
+  announceImage?: string;
+  announceBackground?: string;
+  announceText?: string;
   contactTitle: string;
   contactImage: string;
   agentPhoto: string;
@@ -299,6 +315,7 @@ interface ThemeConfig {
   agentName: string;
   email?: string;
   address?: string;
+  mapIframe?: string;
   footerLogo: string;
   socialLinks: {
     youtube: string;
@@ -384,7 +401,7 @@ const Site: React.FC = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [currentWhyChooseImage, setCurrentWhyChooseImage] = useState(0);
 
-  const whyChooseImages = [
+  const whyChooseImages = themeConfig?.agencia?.images?.length ? themeConfig.agencia.images : [
     team, // Primeira imagem atual (ou team se importado)
     "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
     "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
@@ -500,10 +517,19 @@ const Site: React.FC = () => {
         console.log('Site - socialLinks raw:', response.data.themeConfig.socialLinks);
         
         // Parse JSON strings from backend if needed
+        let parsedAgencia = null;
+        if (response.data.themeConfig.agencia) {
+          try {
+            parsedAgencia = typeof response.data.themeConfig.agencia === 'string' ? JSON.parse(response.data.themeConfig.agencia) : response.data.themeConfig.agencia;
+          } catch (e) {
+            console.error('Error parsing agencia', e);
+          }
+        }
+
         const themeData = {
           ...response.data.themeConfig,
           menuLinks: typeof response.data.themeConfig.menuLinks === 'string' ? JSON.parse(response.data.themeConfig.menuLinks || '[]') : response.data.themeConfig.menuLinks || [],
-          services: typeof response.data.themeConfig.services === 'string' ? JSON.parse(response.data.themeConfig.services || '[]') : response.data.themeConfig.services || [],
+          agencia: parsedAgencia || response.data.themeConfig.agencia,
           socialLinks: typeof response.data.themeConfig.socialLinks === 'string' ? JSON.parse(response.data.themeConfig.socialLinks || '{}') : response.data.themeConfig.socialLinks || {}
         };
         
@@ -524,16 +550,37 @@ const Site: React.FC = () => {
         menuLinks: [],
         phone: '',
         bannerImage: bannerPadrao,
+        bannerImage2: '',
+        bannerImage3: '',
+        bannerOverlayOpacity: 50,
         bannerTitle: 'Para cada imóvel uma nova história se levanta',
         bannerTitleColor: '#ffffff',
         bannerTitleSize: 48,
         bannerColor: '#2563eb',
-        services: [],
+        agencia: {
+          features: [
+            { title: 'Propriedades de Ampla Variedade', description: 'De apartamentos aconchegantes a vilas de luxo, temos opções para todos os estilos de vida..' },
+            { title: 'Corretores de Confiança', description: 'Nossa equipe de profissionais dedica-se a encontrar a melhor oferta para vocês.' },
+            { title: 'Processo transparente', description: 'Sem taxas ocultas ou surpresas. Acompanhamos você em cada etapa.' }
+          ],
+          images: [
+            team,
+            "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+            "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+            "https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+          ]
+        },
         contactTitle: 'Entre em contato',
+        announceImage: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80',
+        announceBackground: '#000000',
+        announceText: 'Escolha a imobiliária especialista no mercado há mais de 70 anos e tenha a maior segurança e rentabilidade do mercado.',
         contactImage: '',
         agentPhoto: corretorPadrao,
         agentQuote: 'Estou aqui para ajudar você a encontrar o imóvel perfeito.',
         agentName: 'Corretor',
+        email: 'contato@empresa.com.br',
+        address: 'Av. Paulista, 1100\nSão Paulo, SP - 01310-100',
+        mapIframe: '',
         footerLogo: '',
         socialLinks: {
           youtube: '',
@@ -592,14 +639,7 @@ const Site: React.FC = () => {
   }
 
   const menuLinks = themeConfig.menuLinks || [];
-  // Garantir que sempre temos os 3 serviços padrão se não houver serviços configurados
-  const defaultServices = [
-    { icon: 'home', title: 'Venda de Imóveis', description: 'Encontre o imóvel perfeito para você', active: true },
-    { icon: 'key', title: 'Locação', description: 'Alugue com segurança e praticidade', active: true },
-    { icon: 'calculator', title: 'Financiamento', description: 'Facilitamos seu financiamento imobiliário', active: true }
-  ];
   
-  const services = (themeConfig.services && themeConfig.services.length > 0) ? themeConfig.services : defaultServices;
   const socialLinks = [
     { platform: 'facebook', url: themeConfig.socialLinks?.facebook || '#' },
     { platform: 'instagram', url: themeConfig.socialLinks?.instagram || '#' },
@@ -868,15 +908,10 @@ function handleChange(e: any): void {
                 <MenuButtonOutline href="#contato" onClick={() => setMobileMenuOpen(false)}>Fale conosco</MenuButtonOutline>
               </div>
 
-              <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginLeft: '1rem' }}>
-                <a href={`https://wa.me/${themeConfig.phone?.replace(/\D/g, '')}`} target="_blank" rel="noopener noreferrer" style={{ color: '#fff' }}>
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
-                </a>
-                <a href={`tel:${themeConfig.phone}`} style={{ color: '#fff' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginLeft: '1rem' }}>
+                <a href={`tel:${themeConfig.phone}`} style={{ color: '#fff', display: 'flex', alignItems: 'center', gap: '8px', textDecoration: 'none' }}>
                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
-                </a>
-                <a href="#contato" style={{ color: '#fff' }}>
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                  <span style={{ fontSize: '15px', fontWeight: '500' }}>{themeConfig.phone}</span>
                 </a>
               </div>
             </MobileMenu>
@@ -895,13 +930,13 @@ function handleChange(e: any): void {
             link: '#'
           },
           {
-            image: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80',
-            title: 'Casa luxuosa com piscina',
+            image: themeConfig.bannerImage2 || 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80',
+            title: themeConfig.bannerTitle || 'Casa luxuosa com piscina',
             link: '#'
           },
           {
-            image: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80',
-            title: 'Cobertura duplex no centro',
+            image: themeConfig.bannerImage3 || 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80',
+            title: themeConfig.bannerTitle || 'Cobertura duplex no centro',
             link: '#'
           }
         ];
@@ -910,7 +945,14 @@ function handleChange(e: any): void {
 
         return (
           <Banner id="inicio" bannerImage={activeSlide.image} defaultBanner={bannerPadrao}>
-            <BannerContent>
+            <div style={{
+              position: 'absolute',
+              top: 0, left: 0, right: 0, bottom: 0,
+              backgroundColor: themeConfig.bannerColor || '#000000',
+              opacity: (themeConfig.bannerOverlayOpacity ?? 50) / 100,
+              zIndex: 0
+            }}></div>
+            <BannerContent style={{ position: 'relative', zIndex: 1 }}>
               <BannerTitle titleColor={themeConfig.bannerTitleColor} titleSize={themeConfig.bannerTitleSize}>
                 {activeSlide.title}
               </BannerTitle>
@@ -939,15 +981,15 @@ function handleChange(e: any): void {
       </Section>
 
       {/* Bloco Novo - Anuncie seu imóvel */}
-      <AnnounceSection>
+      <AnnounceSection style={{ background: themeConfig.announceBackground || '#000' }}>
         <AnnounceBackground>
           <AnnounceImageWrapper>
-            <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Especialista" />
+            <img src={themeConfig.announceImage || "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80"} alt="Especialista" />
           </AnnounceImageWrapper>
           <AnnounceContent>
             <AnnounceTitle>Anuncie seu imóvel</AnnounceTitle>
             <AnnounceSubtitle>
-              Escolha a imobiliária especialista no mercado há mais de 70 anos e tenha a maior segurança e rentabilidade do mercado.
+              {themeConfig.announceText || "Escolha a imobiliária especialista no mercado há mais de 70 anos e tenha a maior segurança e rentabilidade do mercado."}
             </AnnounceSubtitle>
             
             <form onSubmit={handleSubmitAnnounceLead}>
@@ -1000,27 +1042,40 @@ function handleChange(e: any): void {
           <WhyChooseRight>
             <WhyChooseTitle>Porque escolher a Camaleon?</WhyChooseTitle>
             <FeatureList>
-              <FeatureItem>
-                <FeatureNumber>1</FeatureNumber>
-                <FeatureTextContent>
-                  <FeatureTitle>Propriedades de Ampla Variedade</FeatureTitle>
-                  <FeatureDesc>De apartamentos aconchegantes a vilas de luxo, temos opções para todos os estilos de vida..</FeatureDesc>
-                </FeatureTextContent>
-              </FeatureItem>
-              <FeatureItem>
-                <FeatureNumber>2</FeatureNumber>
-                <FeatureTextContent>
-                  <FeatureTitle>Corretores de Confiança</FeatureTitle>
-                  <FeatureDesc>Nossa equipe de profissionais dedica-se a encontrar a melhor oferta para vocês.</FeatureDesc>
-                </FeatureTextContent>
-              </FeatureItem>
-              <FeatureItem>
-                <FeatureNumber>3</FeatureNumber>
-                <FeatureTextContent>
-                  <FeatureTitle>Processo transparente</FeatureTitle>
-                  <FeatureDesc>Sem taxas ocultas ou surpresas. Acompanhamos você em cada etapa.</FeatureDesc>
-                </FeatureTextContent>
-              </FeatureItem>
+              {themeConfig?.agencia?.features?.map((feature, idx) => (
+                <FeatureItem key={idx}>
+                  <FeatureNumber>{idx + 1}</FeatureNumber>
+                  <FeatureTextContent>
+                    <FeatureTitle>{feature.title}</FeatureTitle>
+                    <FeatureDesc>{feature.description}</FeatureDesc>
+                  </FeatureTextContent>
+                </FeatureItem>
+              ))}
+              {(!themeConfig?.agencia?.features || themeConfig.agencia.features.length === 0) && (
+                <>
+                  <FeatureItem>
+                    <FeatureNumber>1</FeatureNumber>
+                    <FeatureTextContent>
+                      <FeatureTitle>Propriedades de Ampla Variedade</FeatureTitle>
+                      <FeatureDesc>De apartamentos aconchegantes a vilas de luxo, temos opções para todos os estilos de vida..</FeatureDesc>
+                    </FeatureTextContent>
+                  </FeatureItem>
+                  <FeatureItem>
+                    <FeatureNumber>2</FeatureNumber>
+                    <FeatureTextContent>
+                      <FeatureTitle>Corretores de Confiança</FeatureTitle>
+                      <FeatureDesc>Nossa equipe de profissionais dedica-se a encontrar a melhor oferta para vocês.</FeatureDesc>
+                    </FeatureTextContent>
+                  </FeatureItem>
+                  <FeatureItem>
+                    <FeatureNumber>3</FeatureNumber>
+                    <FeatureTextContent>
+                      <FeatureTitle>Processo transparente</FeatureTitle>
+                      <FeatureDesc>Sem taxas ocultas ou surpresas. Acompanhamos você em cada etapa.</FeatureDesc>
+                    </FeatureTextContent>
+                  </FeatureItem>
+                </>
+              )}
             </FeatureList>
           </WhyChooseRight>
         </WhyChooseContainer>
@@ -1035,8 +1090,8 @@ function handleChange(e: any): void {
             <ProfileBlock>
               <img src={themeConfig.agentPhoto || corretorPadrao} alt="Corretor" />
               <ProfileText>
-                <h3>Fale conosco</h3>
-                <p>Estamos aqui para ajudar. Envie sua mensagem e retornaremos o mais breve possível.</p>
+                <h3>{themeConfig.contactTitle || 'Fale conosco'}</h3>
+                <p>{themeConfig.agentQuote || 'Estamos aqui para ajudar. Envie sua mensagem e retornaremos o mais breve possível.'}</p>
               </ProfileText>
             </ProfileBlock>
 
@@ -1104,12 +1159,17 @@ function handleChange(e: any): void {
 
           {/* Coluna 3: Mapa */}
           <MapColumn>
-            <iframe 
-              src={`https://maps.google.com/maps?q=${encodeURIComponent(themeConfig.address || 'Avenida Paulista, São Paulo')}&t=&z=14&ie=UTF8&iwloc=&output=embed`}
-              allowFullScreen 
-              loading="lazy" 
-              referrerPolicy="no-referrer-when-downgrade"
-            ></iframe>
+            {themeConfig.mapIframe ? (
+              <div dangerouslySetInnerHTML={{ __html: themeConfig.mapIframe }} style={{ width: '100%', height: '100%' }} />
+            ) : (
+              <iframe 
+                src={`https://maps.google.com/maps?q=${encodeURIComponent(themeConfig.address || 'Avenida Paulista, São Paulo')}&t=&z=14&ie=UTF8&iwloc=&output=embed`}
+                allowFullScreen 
+                loading="lazy" 
+                referrerPolicy="no-referrer-when-downgrade"
+                style={{ width: '100%', height: '100%', border: 0 }}
+              ></iframe>
+            )}
           </MapColumn>
 
         </UnifiedContactContainer>
