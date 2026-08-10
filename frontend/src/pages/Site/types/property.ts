@@ -12,6 +12,7 @@ export type Property = {
     bathRooms:string,
     area:string,
     areaTotal:string,
+    suites?:string,
     iptu:string,
     vacancies:string,
     condominium:string,

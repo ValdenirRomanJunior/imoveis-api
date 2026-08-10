@@ -15,10 +15,22 @@ export const Header = styled.header`
   transition: all 0.3s ease;
   border-bottom: 1px solid #dededeff;
 
-  @media (max-width: 768px) {
+  .header-divider {
+    display: block;
+  }
+
+  @media (max-width: 767px) {
     padding: 1rem;
     background: #fff;
     position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+
+    .header-divider {
+      display: none !important;
+    }
   }
 `;
 
@@ -63,8 +75,9 @@ export const Nav = styled.nav`
   align-items: center;
   gap: 1.5rem;
 
-  @media (max-width: 768px) {
-    display: none;
+  @media (max-width: 767px) {
+    display: flex; /* Mudado de none para flex para manter o ícone visível */
+    margin-left: auto; /* Empurra para a direita se o logo não ocupar todo o espaço */
   }
 `;
 
@@ -89,7 +102,7 @@ export const MobileMenuButton = styled.button`
   color: #333;
   padding: 0;
 
-  @media (max-width: 768px) {
+  @media (max-width: 767px) {
     display: block;
   }
 `;
@@ -109,7 +122,7 @@ export const MobileMenu = styled.div`
   border-top: 1px solid rgba(255,255,255,0.1);
   flex-wrap: wrap;
 
-  @media (max-width: 768px) {
+  @media (max-width: 767px) {
     flex-direction: column;
     background: #fff;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
@@ -202,8 +215,12 @@ export const Banner = styled.section<{ bannerImage?: string; defaultBanner: stri
     display: none;
   }
 
-  @media (max-width: 768px) {
-    height: 75vh;
+  @media (max-width: 767px) {
+    height: 95vh;
+    padding-top: 80px; /* Space for the fixed header */
+    padding-bottom: 30px;
+    align-items: center;
+    justify-content: center;
   }
 `;
 
@@ -211,7 +228,7 @@ export const BannerContent = styled.div`
   max-width: 1200px;
   width: 100%;
   margin: 0 auto;
-  padding: 0 2rem 5rem 2rem; /* Reduzido o espaço embaixo para aproximar os elementos da busca */
+  padding: 0 2rem 5rem 2rem;
   position: relative;
   z-index: 2;
   display: flex;
@@ -219,8 +236,9 @@ export const BannerContent = styled.div`
   align-items: center;
 
 
-  @media (max-width: 768px) {
-    padding: 0 1.5rem 6rem 1.5rem;
+  @media (max-width: 767px) {
+    padding: 0 1.5rem 1rem 1.5rem;
+    margin-top: 6rem;
   }
 `;
 
@@ -228,13 +246,15 @@ export const BannerTitle = styled.h1<{ titleColor?: string; titleSize?: number }
   font-size: ${props => props.titleSize ? `${Math.min(props.titleSize, 46)}px` : '3.2rem'};
   margin-bottom: 1.5rem;
   color: ${props => props.titleColor || '#ffffff'};
-  font-weight: 400; /* Mais fino conforme a imagem */
+  font-weight: 600; /* Ajustado peso para combinar com Parkinsans */
   line-height: 1.2;
-  font-family: 'Inter', -apple-system, sans-serif;
+  font-family: 'Parkinsans', sans-serif;
+  font-optical-sizing: auto;
+  font-style: normal;
   max-width: 800px;
   text-align: center;
 
-  @media (max-width: 768px) {
+  @media (max-width: 767px) {
     font-size: ${props => props.titleSize ? `${Math.max(props.titleSize * 0.6, 28)}px` : '2.2rem'};
   }
 `;
@@ -262,6 +282,26 @@ export const BannerIndicators = styled.div`
   gap: 12px;
   margin-top: 2rem;
   align-items: center;
+`;
+
+export const BannerSearchWrapper = styled.div`
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  z-index: 10;
+  transform: translateY(50%); /* To make it overlap the edge, or 0 if it should be fully inside */
+
+  @media (max-width: 767px) {
+
+    bottom: -20%;
+    padding: 0 0;
+     width: 100%;
+  
+     
+  }
 `;
 
 export const Dot = styled.button<{ active: boolean }>`
@@ -330,6 +370,10 @@ export const Section = styled.section`
   padding: 11rem 1rem 1rem 1rem; /* Diminuído padding bottom de 4rem para 1rem */
   max-width: 1400px;
   margin: 0 auto;
+
+  @media (max-width: 768px) {
+    padding-top: 23rem;
+  }
 `;
 
 export const SectionTitle = styled.h2<{ textColor?: string }>`
@@ -343,7 +387,7 @@ export const SectionTitle = styled.h2<{ textColor?: string }>`
   font-style: normal;
 
   @media (max-width: 768px) {
-    font-size: 1.8rem;
+    font-size: 1.5rem;
     margin-bottom: 2.5rem;
   }
 `;
@@ -457,7 +501,7 @@ export const ContactTextarea = styled.textarea`
 
 export const ContactSubmitButton = styled.button<{ buttonColor?: string }>`
   padding: 1rem 2rem;
-  background: ${props => props.buttonColor || props.theme.colors.primary};
+  background: ${props => props.buttonColor || props.theme.colors.primaryDark || props.theme.colors.primary};
   color: white;
   border: none;
   border-radius: 5px;
@@ -698,7 +742,7 @@ export const SocialLinksRow = styled.div`
     justify-content: center;
     width: 40px;
     height: 40px;
-    background: #FF5317;
+    background: var(--brand-color, #FF5317);
     color: white;
     border-radius: 50%;
     font-size: 1.2rem;
@@ -980,8 +1024,8 @@ export const AboutCarouselArrow = styled.button`
   height: 46px;
   border: none;
   border-radius: 999px;
-  background: #1C1C38;
-  color: #fff;
+  background: var(--brand-color-2, #1C1C38);
+  color: var(--brand-color-2-text, #FFFFFF);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -993,9 +1037,9 @@ export const AboutCarouselArrow = styled.button`
     display: block;
     width: 20px;
     height: 20px;
-    color: #fff;
-    fill: #fff;
-    stroke: #fff;
+    color: var(--brand-color-2-text, #FFFFFF);
+    fill: var(--brand-color-2-text, #FFFFFF);
+    stroke: var(--brand-color-2-text, #FFFFFF);
     flex-shrink: 0;
   }
 
@@ -1314,7 +1358,7 @@ export const WhyChooseImageWrapper = styled.div`
     width: 36px;
     height: 36px;
     border-radius: 50%;
-    background: rgba(0,0,0,0.75);
+    background: transparent;
     color: white;
     border: none;
     display: flex;
@@ -1322,10 +1366,10 @@ export const WhyChooseImageWrapper = styled.div`
     justify-content: center;
     cursor: pointer;
     z-index: 10;
-    transition: background 0.3s;
+    transition: filter 0.3s;
 
     &:hover {
-      background: rgba(0,0,0,0.9);
+      filter: brightness(0.8);
     }
 
     &.prev {

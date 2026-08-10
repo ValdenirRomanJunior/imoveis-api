@@ -1,20 +1,15 @@
 /* eslint-disable jsx-a11y/alt-text */
 
 import React, { useEffect, useState } from 'react'
-import {CardWrapper,CardContent,CardContainer,MessageNoProperties,StatusProperty, InputRangeProperty,DetailsCardWrapper} from './styles';
-import {AiOutlineEdit} from 'react-icons/ai';
-import {BsTrash} from 'react-icons/bs';
-import {BiMap} from 'react-icons/bi';
-import { Link, createSearchParams, useNavigate, useParams, useResolvedPath } from 'react-router-dom';
-import { Property, PropertyPage } from "../../types/property";
+import {CardContainer} from './styles';
+import { Link, createSearchParams, useNavigate, useParams, useLocation } from 'react-router-dom';
+import { PropertyPage } from "../../types/property";
 import Pagination from '../../Pagination';
 import { searchProperties } from '../../Services/property';
-//import PseudoSearch from '../../../components/PseudoSearch';
-import {HiHome} from 'react-icons/hi';
-import Search from '../../Search';
-import defaultImage from '../../.././../assets/images/no-pictures.png';
+import PseudoSearch from '../../PseudoSearch';
+import { BsGrid, BsList, BsMap } from 'react-icons/bs';
 import { useSubdomain } from '../../../../components/SubdomainRouter';
-
+import { CardListItem } from '../../components/FeaturedPropertyCard';
 
 type Props={
     name:string
@@ -29,81 +24,46 @@ const useNavigateSearch = () => {
       navigate(`${pathname}/?${createSearchParams(params)}`);
   };
 
-const CardListItem = ({id,name,images,price,address, numberRooms,bathRooms, area, goal,statusProperty,onChange,close,error,booleanModal}: Property) =>{
-    const { companyName } = useParams<{ companyName: string }>();
-    const { companyName: subdomainCompanyName } = useSubdomain();
-    const slug = subdomainCompanyName || companyName;
-    const isLocalhost = window.location.hostname.includes('localhost') || window.location.hostname.startsWith('127.');
-
-    const detailLink = isLocalhost ? `/site/${slug}/detail/${id}` : `/detail/${id}`;
-
-    return(
-        <CardWrapper>               
-              <CardContent>
-                    <div className='image-card-properties-wrapper'>               
-                    {images?.[0] ?  <Link to={detailLink}> <img src={images?.[0]?.url }/>  </Link> : <Link to={detailLink}> <img src={defaultImage} className='default-image-card-properties'/> </Link> }
-                    </div>     
-                     <div className='price-wrapper'>R$ {price}</div>  
-                     <div className='type-wrapper'><HiHome/></div>    
-
-                                <div className='text-wrapper-card'>
-                                <Link to={detailLink} className='title-wrapper-card-property'> <p className='title-card-property'>{name}</p><p className='title-card-property-cod'>Cod.{id}</p></Link>  
-                                
-                                <div className='localization-wrapper'>                                   
-                                    <BiMap className='localization-icon'/>                              
-                                    <p className='localization'>
-                                    {address.city.name}</p>
-                                    <p className='localization district-localization'>
-                                    {address.district}</p>
-                                </div>
-
-                                </div>
-                  <DetailsCardWrapper>
-                    <div className='details-bottom-card '><span className='value-detail-bottom'>{bathRooms}</span><span className='title-detail-bottom'>Banheiros</span></div>
-                    <div className='details-bottom-card left-border'><span className='value-detail-bottom'>{numberRooms}</span><span className='title-detail-bottom'>Quartos</span></div>
-                    <div className='details-bottom-card left-border'><span className='value-detail-bottom'>{area}</span><span className='title-detail-bottom'>m2</span></div>
-                    <div className='details-bottom-card left-border'><span className='value-detail-bottom'>{goal}</span><span className='title-detail-bottom'>Finalidade</span></div>
-
-                  </DetailsCardWrapper>
-              </CardContent>       
-      </CardWrapper>
-      
-
-    )
-}
-
-const CardProperty = (props:{goal:string})=>{
+const CardProperty = (props:{goal:string, themeConfig?: any})=>{
     const { companyName } = useParams<{ companyName: string }>();
     const { companyName: subdomainCompanyName } = useSubdomain();
     const clientSlug = subdomainCompanyName || companyName;
     const isLocalhost = window.location.hostname.includes('localhost') || window.location.hostname.startsWith('127.');
 
+    const location = useLocation();
     const navigateSearch = useNavigateSearch();
-    let params = new URLSearchParams(document.location.search);
-    const goalParam = params.get('goal');
-    const typeParam = params.get('type');
-    const  nameParam = params.get('name');
-    const cityParam = params.get('city');
-    const districtParam = params.get('district');
-    const minPriceParam = params.get('minPrice');
-    const maxPriceParam = params.get('maxPrice');
-    const minRoomsParam = params.get('minRooms');
-    const minSuitesParam = params.get('minSuites');
-    const minVacanciesParam = params.get('minVacancies');
 
-    //states para mandar os parametros da pesquisa
-    const[goal,setGoal]= useState(goalParam || props.goal);
-    const [type,setType]=useState(typeParam)
-    const [name,setName]=useState(nameParam);
-    const [city, setCity] = useState(cityParam);
-    const [district, setDistrict] = useState(districtParam);
-    const [minPrice, setMinPrice] = useState(minPriceParam);
-    const [maxPrice, setMaxPrice] = useState(maxPriceParam);
-    const [minRooms, setMinRooms] = useState(minRoomsParam);
-    const [minSuites, setMinSuites] = useState(minSuitesParam);
-    const [minVacancies, setMinVacancies] = useState(minVacanciesParam);
+    // states para mandar os parametros da pesquisa
+    const [goal, setGoal] = useState(props.goal);
+    const [type, setType] = useState<string | null>('');
+    const [name, setName] = useState<string | null>('');
+    const [city, setCity] = useState<string | null>('');
+    const [district, setDistrict] = useState<string | null>('');
+    const [minPrice, setMinPrice] = useState<string | null>('');
+    const [maxPrice, setMaxPrice] = useState<string | null>('');
+    const [minRooms, setMinRooms] = useState<string | null>('');
+    const [minSuites, setMinSuites] = useState<string | null>('');
+    const [minVacancies, setMinVacancies] = useState<string | null>('');
+    const [minArea, setMinArea] = useState<string | null>('');
+    const [maxArea, setMaxArea] = useState<string | null>('');
 
-    const [url,setUrl]= useState(clientSlug || window.location.hostname);
+    useEffect(() => {
+        const params = new URLSearchParams(location.search);
+        setGoal(params.get('goal') || props.goal);
+        setType(params.get('type') || '');
+        setName(params.get('name') || '');
+        setCity(params.get('city') || '');
+        setDistrict(params.get('district') || '');
+        setMinPrice(params.get('minPrice') || '');
+        setMaxPrice(params.get('maxPrice') || '');
+        setMinRooms(params.get('minRooms') || '');
+        setMinSuites(params.get('minSuites') || '');
+        setMinVacancies(params.get('minVacancies') || '');
+        setMinArea(params.get('minArea') || '');
+        setMaxArea(params.get('maxArea') || '');
+    }, [location.search, props.goal]);
+
+    const [url, setUrl] = useState(clientSlug || window.location.hostname);
 
     useEffect(() => {
         setUrl(clientSlug || window.location.hostname);
@@ -141,6 +101,8 @@ const CardProperty = (props:{goal:string})=>{
             minRooms: minRooms as string,
             minSuites: minSuites as string,
             minVacancies: minVacancies as string,
+            minArea: minArea as string,
+            maxArea: maxArea as string,
             url: url as string,
             pageNumber
         });  
@@ -156,7 +118,7 @@ const CardProperty = (props:{goal:string})=>{
     useEffect (() =>{ 
  
         getProperties(); 
-    },[pageNumber,name,goal,type,city,district,minPrice,maxPrice,minRooms,minSuites,minVacancies,props,url])
+    },[pageNumber,name,goal,type,city,district,minPrice,maxPrice,minRooms,minSuites,minVacancies,minArea,maxArea,props,url])
    
 
     const handlePageChange = (newPageNumber : number)=>{          
@@ -176,14 +138,38 @@ const CardProperty = (props:{goal:string})=>{
 
     return(
        
-        <CardContainer>         
-          <Search onChange={handleToSearch}/>
+        <CardContainer>
+          <div className="properties-page-header">
+            <div className="properties-search-wrapper" style={{ width: '100%', display: 'flex', justifyContent: 'center', marginBottom: '30px' }}>
+              <PseudoSearch variant="properties" buttonColor={props.themeConfig?.buttonColor} buttonTextColor={props.themeConfig?.bannerTitleColor || '#ffffff'} />
+            </div>
 
-          <p className='properties-found-message'>Foram encontrados {page.content.length} imóveis em {name ? <strong>{name}</strong>: <strong>todas localidades</strong>}</p>
+            <h1 className="properties-main-title">{page.totalElements} Imóveis à venda</h1>
+            
+            <div className="properties-controls-bar">
+              <div className="view-modes">
+                <span className="view-modes-label">Visualizar como</span>
+                <div className="view-modes-icons">
+                  <BsGrid className="active" />
+                  <BsList />
+                  <BsMap />
+                </div>
+              </div>
+              <div className="sort-by">
+                <span className="sort-by-label">Ordenar por</span>
+                <select className="sort-by-select">
+                  <option value="mais-recentes">Mais Recentes</option>
+                  <option value="maior-valor">Maior Valor</option>
+                  <option value="menor-valor">Menor Valor</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
           <div className='wrapper-properties' >  
-          {page.content && page.content.map(property => (
+          {page.content && page.content.map((property, index) => (
           
-            <CardListItem key={property.id} {...property}/>
+            <CardListItem key={property.id} {...property} index={index} buttonColor={props.themeConfig?.buttonColor} brandColor2={props.themeConfig?.brandColor2} />
             )
             )}
             </div>  

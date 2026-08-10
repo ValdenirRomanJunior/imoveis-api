@@ -2,247 +2,253 @@ import styled from "styled-components";
 
 
 export const CardWrapper = styled.div`
-width: 250px;
-height:310px;
-border-bottom: 2px solid rgb(222, 222, 222);
-margin-top: 40px;
-margin:1rem;
+  width: 100%;
+  max-width: 350px;
+  background: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  margin: 1rem;
+  display: flex;
+  flex-direction: column;
 
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
+  }
 
-
-&:hover{
-    -webkit-box-shadow: 1px 6px 14px -9px rgba(138,138,138,1);
-    -moz-box-shadow: 1px 6px 14px -9px rgba(138,138,138,1);
-    box-shadow: 1px 6px 14px -9px rgba(138,138,138,1);
-
-}
-
-@media screen and (min-width: 1000px){
-    width:230px;
-}
-`
+  @media screen and (min-width: 1000px) {
+    width: 350px;
+  }
+`;
 
 export const CardContent = styled.div`
-width: 100%;
-height:100%;
-display: flex;
-flex-direction: column;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  position: relative;
 
+  .image-card-properties-wrapper {
+    width: 100%;
+    height: 220px;
+    position: relative;
+    overflow: hidden;
 
-align-items: center;
-position:relative;
-
-
-  .image-card-properties-wrapper{
-    background-color: #d8d8d8;
-    width:100%;
-    height: 160px;
-
-  }  
-    img{
-        width: 100%;
-        height:160px;
-        object-fit: cover;
-        
-        border-radius:3px;
-         
-    }
-    .default-image-card-properties{
-        width: 100%;
-        height:160px;
-        object-fit: contain;
-        
-        border-radius:3px;
-
-    }
-    .price-wrapper{
-        -webkit-box-shadow: 0px 10px 10px -8px rgba(120,120,120,1);
-        -moz-box-shadow: 0px 10px 10px -8px rgba(120,120,120,1);
-        box-shadow: 0px 10px 10px -8px rgba(120,120,120,1);
-
-        font-weight: 500;
-        color: rgb(74, 74, 74);
-        font-size: 11px;
-        margin-bottom: 3px;
-        text-overflow: ellipsis;
-        display: flex;
-        align-items: center;
-        justify-content: left;
-       
-        white-space: nowrap;
-        position:absolute;
-        top:48%;
-        left:10%;
-        min-width:82px;
-        max-width:125px;
-        padding:0 10px;
-        height:24px;
-        background:#fff;
-        border-radius:20px;
-       
-
+    a {
+      display: block;
+      width: 100%;
+      height: 100%;
     }
 
-    .type-wrapper{
-        -webkit-box-shadow: 0px 10px 11px -11px rgba(128,128,128,1);
-        -moz-box-shadow: 0px 10px 11px -11px rgba(128,128,128,1);
-        box-shadow: 0px 10px 11px -11px rgba(128,128,128,1);
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.5s ease;
+    }
 
-        font-weight: 500;
-        color:#9B9B9B;
+    &:hover img {
+      transform: scale(1.05);
+    }
+  }
+
+  .price-wrapper {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    background: var(--brand-color-2, #1C1C38);
+    color: var(--brand-color-2-text, #FFFFFF);
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 14px;
+    z-index: 2;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+    font-family: 'Inter', sans-serif;
+  }
+
+  .type-wrapper {
+    display: none; /* Oculto para seguir o estilo do FeaturedPropertyCard */
+  }
+
+  .text-wrapper-card {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+    .title-wrapper-card-property {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      text-decoration: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .title-card-property {
+      font-size: 16px;
+      color: #333 !important;
+      font-weight: 600;
+      font-family: 'Inter', sans-serif;
+      margin: 0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .title-card-property-cod {
+      font-size: 12px;
+      color: #888 !important;
+      font-weight: 400;
+      margin: 0;
+    }
+
+    .localization-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 0;
+      margin-top: 8px;
+
+      .localization-icon {
         font-size: 16px;
-        margin-bottom: 3px;
-        text-overflow: ellipsis;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-       
+        color: #888;
+        min-width: 16px;
+      }
+
+      .localization {
+        font-size: 13px;
+        color: #666;
+        margin: 0;
         white-space: nowrap;
-        position:absolute;
-        top:46%;
-        right:10%;
-        width:35px;
-        height:35px;
-        background:#fff;
-        border-radius:50%;
-       
-
-    }
-
-    .text-wrapper-card{
-        width:100%;
-        display:flex;
-        flex-direction: column;
-        justify-content: center;
-       
-      
-        padding: 5px 5px;
-       
         overflow: hidden;
+        text-overflow: ellipsis;
+        font-weight: 400 !important;
+        max-width: none;
+      }
 
-        .title-wrapper-card-property{
-            display: flex;
-            width:100%;
-            margin-bottom: 3px;
-            justify-content: space-between;
-            padding:20px 15px 0 15px;
-        }
-        .title-card-property{
-           
-            font-size:14px;
-            color: rgb(74, 74, 74)  !important;
-         
-            font-weight:500;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            display: block;
-            white-space: nowrap;
-            cursor: pointer;
-            outline: none;
-            
-        }
-        .title-card-property-cod{
-           
-            font-size:11px;
-            color: rgb(74, 74, 74)  !important;
-            font-weight:200;
-            padding-right:5px;
-            display:flex;
-            align-items: center;
-        }
-   
-        p{
-            margin-bottom: 0;
-            
-        }
-
-        .localization-wrapper{
-            
-            font-weight:200;
-            display:flex;
-            align-items: center;
-           
-            width:100%;
-            overflow:hidden;
-            line-break: anywhere;
-            text-overflow: ellipsis;
-           
-            padding-top:9px;
-            padding-left:10px;
-            
-        }
-        .localization{
-         
-            font-weight:200 !important;
-            color: rgb(153, 153, 153);
-            font-size: 11px;
-            
-            align-items: center;
-            margin-bottom: 0;
-          
-            line-break: anywhere;
-            text-overflow: ellipsis;
-          
-            white-space: nowrap;
-            max-width: 40%;
-            overflow: hidden;
-            display: block;
-           
-        }
-        .localization-icon{
-            font-size:15px;
-            color:#A4B7E9;
-        }
-        .district-localization{
-            margin-left:5px;
-            text-overflow: ellipsis;
-        }
-
-        .links-card{
-
-            display: flex;
-            color:#0b90d1;
-            justify-content: space-between;  
-            width:150px;
-            font-size: 11px;
-            font-weight: 300;
-            
-                   
-            .icon-links{
-                margin-right:4px;
-                font-size: 15px;
-            }
-
-        }
-     
-
-    @media screen and (min-width: 700px){
-        .text-wrapper-card{
-            .links-card{
-                width:150px;
-            }
-
-        }
+      .district-localization {
+        margin-left: 0;
+      }
     }
-
-   
-`
+  }
+`;
 
 export const CardContainer = styled.main`   
-    width:100%;
-    display:flex;
+    width: 100%;
+    display: flex;
     flex-direction: column;
     align-items: center;
+    margin-top: 0;
 
-   
-    margin-top:90px;
+    .properties-page-header {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 0 20px;
+        margin-bottom: 20px;
+        margin-top: 0;
+
+        .properties-main-title {
+            font-size: 28px;
+            font-weight: 300;
+            color: #666;
+            margin-bottom: 20px;
+            font-family: 'Inter', sans-serif;
+            text-align: left;
+            width: 100%;
+            max-width: 1200px;
+        }
+
+        .properties-controls-bar {
+            width: 100%;
+            max-width: 1200px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-top: 0;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eaeaea;
+
+            .view-modes {
+                display: flex;
+                align-items: center;
+                gap: 15px;
+
+                .view-modes-label {
+                    font-size: 14px;
+                    color: #999;
+                    font-weight: 500;
+                }
+
+                .view-modes-icons {
+                    display: flex;
+                    align-items: center;
+                    gap: 12px;
+
+                    svg {
+                        font-size: 22px;
+                        color: #666;
+                        cursor: pointer;
+                        transition: color 0.2s;
+
+                        &.active {
+                            color: var(--brand-color, #FF5317);
+                        }
+
+                        &:hover {
+                            color: var(--brand-color, #FF5317);
+                        }
+                    }
+                }
+            }
+
+            .sort-by {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+
+                .sort-by-label {
+                    font-size: 14px;
+                    color: #999;
+                    font-weight: 500;
+                }
+
+                .sort-by-select {
+                    height: 40px;
+                    border: 1px solid #ddd;
+                    border-radius: 8px;
+                    padding: 0 15px;
+                    font-size: 14px;
+                    color: #666;
+                    background: #fff;
+                    outline: none;
+                    cursor: pointer;
+                }
+            }
+        }
+    }
 
     .wrapper-properties{
         width:100%;
-        flex-direction: column;
-        display: flex;
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 20px;
         align-items: center;
-        justify-content: center;
+        justify-items: center;
+        padding: 0 10px;
+
+        /* Adaptação para o CardContainer do FeaturedPropertyCard */
+        & > main {
+            width: 100% !important;
+            padding: 0 !important;
+        }
     }
    
     .pagination-button-wrapper{
@@ -256,37 +262,20 @@ export const CardContainer = styled.main`
         }
     }
     .properties-found-message{
-    
-        font-size:1rem;
-        margin-top:25px;
-        color:gray;
-        padding-right:2rem;
-        padding-left:2rem;
-        font-weight:300;
-        font-size:15px;
+        display: none; /* Substituído pelo novo título */
     }
 
     @media screen and (min-width:600px){
         .wrapper-properties{
-            flex-direction: row;
-            justify-content: space-between;
+            grid-template-columns: repeat(2, 1fr);
             padding:0 2rem;
-            flex-wrap: wrap;
-
-        }
-        .properties-found-message{
-            width:100%;
-            margin-top:40px;
         }
     }
 
     @media screen and (min-width:620px){
         .wrapper-properties{
-            flex-direction: row;
-            justify-content: space-between;
+            grid-template-columns: repeat(2, 1fr);
             padding:0 2.5rem;
-            flex-wrap: wrap;
-
         }
         .properties-found-message{
             width:100%;
@@ -295,11 +284,7 @@ export const CardContainer = styled.main`
     }
     @media screen and (min-width:650px){
         .wrapper-properties{
-            flex-direction: row;
-            justify-content: space-between;
             padding:0 3.4rem;
-            flex-wrap: wrap;
-
         }
         .properties-found-message{
             width:100%;
@@ -308,11 +293,7 @@ export const CardContainer = styled.main`
     }
     @media screen and (min-width:670px){
         .wrapper-properties{
-            flex-direction: row;
-            justify-content: space-between;
             padding:0 4.6rem;
-            flex-wrap: wrap;
-
         }
         .properties-found-message{
             width:100%;
@@ -322,11 +303,7 @@ export const CardContainer = styled.main`
 
     @media screen and (min-width:700px){
         .wrapper-properties{
-            flex-direction: row;
-            justify-content: space-between;
             padding:0 5.2rem;
-            flex-wrap: wrap;
-
         }
         .properties-found-message{
             width:100%;
@@ -336,11 +313,7 @@ export const CardContainer = styled.main`
 
     @media screen and (min-width:740px){
         .wrapper-properties{
-            flex-direction: row;
-            justify-content: space-between;
             padding:0 6.8rem;
-            flex-wrap: wrap;
-
         }
         .properties-found-message{
             width:100%;
@@ -349,11 +322,7 @@ export const CardContainer = styled.main`
     }
     @media screen and (min-width:800px){
         .wrapper-properties{
-            flex-direction: row;
-            justify-content: space-between;
             padding:0 8.2rem;
-            flex-wrap: wrap;
-
         }
         .properties-found-message{
             width:100%;
@@ -362,11 +331,7 @@ export const CardContainer = styled.main`
     }
     @media screen and (min-width:860px){
         .wrapper-properties{
-            flex-direction: row;
-            justify-content: space-between;
             padding:0 9.4rem;
-            flex-wrap: wrap;
-
         }
         .properties-found-message{
             width:100%;
@@ -375,11 +340,8 @@ export const CardContainer = styled.main`
     }
     @media screen and (min-width:920px){
         .wrapper-properties{
-            flex-direction: row;
-            justify-content: start;
+            grid-template-columns: repeat(3, 1fr);
             padding:0 3.5rem;
-            flex-wrap: wrap;
-
         }
         .properties-found-message{
             width:100%;
@@ -388,11 +350,8 @@ export const CardContainer = styled.main`
     }
     @media screen and (min-width:1000px){
         .wrapper-properties{
-            flex-direction: row;
-            justify-content: start;
+            grid-template-columns: repeat(3, 1fr);
             padding:0 2rem;
-            flex-wrap: wrap;
-
         }
         .properties-found-message{
             width:100%;
@@ -401,14 +360,9 @@ export const CardContainer = styled.main`
     }
 
     @media screen and (min-width:1200px){
-        padding:0 4rem;
+        padding:0 1rem;
     }
-    @media screen and (min-width:1350px){
-        padding:0 9rem;
-    }
-    @media screen and (min-width:1450px){
-        padding:0 13rem;
-    }
+
    
     `
 
@@ -474,39 +428,42 @@ export const CardContainer = styled.main`
  
 `
 export const DetailsCardWrapper = styled.div`
-        width:80%;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        margin-top:20px;
-      
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 16px;
+  padding: 16px 20px;
+  background-color: #f8f9fa;
+  border-top: 1px solid #eaeaea;
+  margin-top: auto;
 
-        .details-bottom-card{
-            display:flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;     
-            width:25%;
-           
-            .value-detail-bottom{
-                font-size:9px;
-                font-weight:600;
-              
-            }
+  .details-bottom-card {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: #666;
 
-            .title-detail-bottom{         
-                font-weight:300;
-                font-size:9px;
-                color:#979797;
-              
-               
-            }
-        }
-        .left-border{
-            border-left:1px solid rgb(230, 233, 237);
-        }
+    svg {
+      font-size: 16px;
+      color: var(--brand-color, #FF5317);
+    }
 
-`
+    .value-detail-bottom {
+      font-size: 13px;
+      font-weight: 500;
+      color: #333;
+    }
+
+    .title-detail-bottom {
+      display: none; /* Oculto para seguir o estilo visual do FeaturedPropertyCard */
+    }
+  }
+
+  .left-border {
+    border-left: none; /* Removido para igualar ao FeaturedPropertyCard */
+  }
+`;
 
 
     

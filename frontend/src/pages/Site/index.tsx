@@ -70,6 +70,7 @@ import {
   BannerTitle,
   BannerButton,
   BannerIndicators,
+  BannerSearchWrapper,
   Dot,
   Section,
   SectionTitle,
@@ -283,6 +284,9 @@ interface AgenciaFeature {
 }
 
 interface AgenciaConfig {
+  title?: string;
+  reviewMessage?: string;
+  reviewName?: string;
   features: AgenciaFeature[];
   images: string[];
 }
@@ -296,6 +300,7 @@ interface ThemeConfig {
   logoSize: string;
   menuLinks: MenuLink[];
   phone: string;
+  contactIconColor: string;
   bannerImage: string;
   bannerImage2?: string;
   bannerImage3?: string;
@@ -304,6 +309,7 @@ interface ThemeConfig {
   bannerTitleColor: string;
   bannerTitleSize: number;
   bannerColor: string;
+  bannerSearchButtonTextColor?: string;
   agencia?: AgenciaConfig;
   announceImage?: string;
   announceBackground?: string;
@@ -329,6 +335,8 @@ interface ThemeConfig {
   footerBackgroundColor: string;
   textColor: string;
   buttonColor: string;
+  brandColor2: string;
+  brandColor2Text?: string;
   h2Color: string;
   favicon?: string;
   privacyPolicy: string;
@@ -549,6 +557,7 @@ const Site: React.FC = () => {
         logoSize: 'media',
         menuLinks: [],
         phone: '',
+        contactIconColor: '#1C1C38',
         bannerImage: bannerPadrao,
         bannerImage2: '',
         bannerImage3: '',
@@ -557,7 +566,11 @@ const Site: React.FC = () => {
         bannerTitleColor: '#ffffff',
         bannerTitleSize: 48,
         bannerColor: '#2563eb',
+        bannerSearchButtonTextColor: '#ffffff',
         agencia: {
+          title: 'Porque escolher a Camaleon?',
+          reviewMessage: '"A melhor agência com a qual já trabalhamos."',
+          reviewName: '- Camaleon',
           features: [
             { title: 'Propriedades de Ampla Variedade', description: 'De apartamentos aconchegantes a vilas de luxo, temos opções para todos os estilos de vida..' },
             { title: 'Corretores de Confiança', description: 'Nossa equipe de profissionais dedica-se a encontrar a melhor oferta para vocês.' },
@@ -572,7 +585,7 @@ const Site: React.FC = () => {
         },
         contactTitle: 'Entre em contato',
         announceImage: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80',
-        announceBackground: '#000000',
+        announceBackground: '#f5f5f0',
         announceText: 'Escolha a imobiliária especialista no mercado há mais de 70 anos e tenha a maior segurança e rentabilidade do mercado.',
         contactImage: '',
         agentPhoto: corretorPadrao,
@@ -593,7 +606,9 @@ const Site: React.FC = () => {
         footerText: 'Todos os direitos reservados.',
         footerBackgroundColor: '#1f2937',
         textColor: '#1f2937',
-        buttonColor: '#2563eb',
+        buttonColor: '#FF5317',
+        brandColor2: '#1C1C38',
+        brandColor2Text: '#FFFFFF',
         h2Color: '#1f2937',
         favicon: '', // Adicionar favicon no fallback
         privacyPolicy: '',
@@ -861,29 +876,30 @@ function handleChange(e: any): void {
           );
         })()}
         <Nav>
-          <div className="header-search-bar" style={{ 
-            display: 'flex', 
-            alignItems: 'center', 
-            border: '1px solid #d8d8d8ff', 
-            borderRadius: '6px', 
-            padding: '11px 12px',
-            width: '350px'
-          }}>
-            <HiSearch style={{ color: '#666', fontSize: '27px', marginRight: '8px' }} />
-            <input 
-              type="text" 
-              placeholder="Tipo, bairro, rua, edifício ou código" 
-              style={{ border: 'none', outline: 'none', width: '100%', fontSize: '15px', color: '#666', fontFamily: 'Inter, sans-serif' }}
-            />
+          <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+            <a 
+              href="#" 
+              style={{ 
+                color: themeConfig.buttonColor || '#FF5317', 
+                border: `1px solid ${themeConfig.buttonColor || '#FF5317'}`,
+                padding: '8px 16px',
+                borderRadius: '6px',
+                textDecoration: 'none',
+                fontFamily: 'Inter, sans-serif',
+                fontSize: '14px',
+                fontWeight: 500,
+                transition: 'all 0.3s ease'
+              }}
+            >
+              Área do cliente
+            </a>
+            <div className="header-divider" style={{ height: '35px', width: '1px', backgroundColor: '#eaeaea' }}></div>
+            <div onClick={() => setMobileMenuOpen(!mobileMenuOpen)} style={{ cursor: 'pointer', display: 'flex', alignItems: 'center' }}>
+              {mobileMenuOpen ? <HiX style={{ fontSize: '36px', color: themeConfig.buttonColor || '#FF5317' }} /> : <svg width="36" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M3 6H21M3 12H17M3 18H21" stroke={themeConfig.buttonColor || "#FF5317"} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>}
+            </div>
           </div>
-          <div style={{ display: 'flex', alignItems: 'center' }}>
-          <div style={{ height: '35px', width: '1px', backgroundColor: '#eaeaea', marginLeft: '20px', marginRight: '20px' }}></div>
-          <div onClick={() => setMobileMenuOpen(!mobileMenuOpen)} style={{ cursor: 'pointer', display: 'flex', alignItems: 'center' }}>
-            {mobileMenuOpen ? <HiX style={{ fontSize: '36px', color: '#ff6b35' }} /> : <svg width="36" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M3 6H21M3 12H17M3 18H21" stroke="#ff6b35" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>}
-          </div>
-        </div>
         </Nav>
         
         {mobileMenuOpen && (
@@ -966,8 +982,12 @@ function handleChange(e: any): void {
                   />
                 ))}
               </BannerIndicators>
-              <PseudoSearch/> 
             </BannerContent>
+            <BannerSearchWrapper>
+              <div style={{ '--brand-color': themeConfig.buttonColor, '--banner-search-button-text-color': themeConfig.bannerSearchButtonTextColor || '#ffffff' } as React.CSSProperties}>
+                <PseudoSearch buttonColor={themeConfig.buttonColor} buttonTextColor={themeConfig.bannerSearchButtonTextColor || '#ffffff'} /> 
+              </div>
+            </BannerSearchWrapper>
           </Banner>
         );
       })()}
@@ -976,13 +996,13 @@ function handleChange(e: any): void {
       <Section id="imoveis">
         
       <SectionTitle textColor={'#888'}>Imóveis com alta procura</SectionTitle>
-      
-          {clientSlug && <FeaturedPropertyCard url={clientSlug} properties={featuredProperties} buttonColor={themeConfig.buttonColor} />}
+        
+          {clientSlug && <FeaturedPropertyCard url={clientSlug} properties={featuredProperties} buttonColor={themeConfig.buttonColor} brandColor2={themeConfig.brandColor2} />}
       </Section>
 
       {/* Bloco Novo - Anuncie seu imóvel */}
-      <AnnounceSection style={{ background: themeConfig.announceBackground || '#000' }}>
-        <AnnounceBackground>
+      <AnnounceSection>
+        <AnnounceBackground style={{ background: themeConfig.announceBackground || '#f5f5f0' }}>
           <AnnounceImageWrapper>
             <img src={themeConfig.announceImage || "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80"} alt="Especialista" />
           </AnnounceImageWrapper>
@@ -1000,7 +1020,7 @@ function handleChange(e: any): void {
               </AnnounceFormRow>
               <AnnounceButtonRow>
                 <div className="dots-blue"></div>
-                <button type="submit" disabled={loadingAnnounceLead}>
+                <button type="submit" disabled={loadingAnnounceLead} style={{ backgroundColor: themeConfig.buttonColor }}>
                   {loadingAnnounceLead ? 'Enviando...' : successAnnounceMessage ? 'Enviado!' : 'Solicitar Contato \u2192'}
                 </button>
                 <div className="dots-green"></div>
@@ -1013,7 +1033,7 @@ function handleChange(e: any): void {
       {/* Bloco 5 - Lançamentos */}
       <Section id="lancamentos" style={{ paddingTop: '2rem' }}>
         <SectionTitle textColor={'#888'}>Lançamentos</SectionTitle>
-        {clientSlug && <FeaturedPropertyCard url={clientSlug} properties={featuredProperties} buttonColor={themeConfig.buttonColor} isLancamento={true} />}
+        {clientSlug && <FeaturedPropertyCard url={clientSlug} properties={featuredProperties} buttonColor={themeConfig.buttonColor} brandColor2={themeConfig.brandColor2} isLancamento={true} />}
       </Section>
 
   
@@ -1025,26 +1045,26 @@ function handleChange(e: any): void {
             <WhyChooseImageWrapper>
               <img src={whyChooseImages[currentWhyChooseImage]} alt="Interior moderno" />
               
-              <button className="slider-arrow prev" onClick={prevWhyChooseImage}>
-                <PiCaretLeftBold size={20} style={{backgroundColor: '#1C1C38'}}/>
+              <button className="slider-arrow prev" onClick={prevWhyChooseImage} style={{backgroundColor: themeConfig.brandColor2 || '#1C1C38'}}>
+                <PiCaretLeftBold size={20} style={{color: themeConfig.brandColor2Text || '#FFFFFF'}}/>
               </button>
-              <button className="slider-arrow next" onClick={nextWhyChooseImage}>
-                <PiCaretRightBold size={20} style={{backgroundColor: '#1C1C38'}}/>
+              <button className="slider-arrow next" onClick={nextWhyChooseImage} style={{backgroundColor: themeConfig.brandColor2 || '#1C1C38'}}>
+                <PiCaretRightBold size={20} style={{color: themeConfig.brandColor2Text || '#FFFFFF'}}/>
               </button>
 
               <ReviewCard>
                 <Stars>★★★★★</Stars>
-                <ReviewText>"A melhor agência com a qual já trabalhamos."</ReviewText>
-                <ReviewAuthor>- Camaleon</ReviewAuthor>
+                <ReviewText>{themeConfig?.agencia?.reviewMessage || '"A melhor agência com a qual já trabalhamos."'}</ReviewText>
+                <ReviewAuthor>{themeConfig?.agencia?.reviewName || '- Camaleon'}</ReviewAuthor>
               </ReviewCard>
             </WhyChooseImageWrapper>
           </WhyChooseLeft>
           <WhyChooseRight>
-            <WhyChooseTitle>Porque escolher a Camaleon?</WhyChooseTitle>
+            <WhyChooseTitle>{themeConfig?.agencia?.title || 'Porque escolher a Camaleon?'}</WhyChooseTitle>
             <FeatureList>
               {themeConfig?.agencia?.features?.map((feature, idx) => (
                 <FeatureItem key={idx}>
-                  <FeatureNumber>{idx + 1}</FeatureNumber>
+                  <FeatureNumber style={{ color: themeConfig.buttonColor }}>{idx + 1}</FeatureNumber>
                   <FeatureTextContent>
                     <FeatureTitle>{feature.title}</FeatureTitle>
                     <FeatureDesc>{feature.description}</FeatureDesc>
@@ -1054,21 +1074,21 @@ function handleChange(e: any): void {
               {(!themeConfig?.agencia?.features || themeConfig.agencia.features.length === 0) && (
                 <>
                   <FeatureItem>
-                    <FeatureNumber>1</FeatureNumber>
+                    <FeatureNumber style={{ color: themeConfig.buttonColor }}>1</FeatureNumber>
                     <FeatureTextContent>
                       <FeatureTitle>Propriedades de Ampla Variedade</FeatureTitle>
                       <FeatureDesc>De apartamentos aconchegantes a vilas de luxo, temos opções para todos os estilos de vida..</FeatureDesc>
                     </FeatureTextContent>
                   </FeatureItem>
                   <FeatureItem>
-                    <FeatureNumber>2</FeatureNumber>
+                    <FeatureNumber style={{ color: themeConfig.buttonColor }}>2</FeatureNumber>
                     <FeatureTextContent>
                       <FeatureTitle>Corretores de Confiança</FeatureTitle>
                       <FeatureDesc>Nossa equipe de profissionais dedica-se a encontrar a melhor oferta para vocês.</FeatureDesc>
                     </FeatureTextContent>
                   </FeatureItem>
                   <FeatureItem>
-                    <FeatureNumber>3</FeatureNumber>
+                    <FeatureNumber style={{ color: themeConfig.buttonColor }}>3</FeatureNumber>
                     <FeatureTextContent>
                       <FeatureTitle>Processo transparente</FeatureTitle>
                       <FeatureDesc>Sem taxas ocultas ou surpresas. Acompanhamos você em cada etapa.</FeatureDesc>
@@ -1097,21 +1117,21 @@ function handleChange(e: any): void {
 
             <ContactDetailsGrid>
               <DetailItem>
-                <div className="icon-box"><FaEnvelope /></div>
+                <div className="icon-box" style={{ backgroundColor: themeConfig.brandColor2 || '#1C1C38', color: themeConfig.brandColor2Text || '#FFFFFF' }}><FaEnvelope /></div>
                 <div className="text-box">
                   <strong>E-mail</strong>
                   <span>{themeConfig.email || 'contato@empresa.com.br'}</span>
                 </div>
               </DetailItem>
               <DetailItem>
-                <div className="icon-box"><FaPhoneAlt /></div>
+                <div className="icon-box" style={{ backgroundColor: themeConfig.brandColor2 || '#1C1C38', color: themeConfig.brandColor2Text || '#FFFFFF' }}><FaPhoneAlt /></div>
                 <div className="text-box">
                   <strong>Telefone</strong>
                   <span>{themeConfig.phone || '(11) 98765-4321'}</span>
                 </div>
               </DetailItem>
               <DetailItem>
-                <div className="icon-box"><FaMapMarkerAlt /></div>
+                <div className="icon-box" style={{ backgroundColor: themeConfig.brandColor2 || '#1C1C38', color: themeConfig.brandColor2Text || '#FFFFFF' }}><FaMapMarkerAlt /></div>
                 <div className="text-box">
                   <strong>Endereço</strong>
                   <span>{themeConfig.address || 'Av. Paulista, 1100\nSão Paulo, SP - 01310-100'}</span>
@@ -1152,7 +1172,7 @@ function handleChange(e: any): void {
               {emptyValue && form['message'] === '' && <span className='formField__error textarea-class'>Este campo é requerido</span>}
             </FormField>
 
-            <SubmitBtn type='submit'>
+            <SubmitBtn type='submit' style={{ backgroundColor: themeConfig.brandColor2 || '#1C1C38', color: themeConfig.brandColor2Text || '#FFFFFF' }}>
               <FaPaperPlane /> Enviar Mensagem
             </SubmitBtn>
           </FormColumn>
@@ -1223,7 +1243,7 @@ function handleChange(e: any): void {
 
           <FooterContactColumn>
             <h3 className="footer-phone">{themeConfig.phone || '(00) 0000-0000'}</h3>
-            <SocialLinksRow>
+            <SocialLinksRow style={{ '--brand-color': themeConfig.buttonColor } as React.CSSProperties}>
               <a href={themeConfig.socialLinks?.facebook || '#'}><FaFacebook /></a>
               <a href={themeConfig.socialLinks?.instagram || '#'}><FaInstagram /></a>
               <a href={themeConfig.socialLinks?.linkedin || '#'}><FaLinkedinIn /></a>
@@ -1283,7 +1303,7 @@ function handleChange(e: any): void {
                     <h2>Conheca os corretores que fazem parte da equipe</h2>
                   </AboutTeamHeader>
 
-                  <AboutTeamSlider>
+                  <AboutTeamSlider style={{ '--brand-color-2': themeConfig?.brandColor2, '--brand-color-2-text': themeConfig?.brandColor2Text } as React.CSSProperties}>
                     <Slider {...aboutTeamCarouselSettings}>
                       {teamMembers.map((member) => (
                         <AboutTeamSlide key={member.id}>

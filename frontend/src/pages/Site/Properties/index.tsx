@@ -32,6 +32,8 @@ import bannerPadrao from '../../../assets/images/bg-principal.png';
 import DynamicSEO from '../../../components/DynamicSEO';
 import DynamicFavicon from '../../../components/DynamicFavicon';
 
+import PseudoSearch from '../PseudoSearch';
+
 interface ThemeConfig {
   name: string;
   logo: string;
@@ -180,7 +182,7 @@ const Properties = ()=>{
           footerText: 'Todos os direitos reservados.',
           footerBackgroundColor: '#1f2937',
           textColor: '#1f2937',
-          buttonColor: '#2563eb',
+          buttonColor: '#ff6b35be',
           h2Color: '#1f2937',
           privacyPolicy: '',
           aboutUs: '',
@@ -199,8 +201,8 @@ const Properties = ()=>{
     // Criar tema dinâmico baseado no themeConfig
     const dynamicTheme = {
       colors: {
-        primary: themeConfig.buttonColor || '#2563eb',
-        primaryDark: themeConfig.buttonColor || '#1d4ed8',
+        primary: themeConfig.buttonColor || '#ff6b35be',
+        primaryDark: themeConfig.buttonColor || '#ff6b35be',
         secondary: themeConfig.secondaryColor || '#64748b',
         tertiary: '#f8fafc',
         background: themeConfig.backgroundColor || '#ffffff',
@@ -258,50 +260,54 @@ const Properties = ()=>{
             );
           })()}
           <Nav>
-            {(() => {
-              const hostname = window.location.hostname;
-              const isLocalhost = hostname === 'localhost' || hostname === '127.0.0.1';
-              const slug = clientSlug || companyName || '';
-              const homePath = isLocalhost ? `/site/${slug}` : '/';
-              return <NavLink href={homePath}>Início</NavLink>;
-            })()}
-            {(() => {
-              const hostname = window.location.hostname;
-              const isLocalhost = hostname === 'localhost' || hostname === '127.0.0.1';
-              const slug = clientSlug || companyName || '';
-              const propertiesPath = isLocalhost ? `/site/${slug}/imoveis/?goal=&type=&name=` : '/imoveis/?goal=&type=&name=';
-              return <NavLink href={propertiesPath}>Imóveis</NavLink>;
-            })()}
-            <NavLink href={`tel:${themeConfig.phone}`}>{themeConfig.phone}</NavLink>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+              <a 
+                href="#" 
+                style={{ 
+                  color: themeConfig.buttonColor || '#FF5317', 
+                  border: `1px solid ${themeConfig.buttonColor || '#FF5317'}`,
+                  padding: '8px 16px',
+                  borderRadius: '6px',
+                  textDecoration: 'none',
+                  fontFamily: 'Inter, sans-serif',
+                  fontSize: '14px',
+                  fontWeight: 500,
+                  transition: 'all 0.3s ease'
+                }}
+              >
+                Área do cliente
+              </a>
+              <div className="header-divider" style={{ height: '35px', width: '1px', backgroundColor: '#eaeaea' }}></div>
+              <div onClick={() => setMobileMenuOpen(!mobileMenuOpen)} style={{ cursor: 'pointer', display: 'flex', alignItems: 'center' }}>
+                {mobileMenuOpen ? <HiX style={{ fontSize: '36px', color: themeConfig.buttonColor || '#FF5317' }} /> : <svg width="36" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M3 6H21M3 12H17M3 18H21" stroke={themeConfig.buttonColor || "#FF5317"} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>}
+              </div>
+            </div>
           </Nav>
-          <MobileMenuButton onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
-            {mobileMenuOpen ? <HiX /> : <HiMenu />}
-          </MobileMenuButton>
           {mobileMenuOpen && (
             <MobileMenu>
               {(() => {
                 const hostname = window.location.hostname;
                 const isLocalhost = hostname === 'localhost' || hostname === '127.0.0.1';
                 const slug = clientSlug || companyName || '';
-                const homePath = isLocalhost ? `/site/${slug}` : '/';
-                return <NavLink href={homePath} onClick={() => setMobileMenuOpen(false)}>Início</NavLink>;
-              })()}
-              {(() => {
-                const hostname = window.location.hostname;
-                const isLocalhost = hostname === 'localhost' || hostname === '127.0.0.1';
-                const slug = clientSlug || companyName || '';
                 const propertiesPath = isLocalhost ? `/site/${slug}/imoveis/?goal=&type=&name=` : '/imoveis/?goal=&type=&name=';
-                return <NavLink href={propertiesPath} onClick={() => setMobileMenuOpen(false)}>Imóveis</NavLink>;
+                return (
+                  <>
+                    <NavLink href={propertiesPath} onClick={() => setMobileMenuOpen(false)}>Comprar imóvel</NavLink>
+                    <NavLink href={propertiesPath} onClick={() => setMobileMenuOpen(false)}>Alugar imóvel</NavLink>
+                  </>
+                );
               })()}
-              <NavLink href={`tel:${themeConfig.phone}`} onClick={() => setMobileMenuOpen(false)}>{themeConfig.phone}</NavLink>
+              <NavLink href="#contato" onClick={() => setMobileMenuOpen(false)}>Lançamentos</NavLink>
+              <NavLink href="#sobre" onClick={() => setMobileMenuOpen(false)}>Sobre Nós</NavLink>
             </MobileMenu>
           )}
         </Header>
          
     <PropertiesBackground>
-         
        <BodyPropertiesContainer>           
-        <CardProperty goal={goal}/>
+         <CardProperty goal={goal} themeConfig={themeConfig} />
        </BodyPropertiesContainer>
     </PropertiesBackground>
     <WhatsappButton whatsappNumber={themeConfig.phone} />  

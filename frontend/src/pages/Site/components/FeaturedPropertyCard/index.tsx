@@ -44,7 +44,7 @@ interface SiteProperty {
       };
     };
   };
-  images: Array<{
+  images?: Array<{
     id: number;
     url: string;
     idTenant: number;
@@ -55,10 +55,11 @@ interface FeaturedPropertyCardProps {
   url: string;
   properties: SiteProperty[];
   buttonColor?: string;
+  brandColor2?: string;
   isLancamento?: boolean;
 }
 
-const FeaturedPropertyCard = ({ url, properties, buttonColor = '#2563eb', isLancamento }: FeaturedPropertyCardProps) => {
+const FeaturedPropertyCard = ({ url, properties, buttonColor = '#FF5317', brandColor2 = '#1C1C38', isLancamento }: FeaturedPropertyCardProps) => {
   const [featuredProperties, setFeaturedProperties] = useState<SiteProperty[]>(properties || []);
 
   useEffect(() => {
@@ -91,7 +92,7 @@ const FeaturedPropertyCard = ({ url, properties, buttonColor = '#2563eb', isLanc
           width: '50px',
           height: '50px',
           borderRadius: '50%',
-          background: `${cardAccentColor} center no-repeat`,
+          backgroundColor: 'var(--dynamic-brand-color-2, #1C1C38)',
           boxShadow: '2px 3px 6px -4px rgba(128,128,128,1)',
           cursor: 'pointer',
           alignItems: 'center',
@@ -120,7 +121,7 @@ const FeaturedPropertyCard = ({ url, properties, buttonColor = '#2563eb', isLanc
           width: '50px',
           height: '50px',
           borderRadius: '50%',
-          background: `${cardAccentColor} center no-repeat`,
+          backgroundColor: 'var(--dynamic-brand-color-2, #1C1C38)',
           boxShadow: '-2px 3px 6px -4px rgba(128,128,128,1)',
           cursor: 'pointer',
           alignItems: 'center',
@@ -171,11 +172,11 @@ const FeaturedPropertyCard = ({ url, properties, buttonColor = '#2563eb', isLanc
   }
 
   return (
-    <div className="featured-properties-slider">
+    <div className="featured-properties-slider" style={{ '--dynamic-button-color': buttonColor, '--dynamic-brand-color-2': brandColor2 } as React.CSSProperties}>
       <Slider {...settings}>
         {featuredProperties.map((property, index) => (
           <div key={`${property.id}-${index}`}>
-            <CardListItem {...property} isLancamento={isLancamento} index={index} buttonColor={cardAccentColor} />
+            <CardListItem {...property} isLancamento={isLancamento} index={index} buttonColor={buttonColor} brandColor2={brandColor2} />
           </div>
         ))}
       </Slider>
@@ -189,9 +190,10 @@ interface CardListItemProps extends SiteProperty {
   isLancamento?: boolean;
   index?: number;
   buttonColor?: string;
+  brandColor2?: string;
 }
 
-const CardListItem = ({id,name,images,price,address,numberRooms,bathRooms,area,goal, isLancamento, index = 0, buttonColor = cardAccentColor}: CardListItemProps) =>{
+export const CardListItem = ({id,name,images,price,address,numberRooms,bathRooms,area,goal, isLancamento, index = 0, buttonColor = '#FF5317', brandColor2 = '#1C1C38'}: CardListItemProps) =>{
     const { companyName } = useParams<{ companyName: string }>();
     const { companyName: subdomainCompanyName } = useSubdomain();
     const slug = subdomainCompanyName || companyName;
@@ -233,17 +235,17 @@ const CardListItem = ({id,name,images,price,address,numberRooms,bathRooms,area,g
                                 </div>
                   <DetailsCardWrapper>
                     <div className='details-bottom-card'>
-                      <PiRulerLight className="icon-detail" style={{ color: buttonColor, fontSize: '35px'}} />
+                      <PiRulerLight className="icon-detail" style={{ color: 'var(--dynamic-button-color, #FF5317)', fontSize: '35px'}} />
                       <span className='title-detail-bottom'>Área total</span>
                       <span className='value-detail-bottom'>{area || 0} m²</span>
                     </div>
                     <div className='details-bottom-card'>
-                      <PiBedLight className="icon-detail" style={{ color: buttonColor, fontSize: '35px'}} />
+                      <PiBedLight className="icon-detail" style={{ color: 'var(--dynamic-button-color, #FF5317)', fontSize: '35px'}} />
                       <span className='title-detail-bottom'>Dormitórios</span>
                       <span className='value-detail-bottom'>{numberRooms || 0}</span>
                     </div>
                     <div className='details-bottom-card'>
-                      <PiCarLight className="icon-detail" style={{ color: buttonColor, fontSize: '35px'}} />
+                      <PiCarLight className="icon-detail" style={{ color: 'var(--dynamic-button-color, #FF5317)', fontSize: '35px'}} />
                       <span className='title-detail-bottom'>Vaga(s)</span>
                       <span className='value-detail-bottom'>0</span> {/* Usando 0 pois não tem vagas na API base ainda */}
                     </div>
@@ -252,9 +254,9 @@ const CardListItem = ({id,name,images,price,address,numberRooms,bathRooms,area,g
                   <CardFooter>
                     <div className="price-block">
                       <span className="price-label">Valor</span>
-                      <span className="price-value" style={{ color: buttonColor }}>R$ {price}</span>
+                      <span className="price-value" style={{ color: 'var(--dynamic-button-color, #FF5317)' }}>R$ {price}</span>
                     </div>
-                    <Link to={detailLink} className="btn-conheca" style={{ background: buttonColor }}>Conheça</Link>
+                    <Link to={detailLink} className="btn-conheca" style={{ background: brandColor2 }}>Conheça</Link>
                   </CardFooter>
               </CardContent>       
       </CardWrapper>

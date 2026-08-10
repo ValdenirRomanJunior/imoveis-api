@@ -8,6 +8,19 @@ export const DetailContainer = styled.div`
         display:none;
     }
 
+    .full-width-slider {
+        width: 100vw;
+        height: 100vh;
+        margin-left: calc(-50vw + 50%); /* Força a ocupar a tela toda */
+        margin-top: 0;
+    }
+
+    @media screen and (min-width: 900px){
+        .full-width-slider {
+            height: 100vh;
+        }
+    }
+
     .links-desktop-container{
  
         display:none;
@@ -264,109 +277,64 @@ export const DetailContainer = styled.div`
 export const DetailContent = styled.div`
     width:100%;
     letter-spacing: .45px;
+    position: relative;
+    z-index: 10;
+    margin-top: 2rem; /* Overlap the slider */
 
- 
-
-    .modal-desktop-container{
-
+    .right-left-container-flex {
+        display: flex;
+        flex-direction: column;
+        gap: 2rem;
+        padding: 0 1rem;
     }
- 
+
+    .main-content-detail-container {
+        width: 100%;
+        background: #fff;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    .modal-desktop-container {
+        width: 100%;
+    }
 
     @media screen and (min-width: 900px){
         width: 100%;
-        
-        display:flex;
-        
         display: flex;
         flex-direction: row;
         justify-content: center;
         align-items: center;
 
        .right-left-container-flex {
-        width: 850px;
-
-        display:flex;
-        justify-content: center;
-        align-items: start;
+            width: 850px;
+            display:flex;
+            flex-direction: row;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 0;
+            gap: 0;
        }
         
         .main-content-detail-container {
             width:60%;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         }
 
         .modal-desktop-container{
             width:40%;
-            height:1292px;
-            padding-left:10px;
-          
+            height: auto;
+            padding-left: 20px;
         }
     }
 
     @media screen and (min-width: 1300px){
-        width: 100%;
-        
-        display:flex;
-        
-        display: flex;
-        flex-direction: row;
-        justify-content: center;
-        align-items: center;
-
-       
-     
         .right-left-container-flex {
-            width: 850px;
-    
-            display:flex;
-            justify-content: center;
-            align-items: start;
-           }
-            
-            .main-content-detail-container {
-                width:60%;
-            }
-    
-            .modal-desktop-container{
-                width:40%;
-                height:1292px;
-                padding-left:10px;
-              
-            }
+            width: 1300px;
+        }
     }
-
-    @media screen and (min-width: 1400px){
-        width: 100%;
-        
-        display:flex;
-        
-        display: flex;
-        flex-direction: row;
-        justify-content: center;
-        align-items: center;
-
-       
-     
-        .right-left-container-flex {
-            width: 1000px;
-    
-            display:flex;
-            justify-content: center;
-            align-items: start;
-           }
-            
-            .main-content-detail-container {
-                width:60%;
-            }
-    
-            .modal-desktop-container{
-                width:40%;
-                height:1292px;
-                padding-left:10px;
-              
-            }
-    }
-   
-
 `
 export const DetailTextContainer = styled.div`
     width:100%;
@@ -491,16 +459,36 @@ export const TitleWrapper = styled.div`
     width:100%;
     padding:1rem 0;
    
-    
     h2{
-      
         font-weight: 300;
-        font-size: 1.125rem;
-        line-height: 150%;
+        font-size: 2.25rem;
+        line-height: 120%;
         line-break: anywhere;
         white-space: pre-line;
         overflow-wrap: break-word;
-       
+        color: #666;
+        margin-bottom: 1rem;
+    }
+
+    .views-badge {
+        display: inline-block;
+        border: 1px solid #ff6b35be;
+        color: #ff6b35be;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 13px;
+        margin-bottom: 1.5rem;
+    }
+
+    .property-subtitle {
+        font-size: 1.25rem;
+        color: #666;
+        margin-bottom: 0.5rem;
+    }
+
+    .property-reference {
+        font-size: 0.9rem;
+        color: #999;
     }
 `
 
@@ -537,49 +525,39 @@ export const LocalizationWrapper = styled.div`
 `
 export const DetailsWrapper = styled.div`
     width:100%;
-    padding:0.5rem 0;
-    border-top: .0625rem solid #e5e5e5;
-    border-bottom: 0.0625rem solid #e5e5e5;
-    margin-top:.8rem;
+    padding: 2rem 0;
+    margin-top: 1rem;
    
-    border-radius:3px;
-
     display: flex;
-    justify-content: space-evenly;
+    justify-content: flex-start;
     align-items: center;
+    gap: 3rem;
+    flex-wrap: wrap;
 
     .detail-wrapper{
-      
         display: flex;
         flex-direction: column;
         justify-content: center;
         align-items: center;
-        width:1rem;
+        gap: 8px;
+
+        .detail-icon {
+            font-size: 2.5rem;
+            color: #ff6b35be;
+            opacity: 0.7;
+        }
 
         .detail-value{
-            color:#000;
-            font-size: .9rem;
-            text-transform: lowercase;
-          
+            color: #666;
+            font-size: 1.2rem;
+            font-weight: 500;
         }
+        
         .detail-title{
-            font-weight:200;
-            font-size: 1rem;
+            font-weight: 300;
+            font-size: 0.9rem;
+            color: #666;
         }
-
-        span{
-           
-       
-            white-space: nowrap;
-            font-size:.9rem;
-        }
-    }
-    .diviser{
-        content: "";
-        width: 0.0625rem;
-        height: 2.375rem;
-        background: #e5e5e5;
-       
     }
 `
 export const DescriptionWrapper = styled.div`
@@ -615,70 +593,79 @@ export const MoreDetailsWrapper = styled.div`
     margin-bottom: 5rem;
     
     h2{
-      
         font-weight: 300;
-        font-size: 1.125rem;
+        font-size: 1.5rem;
+        color: #666;
         line-height: 150%;
-        margin-bottom:.5rem; 
+        margin-bottom: 1.5rem; 
     }
 
-   ul{
-    width:100%;
+    .amenities-grid {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-bottom: 2rem;
+    }
 
+    .amenity-tag {
+        background: #e2e2e2;
+        color: #666;
+        padding: 8px 16px;
+        border-radius: 4px;
+        font-size: 0.9rem;
+        font-weight: 300;
+    }
 
-   li{
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-   
-    margin-top: 0.5rem;
-
-     }
-
-     .more-detail-dot-label-wrapper{
+    .map-placeholder {
+        width: 100%;
+        height: 250px;
+        background: #f0f0f0;
         display: flex;
         align-items: center;
-     }
-     .dot-iptu{
-        width:10px;
-        height:10px;
-        background:rgb(36, 200, 199);
-        border-radius:50%;
-     }
-     .dot-vacancies{
-        width:10px;
-        height:10px;
-        background:rgb(89, 134, 240);
-        border-radius:50%;
-     }
-     .dot-condominium{
-        width:10px;
-        height:10px;
-        background:rgb(162, 178, 248);
-        border-radius:50%;
-     }
-     .more-detail-label{
-        margin-left:7px;
-        font-size: 1rem;
-     }
-     .more-detail-value{
-        min-width: auto;
-        width: 8.7rem;
-        min-height: 2.45rem;
-        border: 0.0625rem solid #d2d2d2;
-        border-radius: 0.375rem;
-        padding: 0.6875rem;
-        text-align: right;
-      
-        font-weight:200;
-        font-size: 14px;
-     }
-   }
+        justify-content: center;
+        border-radius: 8px;
+        color: #666;
+        font-size: 1.2rem;
+        cursor: pointer;
+        opacity: 0.8;
+    }
 
    @media screen and (min-width: 900px){
     margin-bottom: 0;
    }
     
+`
+
+export const PriceLocalizationContainer = styled.div`
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 2rem 0;
+    border-bottom: 1px solid #e5e5e5;
+    margin-bottom: 2rem;
+
+    .price-section, .localization-section {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .section-label {
+        font-size: 0.9rem;
+        color: #999;
+    }
+
+    .price-value {
+        font-size: 1.8rem;
+        font-weight: 400;
+    }
+
+    .localization-value {
+        font-size: 1rem;
+        color: #666;
+        max-width: 300px;
+    }
 `
 
 export const ContactDetailrapper = styled.div`
@@ -714,16 +701,13 @@ export const ContactDetailrapper = styled.div`
 `
 export const ContactModalDetailWrapper = styled.div<{openModal:boolean}>`
     width:100%;
-    height:100vh;
-    position: fixed;
-    top:0;
-    left:0;
-    z-index:10000000;
     background:#fff;
-
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    padding-bottom: 20px;
+    margin-bottom: 2rem;
     display: flex;
     flex-direction:column;
-    display: ${({openModal}) => (openModal ? 'none' : 'flex')};
 
     .header-modal-contact-wrapper{
         border-bottom:.0625rem solid #e5e5e5;
@@ -734,14 +718,7 @@ export const ContactModalDetailWrapper = styled.div<{openModal:boolean}>`
         align-items:center;
         
         .close-button-modal-contact{
-            position: absolute;
-            top:2%;
-            right:5%;
-            font-size:20px;
-
-            @media screen and (min-width:900px){
-                display:none;
-               }
+            display: none;
         }
 
         h1{
@@ -931,18 +908,21 @@ export const ContactModalDetailWrapper = styled.div<{openModal:boolean}>`
  
 
     @media screen and (min-width:900px){
-        width: 310px;
-        height:427px; 
+        width: 350px;
+        height: auto;
+        padding-bottom: 20px; 
         display: ${({openModal}) => (openModal ? 'flex' : 'flex')};
         z-index:0;
         border: 0.0625rem solid #d2d2d2;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         
         position:sticky;
         position: -webkit-sticky;
         top:145px;
         background:#fff;
         transition: margin-top 0.4s ease-in-out;
-        margin-top: -55px;
+        margin-top: -150px;
        
      
 
@@ -1069,9 +1049,44 @@ export const ContactModalDetailWrapper = styled.div<{openModal:boolean}>`
     
             }
             .button-send-lead{
-                height:33px;
+                height: 45px;
+                border-radius: 4px;
+                font-weight: 500;
+                font-size: 1rem;
+                margin-top: 1.5rem;
+                text-transform: none;
             }
-    
+
+            .btn-whatsapp {
+                background: #25d366;
+                color: #fff;
+                border: none;
+                height: 45px;
+                border-radius: 4px;
+                font-weight: 500;
+                font-size: 1rem;
+                margin-top: 1rem;
+                text-transform: none;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .btn-outline {
+                background: transparent;
+                color: #666;
+                border: 1px solid #ff6b35be;
+                height: 45px;
+                border-radius: 4px;
+                font-weight: 500;
+                font-size: 1rem;
+                margin-top: 1rem;
+                text-transform: none;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
             button:focus{
                border-color: #9797ff;
                box-shadow: 0px 0px 3px #0064e5;
@@ -1090,20 +1105,21 @@ export const ContactModalDetailWrapper = styled.div<{openModal:boolean}>`
     }
 }
     @media screen and (min-width:1300px){
-        width:345px;
-        height: 407px;
+        width: 350px;
+        height: auto;
+        padding-bottom: 20px;
         display: ${({openModal}) => (openModal ? 'flex' : 'flex')};
         
-
-     
         border: 0.0625rem solid #d2d2d2;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         
         position:sticky;
         position: -webkit-sticky;
         top:148px;
         background:#fff;
         transition: margin-top 0.4s ease-in-out;
-        margin-top: -50px;
+        margin-top: -150px;
        
      
 
@@ -1241,20 +1257,21 @@ export const ContactModalDetailWrapper = styled.div<{openModal:boolean}>`
     }
 }
     @media screen and (min-width:1400px){
-        width:345px;
-        height: 410px;
+        width: 380px;
+        height: auto;
+        padding-bottom: 20px;
         display: ${({openModal}) => (openModal ? 'flex' : 'flex')};
         
-
-     
         border: 0.0625rem solid #d2d2d2;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         
         position:sticky;
         position: -webkit-sticky;
         top:147px;
         background:#fff;
         transition: margin-top 0.4s ease-in-out;
-        margin-top: -50px;
+        margin-top: -150px;
        
      
 
@@ -1363,7 +1380,42 @@ export const ContactModalDetailWrapper = styled.div<{openModal:boolean}>`
     
             }
             .button-send-lead{
-                height:33px;
+                height: 45px;
+                border-radius: 4px;
+                font-weight: 500;
+                font-size: 1rem;
+                margin-top: 1.5rem;
+                text-transform: none;
+            }
+
+            .btn-whatsapp {
+                background: #25d366;
+                color: #fff;
+                border: none;
+                height: 45px;
+                border-radius: 4px;
+                font-weight: 500;
+                font-size: 1rem;
+                margin-top: 1rem;
+                text-transform: none;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .btn-outline {
+                background: transparent;
+                color: #666;
+                border: 1px solid #ff6b35be;
+                height: 45px;
+                border-radius: 4px;
+                font-weight: 500;
+                font-size: 1rem;
+                margin-top: 1rem;
+                text-transform: none;
+                display: flex;
+                align-items: center;
+                justify-content: center;
             }
     
             button:focus{

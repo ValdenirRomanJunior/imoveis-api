@@ -275,7 +275,6 @@ export const DetailsCardWrapper = styled.div`
             gap: 4px;
            
             .icon-detail {
-                color: #ff6b35be !important; /* Orange icon color */
                 font-size: 25px;
                 margin-bottom: 4px;
             
@@ -324,8 +323,6 @@ export const CardFooter = styled.div`
         
         .price-value {
             font-size: 22px;
-            
-            color: #FF5317 !important; /* Orange price */
             font-weight: 400;
             font-family: 'Parkinsans', sans-serif;
             font-optical-sizing: auto;

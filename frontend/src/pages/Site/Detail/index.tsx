@@ -1,6 +1,6 @@
 
 import {DetailContainer, DetailTextContainer,PriceWrapper,TitleWrapper,LocalizationWrapper,DetailsWrapper,DescriptionWrapper,
-MoreDetailsWrapper,ContactDetailrapper, ContactModalDetailWrapper, DetailContent, SessionFooter} from './styles';
+MoreDetailsWrapper,ContactDetailrapper, ContactModalDetailWrapper, DetailContent, SessionFooter, PriceLocalizationContainer} from './styles';
 import LightGallery from 'lightgallery/react';
 import 'lightgallery/css/lightgallery.css';
 import 'lightgallery/css/lg-zoom.css';
@@ -14,9 +14,12 @@ import {BsShare} from 'react-icons/bs'
 import {IoCloseOutline} from 'react-icons/io5'
 import WhatsappButton from '../WhatsappButton';
 
-import {SlArrowRight} from 'react-icons/sl';
-import {AiFillStar} from 'react-icons/ai';
-import { findProperty } from '../Services/property';
+import { BiArea, BiBath, BiBed, BiCar } from 'react-icons/bi';
+import { MdOutlineShower } from 'react-icons/md';
+import { TbVectorTriangle } from 'react-icons/tb';
+import { SlArrowRight } from 'react-icons/sl';
+import { findProperty, getPropertiesHome } from '../Services/property';
+import { CardListItem } from '../components/FeaturedPropertyCard';
 import { Property } from '../types/property';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import { ItemSlide, Slides } from '../types/image';
@@ -108,6 +111,7 @@ const Detail  = () => {
     
     const [openModalContact,setOpenModalContact]=useState(true);
     const [property, setProperty]= useState<Property>();
+    const [similarProperties, setSimilarProperties] = useState<Property[]>([]);
     const [errors,setErrors]=useState<string | undefined>(undefined);
     const [errorsLead, setErrorsLead] = useState<Error[]>([]);
     const [otherError, setOtherError] = useState(false);
@@ -123,7 +127,7 @@ const Detail  = () => {
         secondaryColor: '#6c757d',
         textColor: '#333',
         backgroundColor: '#fff',
-        buttonColor: '#007bff',
+        buttonColor: '#ff6b35be',
         h1Color: '#333',
         h2Color: '#333',
         logoSize: 'media'
@@ -204,7 +208,7 @@ const Detail  = () => {
                 footerText: 'Todos os direitos reservados.',
                 footerBackgroundColor: '#1f2937',
                 textColor: '#1f2937',
-                buttonColor: '#2563eb',
+                buttonColor: '#ff6b35be',
                 h2Color: '#1f2937',
                 privacyPolicy: '',
                 aboutUs: '',
@@ -224,8 +228,8 @@ const Detail  = () => {
     // Tema dinâmico
     const dynamicTheme = {
         colors: {
-            primary: themeConfig.buttonColor || '#2563eb',
-            primaryDark: themeConfig.buttonColor || '#1d4ed8',
+            primary: themeConfig.buttonColor || '#ff6b35be',
+            primaryDark: themeConfig.buttonColor || '#ff6b35be',
             secondary: themeConfig.secondaryColor || '#64748b',
             tertiary: '#f8fafc',
             background: themeConfig.backgroundColor || '#ffffff',
@@ -295,10 +299,19 @@ const Detail  = () => {
           }            
     }
 
+    const getSimilarProperties = async () => {
+        if (clientSlug) {
+            const res = await getPropertiesHome(clientSlug);
+            if (res && res.data) {
+                setSimilarProperties(res.data.slice(0, 4));
+            }
+        }
+    }
+
     useEffect(() => {
         getProperty();
-        
-    }, [location.pathname, propertyId]);
+        getSimilarProperties();
+    }, [location.pathname, propertyId, clientSlug]);
    
  
 
@@ -498,8 +511,9 @@ console.log(property?.id)
             </Header>
         { !errors ? 
         <DetailContainer>
-              
-            
+               <div className='full-width-slider'>
+                   <ImageSlider items={imgs} goal={property?.goal as string}/>
+               </div>
                <div className='links-desktop-container'>
                 <div className='links-desktop-wrapper'>
                     <ul className='list-links-desktop-wrapper'>
@@ -515,124 +529,128 @@ console.log(property?.id)
                    <DetailContent>
                     <div className='right-left-container-flex'>
                         <div className='main-content-detail-container'>
-                        <ImageSlider items={imgs} goal={property?.goal as string}/>
                         <DetailTextContainer>
-                            <PriceWrapper>
-                                <div className='price-star-wrapper'>
-                                    <span>R$ {property?.price}</span>
-                                        <div className='star-detail-wrapper'>
-                                            <AiFillStar className='star-detail'/>
-                                            <AiFillStar className='star-detail'/>
-                                            <AiFillStar className='star-detail'/>
-                                            <AiFillStar className='star-detail'/>
-                                        </div>
-                                        </div>
-                                    <BsShare className='share-icon-detail' onClick={handleCopyUrl}/>
-                            </PriceWrapper>
-                            {copyUrl &&
-                            <div className='copy-url-wrapper'>
-                                <span className='copy-url-text'>Link copiado!</span>
-                            </div>
-                            }
-         
+                            <TitleWrapper>
+                                <h2>{property?.name}</h2>
+                                <div className='views-badge'>Este imóvel já recebeu 102 visualizações</div>
+                                <p className='property-subtitle'>{property?.typeProperty} {property?.numberRooms} Quartos {property?.address.district} {property?.areaTotal}m²</p>
+                                <p className='property-reference'>Referência: {property?.id}</p>
+                            </TitleWrapper>
 
-                    <LocalizationWrapper>
-                        <div className='localization-street-district'>
-                        <span>{property?.address.street}, {property?.address.number}</span>      
-                        </div>
-
-                        <div className='localization-city-state-cep'>
-                        <span>{property?.address.district}, </span> 
-                        <span>{property?.address.city.name}, </span>
-                        <span>{property?.address.city.state.name} </span>                       
-                        </div>
-                        <span>{property?.address.cep}</span>
-                    </LocalizationWrapper>
-
-                    <DetailsWrapper>
-                        <div className='detail-wrapper'>
-                        <span className='detail-value'>{property?.bathRooms}</span>
-                        <span className='detail-title'>Banheiros</span>
-                        </div>
-                                <div className='diviser'></div>
+                            <DetailsWrapper>
                                 <div className='detail-wrapper'>
-                                <span className='detail-value'>{property?.numberRooms}</span>
-                                <span className='detail-title'>Quartos</span>
+                                    <TbVectorTriangle className='detail-icon' />
+                                    <span className='detail-title'>Área total</span>
+                                    <span className='detail-value'>{property?.areaTotal}m²</span>
                                 </div>
-                                <div className='diviser'></div>
                                 <div className='detail-wrapper'>
-                                <span className='detail-value'>{property?.area}m2</span>
-                                <span className='detail-title'>Const</span>
+                                    <BiArea className='detail-icon' />
+                                    <span className='detail-title'>Área privativa</span>
+                                    <span className='detail-value'>{property?.area}m²</span>
                                 </div>
-                        <div className='diviser'></div>
-                        <div className='detail-wrapper'>
-                        <span className='detail-value'>{property?.areaTotal}m2</span>
-                        <span className='detail-title'>Total</span>
-                        </div>                       
-                    </DetailsWrapper>
-                    <TitleWrapper>
-                        <h2>{property?.name}</h2>
-                </TitleWrapper>
-                    <DescriptionWrapper>
-                        <h2>Descrição</h2>
-                        <p>{property?.description}</p>
-                    </DescriptionWrapper>
-                <MoreDetailsWrapper>
-                    <h2>Mais Detalhes</h2>
-                        <ul>
-                             <li><div className='more-detail-dot-label-wrapper'><div className='dot-iptu'></div><span className='more-detail-label'>Iptu</span></div><span className='more-detail-value'>R${property?.iptu}</span></li>
-                             <li><div className='more-detail-dot-label-wrapper'><div className='dot-vacancies'></div><span className='more-detail-label'>vagas</span></div><span className='more-detail-value'>R${property?.vacancies}</span></li>
-                             <li><div className='more-detail-dot-label-wrapper'><div className='dot-condominium'></div><span className='more-detail-label'>Condomínio</span></div><span className='more-detail-value'>{property?.condominium}</span></li>                               
-                        </ul>
-                </MoreDetailsWrapper>
-           </DetailTextContainer> 
-           <ContactDetailrapper>
-            <button onClick={handleOpenModalContact}>Fale Conosco</button>
-           
-          </ContactDetailrapper> 
-        
-            <WhatsappButton whatsappNumber={themeConfig.phone} />   
+                                <div className='detail-wrapper'>
+                                    <BiBed className='detail-icon' />
+                                    <span className='detail-title'>Dormitórios</span>
+                                    <span className='detail-value'>{property?.numberRooms}</span>
+                                </div>
+                                <div className='detail-wrapper'>
+                                    <MdOutlineShower className='detail-icon' />
+                                    <span className='detail-title'>Suítes</span>
+                                    <span className='detail-value'>{property?.suites || '0'}</span>
+                                </div>
+                                <div className='detail-wrapper'>
+                                    <BiCar className='detail-icon' />
+                                    <span className='detail-title'>Vagas</span>
+                                    <span className='detail-value'>{property?.vacancies || '0'}</span>
+                                </div>
+                                <div className='detail-wrapper'>
+                                    <BiBath className='detail-icon' />
+                                    <span className='detail-title'>Banheiros</span>
+                                    <span className='detail-value'>{property?.bathRooms}</span>
+                                </div>
+                            </DetailsWrapper>
+
+                            <PriceLocalizationContainer>
+                                <div className='price-section'>
+                                    <span className='section-label'>Valor</span>
+                                    <div className='price-value' style={{ color: themeConfig.buttonColor }}>R$ {property?.price}</div>
+                                </div>
+                                <div className='localization-section'>
+                                    <span className='section-label'>Localização</span>
+                                    <div className='localization-value'>
+                                        <span>{property?.address.street}, {property?.address.number} - {property?.address.district}</span>
+                                    </div>
+                                </div>
+                            </PriceLocalizationContainer>
+
+                            <DescriptionWrapper>
+                                <h2>Descrição</h2>
+                                <p>{property?.description}</p>
+                            </DescriptionWrapper>
+
+                            <MoreDetailsWrapper>
+                                <h2>O condomínio também oferece</h2>
+                                <div className='amenities-grid'>
+                                    {['Churrasqueira Condominio', 'Terraço Coletivo', 'Condominio Fechado', 'Elevador', 'Portaria', 'Salão de Festas'].map(item => (
+                                        <div key={item} className='amenity-tag'>{item}</div>
+                                    ))}
+                                </div>
+
+                                <h2 style={{ marginTop: '2rem' }}>Localização do imóvel</h2>
+                                <div className='localization-street-district' style={{ marginBottom: '1rem', color: '#666' }}>
+                                    <TbVectorTriangle style={{ marginRight: '5px', color: '#ff6b35be' }}/>
+                                    <span>{property?.address.street}, {property?.address.number} {property?.address.district} {property?.address.city.name} - {property?.address.city.state.name}</span>
+                                </div>
+                                <div className='map-placeholder'>
+                                    <span>Clique para ver o mapa</span>
+                                </div>
+                            </MoreDetailsWrapper>
+                        </DetailTextContainer> 
             </div>
 
             <div className='modal-desktop-container'>
             <ContactModalDetailWrapper openModal={openModalContact}>
             <div className='header-modal-contact-wrapper'>
-            <h1>Titulo da propriedade</h1>
-            <IoCloseOutline onClick={handleOpenModalContact} className='close-button-modal-contact'/>
+                <h1>Fale conosco <br/> ou agende uma visita</h1>
+                <IoCloseOutline onClick={handleOpenModalContact} className='close-button-modal-contact'/>
             </div>
-                <h2>Mais informações sobre este imóvel</h2>
-                <span className='cod-property'>Cod. 1</span>
 
                 <form onSubmit={(e)=> {handleSubmitLead(e)}}> 
                     <div className='input-modal-wrapper'>    
-                    <input type='text' placeholder="Rogerio" className="input-class" id="name" name="name" onChange={(e) => handleChange(e)} maxLength={41} onKeyUp={handleKeyUp}/>   
-                    {errorsLead.map(x => { if(x.fieldName === 'name') return  <p className=' formField__error error-name'>{x.message}</p>})}
-                    { emptyValue && form['name'] === '' ? <span className='formField__error error-name'>Este campo é requerido</span>: ''}
+                        <input type='text' placeholder="Nome completo" className="input-class" id="name" name="name" onChange={(e) => handleChange(e)} maxLength={41} onKeyUp={handleKeyUp}/>   
+                        {errorsLead.map(x => { if(x.fieldName === 'name') return  <p className=' formField__error error-name'>{x.message}</p>})}
+                        { emptyValue && form['name'] === '' ? <span className='formField__error error-name'>Este campo é requerido</span>: ''}
                     </div>   
 
                     <div className='input-modal-wrapper'>  
-                    <input type='text'  placeholder="(85) 982251423" className="input-class" id="phone" name="phone" onChange={(e) => handleChange(e)} onKeyUp={handleKeyUp}/>
-                    {errorsLead.map(x => { if(x.fieldName === 'phone') return  <p className=' formField__error error-phone'>{x.message}</p>})}
-                    { emptyValue && form['phone'] === '' ? <span className='formField__error error-phone'>Este campo é requerido</span>: ''}
-                    { form['phone'].length >1 && form['phone'].length <14 &&  <span className='formField__error error-phone'>Formato de telefone errado</span>}
+                        <input type='text' placeholder="E-mail" className="input-class" id="email" name="email" onChange={(e) => handleChange(e)}  maxLength={40} onKeyUp={handleKeyUp}/>
+                        {errorsLead.map(x => { if(x.fieldName === 'email') return  <p className=' formField__error'>{x.message}</p>})}
+                        { emptyValue && form['email'] === '' ? <span className='formField__error'>Este campo é requerido</span>: ''}
                     </div>
+
                     <div className='input-modal-wrapper'>  
-                    <input type='text' placeholder="ex: joao@gmail.com" className="input-class" id="email" name="email" onChange={(e) => handleChange(e)}  maxLength={40} onKeyUp={handleKeyUp}/>
-                    {errorsLead.map(x => { if(x.fieldName === 'email') return  <p className=' formField__error'>{x.message}</p>})}
-                    { emptyValue && form['email'] === '' ? <span className='formField__error'>Este campo é requerido</span>: ''}
-                            </div>
-                    <div className='input-modal-wrapper '>  
-                    <textarea placeholder='Digite sua mensagem'  id="message" name="message" onChange={(e) => handleChange(e)} onKeyUp={handleKeyUp} ></textarea>
-                    {errorsLead.map(x => { if(x.fieldName === 'message') return  <p className=' formField__error textarea-class' textarea-class>{x.message}</p>})}
-                    { emptyValue && form['message'] === '' ? <span className='formField__error textarea-class'>Este campo é requerido</span>: ''}
-                   </div>
+                        <input type='text'  placeholder="telefone com DDD" className="input-class" id="phone" name="phone" onChange={(e) => handleChange(e)} onKeyUp={handleKeyUp}/>
+                        {errorsLead.map(x => { if(x.fieldName === 'phone') return  <p className=' formField__error error-phone'>{x.message}</p>})}
+                        { emptyValue && form['phone'] === '' ? <span className='formField__error error-phone'>Este campo é requerido</span>: ''}
+                        { form['phone'].length >1 && form['phone'].length <14 &&  <span className='formField__error error-phone'>Formato de telefone errado</span>}
+                    </div>
+
                    {
-                        loadingAddLead && <button className="button-send-lead" type='submit'><Loading/></button>
+                        loadingAddLead ? <button className="button-send-lead" style={{background: themeConfig.buttonColor, borderColor: themeConfig.buttonColor, color: '#fff'}} type='submit'><Loading/></button>
+                        : <button type='submit' className="button-send-lead" style={{background: themeConfig.buttonColor, borderColor: themeConfig.buttonColor, color: '#fff'}}>Enviar</button>
                     }
-                    {
-                        !loadingAddLead &&
-                    <button  type='submit'>enviar</button>
-                    }
+                    
+                    <button type="button" className="btn-whatsapp" onClick={() => window.open(`https://wa.me/${themeConfig.phone}?text=Olá, tenho interesse no imóvel código ${property?.id}`)}>
+                        Converse via WhatsApp
+                    </button>
+                    
+                    <button type="button" className="btn-outline" onClick={() => window.open(`tel:${themeConfig.phone}`)}>
+                        Ligue para nós
+                    </button>
+
+                    <button type="button" className="btn-outline" onClick={handleCopyUrl}>
+                        Compartilhe este imóvel
+                    </button>
                 </form>
                 { otherError &&   
                 <div className='other-errorModal'>Erro Inesperado</div>
@@ -646,12 +664,28 @@ console.log(property?.id)
             </div>
             </div>
             </DetailContent> 
+            
+            <div style={{ width: '100%', maxWidth: '1200px', margin: '4rem auto', padding: '0 1rem' }}>
+                <h2 style={{ fontSize: '1.5rem', fontWeight: 300, color: '#666', marginBottom: '2rem' }}>Imóveis similares</h2>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '20px' }}>
+                    {similarProperties.map(prop => (
+                        <CardListItem 
+                            key={prop.id} 
+                            {...prop} 
+                            buttonColor={themeConfig.buttonColor}
+                            brandColor2={themeConfig.secondaryColor || '#1C1C38'}
+                        />
+                    ))}
+                </div>
+            </div>
+
             { otherError &&   
                 <div className='other-error'>Erro Inesperado</div>
                  }
             {successMessage   ? <div className="message">
                     <span className='success'>Lead salvo com sucesso!</span>
                     </div>: ''}
+            <WhatsappButton whatsappNumber={themeConfig.phone} />   
             <SessionFooter>
         
             </SessionFooter>                         

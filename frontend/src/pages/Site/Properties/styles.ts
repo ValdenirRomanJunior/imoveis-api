@@ -2,31 +2,29 @@ import styled from "styled-components";
 import imageTopBanner from '../../assets/images/banner-top.png';
 
 
-export const PropertiesBackground = styled.div`
-width: 100%;   
-display: flex;  
-flex-direction: column;
-justify-content: center;
+export const PropertiesBackground = styled.main`
+    background-color:#FAFAFA;
+    min-height: 100vh;
+    width: 100%;
+    padding-top: 80px; /* Space for the fixed header */
 
+    .properties-search-wrapper {
+        margin-top: 0 !important;
 
-
-@media screen and (min-width:100px){
-    align-items: center;
-}
+        @media (min-width: 768px) {
+            margin-top: 20px !important;
+        }
+    }
 `
 
-export const BodyPropertiesContainer = styled.main`      
-    width:100%;
-    display:flex;
-    flex-direction: column;
-
-
-
-    @media screen and (min-width: 1000px){
-      
-    }
-  
-    `
+export const BodyPropertiesContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  margin: 0 auto;
+  min-height: 100vh;
+  padding-top: 1rem;
+`;
 
     
 export const TitleWrapper = styled.div`
@@ -96,7 +94,6 @@ export const TitleWrapper = styled.div`
         padding: 10px 70px 10px 140px;
 
         .title-properties{
-
             display:none;   
         }
 

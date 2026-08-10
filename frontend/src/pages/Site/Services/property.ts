@@ -11,6 +11,8 @@ export interface SearchPropertyFilters {
   minRooms?: string;
   minSuites?: string;
   minVacancies?: string;
+  minArea?: string;
+  maxArea?: string;
   url: string;
   pageNumber?: number;
   linesPerPage?: number;
@@ -57,28 +59,33 @@ export const searchProperties = (
       minRooms = '',
       minSuites = '',
       minVacancies = '',
+      minArea = '',
+      maxArea = '',
       url,
       pageNumber = 0,
       linesPerPage = 12,
     } = filters;
 
-    const params = new URLSearchParams({
-      name,
-      goal,
-      typeProperty,
-      city,
-      district,
-      minPrice,
-      maxPrice,
-      minRooms,
-      minSuites,
-      minVacancies,
-      nameUrl: url,
-      page: String(pageNumber),
-      linesPerPage: String(linesPerPage),
-      orderBy: 'name',
-      direction: 'ASC',
-    });
+    const queryParams: Record<string, string> = {};
+    if (name) queryParams.name = name;
+    if (goal) queryParams.goal = goal;
+    if (typeProperty) queryParams.typeProperty = typeProperty;
+    if (city) queryParams.city = city;
+    if (district) queryParams.district = district;
+    if (minPrice) queryParams.minPrice = minPrice;
+    if (maxPrice) queryParams.maxPrice = maxPrice;
+    if (minRooms) queryParams.minRooms = minRooms;
+    if (minSuites) queryParams.minSuites = minSuites;
+    if (minVacancies) queryParams.minVacancies = minVacancies;
+    if (minArea) queryParams.minArea = minArea;
+    if (maxArea) queryParams.maxArea = maxArea;
+    queryParams.nameUrl = url;
+    queryParams.page = String(pageNumber);
+    queryParams.linesPerPage = String(linesPerPage);
+    queryParams.orderBy = 'name';
+    queryParams.direction = 'ASC';
+
+    const params = new URLSearchParams(queryParams);
 
     return api.get(`/properties/searchTest?${params.toString()}`)
           .then(response =>{

@@ -30,6 +30,7 @@ public class Theme {
     private String bannerTitle;
     private String bannerTitleColor;
     private Integer bannerTitleSize;
+    private String bannerSearchButtonTextColor;
     
     // Services configuration
     @Column(columnDefinition = "TEXT")
@@ -82,6 +83,10 @@ public class Theme {
     private String seoKeywords;
     private String siteTitle;
     private String favicon;
+    private String creci;
+    private String contactIconColor;
+    private String brandColor2;
+    private String brandColor2Text;
 
     @OneToOne
     @JoinColumn(name = "tenant_id")
@@ -241,6 +246,14 @@ public class Theme {
 
     public void setBannerTitleSize(Integer bannerTitleSize) {
         this.bannerTitleSize = bannerTitleSize;
+    }
+
+    public String getBannerSearchButtonTextColor() {
+        return bannerSearchButtonTextColor;
+    }
+
+    public void setBannerSearchButtonTextColor(String bannerSearchButtonTextColor) {
+        this.bannerSearchButtonTextColor = bannerSearchButtonTextColor;
     }
 
     public String getServices() {
@@ -473,6 +486,38 @@ public class Theme {
 
     public void setFavicon(String favicon) {
         this.favicon = favicon;
+    }
+
+    public String getCreci() {
+        return creci;
+    }
+
+    public void setCreci(String creci) {
+        this.creci = creci;
+    }
+
+    public String getContactIconColor() {
+        return contactIconColor;
+    }
+
+    public void setContactIconColor(String contactIconColor) {
+        this.contactIconColor = contactIconColor;
+    }
+
+    public String getBrandColor2() {
+        return brandColor2;
+    }
+
+    public void setBrandColor2(String brandColor2) {
+        this.brandColor2 = brandColor2;
+    }
+
+    public String getBrandColor2Text() {
+        return brandColor2Text;
+    }
+
+    public void setBrandColor2Text(String brandColor2Text) {
+        this.brandColor2Text = brandColor2Text;
     }
 
     @Override

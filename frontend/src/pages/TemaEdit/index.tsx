@@ -65,6 +65,9 @@ interface AgenciaFeature {
 }
 
 interface AgenciaConfig {
+  title?: string;
+  reviewMessage?: string;
+  reviewName?: string;
   features: AgenciaFeature[];
   images: string[];
 }
@@ -77,6 +80,10 @@ interface ThemeConfig {
   logoSize: string;
   menuLinks: MenuLink[];
   phone: string;
+  creci: string;
+  contactIconColor: string;
+  brandColor2: string;
+  brandColor2Text?: string;
   bannerImage: string;
   bannerImage2?: string;
   bannerImage3?: string;
@@ -85,6 +92,7 @@ interface ThemeConfig {
   bannerTitle: string;
   bannerTitleColor: string;
   bannerTitleSize: number;
+  bannerSearchButtonTextColor?: string;
   agencia?: AgenciaConfig;
   announceImage?: string;
   announceBackground?: string;
@@ -156,6 +164,8 @@ const TemaEdit: React.FC = () => {
     logoSize: 'media',
     menuLinks: [{ label: 'Início', url: '/' }, { label: 'Imóveis', url: '/imoveis' }, { label: 'Contato', url: '/contato' }],
     phone: '(85) 9999-6895',
+    creci: 'J00000',
+    contactIconColor: '#1C1C38',
     bannerImage: '',
     bannerImage2: '',
     bannerImage3: '',
@@ -164,7 +174,11 @@ const TemaEdit: React.FC = () => {
     bannerTitle: 'Sempre entregando o imóvel do seu sonho.',
     bannerTitleColor: '#ffffff',
     bannerTitleSize: 48,
+    bannerSearchButtonTextColor: '#ffffff',
     agencia: {
+      title: 'Porque escolher a Camaleon?',
+      reviewMessage: '"A melhor agência com a qual já trabalhamos."',
+      reviewName: '- Camaleon',
       features: [
         { title: 'Propriedades de Ampla Variedade', description: 'De apartamentos aconchegantes a vilas de luxo, temos opções para todos os estilos de vida..' },
         { title: 'Corretores de Confiança', description: 'Nossa equipe de profissionais dedica-se a encontrar a melhor oferta para vocês.' },
@@ -178,7 +192,7 @@ const TemaEdit: React.FC = () => {
     },
     contactTitle: 'Entre em contato conosco',
     announceImage: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80',
-    announceBackground: '#000000',
+    announceBackground: '#f5f5f0',
     announceText: 'Escolha a imobiliária especialista no mercado há mais de 70 anos e tenha a maior segurança e rentabilidade do mercado.',
     contactImage: '',
     agentPhoto: '',
@@ -198,8 +212,10 @@ const TemaEdit: React.FC = () => {
     },
     footerText: '© 2024 Imobiliária. Todos os direitos reservados.',
     textColor: '#2563eb',
-    buttonColor: '#64748b',
-    footerBackgroundColor: '#333333',
+    buttonColor: '#FF5317',
+    brandColor2: '#1C1C38',
+    brandColor2Text: '#FFFFFF',
+    footerBackgroundColor: '#1C1C38',
     h2Color: '#1f2937',
     h3Color: '#374151',
     privacyPolicy: 'Sua privacidade é importante para nós. Esta política descreve como coletamos, usamos e protegemos suas informações pessoais.',
@@ -943,6 +959,14 @@ const TemaEdit: React.FC = () => {
               />
             </FormGroup>
             <FormGroup>
+              <Label>Cor do Texto do Botão "Buscar"</Label>
+              <ColorInput
+                type="color"
+                value={themeConfig.bannerSearchButtonTextColor || '#ffffff'}
+                onChange={(e) => handleDirectChange('bannerSearchButtonTextColor', e.target.value)}
+              />
+            </FormGroup>
+            <FormGroup>
               <Label>Tamanho do Título: {themeConfig.bannerTitleSize || 48}px</Label>
               <input
                 type="range"
@@ -1060,6 +1084,44 @@ const TemaEdit: React.FC = () => {
           <TabContent>
             <h3 style={{ marginBottom: '15px' }}>Porque escolher a Camaleon? (Agência)</h3>
             
+            <div style={{ marginBottom: '20px', padding: '15px', border: '1px solid #eee', borderRadius: '8px', background: '#f8f9fa' }}>
+              <h4 style={{ marginBottom: '10px', fontSize: '14px', color: '#495057' }}>Configurações Gerais da Seção</h4>
+              <FormGroup>
+                <Label>Título da Seção</Label>
+                <Input
+                  value={themeConfig.agencia?.title || ''}
+                  onChange={(e) => {
+                    const newAgencia = { ...(themeConfig.agencia || { features: [], images: [] }), title: e.target.value };
+                    handleDirectChange('agencia', newAgencia);
+                  }}
+                  placeholder="Ex: Porque escolher a Camaleon?"
+                />
+              </FormGroup>
+              <FormGroup>
+                <Label>Mensagem da Avaliação (Card 5 Estrelas)</Label>
+                <Textarea
+                  value={themeConfig.agencia?.reviewMessage || ''}
+                  onChange={(e) => {
+                    const newAgencia = { ...(themeConfig.agencia || { features: [], images: [] }), reviewMessage: e.target.value };
+                    handleDirectChange('agencia', newAgencia);
+                  }}
+                  placeholder='Ex: "A melhor agência com a qual já trabalhamos."'
+                  rows={2}
+                />
+              </FormGroup>
+              <FormGroup>
+                <Label>Nome na Avaliação</Label>
+                <Input
+                  value={themeConfig.agencia?.reviewName || ''}
+                  onChange={(e) => {
+                    const newAgencia = { ...(themeConfig.agencia || { features: [], images: [] }), reviewName: e.target.value };
+                    handleDirectChange('agencia', newAgencia);
+                  }}
+                  placeholder="Ex: - Camaleon"
+                />
+              </FormGroup>
+            </div>
+
             {/* Imagens (Slide) */}
             <div style={{ marginBottom: '30px' }}>
               <Label>Imagens do Slide (1 a 5 fotos)</Label>
@@ -1143,7 +1205,7 @@ const TemaEdit: React.FC = () => {
               <Label>Cor de Fundo (Background)</Label>
               <ColorInput
                 type="color"
-                value={themeConfig.announceBackground || '#000000'}
+                value={themeConfig.announceBackground || '#f5f5f0'}
                 onChange={(e) => handleDirectChange('announceBackground', e.target.value)}
               />
             </FormGroup>
@@ -1204,14 +1266,6 @@ const TemaEdit: React.FC = () => {
                 />
               </FormGroup>
               <FormGroup>
-                <Label>Nome de Exibição do Corretor / Atendente</Label>
-                <Input
-                  value={themeConfig.agentName}
-                  onChange={(e) => handleDirectChange('agentName', e.target.value)}
-                  placeholder="Ex: João Silva"
-                />
-              </FormGroup>
-              <FormGroup>
                 <Label>Foto do Corretor / Atendimento</Label>
                 <div style={{ marginBottom: '10px' }}>
                   <img src={themeConfig.agentPhoto || 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80'} alt="Foto Contato" style={{ maxWidth: '100px', maxHeight: '100px', borderRadius: '50%', objectFit: 'cover' }} />
@@ -1245,6 +1299,15 @@ const TemaEdit: React.FC = () => {
                 />
               </FormGroup>
               <FormGroup>
+                <Label>Telefone</Label>
+                <Input
+                  value={themeConfig.phone || ''}
+                  onChange={(e) => handleDirectChange('phone', e.target.value)}
+                  onKeyUp={(e) => phone(e)}
+                  placeholder="Ex: (11) 99999-9999"
+                />
+              </FormGroup>
+              <FormGroup>
                 <Label>Endereço</Label>
                 <Textarea
                   value={themeConfig.address || ''}
@@ -1259,7 +1322,7 @@ const TemaEdit: React.FC = () => {
             </div>
 
             <div style={{ padding: '15px', border: '1px solid #eee', borderRadius: '8px', background: '#f8f9fa' }}>
-              <h4 style={{ marginBottom: '10px', fontSize: '14px', color: '#495057' }}>3. Mapa Personalizado (Google Maps)</h4>
+              <h4 style={{ marginBottom: '10px', fontSize: '14px', color: '#495057' }}>4. Mapa Personalizado (Google Maps)</h4>
               <FormGroup>
                 <Label>Código Iframe do Mapa (Opcional)</Label>
                 <Textarea
@@ -1283,7 +1346,30 @@ const TemaEdit: React.FC = () => {
             <h3 style={{ marginBottom: '15px' }}>Seção do Rodapé (Footer)</h3>
             
             <div style={{ marginBottom: '20px', padding: '15px', border: '1px solid #eee', borderRadius: '8px', background: '#f8f9fa' }}>
-              <h4 style={{ marginBottom: '10px', fontSize: '14px', color: '#495057' }}>1. Cores e Logo</h4>
+              <h4 style={{ marginBottom: '10px', fontSize: '14px', color: '#495057' }}>1. Informações de Contato</h4>
+              <FormGroup>
+                <Label>Telefone</Label>
+                <Input
+                  value={themeConfig.phone || ''}
+                  onChange={(e) => handleDirectChange('phone', e.target.value)}
+                  onKeyUp={(e) => phone(e)}
+                  placeholder="Ex: (11) 99999-9999"
+                />
+                <small style={{ color: '#6c757d', fontSize: '12px' }}>Aparecerá no rodapé do site.</small>
+              </FormGroup>
+              <FormGroup>
+                <Label>CRECI</Label>
+                <Input
+                  value={themeConfig.creci || ''}
+                  onChange={(e) => handleDirectChange('creci', e.target.value)}
+                  placeholder="Ex: J00000"
+                />
+                <small style={{ color: '#6c757d', fontSize: '12px' }}>Aparecerá no rodapé do site.</small>
+              </FormGroup>
+            </div>
+
+            <div style={{ marginBottom: '20px', padding: '15px', border: '1px solid #eee', borderRadius: '8px', background: '#f8f9fa' }}>
+              <h4 style={{ marginBottom: '10px', fontSize: '14px', color: '#495057' }}>2. Cores e Logo</h4>
               <FormGroup>
                 <Label>Cor de Fundo do Footer</Label>
                 <ColorInput
@@ -1322,7 +1408,7 @@ const TemaEdit: React.FC = () => {
             </div>
 
             <div style={{ padding: '15px', border: '1px solid #eee', borderRadius: '8px', background: '#f8f9fa' }}>
-              <h4 style={{ marginBottom: '10px', fontSize: '14px', color: '#495057' }}>2. Redes Sociais</h4>
+              <h4 style={{ marginBottom: '10px', fontSize: '14px', color: '#495057' }}>3. Redes Sociais</h4>
               <p style={{ fontSize: '12px', color: '#666', marginBottom: '15px' }}>Deixe o campo vazio para não exibir o ícone no site.</p>
               
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' }}>
@@ -1391,28 +1477,37 @@ const TemaEdit: React.FC = () => {
                   />
                 </FormGroup>
                 <FormGroup>
-                  <Label>Cor de Botões/Ícones</Label>
+                  <Label>Cor da Marca (Global)</Label>
                   <ColorInput
                     type="color"
-                    value={themeConfig.buttonColor}
+                    value={themeConfig.buttonColor || '#FF5317'}
                     onChange={(e) => handleDirectChange('buttonColor', e.target.value)}
                   />
+                  <small style={{ color: '#6c757d', fontSize: '12px', display: 'block', marginTop: '5px' }}>
+                    Altera a cor do menu hambúrguer, botão de busca, ícones de destaque, botão "Solicitar Contato" e fundo dos ícones do rodapé.
+                  </small>
                 </FormGroup>
                 <FormGroup>
-                  <Label>Cor dos Títulos H2</Label>
+                  <Label>Cor da Marca 2</Label>
                   <ColorInput
                     type="color"
-                    value={themeConfig.h2Color}
-                    onChange={(e) => handleDirectChange('h2Color', e.target.value)}
+                    value={themeConfig.brandColor2 || '#1C1C38'}
+                    onChange={(e) => handleDirectChange('brandColor2', e.target.value)}
                   />
+                  <small style={{ color: '#6c757d', fontSize: '12px', display: 'block', marginTop: '5px' }}>
+                    Altera a cor das setas (carrossel), botão "Conheça", ícones/botões de contato e setas da seção "Corretores".
+                  </small>
                 </FormGroup>
                 <FormGroup>
-                  <Label>Cor dos Títulos H3</Label>
+                  <Label>Cor da Marca 2 (Ícones/textos)</Label>
                   <ColorInput
                     type="color"
-                    value={themeConfig.h3Color}
-                    onChange={(e) => handleDirectChange('h3Color', e.target.value)}
+                    value={themeConfig.brandColor2Text || '#FFFFFF'}
+                    onChange={(e) => handleDirectChange('brandColor2Text', e.target.value)}
                   />
+                  <small style={{ color: '#6c757d', fontSize: '12px', display: 'block', marginTop: '5px' }}>
+                    Altera a cor do texto e ícones dos itens da "Cor da Marca 2".
+                  </small>
                 </FormGroup>
 
           </TabContent>

@@ -133,6 +133,10 @@ public class ThemeService {
             theme.setFavicon(themeDTO.getFavicon());
         }
         
+        theme.setCreci(themeDTO.getCreci());
+        theme.setContactIconColor(themeDTO.getContactIconColor());
+        theme.setBrandColor2(themeDTO.getBrandColor2());
+        theme.setBrandColor2Text(themeDTO.getBrandColor2Text());
         theme.setCustomDomain(themeDTO.getCustomDomain());
         theme = themeRepository.save(theme);
         themeRepository.flush(); // Force immediate persistence to database
@@ -175,18 +179,20 @@ public class ThemeService {
         theme.setFooterText("© 2024 Imobiliária. Todos os direitos reservados.");
         theme.setFooterBackgroundColor("#1f2937");
         theme.setTextColor("#2563eb");
-        theme.setButtonColor("#64748b");
+        theme.setButtonColor("#FF5317");
         theme.setH2Color("#1f2937");
         theme.setH3Color("#374151");
         theme.setPrivacyPolicy("Política de privacidade padrão.");
         theme.setAboutUs("Sobre nós padrão.");
         theme.setAgencia("{\"features\":[{\"title\":\"Propriedades de Ampla Variedade\",\"description\":\"De apartamentos aconchegantes a vilas de luxo, temos opções para todos os estilos de vida..\"},{\"title\":\"Corretores de Confiança\",\"description\":\"Nossa equipe de profissionais dedica-se a encontrar a melhor oferta para vocês.\"},{\"title\":\"Processo transparente\",\"description\":\"Sem taxas ocultas ou surpresas. Acompanhamos você em cada etapa.\"}],\"images\":[\"https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80\",\"https://images.unsplash.com/photo-1512917774080-9991f1c4c750?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80\",\"https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80\"]}");
         theme.setAnnounceImage("https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80");
-        theme.setAnnounceBackground("#000000");
+        theme.setAnnounceBackground("#f5f5f0");
         theme.setAnnounceText("Escolha a imobiliária especialista no mercado há mais de 70 anos e tenha a maior segurança e rentabilidade do mercado.");
         theme.setFacebookPixel("");
         theme.setSeoKeywords("");
         theme.setSiteTitle("Imobiliária - Encontre seu imóvel");
+        theme.setBrandColor2("#1C1C38");
+        theme.setBrandColor2Text("#FFFFFF");
         
         theme = themeRepository.save(theme);
         return new ThemeDTO(theme);

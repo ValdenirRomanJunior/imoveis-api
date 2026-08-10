@@ -1,9 +1,8 @@
 import { PseudoSearchContainer } from "./styles";
-import { TfiLocationArrow } from 'react-icons/tfi';
-import Modal from 'react-modal';
 import { useEffect, useMemo, useRef, useState } from "react";
-import { IoIosArrowBack, IoIosArrowDown } from 'react-icons/io';
+import { IoIosArrowDown } from 'react-icons/io';
 import { PiBuildingsLight, PiCurrencyDollarLight, PiHouseLineLight, PiKeyLight, PiMapPinLight } from 'react-icons/pi';
+import { BiSearch } from 'react-icons/bi';
 import './styles.css';
 
 import { createSearchParams, useNavigate, useParams } from "react-router-dom";
@@ -25,6 +24,8 @@ type SearchFilters = {
   minRooms: string;
   minSuites: string;
   minVacancies: string;
+  minArea?: string;
+  maxArea?: string;
 };
 
 type PriceRangeOption = {
@@ -67,6 +68,8 @@ const defaultFilters: SearchFilters = {
   minRooms: '',
   minSuites: '',
   minVacancies: '',
+  minArea: '',
+  maxArea: '',
 };
 
 const fallbackPropertyTypes: PropertyFilterOptions['types'] = [
@@ -163,7 +166,13 @@ const useNavigateSearch = () => {
     navigate(`${pathname}/?${createSearchParams(params)}`);
 };
 
-const PseudoSearch = () => {
+interface PseudoSearchProps {
+  buttonColor?: string;
+  buttonTextColor?: string;
+  variant?: 'home' | 'properties';
+}
+
+const PseudoSearch = ({ buttonColor = '#e67e22', buttonTextColor = '#ffffff', variant = 'home' }: PseudoSearchProps) => {
   const { companyName } = useParams<{ companyName: string }>();
   const { companyName: subdomainCompanyName } = useSubdomain();
   const hostname = window.location.hostname;
@@ -191,16 +200,19 @@ const PseudoSearch = () => {
   const [filters, setFilters] = useState<SearchFilters>(defaultFilters);
   const [filterOptions, setFilterOptions] = useState<PropertyFilterOptions>(emptyFilterOptions);
   const [addressOptions, setAddressOptions] = useState<AddressOption[]>([]);
-  const [modalIsOpen, setModalIsOpen] = useState(false);
   const [loadingOptions, setLoadingOptions] = useState(false);
   const [loadingSearch, setLoadingSearch] = useState(false);
   const [isTypeDropdownVisible, setIsTypeDropdownVisible] = useState(false);
   const [isPriceDropdownVisible, setIsPriceDropdownVisible] = useState(false);
+  const [isDormitoriosVisible, setIsDormitoriosVisible] = useState(false);
+  const [isMaisFiltrosVisible, setIsMaisFiltrosVisible] = useState(false);
   const [showLocationSuggestions, setShowLocationSuggestions] = useState(false);
 
   const typeRef = useRef<HTMLDivElement>(null);
   const priceRef = useRef<HTMLDivElement>(null);
   const locationRef = useRef<HTMLDivElement>(null);
+  const dormitoriosRef = useRef<HTMLDivElement>(null);
+  const maisFiltrosRef = useRef<HTMLDivElement>(null);
 
   const priceRanges = useMemo(() => buildPriceRanges(), []);
 
@@ -310,6 +322,14 @@ const PseudoSearch = () => {
         setIsPriceDropdownVisible(false);
       }
 
+      if (dormitoriosRef.current && !dormitoriosRef.current.contains(target)) {
+        setIsDormitoriosVisible(false);
+      }
+
+      if (maisFiltrosRef.current && !maisFiltrosRef.current.contains(target)) {
+        setIsMaisFiltrosVisible(false);
+      }
+
       if (locationRef.current && !locationRef.current.contains(target)) {
         setShowLocationSuggestions(false);
       }
@@ -381,10 +401,15 @@ const PseudoSearch = () => {
       minRooms: nextFilters.minRooms || '',
       minSuites: nextFilters.minSuites || '',
       minVacancies: nextFilters.minVacancies || '',
+      minArea: nextFilters.minArea || '',
+      maxArea: nextFilters.maxArea || '',
     };
 
-    navigateSearch(targetPath, params);
-    setModalIsOpen(false);
+    const cleanedParams = Object.fromEntries(
+      Object.entries(params).filter(([_, v]) => v !== '')
+    );
+
+    navigateSearch(targetPath, cleanedParams);
 
     setTimeout(() => {
       setLoadingSearch(false);
@@ -395,6 +420,8 @@ const PseudoSearch = () => {
     const nextFilters = quickFilter.apply(filters);
     executeSearch(nextFilters);
   };
+
+  const [isMobileModalOpen, setIsMobileModalOpen] = useState(false);
 
   const renderLocationSuggestions = (isDesktop = false) => {
     if (!filters.location || !showLocationSuggestions) {
@@ -452,12 +479,228 @@ const PseudoSearch = () => {
     );
   };
 
-  return (
-    <PseudoSearchContainer className="container">
-      <TfiLocationArrow className="arrow-location-pseudoSearch" />
-      <button onClick={() => setModalIsOpen(true)}>Estado, Cidade, Tipo, Finalidade...</button>
+  if (variant === 'properties') {
+    return (
+      <PseudoSearchContainer className="properties-variant">
+        {/* DESKTOP PROPERTIES FILTER */}
+        <div className="properties-desktop-filter">
+          <div className="properties-filter-header">
+            <span className="properties-filter-title">Filtrar busca</span>
+            <button className="properties-clear-btn" onClick={() => setFilters(defaultFilters)}>Limpar filtros</button>
+          </div>
+          <div className="properties-filter-row">
+            {/* Comprar / Alugar (Inline Toggle) */}
+            <div className="properties-goal-inline-toggle" style={{ display: 'flex', gap: '15px', alignItems: 'center', paddingRight: '15px', borderRight: '1px solid #eaeaea' }}>
+              <label
+                onClick={() => handleGoalChange('2')}
+                style={{ display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer', position: 'relative', paddingBottom: '4px' }}
+              >
+                <PiHouseLineLight style={{ fontSize: '20px', color: filters.goal === '2' ? buttonColor || '#FF5317' : '#999' }} />
+                <span style={{ color: filters.goal === '2' ? '#111' : '#999', fontWeight: 600, fontSize: '15px' }}>Comprar</span>
+                {filters.goal === '2' && <div style={{ position: 'absolute', bottom: '-8px', left: 0, width: '100%', height: '2px', backgroundColor: buttonColor || '#FF5317' }} />}
+              </label>
+              <label
+                onClick={() => handleGoalChange('1')}
+                style={{ display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer', position: 'relative', paddingBottom: '4px' }}
+              >
+                <PiKeyLight style={{ fontSize: '20px', color: filters.goal === '1' ? buttonColor || '#FF5317' : '#999' }} />
+                <span style={{ color: filters.goal === '1' ? '#111' : '#999', fontWeight: 600, fontSize: '15px' }}>Alugar</span>
+                {filters.goal === '1' && <div style={{ position: 'absolute', bottom: '-8px', left: 0, width: '100%', height: '2px', backgroundColor: buttonColor || '#FF5317' }} />}
+              </label>
+            </div>
 
-      <div className="search-box-main" style={{ display: window.innerWidth >= 1000 ? 'flex' : 'none' }}>
+            {/* Tipo */}
+            <div className="custom-dropdown properties-dropdown" ref={typeRef}>
+              <div className="custom-dropdown-selection" onClick={() => setIsTypeDropdownVisible((current) => !current)}>
+                <span>{selectedType?.label || 'Tipo'}</span>
+                <IoIosArrowDown />
+              </div>
+              {isTypeDropdownVisible && (
+                <div className="items-holder">
+                  <div className="dropdown-item" onClick={() => handleSelectType('')}>Todos os tipos</div>
+                  {availableTypes.map((item) => (
+                    <div key={item.value} className="dropdown-item" onClick={() => handleSelectType(String(item.value))}>
+                      {item.label}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Localização (Cidade/Bairro combinados por enquanto para manter compatibilidade) */}
+            <div className="custom-dropdown properties-dropdown location-input-container" ref={locationRef}>
+              <div style={{ display: 'flex', alignItems: 'center', width: '100%', height: '100%' }}>
+                <input
+                  placeholder="Cidade ou Bairro"
+                  type="text"
+                  value={filters.location}
+                  onFocus={() => setShowLocationSuggestions(filters.location.trim().length > 0)}
+                  onChange={(event) => handleLocationChange(event.target.value)}
+                />
+                <IoIosArrowDown />
+              </div>
+              {renderLocationSuggestions(true)}
+            </div>
+
+            {/* Valor */}
+            <div className="custom-dropdown properties-dropdown" ref={priceRef}>
+              <div className="custom-dropdown-selection" onClick={() => setIsPriceDropdownVisible((current) => !current)}>
+                <span>{filters.maxPrice || filters.minPrice ? selectedPriceLabel : 'Valor'}</span>
+                <IoIosArrowDown />
+              </div>
+              {isPriceDropdownVisible && (
+                <div className="items-holder">
+                  {priceRanges.map((range) => (
+                    <div key={`${range.minPrice}-${range.maxPrice}-${range.label}`} className="dropdown-item" onClick={() => handleSelectPriceRange(range)}>
+                      {range.label}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Dormitórios */}
+            <div className="custom-dropdown properties-dropdown" ref={dormitoriosRef}>
+              <div className="custom-dropdown-selection" onClick={() => setIsDormitoriosVisible(!isDormitoriosVisible)}>
+                <span>{filters.minRooms ? `${filters.minRooms}+ Dormitórios` : 'Dormitórios'}</span>
+                <IoIosArrowDown />
+              </div>
+              {isDormitoriosVisible && (
+                <div className="items-holder">
+                  <div className="dropdown-item" onClick={() => { updateFilters({ minRooms: '' }); setIsDormitoriosVisible(false); }}>Qualquer quantidade</div>
+                  {[1, 2, 3, 4].map(num => (
+                    <div key={`dorm-${num}`} className="dropdown-item" onClick={() => { updateFilters({ minRooms: String(num) }); setIsDormitoriosVisible(false); }}>
+                      {num}+ {num === 1 ? 'Quarto' : 'Quartos'}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Mais Filtros */}
+            <div className="custom-dropdown properties-dropdown mais-filtros-container" ref={maisFiltrosRef}>
+              <div className="custom-dropdown-selection" onClick={() => setIsMaisFiltrosVisible(!isMaisFiltrosVisible)}>
+                <span>Mais filtros</span>
+                <IoIosArrowDown />
+              </div>
+              {isMaisFiltrosVisible && (
+                <div className="items-holder mais-filtros-dropdown" style={{ width: '280px', padding: '15px', right: 0, left: 'auto', display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                  <div className="filter-section">
+                    <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, color: '#666', marginBottom: '10px' }}>Suítes</label>
+                    <div style={{ display: 'flex', gap: '15px', flexWrap: 'wrap' }}>
+                      {[1, 2, 3, 4].map(num => (
+                        <label key={`suite-${num}`} style={{ display: 'flex', alignItems: 'center', gap: '5px', fontSize: '14px', cursor: 'pointer' }}>
+                          <input type="checkbox" checked={filters.minSuites === String(num)} onChange={() => updateFilters({ minSuites: filters.minSuites === String(num) ? '' : String(num) })} /> {num === 4 ? 'Acima de 3' : num}
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="filter-section">
+                    <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, color: '#666', marginBottom: '10px' }}>Vagas de garagem</label>
+                    <div style={{ display: 'flex', gap: '15px', flexWrap: 'wrap' }}>
+                      {[1, 2, 3, 4, 5].map(num => (
+                        <label key={`vaga-${num}`} style={{ display: 'flex', alignItems: 'center', gap: '5px', fontSize: '14px', cursor: 'pointer' }}>
+                          <input type="checkbox" checked={filters.minVacancies === String(num)} onChange={() => updateFilters({ minVacancies: filters.minVacancies === String(num) ? '' : String(num) })} /> {num === 5 ? 'Acima de 4' : num}
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Filtrar Button */}
+            <button className="properties-submit-btn" onClick={() => executeSearch()} style={{ backgroundColor: buttonColor || 'var(--brand-color, #FF5317)', color: buttonTextColor, minWidth: '120px' }}>
+              <BiSearch size={18} />
+              Buscar
+            </button>
+          </div>
+        </div>
+
+        {/* MOBILE PROPERTIES FILTER */}
+        <div className="properties-mobile-filter">
+          <button className="properties-mobile-open-btn" onClick={() => setIsMobileModalOpen(true)} style={{ color: buttonColor, borderColor: buttonColor }}>
+            Filtrar busca
+          </button>
+          
+          {isMobileModalOpen && (
+            <div className="properties-mobile-modal">
+              <div className="modal-header">
+                <span className="modal-title">Filtros</span>
+                <IoCloseOutline className="modal-close" onClick={() => setIsMobileModalOpen(false)} />
+              </div>
+              
+              <div className="modal-body">
+                <div className="modal-field">
+                  <label>Comprar ou Alugar?</label>
+                  <div className="goal-toggle">
+                    <button className={filters.goal === '2' ? 'active' : ''} onClick={() => handleGoalChange('2')} style={filters.goal === '2' ? { backgroundColor: buttonColor, color: buttonTextColor } : {}}>Comprar</button>
+                    <button className={filters.goal === '1' ? 'active' : ''} onClick={() => handleGoalChange('1')} style={filters.goal === '1' ? { backgroundColor: buttonColor, color: buttonTextColor } : {}}>Alugar</button>
+                  </div>
+                </div>
+
+                <div className="modal-field">
+                  <label>Tipo do Imóvel</label>
+                  <select value={filters.typeProperty} onChange={(e) => handleSelectType(e.target.value)}>
+                    <option value="">Todos os tipos</option>
+                    {availableTypes.map((item) => (
+                      <option key={item.value} value={item.value}>{item.label}</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="modal-field">
+                  <label>Localização (Cidade/Bairro)</label>
+                  <input
+                    placeholder="Digite a localização"
+                    type="text"
+                    value={filters.location}
+                    onChange={(event) => handleLocationChange(event.target.value)}
+                  />
+                  {/* Para mobile simplificado, deixaremos a busca nativa via API lidar com o texto */}
+                </div>
+
+                <div className="modal-field">
+                  <label>Valor</label>
+                  <select onChange={(e) => {
+                    const range = priceRanges.find(r => r.label === e.target.value);
+                    if (range) handleSelectPriceRange(range);
+                  }}>
+                    <option value="">Selecione o valor</option>
+                    {priceRanges.map((range) => (
+                      <option key={range.label} value={range.label}>{range.label}</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="modal-field">
+                  <label>Dormitórios</label>
+                  <select value={filters.minRooms} onChange={(e) => updateFilters({ minRooms: e.target.value })}>
+                    <option value="">Qualquer quantidade</option>
+                    <option value="1">1+ Quarto</option>
+                    <option value="2">2+ Quartos</option>
+                    <option value="3">3+ Quartos</option>
+                    <option value="4">4+ Quartos</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="modal-footer">
+                <button className="clear-btn" onClick={() => setFilters(defaultFilters)}>Limpar filtros</button>
+                <button className="submit-btn" onClick={() => { setIsMobileModalOpen(false); executeSearch(); }} style={{ backgroundColor: buttonColor, color: buttonTextColor }}>
+                  Mostrar Resultados
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      </PseudoSearchContainer>
+    );
+  }
+
+  return (
+    <PseudoSearchContainer>
+      <div className="search-box-main">
         <div className="search-block" style={{ flex: '1', paddingLeft: '10px' }}>
           <div className="goal-inline-tabs" style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
             <label
@@ -465,22 +708,23 @@ const PseudoSearch = () => {
               onClick={() => handleGoalChange('2')}
               style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', position: 'relative', paddingBottom: '4px' }}
             >
-              <PiHouseLineLight style={{ fontSize: '20px', color: filters.goal === '2' ? '#FF5317' : '#999' }} />
+              <PiHouseLineLight style={{ fontSize: '20px', color: filters.goal === '2' ? 'var(--brand-color, #FF5317)' : '#999' }} />
               <span style={{ color: filters.goal === '2' ? '#111' : '#999', fontWeight: 600, fontSize: '15px' }}>Comprar</span>
-              {filters.goal === '2' && <div style={{ position: 'absolute', bottom: 0, left: 0, width: '100%', height: '2px', backgroundColor: '#e67e22' }} />}
+              {filters.goal === '2' && <div style={{ position: 'absolute', bottom: 0, left: 0, width: '100%', height: '2px', backgroundColor: 'var(--brand-color, #FF5317)' }} />}
             </label>
             <label
               className={filters.goal === '1' ? 'active' : ''}
               onClick={() => handleGoalChange('1')}
               style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', position: 'relative', paddingBottom: '4px' }}
             >
-              <PiKeyLight style={{ fontSize: '20px', color: filters.goal === '1' ? '#FF5317' : '#999' }} />
+              <PiKeyLight style={{ fontSize: '20px', color: filters.goal === '1' ? 'var(--brand-color, #FF5317)' : '#999' }} />
               <span style={{ color: filters.goal === '1' ? '#111' : '#999', fontWeight: 600, fontSize: '15px' }}>Alugar</span>
-              {filters.goal === '1' && <div style={{ position: 'absolute', bottom: 0, left: 0, width: '100%', height: '2px', backgroundColor: '#e67e22' }} />}
+              {filters.goal === '1' && <div style={{ position: 'absolute', bottom: 0, left: 0, width: '100%', height: '2px', backgroundColor: 'var(--brand-color, #FF5317)' }} />}
             </label>
           </div>
         </div>
 
+        <div className="ps-divider" />
         <div className="search-block" style={{ flex: '1.2' }}>
           <div className="custom-dropdown" ref={typeRef}>
             <div
@@ -523,6 +767,7 @@ const PseudoSearch = () => {
           </div>
         </div>
 
+        <div className="ps-divider" />
         <div className="search-block" style={{ flex: '1.5' }} ref={locationRef}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', width: '100%' }}>
             <PiMapPinLight style={{ fontSize: '20px', color: '#999' }} />
@@ -539,6 +784,7 @@ const PseudoSearch = () => {
           </div>
         </div>
 
+        <div className="ps-divider" />
         <div className="search-block" style={{ flex: '1.2' }}>
           <div className="custom-dropdown" ref={priceRef}>
             <div
@@ -568,12 +814,54 @@ const PseudoSearch = () => {
           </div>
         </div>
 
-        <button className="search-btn-dark" onClick={() => executeSearch()} style={{ backgroundColor: '#e67e22' }}>
+        <div className="ps-divider" />
+        <div className="search-block" style={{ flex: '1' }}>
+          <div className="custom-dropdown" ref={maisFiltrosRef}>
+            <div
+              className="custom-dropdown-selection"
+              onClick={() => setIsMaisFiltrosVisible(!isMaisFiltrosVisible)}
+              style={{ display: 'flex', justifyContent: 'space-between', width: '100%', alignItems: 'center', cursor: 'pointer' }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', minWidth: 0 }}>
+                <span style={{ flex: 1, fontSize: '15px', color: '#666', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                  Mais filtros
+                </span>
+              </div>
+              <IoIosArrowDown style={{ fontSize: '14px', color: '#666' }} />
+            </div>
+            {isMaisFiltrosVisible && (
+              <div className="items-holder mais-filtros-dropdown" style={{ width: '280px', padding: '15px', right: 0, left: 'auto', display: 'flex', flexDirection: 'column', gap: '20px', backgroundColor: '#fff', border: '1px solid #eaeaea', borderRadius: '8px', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}>
+                <div className="filter-section">
+                  <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, color: '#666', marginBottom: '10px' }}>Suítes</label>
+                  <div style={{ display: 'flex', gap: '15px', flexWrap: 'wrap' }}>
+                    {[1, 2, 3, 4].map(num => (
+                      <label key={`home-suite-${num}`} style={{ display: 'flex', alignItems: 'center', gap: '5px', fontSize: '14px', cursor: 'pointer' }}>
+                        <input type="checkbox" checked={filters.minSuites === String(num)} onChange={() => updateFilters({ minSuites: filters.minSuites === String(num) ? '' : String(num) })} /> {num === 4 ? 'Acima de 3' : num}
+                      </label>
+                    ))}
+                  </div>
+                </div>
+                <div className="filter-section">
+                  <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, color: '#666', marginBottom: '10px' }}>Vagas de garagem</label>
+                  <div style={{ display: 'flex', gap: '15px', flexWrap: 'wrap' }}>
+                    {[1, 2, 3, 4, 5].map(num => (
+                      <label key={`home-vaga-${num}`} style={{ display: 'flex', alignItems: 'center', gap: '5px', fontSize: '14px', cursor: 'pointer' }}>
+                        <input type="checkbox" checked={filters.minVacancies === String(num)} onChange={() => updateFilters({ minVacancies: filters.minVacancies === String(num) ? '' : String(num) })} /> {num === 5 ? 'Acima de 4' : num}
+                      </label>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+
+        <button className="search-btn-dark" onClick={() => executeSearch()} style={{ backgroundColor: buttonColor, color: buttonTextColor }}>
           Buscar
         </button>
       </div>
 
-      <div className="popular-tags" style={{ display: window.innerWidth >= 1000 ? 'flex' : 'none' }}>
+      <div className="popular-tags">
         {quickFilters.map((quickFilter) => (
           <div
             key={quickFilter.key}
@@ -585,106 +873,6 @@ const PseudoSearch = () => {
           </div>
         ))}
       </div>
-
-      <Modal
-        isOpen={modalIsOpen}
-        onRequestClose={() => setModalIsOpen(false)}
-        className="Modal container"
-      >
-        <div className="header-modal-search">
-          <IoIosArrowBack className="button-close-search-modal" onClick={() => setModalIsOpen(false)} />
-          <p>pesquisar</p>
-        </div>
-
-        <div className="input-rent-sale-wrapper">
-          <label onClick={() => handleGoalChange('2')} className={`selectedClass${filters.goal === '2' ? ' activeSale' : ''}`}>
-            <input type="radio" name="goal" value="2" readOnly checked={filters.goal === '2'} />
-            <span className="sale-span">comprar</span>
-          </label>
-
-          <label onClick={() => handleGoalChange('1')} className={`selectedClass${filters.goal === '1' ? ' activeRent' : ''}`}>
-            <input type="radio" name="goal" value="1" readOnly checked={filters.goal === '1'} />
-            <span className="rent-span">alugar</span>
-          </label>
-
-          <div className="custom-dropdown" ref={typeRef}>
-            <div className="custom-dropdown-selection" onClick={() => setIsTypeDropdownVisible((current) => !current)}>
-              {selectedType?.label || ' Tipo'}
-              {filters.typeProperty && (
-                <IoCloseOutline
-                  onClick={(event) => {
-                    event.stopPropagation();
-                    updateFilters({ typeProperty: '' });
-                  }}
-                  className="icon-clean-type"
-                />
-              )}
-
-              <IoIosArrowDown className="arrow-type" />
-            </div>
-            {isTypeDropdownVisible && (
-              <div className="items-holder">
-                {loadingOptions ? (
-                  <div className="dropdown-item">Carregando tipos...</div>
-                ) : (
-                  availableTypes.map((item) => (
-                    <div key={item.value} className="dropdown-item" onClick={() => handleSelectType(String(item.value))}>
-                      {item.label}
-                    </div>
-                  ))
-                )}
-              </div>
-            )}
-          </div>
-        </div>
-
-        <div className="search-wrapper">
-          <input type="text" placeholder="Digite um bairro ou cidade" value={filters.location} onFocus={() => setShowLocationSuggestions(filters.location.trim().length > 0)} onChange={(event) => handleLocationChange(event.target.value)} />
-        </div>
-
-        <div className="search-wrapper">
-          <div className="custom-dropdown" ref={priceRef} style={{ width: '100%', marginLeft: 0, borderLeft: 'none', padding: 0 }}>
-            <div className="custom-dropdown-selection" onClick={() => setIsPriceDropdownVisible((current) => !current)}>
-              {selectedPriceLabel}
-              <IoIosArrowDown className="arrow-type" />
-            </div>
-            {isPriceDropdownVisible && (
-              <div className="items-holder" style={{ left: 0, width: '100%' }}>
-                {priceRanges.map((range) => (
-                  <div key={`${range.minPrice}-${range.maxPrice}-${range.label}`} className="dropdown-item" onClick={() => handleSelectPriceRange(range)}>
-                    {range.label}
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        </div>
-
-        <div className="popular-tags mobile-popular-tags">
-          {quickFilters.map((quickFilter) => (
-            <div
-              key={quickFilter.key}
-              className="tag-pill"
-              onClick={() => updateFilters(quickFilter.apply(filters))}
-              style={quickFilter.isActive(filters) ? { background: '#ffffff', borderColor: '#111', color: '#111' } : undefined}
-            >
-              {quickFilter.label}
-            </div>
-          ))}
-        </div>
-
-        <div className="result-list-wrapper">
-          {renderLocationSuggestions()}
-        </div>
-
-        <div className="button-send-search-wrapper">
-          {!loadingSearch ? (
-            <button onClick={() => executeSearch()}>pesquisar</button>
-          ) : (
-            <button className="button-loading"><Loading /></button>
-          )}
-        </div>
-      </Modal>
 
       <div className="result-list-wrapper-desktop">
         {renderLocationSuggestions(true)}

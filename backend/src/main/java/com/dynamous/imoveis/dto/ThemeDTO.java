@@ -25,6 +25,7 @@ public class ThemeDTO {
     private String bannerTitle;
     private String bannerTitleColor;
     private Integer bannerTitleSize;
+    private String bannerSearchButtonTextColor;
     
     // Services configuration
     private String services; // JSON string
@@ -69,6 +70,10 @@ public class ThemeDTO {
     private String seoKeywords;
     private String siteTitle;
     private String favicon;
+    private String creci;
+    private String contactIconColor;
+    private String brandColor2;
+    private String brandColor2Text;
 
     public ThemeDTO() {}
 
@@ -95,6 +100,7 @@ public class ThemeDTO {
         this.bannerTitle = theme.getBannerTitle();
         this.bannerTitleColor = theme.getBannerTitleColor();
         this.bannerTitleSize = theme.getBannerTitleSize();
+        this.bannerSearchButtonTextColor = theme.getBannerSearchButtonTextColor();
         
         // Services configuration
         this.services = theme.getServices();
@@ -139,6 +145,10 @@ public class ThemeDTO {
         this.seoKeywords = theme.getSeoKeywords();
         this.siteTitle = theme.getSiteTitle();
         this.favicon = theme.getFavicon();
+        this.creci = theme.getCreci();
+        this.contactIconColor = theme.getContactIconColor();
+        this.brandColor2 = theme.getBrandColor2();
+        this.brandColor2Text = theme.getBrandColor2Text();
     }
 
     // Getters and Setters
@@ -271,6 +281,14 @@ public class ThemeDTO {
 
     public void setBannerTitleSize(Integer bannerTitleSize) {
         this.bannerTitleSize = bannerTitleSize;
+    }
+
+    public String getBannerSearchButtonTextColor() {
+        return bannerSearchButtonTextColor;
+    }
+
+    public void setBannerSearchButtonTextColor(String bannerSearchButtonTextColor) {
+        this.bannerSearchButtonTextColor = bannerSearchButtonTextColor;
     }
 
     // Services configuration getters/setters
@@ -497,5 +515,37 @@ public class ThemeDTO {
 
     public void setFavicon(String favicon) {
         this.favicon = favicon;
+    }
+
+    public String getCreci() {
+        return creci;
+    }
+
+    public void setCreci(String creci) {
+        this.creci = creci;
+    }
+
+    public String getContactIconColor() {
+        return contactIconColor;
+    }
+
+    public void setContactIconColor(String contactIconColor) {
+        this.contactIconColor = contactIconColor;
+    }
+
+    public String getBrandColor2() {
+        return brandColor2;
+    }
+
+    public void setBrandColor2(String brandColor2) {
+        this.brandColor2 = brandColor2;
+    }
+
+    public String getBrandColor2Text() {
+        return brandColor2Text;
+    }
+
+    public void setBrandColor2Text(String brandColor2Text) {
+        this.brandColor2Text = brandColor2Text;
     }
 }

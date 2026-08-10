@@ -480,7 +480,7 @@ public class PropertyService {
 	 @Transactional(readOnly = true)
 	 public Page<Property> findByTenantMatchAnyParam(Integer goal, Integer typeProperty, String name, String city, String district,
 	 												java.math.BigDecimal minPrice, java.math.BigDecimal maxPrice, Integer minRooms, Integer minSuites,
-	 												Integer minVacancies, String domain, Integer page, Integer linesPerPage,
+	 												Integer minVacancies, java.math.BigDecimal minArea, java.math.BigDecimal maxArea, String domain, Integer page, Integer linesPerPage,
 	 												String orderBy, String direction){
 		  String normalizedName = normalizeText(name);
 		  String normalizedCity = normalizeText(city);
@@ -524,8 +524,31 @@ public class PropertyService {
 		  			return true;
 		  		})
 		  		.filter(property -> minRooms == null || (parseIntegerValue(property.getNumberRooms()) != null && parseIntegerValue(property.getNumberRooms()) >= minRooms))
-		  		.filter(property -> minSuites == null || (parseIntegerValue(property.getSuites()) != null && parseIntegerValue(property.getSuites()) >= minSuites))
-		  		.filter(property -> minVacancies == null || (parseIntegerValue(property.getVacancies()) != null && parseIntegerValue(property.getVacancies()) >= minVacancies))
+		  		.filter(property -> {
+		  			if (minSuites == null) return true;
+		  			Integer propSuites = parseIntegerValue(property.getSuites());
+		  			if (propSuites == null) propSuites = 0;
+		  			if (minSuites >= 4) return propSuites >= 4;
+		  			return propSuites.equals(minSuites);
+		  		})
+		  		.filter(property -> {
+		  			if (minVacancies == null) return true;
+		  			Integer propVacancies = parseIntegerValue(property.getVacancies());
+		  			if (propVacancies == null) propVacancies = 0;
+		  			if (minVacancies >= 5) return propVacancies >= 5;
+		  			return propVacancies.equals(minVacancies);
+		  		})
+		  		.filter(property -> {
+		  			java.math.BigDecimal propertyArea = parseDecimalValue(property.getArea());
+		  			if (propertyArea == null) propertyArea = parseDecimalValue(property.getAreaTotal());
+		  			if (minArea != null && (propertyArea == null || propertyArea.compareTo(minArea) < 0)) {
+		  				return false;
+		  			}
+		  			if (maxArea != null && (propertyArea == null || propertyArea.compareTo(maxArea) > 0)) {
+		  				return false;
+		  			}
+		  			return true;
+		  		})
 		  		.collect(Collectors.toList());
 
 		  return paginate(filteredProperties, page, linesPerPage, orderBy, direction);

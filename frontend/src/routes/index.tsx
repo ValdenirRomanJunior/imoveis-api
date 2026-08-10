@@ -74,6 +74,7 @@ const LazyEmpreendimentoDetalhe = React.lazy(() => import('../pages/Empreendimen
 const LazyEditorLP = React.lazy(() => import('../pages/Empreendimentos/EditorLP'));
 const LazyLancamentoPublico = React.lazy(() => import('../pages/LancamentoPublico'));
 const LazyOldHome = React.lazy(() => import('../pages/OldHome'));
+const LazyLpSite = React.lazy(() => import('../pages/LpSite'));
 
 
 
@@ -189,6 +190,7 @@ const TrialGuard: React.FC = () => {
                 <Route path="/site/:companyName/detail/:propertyId"  element={<React.Suspense fallback={<LoadingPage/>}> <LazyDetail /> </React.Suspense>} /> 
                 <Route path="/detail/:propertyId"  element={<React.Suspense fallback={<LoadingPage/>}> <LazyDetail /> </React.Suspense>} />
                 <Route path="/premium-preview" element={<React.Suspense fallback={<LoadingPage/>}><LazyPremiumPreview/></React.Suspense>} />
+                <Route path="/lp-vendas-site" element={<React.Suspense fallback={<div>Carregando...</div>}><LazyLpSite/></React.Suspense>} />
                 <Route path='*' element={<PageNotFound/>}/>
             </Routes>
         </>
