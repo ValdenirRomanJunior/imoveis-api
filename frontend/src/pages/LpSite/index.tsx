@@ -68,36 +68,14 @@ const LpSite: React.FC = () => {
 
       <ContentWrapper>
         <MainTitle>
-          Como Imobiliárias Estão Recebendo <span>10 a 15 contatos Qualificados Por Dia</span> Com um Site, Bem Posicionado Na sua Cidade.
+          Como Imobiliárias Estão Recebendo <span>10 a 15 contatos Qualificados Por Dia</span> Com um Site, Bem Posicionado Na sua Cidade Sem Gastar com Tráfego Pago.
         </MainTitle>
 
         <SubTitle>
-          Assista ao vídeo de 1 minuto onde Valdenir Roman mostra o que a Standi Tecnologia Imobiliária tem para te ajudar a encher o CRM de contatos em que você não precisa gastar dias configurando.
+          Nós da Standi Tecnologia Imobiliária cria seu Site imobiliário com Taxa de Setup + mensalidade com valor reduzido e você não precisa colocar a mão na massa.
         </SubTitle>
 
-        <VideoContainer onClick={() => setPlaying(true)}>
-          {!playing ? (
-            <>
-              <img
-                className="video-thumb"
-                src={`https://img.youtube.com/vi/${YOUTUBE_ID}/hqdefault.jpg`}
-                alt="Thumb do vídeo"
-              />
-              <svg className="play-icon" viewBox="0 0 100 100">
-                <circle cx="50" cy="50" r="48" fill="#fff" opacity="0.95" />
-                <polygon points="40,30 78,50 40,70" fill="#ff0000" />
-              </svg>
-            </>
-          ) : (
-            <iframe
-              src={`https://www.youtube.com/embed/${YOUTUBE_ID}?autoplay=1&rel=0&modestbranding=1&controls=1&iv_load_policy=3&playsinline=1&fs=1&disablekb=1&showinfo=0`}
-              title="YouTube video player"
-              frameBorder="0"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-              allowFullScreen
-            />
-          )}
-        </VideoContainer>
+     
 
         <CtaText>
           Clique abaixo para falar comigo <span>e fecharmos sua estrutura</span>
