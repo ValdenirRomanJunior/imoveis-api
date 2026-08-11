@@ -103,8 +103,8 @@ const LpSite: React.FC = () => {
           Clique abaixo para falar comigo <span>e fecharmos sua estrutura</span>
         </CtaText>
 
-        <CtaButton>
-          <FaWhatsapp color="#ffffff" />
+        <CtaButton as="a" href="https://api.whatsapp.com/send?phone=45974007155" target="_blank" rel="noopener noreferrer">
+          <FaWhatsapp size={24} color="#ffffff" />
           QUERO SABER MAIS NO WHATSAPP
         </CtaButton>
       </ContentWrapper>

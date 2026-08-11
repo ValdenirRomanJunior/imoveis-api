@@ -140,7 +140,7 @@ export const CtaText = styled.p`
   }
 `;
 
-export const CtaButton = styled.button`
+export const CtaButton = styled.a`
   background: linear-gradient(180deg, #86efac 0%, #22c55e 100%);
   color: #ffffff;
   border: none;
@@ -159,6 +159,7 @@ export const CtaButton = styled.button`
   align-items: center;
   justify-content: center;
   gap: 12px;
+  text-decoration: none;
 
   svg {
     font-size: 44px;
